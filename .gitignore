@@ -1,0 +1,7 @@
+# Вихідні файли прогонів scrape-complete.js / render-map.js —
+# генеруються заново під кожну категорію, у репозиторії не потрібні.
+cncprom_complete_*.csv
+category_map_*.json
+report_*.md
+map_*.html
+failed_urls_*.json

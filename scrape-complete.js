@@ -16,6 +16,7 @@ const START_CATEGORY_ID = (START_URL.match(/\/g(\d+)-/) || [, "unknown"])[1];
 const OUTPUT_CSV = `cncprom_complete_${START_CATEGORY_ID}.csv`;
 const OUTPUT_MAP = `category_map_${START_CATEGORY_ID}.json`;
 const OUTPUT_FAILED = `failed_urls_${START_CATEGORY_ID}.json`;
+const OUTPUT_REPORT = `report_${START_CATEGORY_ID}.md`;
 
 const BLOCKED_PATTERNS = [
   'google-analytics.com', 'googletagmanager.com', 'doubleclick.net',
@@ -242,6 +243,84 @@ function toCSV(rows) {
   return lines.join("\n");
 }
 
+// ==================== ЕТАП 3: MD-ЗВІТ ЗІ ЗВІРКОЮ ====================
+// Звіряє наші зібрані дані з лічильником сайту "В наявності N" на кожному
+// вузлі дерева. Для вузла зіставляється не лише його власні прямі товари, а
+// увесь піддерево (лічильник сайту на проміжній категорії враховує і
+// підкатегорії), тому для звірки збираються categoryId усіх нащадків.
+function collectSubtreeCategoryIds(node, acc = new Set()) {
+  if (!node || !node.categoryId) return acc;
+  acc.add(node.categoryId);
+  (node.children || []).forEach(c => collectSubtreeCategoryIds(c, acc));
+  return acc;
+}
+
+// ВАЖЛИВО: не додавати сюди "наявн" — статус відсутності товару звучить як
+// "Немає в наявності" і теж містить цей підрядок, тому широка регулярка
+// хибно зараховувала і недоступні товари (перевірено: 108 з 178 "Немає в
+// наявності" все одно проходили як "available", поки цей коментар не додали).
+function isAvailableRow(row) {
+  return /готово/i.test(row.availabilityStatus || "");
+}
+
+function buildCategoryStats(node, allRows, depth = 0, out = []) {
+  if (!node || !node.categoryId) return out;
+  const subtreeIds = collectSubtreeCategoryIds(node);
+  const rowsInSubtree = allRows.filter(r => subtreeIds.has(r.categoryId));
+  const ourTotal = rowsInSubtree.length;
+  const ourAvailable = rowsInSubtree.filter(isAvailableRow).length;
+  const siteCounter = node.siteAvailableCounter;
+  const hasCounter = siteCounter !== null && siteCounter !== undefined;
+  const diff = hasCounter ? ourAvailable - siteCounter : null;
+  let verdict;
+  if (!hasCounter) verdict = "— (лічильник не знайдено)";
+  else if (Math.abs(diff) <= 2) verdict = "✅ збігається";
+  else verdict = "⚠️ РОЗБІЖНІСТЬ";
+
+  out.push({ depth, name: node.categoryName, categoryId: node.categoryId, ourTotal, ourAvailable, siteCounter, diff, verdict });
+  (node.children || []).forEach(c => buildCategoryStats(c, allRows, depth + 1, out));
+  return out;
+}
+
+function mdEscape(s) {
+  return String(s ?? "").replace(/\|/g, "\\|");
+}
+
+function generateReport(tree, allRows) {
+  const stats = buildCategoryStats(tree, allRows);
+  const root = stats[0];
+  const lines = [];
+
+  lines.push(`# Звіт по категорії "${tree.categoryName}"`, "");
+  lines.push(`## Підсумок`, "");
+  lines.push(`| Зібрано (всього) | "В наявності" за нашими даними | Лічильник сайту | Різниця | Висновок |`);
+  lines.push(`|---|---|---|---|---|`);
+  lines.push(`| ${root.ourTotal} | ${root.ourAvailable} | ${root.siteCounter ?? "н/д"} | ${root.diff ?? "—"} | ${root.verdict} |`, "");
+
+  lines.push(`## Звірка по категоріях`, "");
+  lines.push(`| Категорія | Всього зібрано | "В наявності" (наші дані) | Лічильник сайту | Різниця | Висновок |`);
+  lines.push(`|---|---|---|---|---|---|`);
+  stats.forEach(s => {
+    const indent = "&nbsp;&nbsp;".repeat(s.depth) + (s.depth > 0 ? "↳ " : "");
+    lines.push(`| ${indent}${mdEscape(s.name)} | ${s.ourTotal} | ${s.ourAvailable} | ${s.siteCounter ?? "н/д"} | ${s.diff ?? "—"} | ${s.verdict} |`);
+  });
+  lines.push("");
+
+  const orphans = allRows.filter(r => r.isOrphan);
+  lines.push(`## Товари-сироти (${orphans.length})`, "");
+  if (orphans.length === 0) {
+    lines.push("_Немає._");
+  } else {
+    lines.push(`Товари, прикріплені напряму до проміжної категорії (не до жодної з її підкатегорій):`, "");
+    orphans.forEach(r => {
+      lines.push(`- [${mdEscape(r.productName || r.productId)}](${r.finalUrl}) — категорія: \`${mdEscape(r.baseCategoryPath)}\``);
+    });
+  }
+  lines.push("");
+
+  return lines.join("\n");
+}
+
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (async () => {
   const startTime = Date.now();
@@ -282,7 +361,7 @@ function toCSV(rows) {
   }
 
   console.log(`\nВсього товарів зібрано: ${allRows.length}`);
-  const availableCount = allRows.filter(r => /готово|наявн/i.test(r.availabilityStatus)).length;
+  const availableCount = allRows.filter(isAvailableRow).length;
   console.log(`З них "Готово до відправки": ${availableCount}`);
   console.log(`(Порівняйте це число з лічильником "В наявності N" на сайті для рівня 1 — див. лог ЕТАПУ 1 вище)`);
 
@@ -293,6 +372,10 @@ function toCSV(rows) {
 
   const csv = toCSV(allRows);
   fs.writeFileSync(OUTPUT_CSV, "\uFEFF" + csv, "utf-8");
+
+  const report = generateReport(tree, allRows);
+  fs.writeFileSync(OUTPUT_REPORT, report, "utf-8");
+  console.log(`\u0417\u0432\u0456\u0442 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E: ${OUTPUT_REPORT}`);
 
   const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
   console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CSV}`);
