@@ -71,7 +71,7 @@ function parseCsv(text) {
 function readCategoriesFromCsv() {
   if (!fs.existsSync(CSV_FILE)) return null;
   const rows = parseCsv(fs.readFileSync(CSV_FILE, "utf-8"));
-  return rows.map(r => ({ id: r.ID, name: r["Назва категорії"], url: r.URL }));
+  return rows.map(r => ({ id: r.categoryId, name: r.categoryName, url: r.categoryUrl }));
 }
 
 // ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================

@@ -12,7 +12,9 @@
 //   node discover-categories.js
 //
 // Результат: output/categories-site.csv (UTF-8 з BOM, роздільник ";"),
-// колонки: №, ID, Назва категорії, URL, scrapingTime.
+// колонки: number, categoryId, categoryName, categoryUrl, scrapingTime.
+// Рядки відсортовані за scrapingTime (від найменшого до найбільшого), а
+// number — просто порядковий номер після сортування, 1..N.
 
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -152,20 +154,33 @@ function csvEscape(val) {
     console.log(`[${i + 1}/${categories.length}] ${cat.name} (${id}) — підкатегорій: ${subCount}, ` +
       `в наявності: ${siteCounter}, оцінка: ${scrapingTime !== null ? scrapingTime.toFixed(1) + ' хв' : 'н/д'}`);
     rows.push({
-      n: i + 1,
       id,
       name: cat.name,
       url: cat.url,
+      scrapingTimeValue: scrapingTime, // число (для сортування) — null, якщо оцінити не вдалось
       scrapingTime: scrapingTime !== null ? scrapingTime.toFixed(1) : ""
     });
   }
 
-  const header = ["№", "ID", "Назва категорії", "URL", "scrapingTime"];
+  // Сортування за scrapingTime, від найменшого до найбільшого — так
+  // scrape-all-categories.js потім просто йде по стовпцю number 1..N, без
+  // жодної власної логіки сортування (і користувач може вручну відредагувати
+  // CSV — переставити/видалити рядки/перенумерувати — щоб скрапити не все,
+  // а вибірково чи в іншому порядку). Рядки без оцінки (scrapingTimeValue
+  // === null) — в кінці, в порядку виявлення на сайті.
+  rows.sort((a, b) => {
+    if (a.scrapingTimeValue === null && b.scrapingTimeValue === null) return 0;
+    if (a.scrapingTimeValue === null) return 1;
+    if (b.scrapingTimeValue === null) return -1;
+    return a.scrapingTimeValue - b.scrapingTimeValue;
+  });
+
+  const header = ["number", "categoryId", "categoryName", "categoryUrl", "scrapingTime"];
   const lines = [header.join(";")];
-  rows.forEach(r => lines.push([r.n, r.id, csvEscape(r.name), r.url, r.scrapingTime].join(";")));
+  rows.forEach((r, i) => lines.push([i + 1, r.id, csvEscape(r.name), r.url, r.scrapingTime].join(";")));
   fs.writeFileSync(OUTPUT_CSV, "﻿" + lines.join("\n"), "utf-8");
 
-  console.log(`\nЗбережено: ${OUTPUT_CSV} (${rows.length} категорій)`);
+  console.log(`\nЗбережено: ${OUTPUT_CSV} (${rows.length} категорій, відсортовано за scrapingTime)`);
 
   await browser.close();
 })();
