@@ -158,12 +158,10 @@ if (!appTree) {
 }
 
 let maxLevel = 1;
-const levelOwnCounts = {};
 let categoriesCount = 0;
 (function walk(n) {
   categoriesCount++;
   maxLevel = Math.max(maxLevel, n.level);
-  levelOwnCounts[n.level] = (levelOwnCounts[n.level] || 0) + n.stats.own_products;
   n.children.forEach(walk);
 })(appTree);
 
@@ -257,7 +255,7 @@ a:hover { text-decoration: underline; }
 }
 .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .catalog-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.catalog-subtitle { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+.catalog-subtitle-btn { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
 
 .header-center { flex: 1; max-width: 480px; margin: 0 16px; }
 .search-wrap { position: relative; display: flex; align-items: center; width: 100%; }
@@ -297,22 +295,20 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 .btn-theme-toggle:hover { background: var(--bg-hover); border-color: var(--border-dark); }
 .theme-icon { font-size: 0.85rem; line-height: 1; }
 
-.workspace { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 44px); overflow: hidden; }
+/* --sidebar-width зберігається в localStorage (setupSidebarResize) — 380px тут лише
+   дефолт для першого відкриття, поки JS ще не застосував збережене значення. */
+.workspace { display: grid; grid-template-columns: var(--sidebar-width, 380px) 5px 1fr; height: calc(100vh - 44px); overflow: hidden; }
 
-.sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
+.sidebar-resize-handle { cursor: col-resize; background: transparent; position: relative; }
+.sidebar-resize-handle::after { content: ''; position: absolute; top: 0; bottom: 0; left: -3px; right: -3px; }
+.sidebar-resize-handle:hover, .sidebar-resize-handle.dragging { background: var(--border-active); }
 .sidebar-top { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-subtle); }
 .sidebar-label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
 .sidebar-tools { display: flex; align-items: center; gap: 6px; }
 .btn-link { background: none; border: none; color: var(--text-link); font-size: 0.74rem; font-weight: 500; cursor: pointer; padding: 0; }
 .btn-link:hover { text-decoration: underline; }
 .divider { color: var(--border-color); font-size: 0.7rem; }
-
-.sidebar-tabs { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bg-subtle); padding: 4px 8px; gap: 4px; }
-.tab-btn {
-  flex: 1; padding: 4px 8px; font-size: 0.76rem; font-weight: 600; border: 1px solid transparent; background: transparent;
-  color: var(--text-muted); border-radius: 4px; cursor: pointer; text-align: center;
-}
-.tab-btn.active { background: var(--bg-white); border-color: var(--border-color); color: var(--text-main); }
 
 .category-tree { flex: 1; overflow-y: auto; padding: 6px 4px; }
 .nav-node { display: flex; flex-direction: column; }
@@ -330,44 +326,38 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 
 .main-content { background: var(--bg-page); display: flex; flex-direction: column; overflow-y: auto; }
 
-.category-header { background: var(--bg-white); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
+.category-header {
+  background: var(--bg-white); border-bottom: 1px solid var(--border-color); padding: 12px 20px;
+  position: sticky; top: 0; z-index: 5; /* закріплено при скролі #content-body — однаково для будь-якого відкритого рівня, бо це один і той самий елемент */
+}
 .breadcrumbs { font-size: 0.74rem; color: var(--text-subtle); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .breadcrumbs .crumb-link { color: var(--text-muted); cursor: pointer; }
 .breadcrumbs .crumb-link:hover { text-decoration: underline; }
 .breadcrumbs .crumb-current { color: var(--text-main); font-weight: 600; }
 
-.title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.title-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Стовпці зі спільними шириними колонками (заголовок категорії + список підкатегорій під ним)
+   мають лишатись вирівняними по вертикалі — фіксований layout читає ширини з першого рядка. */
+.aligned-table { table-layout: fixed; }
 .level-tag { font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: var(--bg-tag); border: 1px solid var(--border-dark); color: var(--text-muted); white-space: nowrap; }
-.cat-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
-.title-actions { display: flex; align-items: center; gap: 8px; }
-.btn-site {
-  display: inline-flex; align-items: center; padding: 4px 10px; font-size: 0.76rem; font-weight: 500;
-  border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; color: var(--text-link);
-}
-.btn-site:hover { background: var(--bg-hover); text-decoration: none; }
 .btn-default {
   display: inline-flex; align-items: center; padding: 4px 10px; font-size: 0.76rem; font-weight: 500;
   border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; color: var(--text-main); cursor: pointer;
 }
 .btn-default:hover { background: var(--bg-hover); }
 
-.level-toggles-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-color); flex-wrap: wrap; }
-.toggles-label { font-size: 0.74rem; font-weight: 600; color: var(--text-muted); }
-.btn-lvl-toggle {
-  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 0.74rem; font-weight: 500;
-  border: 1px solid var(--border-color); background: var(--bg-subtle); border-radius: 4px; color: var(--text-muted);
-  cursor: pointer; transition: all 0.1s ease;
-}
-.btn-lvl-toggle:hover { background: var(--bg-hover); border-color: var(--border-dark); }
-.btn-lvl-toggle.active { background: var(--bg-white); border-color: var(--border-active); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.btn-lvl-toggle.active .status-text { color: var(--status-yes); font-weight: 600; }
-.btn-lvl-toggle:not(.active) .status-text { color: var(--text-subtle); }
-
 .content-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 
 .section-block { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; }
 .section-head { padding: 8px 12px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); gap: 8px; flex-wrap: wrap; }
+/* Заголовок блоку (напр. "Підкатегорії (N)") вирівняно з текстом у стовпці "Назва
+   категорії" таблиці над ним: 38px ширина .col-n + 10px горизонтальний padding
+   комірок .simple-table — саме звідти цей текст там починається. */
+.section-head-aligned { padding-left: 48px; }
+
+/* Підсумкові рядки ("Товари в підкатегоріях" / "Разом в цій категорії") — трохи
+   виділені (тонований фон + кольорова риска зліва), але без різкого контрасту,
+   щоб виглядало як спокійний акцент, а не попередження. */
+.summary-block { background: var(--bg-subtle); border-left: 3px solid var(--border-active); }
 .table-subhead { padding: 6px 12px; font-size: 0.76rem; font-weight: 600; color: var(--text-muted); background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); }
 
 .table-wrap { width: 100%; overflow-x: auto; }
@@ -395,18 +385,20 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 .diff-zero { color: var(--status-yes); font-weight: 600; }
 .diff-nonzero { color: var(--status-no); font-weight: 700; }
 
+/* Один стиль для ВСІХ числових значень у таблицях (Товарів / В наявності / Немає в
+   наявності скрізь — і в заголовку категорії, і в підкатегоріях, і в підсумкових
+   рядках): просте кольорове число, без "пігулки"-бейджа з фоном і рамкою. Бейдж
+   (.stock-badge) лишається тільки для текстового статусу товару ("Готово до
+   відправки" тощо) в таблиці товарів — там це напис, а не число. */
+.count-yes { color: var(--status-yes); font-weight: 600; }
+.count-no  { color: var(--status-no); font-weight: 600; }
+
 /* Товщина шрифту — окремий клас на кожен елемент, значення можна міняти тут незалежно одне від одного */
 .fw-cat-link   { font-weight: 600; } /* назва (під)категорії-посилання в таблицях */
 .fw-count-cell { font-weight: 600; } /* числові підсумкові комірки таблиць (товарів, «разом» по категорії) */
 .fw-grand-row  { font-weight: 700; } /* рядок «Разом» підсумкової таблиці — підпис і числа */
-.fw-grand-badge{ font-weight: 700; } /* бейджі «В наявності» / «Немає в наявності» саме в рядку «Разом» */
+.fw-grand-badge{ font-weight: 700; } /* числа «В наявності» / «Немає в наявності» саме в рядку «Разом» */
 .fw-meta-label { font-weight: 600; } /* короткі службові підписи (лічильники, заголовки порожніх станів) */
-
-.all-cat-block { margin-bottom: 12px; border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; }
-.all-cat-head { padding: 8px 12px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; flex-wrap: wrap; gap: 8px; }
-.all-cat-head:hover { background: var(--bg-hover); }
-.all-cat-title { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
-.all-cat-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 .empty-note { padding: 16px; text-align: center; color: var(--text-subtle); font-style: italic; }
 
@@ -415,6 +407,20 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
   border-radius: 4px; font-size: 0.8rem; line-height: 1.45; color: var(--text-main); display: flex; align-items: flex-start; gap: 10px;
 }
 .info-banner.warning { border-left-color: #eab308; background: var(--bg-subtle); }
+
+/* Гарні підказки замість нативного title (той не переноситься й губиться на довгому тексті).
+   Позиціонується через JS (setupTooltips) в координатах в'юпорта — саме тому fixed, а не
+   absolute, щоб не обрізáлось контейнерами з overflow (.table-wrap, .main-content). */
+[data-tip] { cursor: help; }
+#custom-tooltip {
+  position: fixed; z-index: 200; max-width: 300px;
+  background: var(--text-main); color: var(--bg-white);
+  padding: 8px 10px; border-radius: 6px;
+  font-size: 0.74rem; font-weight: 400; line-height: 1.45; white-space: normal;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+}
+#custom-tooltip.visible { opacity: 1; }
 
 .help-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100;
@@ -436,12 +442,10 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 }
 .btn-help-close:hover { background: var(--bg-hover); color: var(--text-main); }
 .help-panel-body { padding: 6px 18px 18px; max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-.help-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-top: 8px; }
 .help-term { display: flex; flex-direction: column; gap: 3px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
 .help-term:last-child { border-bottom: none; }
 .help-term-label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); flex-wrap: wrap; }
 .help-term-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
-.help-term-desc b { color: var(--text-main); }
 
 @media (max-width: 800px) {
   .app-header { height: auto; padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
@@ -451,6 +455,7 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
   .workspace { grid-template-columns: 1fr; height: auto; overflow: visible; }
   html, body { overflow: visible; height: auto; }
   .sidebar { max-height: 300px; border-right: none; border-bottom: 1px solid var(--border-color); }
+  .sidebar-resize-handle { display: none; }
 }
 `;
 
@@ -460,14 +465,11 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 // всередині не потребують екранування.
 function clientApp(CATALOG_DATA) {
   var state = {
-    mode: 'selected',
     selectedNodeId: CATALOG_DATA.tree.id,
     sidebarCollapsed: new Set(),
-    levelVisible: {},
     nodeOverrides: new Map(),
     searchQuery: ''
   };
-  for (var lvl = 1; lvl <= CATALOG_DATA.global_stats.levels; lvl++) state.levelVisible[lvl] = true;
 
   var nodeMap = new Map();
   var parentMap = new Map();
@@ -485,6 +487,12 @@ function clientApp(CATALOG_DATA) {
   }
   indexTree(CATALOG_DATA.tree, null);
 
+  // За замовчуванням розгорнутий лише рівень 1 (корінь) — його прямі підкатегорії
+  // видно одразу, а самі вони згорнуті, тож рівні 3+ не розгортаються каскадом.
+  allNodes.forEach(function (n) {
+    if (n.level >= 2 && n.children && n.children.length > 0) state.sidebarCollapsed.add(n.id);
+  });
+
   function getPath(node) {
     var path = [];
     var curr = node;
@@ -496,7 +504,7 @@ function clientApp(CATALOG_DATA) {
 
   function isNodeProductsVisible(node) {
     if (state.nodeOverrides.has(node.id)) return state.nodeOverrides.get(node.id);
-    return Boolean(state.levelVisible[node.level]);
+    return true;
   }
 
   function escapeHtml(str) {
@@ -504,25 +512,16 @@ function clientApp(CATALOG_DATA) {
   }
 
   function diffBadge(stats) {
-    if (stats.site_counter === null || stats.site_counter === undefined) {
-      return '<span class="stock-badge neutral" title="Сайт не показав лічильник «В наявності N» на сторінці цієї категорії — звірка неможлива.">н/д</span>';
+    // stats.diff вже коректно враховує обидві причини неможливості звірки: сайт
+    // не показав лічильник (hasCounter=false) АБО скрипт запущено без CSV
+    // (HAS_CSV=false, тоді total_yes завжди 0 — порівнювати з ним не можна,
+    // інакше майже кожна категорія хибно підсвітилась би червоним).
+    if (stats.diff === null || stats.diff === undefined) {
+      return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені (запущено без CSV) — звірка неможлива.">н/д</span>';
     }
-    var match = stats.total_yes === stats.site_counter;
-    var cls = match ? 'diff-zero' : 'diff-nonzero';
-    var tip = 'Парсер нарахував «В наявності»: ' + stats.total_yes +
-      '. Лічильник сайту cncprom.ua «В наявності N» для цієї категорії (разом з підкатегоріями): ' + stats.site_counter +
-      '. ' + (match ? 'Збігається.' : 'Розбіжність — варто перевірити.');
-    return '<span class="' + cls + '" title="' + tip + '">' + stats.total_yes + '/' + stats.site_counter + '</span>';
-  }
-
-  function verdictBadge(stats) {
-    if (stats.site_counter === null || stats.site_counter === undefined) return '';
-    var match = stats.total_yes === stats.site_counter;
-    var tip = match
-      ? 'Парсер нарахував «В наявності» (' + stats.total_yes + '), і це збігається з лічильником сайту (' + stats.site_counter + ') — можна довіряти зібраним даним.'
-      : 'Парсер нарахував «В наявності» (' + stats.total_yes + '), а лічильник сайту показує (' + stats.site_counter + ') — щось загубилось або сайт змінився з моменту прогону, варто перевірити.';
-    return '<span class="stock-badge ' + (match ? 'yes' : 'no') + '" title="' + tip + '">' +
-      'В наявності (' + stats.total_yes + '/' + stats.site_counter + ')</span>';
+    var cls = stats.diff === 0 ? 'diff-zero' : 'diff-nonzero';
+    // Без data-tip на кожному значенні — пояснення формату "X/Y" дає сам <th> колонки.
+    return '<span class="' + cls + '">' + stats.total_yes + '/' + stats.site_counter + '</span>';
   }
 
   // ── ЛІВЕ МЕНЮ КАТЕГОРІЙ ──
@@ -533,7 +532,7 @@ function clientApp(CATALOG_DATA) {
     function createSidebarNode(node) {
       var hasChildren = node.children && node.children.length > 0;
       var isCollapsed = state.sidebarCollapsed.has(node.id);
-      var isActive = state.mode === 'selected' && state.selectedNodeId === node.id;
+      var isActive = state.selectedNodeId === node.id;
 
       var nodeEl = document.createElement('div');
       nodeEl.className = 'nav-node';
@@ -563,16 +562,17 @@ function clientApp(CATALOG_DATA) {
       title.title = node.name;
       row.appendChild(title);
 
-      var count = document.createElement('span');
-      count.className = 'node-count';
-      count.textContent = '(' + (node.stats.own_products || 0) + ')';
-      count.title = 'Товарів, прикріплених напряму до цієї категорії (без урахування підкатегорій): ' + (node.stats.own_products || 0);
-      row.appendChild(count);
+      var ownCount = node.stats.own_products || 0;
+      if (hasChildren && ownCount > 0) {
+        var count = document.createElement('span');
+        count.className = 'node-count';
+        count.textContent = '(' + ownCount + ')';
+        count.setAttribute('data-tip', 'Кількість товарів, які не входять до підкатегорій');
+        row.appendChild(count);
+      }
 
       row.addEventListener('click', function () {
         state.selectedNodeId = node.id;
-        state.mode = 'selected';
-        updateTabsUI();
         renderSidebar();
         renderContent();
       });
@@ -591,13 +591,6 @@ function clientApp(CATALOG_DATA) {
     container.appendChild(createSidebarNode(CATALOG_DATA.tree));
   }
 
-  function updateTabsUI() {
-    var tabAll = document.getElementById('tab-all');
-    var tabSel = document.getElementById('tab-selected');
-    if (state.mode === 'all') { tabAll.classList.add('active'); tabSel.classList.remove('active'); }
-    else { tabSel.classList.add('active'); tabAll.classList.remove('active'); }
-  }
-
   // ── ОСНОВНИЙ ВМІСТ ──
   function renderContent() {
     var body = document.getElementById('content-body');
@@ -607,59 +600,42 @@ function clientApp(CATALOG_DATA) {
 
     var selNode = nodeMap.get(state.selectedNodeId) || CATALOG_DATA.tree;
     updateHeader(selNode);
-
-    if (state.mode === 'selected') renderSingleView(selNode, body);
-    else renderAllView(body);
+    renderSingleView(selNode, body);
   }
 
   function updateHeader(node) {
     var bc = document.getElementById('breadcrumbs');
     var badge = document.getElementById('cat-level-badge');
+    var totalCell = document.getElementById('cat-total-products');
     var verdict = document.getElementById('cat-verdict-badge');
+    var totalNoCell = document.getElementById('cat-total-no');
     var heading = document.getElementById('cat-heading');
     var siteLink = document.getElementById('cat-site-link');
-    var toggleBar = document.getElementById('level-toggles-bar');
 
-    if (state.mode === 'all') {
-      bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Суцільний список (усі рівні)</span>';
-      badge.textContent = 'Огляд';
-      verdict.innerHTML = verdictBadge(CATALOG_DATA.tree.stats);
-      heading.textContent = 'Суцільний список категорій та товарів';
-      if (CATALOG_DATA.tree.url) { siteLink.href = CATALOG_DATA.tree.url; siteLink.style.display = ''; } else siteLink.style.display = 'none';
-      if (toggleBar) toggleBar.style.display = 'flex';
-      updateLevelTogglesUI();
-    } else {
-      var path = getPath(node);
-      bc.innerHTML = '<span class="crumb-link" data-id="root">Каталог</span>' +
-        path.map(function (p, idx) {
-          return '<span class="sep">/</span><span class="' + (idx === path.length - 1 ? 'crumb-current' : 'crumb-link') + '" data-id="' + p.id + '">' + escapeHtml(p.name) + '</span>';
-        }).join('');
+    var path = getPath(node);
+    bc.innerHTML = '<span class="crumb-link" data-id="root">Каталог</span>' +
+      path.map(function (p, idx) {
+        return '<span class="sep">/</span><span class="' + (idx === path.length - 1 ? 'crumb-current' : 'crumb-link') + '" data-id="' + p.id + '">' + escapeHtml(p.name) + '</span>';
+      }).join('');
 
-      Array.prototype.forEach.call(bc.querySelectorAll('.crumb-link'), function (el) {
-        el.addEventListener('click', function () {
-          state.selectedNodeId = el.dataset.id === 'root' ? CATALOG_DATA.tree.id : el.dataset.id;
-          state.mode = 'selected';
-          updateTabsUI(); renderSidebar(); renderContent();
-        });
+    Array.prototype.forEach.call(bc.querySelectorAll('.crumb-link'), function (el) {
+      el.addEventListener('click', function () {
+        var targetId = el.dataset.id === 'root' ? CATALOG_DATA.tree.id : el.dataset.id;
+        state.selectedNodeId = targetId;
+        // Те саме, що для .cat-jump-link — розкрити гілку до вибраної категорії.
+        var curr = parentMap.get(targetId);
+        while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
+        renderSidebar(); renderContent();
       });
-
-      badge.textContent = 'Рівень ' + node.level;
-      badge.title = 'Глибина вкладеності цієї категорії в дереві каталогу (1 = коренева категорія цього прогону).';
-      verdict.innerHTML = verdictBadge(node.stats);
-      heading.textContent = node.name;
-      if (node.url) { siteLink.href = node.url; siteLink.style.display = ''; } else siteLink.style.display = 'none';
-      if (toggleBar) toggleBar.style.display = 'none';
-    }
-  }
-
-  function updateLevelTogglesUI() {
-    Array.prototype.forEach.call(document.querySelectorAll('.btn-lvl-toggle'), function (btn) {
-      var lvl = parseInt(btn.dataset.level, 10);
-      var isVis = state.levelVisible[lvl];
-      var statusSpan = btn.querySelector('.status-text');
-      if (isVis) { btn.classList.add('active'); if (statusSpan) statusSpan.textContent = 'Показано'; }
-      else { btn.classList.remove('active'); if (statusSpan) statusSpan.textContent = 'Приховано'; }
     });
+
+    badge.textContent = 'Рівень ' + node.level;
+    badge.setAttribute('data-tip', 'Глибина вкладеності цієї категорії в дереві каталогу (1 = коренева категорія цього прогону).');
+    totalCell.textContent = node.stats.total_products;
+    verdict.innerHTML = diffBadge(node.stats);
+    totalNoCell.innerHTML = '<span class="count-no">' + node.stats.total_no + '</span>';
+    heading.textContent = node.name;
+    if (node.url) { siteLink.href = node.url; siteLink.style.display = ''; } else siteLink.style.display = 'none';
   }
 
   function renderTableHtml(products) {
@@ -668,9 +644,9 @@ function clientApp(CATALOG_DATA) {
       return (
         '<tr>' +
         '<td class="col-n">' + (p.index || i + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || '—') + '</span></td>' +
+        '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span></td>' +
         '<td class="col-name">' + (p.url ? '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
-        '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || '—') + '</span></td>' +
+        '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
     }).join('');
@@ -691,32 +667,88 @@ function clientApp(CATALOG_DATA) {
     return renderTableHtml(prods);
   }
 
+  // Розклад "своє / у підкатегоріях / разом" для проміжних рядків під
+  // "Підкатегорії" (renderSingleView) — інваріант "не показувати дублікат
+  // рядка" (grand-рядок лише коли є ОБИДВА складники) рахується тут в одному
+  // місці, а не дублюється в кожному викликаючому місці.
+  function ownSubBreakdown(stats) {
+    var ownTotal = stats.own_products || 0;
+    var ownYes = stats.own_yes || 0;
+    var ownNo = stats.own_no || 0;
+    var allTotal = stats.total_products || ownTotal;
+    var allYes = stats.total_yes || ownYes;
+    var allNo = stats.total_no || ownNo;
+    var subTotal = allTotal - ownTotal;
+    var subYes = allYes - ownYes;
+    var subNo = allNo - ownNo;
+    // "Своя" сума показується, якщо вона є, або якщо взагалі немає товарів (щоб
+    // блок не лишився порожнім); "у підкатегоріях" — лише якщо там є товари;
+    // "разом" — лише коли показані ОБИДВА складники (інакше дублював би один з них).
+    var showOwnRow = ownTotal > 0 || allTotal === 0;
+    var showSubRow = subTotal > 0;
+    var showGrandRow = showOwnRow && showSubRow;
+    return {
+      ownTotal: ownTotal, ownYes: ownYes, ownNo: ownNo,
+      allTotal: allTotal, allYes: allYes, allNo: allNo,
+      subTotal: subTotal, subYes: subYes, subNo: subNo,
+      showOwnRow: showOwnRow, showSubRow: showSubRow, showGrandRow: showGrandRow
+    };
+  }
+
+  // Один рядок проміжної суми ("своє" / "у підкатегоріях" / "разом") — без власного
+  // <thead>, стовпці й ширини ті самі, що в таблиці "Назва категорії"/"Підкатегорії"
+  // над ним, через .aligned-table. Кілька таких рядків збираються в одну таблицю
+  // (див. виклик у renderSingleView), а не в окремі таблиці одна за одною.
+  function summaryRowTr(label, total, yes, no, isGrand) {
+    var rowClass = isGrand ? ' class="fw-grand-row"' : '';
+    var countClass = isGrand ? '' : ' class="fw-count-cell"';
+    var badgeExtra = isGrand ? ' fw-grand-badge' : '';
+    return (
+      '<tr' + rowClass + '>' +
+      '<td class="col-n"></td>' +
+      '<td>' + escapeHtml(label) + '</td>' +
+      '<td style="width:80px;text-align:center;"> </td>' +
+      '<td style="width:90px;text-align:center;"' + countClass + '>' + total + '</td>' +
+      '<td style="width:100px;text-align:center;"><span class="count-yes' + badgeExtra + '">' + yes + '</span></td>' +
+      '<td style="width:150px;text-align:center;"><span class="count-no' + badgeExtra + '">' + no + '</span></td>' +
+      '<td style="width:140px;text-align:right;"> </td>' +
+      '</tr>'
+    );
+  }
+
   // ── РЕЖИМ: ОБРАНИЙ РОЗДІЛ ──
   function renderSingleView(node, container) {
     var hasChildren = node.children && node.children.length > 0;
     var prods = node.own_products || [];
+    var stats = node.stats || {};
+    var b = ownSubBreakdown(stats);
+    var ownTotal = b.ownTotal, ownYes = b.ownYes, ownNo = b.ownNo;
+    var allTotal = b.allTotal, allYes = b.allYes, allNo = b.allNo;
+    var subTotal = b.subTotal, subYes = b.subYes, subNo = b.subNo;
+    // hasChildren завжди true в блоці нижче (він і так лише всередині if (hasChildren)),
+    // але лишаємо явно — ці рядки мають сенс тільки коли підкатегорії є.
+    var showOwnRow = hasChildren && b.showOwnRow;
+    var showSubRow = hasChildren && b.showSubRow;
+    var showGrandRow = hasChildren && b.showGrandRow;
 
     if (hasChildren) {
       var subBlock = document.createElement('div');
       subBlock.className = 'section-block';
       subBlock.innerHTML =
-        '<div class="section-head"><span>Підкатегорії (' + node.children.length + ')</span></div>' +
-        '<div class="table-wrap"><table class="simple-table"><thead><tr>' +
-        '<th class="col-n">№</th><th>Назва підкатегорії</th>' +
-        '<th style="width:80px;text-align:center;" title="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>' +
-        '<th style="width:90px;text-align:center;" title="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>' +
-        '<th style="width:120px;text-align:center;" title="Дані парсера «В наявності» і незалежний лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії — має збігатися.">В наявн. (парсер/сайт)</th>' +
-        '<th style="width:140px;text-align:right;">Перейти на сайт</th>' +
-        '</tr></thead><tbody>' +
+        '<div class="section-head section-head-aligned"><span>Підкатегорії (' + node.children.length + ')</span></div>' +
+        // Без власного <thead> — рядок заголовків над цим блоком уже дає його таблиця
+        // категорії (title-row), стовпці вирівняні через .aligned-table + однакові ширини.
+        '<div class="table-wrap"><table class="simple-table aligned-table"><tbody>' +
         node.children.map(function (ch, i) {
           return (
             '<tr>' +
             '<td class="col-n">' + (i + 1) + '</td>' +
             '<td><a href="#" class="cat-jump-link fw-cat-link" data-id="' + ch.id + '">' + escapeHtml(ch.name) + '</a></td>' +
-            '<td style="text-align:center;"><span class="level-tag" title="Глибина вкладеності в дереві категорій (1 = коренева категорія цього прогону).">Рівень ' + ch.level + '</span></td>' +
-            '<td style="text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
-            '<td style="text-align:center;">' + diffBadge(ch.stats) + '</td>' +
-            '<td style="text-align:right;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a>' : '—') + '</td>' +
+            '<td style="width:80px;text-align:center;"><span class="level-tag" data-tip="Глибина вкладеності в дереві категорій (1 = коренева категорія цього прогону).">Рівень ' + ch.level + '</span></td>' +
+            '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
+            '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
+            '<td style="width:150px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
+            '<td style="width:140px;text-align:right;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -726,11 +758,26 @@ function clientApp(CATALOG_DATA) {
         link.addEventListener('click', function (e) {
           e.preventDefault();
           state.selectedNodeId = link.dataset.id;
-          state.mode = 'selected';
+          // Розкрити гілку дерева до вибраної категорії — інакше вона може лишитись
+          // невидимою в лівому меню, якщо цей рівень згорнутий (дефолт для рівня 2+).
+          var curr = parentMap.get(link.dataset.id);
+          while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
           renderSidebar(); renderContent();
         });
       });
       container.appendChild(subBlock);
+
+      // Одна таблиця з проміжними сумами одразу під "Підкатегорії": своє (якщо є) /
+      // у підкатегоріях / разом (якщо є "своє" — інакше він дублював би єдиний рядок).
+      var summaryRows =
+        (showOwnRow ? summaryRowTr('Товари категорії, які не входять до підкатегорій', ownTotal, ownYes, ownNo, false) : '') +
+        (showSubRow ? summaryRowTr('Товари в підкатегоріях', subTotal, subYes, subNo, false) : '') +
+        (showGrandRow ? summaryRowTr('Разом в цій категорії', allTotal, allYes, allNo, true) : '');
+
+      var summaryBlock = document.createElement('div');
+      summaryBlock.className = 'section-block summary-block';
+      summaryBlock.innerHTML = '<div class="table-wrap"><table class="simple-table aligned-table"><tbody>' + summaryRows + '</tbody></table></div>';
+      container.appendChild(summaryBlock);
     }
 
     if (prods.length === 0 && !hasChildren) {
@@ -743,11 +790,11 @@ function clientApp(CATALOG_DATA) {
       prodBlock.className = 'section-block';
       var isVisible = isNodeProductsVisible(node);
       var headerTitle = hasChildren
-        ? 'Товари категорії, які не входять до підкатегорій (' + prods.length + ' шт.)'
-        : 'Товари категорії (' + prods.length + ' шт.)';
+        ? 'Товари категорії, які не входять до підкатегорій (' + prods.length + ')'
+        : 'Товари категорії (' + prods.length + ')';
 
       prodBlock.innerHTML =
-        '<div class="section-head"><span>' + headerTitle + '</span>' +
+        '<div class="section-head section-head-aligned"><span>' + headerTitle + '</span>' +
         '<button class="btn-default" id="btn-toggle-single-prods">' + (isVisible ? 'Приховати товари' : 'Показати товари') + '</button></div>' +
         '<div class="table-wrap" id="single-prods-table" style="display:' + (isVisible ? 'block' : 'none') + ';">' + renderTableHtml(prods) + '</div>';
 
@@ -760,102 +807,6 @@ function clientApp(CATALOG_DATA) {
       }
       container.appendChild(prodBlock);
     }
-
-    container.appendChild(createSummaryBlock(node));
-  }
-
-  // ── РЕЖИМ: ВЕСЬ КАТАЛОГ ──
-  function renderAllView(container) {
-    allNodes.forEach(function (node) {
-      var prods = node.own_products || [];
-      var hasProds = prods.length > 0;
-      var hasChildren = node.children && node.children.length > 0;
-      var isVisible = isNodeProductsVisible(node);
-
-      var block = document.createElement('div');
-      block.className = 'all-cat-block';
-      var prodsLabel = hasChildren
-        ? 'Товари категорії, які не входять до підкатегорій (' + prods.length + ' шт.)'
-        : 'Товари категорії (' + prods.length + ' шт.)';
-
-      block.innerHTML =
-        '<div class="all-cat-head" data-id="' + node.id + '">' +
-        '<div class="all-cat-title"><span class="level-tag" title="Глибина вкладеності в дереві категорій.">Рівень ' + node.level + '</span><span>' + escapeHtml(node.name) + '</span></div>' +
-        '<div class="all-cat-meta">' +
-        (hasChildren ? '<span style="color:var(--text-subtle);font-size:0.75rem;">Підкатегорій: ' + node.children.length + '</span>' : '') +
-        '<span class="fw-meta-label" style="font-size:0.75rem;">' + (hasChildren ? 'Не в підкат.: ' + prods.length : prods.length + ' тов.') + '</span>' +
-        (node.stats.own_yes > 0 ? '<span class="stock-badge yes" title="Власних товарів цієї категорії (без підкатегорій) зі статусом «Готово до відправки».">' + node.stats.own_yes + ' в наявн.</span>' : '') +
-        diffBadge(node.stats) +
-        (node.url ? '<a href="' + node.url + '" target="_blank" rel="noopener noreferrer" class="link-site" onclick="event.stopPropagation()">Сайт ↗</a>' : '') +
-        (hasProds ? '<button class="btn-default btn-toggle-cat" data-node="' + node.id + '" onclick="event.stopPropagation()">' + (isVisible ? 'Приховати товари' : 'Показати товари') + '</button>' : '') +
-        '</div></div>' +
-        (hasProds
-          ? '<div class="table-wrap" id="block-table-' + node.id + '" style="display:' + (isVisible ? 'block' : 'none') + ';">' +
-            '<div class="table-subhead">' + prodsLabel + '</div>' + renderTableHtml(prods) + '</div>'
-          : '');
-
-      if (hasProds) {
-        var toggleBtn = block.querySelector('.btn-toggle-cat');
-        var triggerToggle = function (e) {
-          if (e) e.stopPropagation();
-          state.nodeOverrides.set(node.id, !isNodeProductsVisible(node));
-          renderContent();
-        };
-        if (toggleBtn) toggleBtn.addEventListener('click', triggerToggle);
-        block.querySelector('.all-cat-head').addEventListener('click', triggerToggle);
-      }
-      container.appendChild(block);
-    });
-
-    container.appendChild(createSummaryBlock(CATALOG_DATA.tree));
-  }
-
-  // ── ПІДСУМКОВА ТАБЛИЧКА ──
-  function createSummaryBlock(node) {
-    var stats = node.stats || {};
-    var hasChildren = node.children && node.children.length > 0;
-    var ownTotal = stats.own_products || 0;
-    var ownYes = stats.own_yes || 0;
-    var ownNo = stats.own_no || 0;
-    var allTotal = stats.total_products || ownTotal;
-    var allYes = stats.total_yes || ownYes;
-    var allNo = stats.total_no || ownNo;
-    var subTotal = allTotal - ownTotal;
-    var subYes = allYes - ownYes;
-    var subNo = allNo - ownNo;
-    var ownRowLabel = hasChildren ? 'Товари категорії, які не входять до підкатегорій' : 'Товари категорії';
-
-    var block = document.createElement('div');
-    block.className = 'section-block summary-block';
-    block.innerHTML =
-      '<div class="section-head"><span>Підсумкова таблиця розділу «' + escapeHtml(node.name) + '»</span></div>' +
-      '<div class="table-wrap"><table class="simple-table summary-table"><thead><tr>' +
-      '<th>Розділ / Категорія</th>' +
-      '<th style="width:130px;text-align:center;" title="Загальна кількість товарів у цьому рядку.">К-сть товарів</th>' +
-      '<th style="width:110px;text-align:center;" title="Статус «Готово до відправки» за даними парсера.">В наявності</th>' +
-      '<th style="width:150px;text-align:center;" title="Статус «Немає в наявності» за даними парсера.">Немає в наявності</th>' +
-      '<th style="width:140px;text-align:center;" title="Дані парсера «В наявності» і незалежний лічильник «В наявності N» самого сайту cncprom.ua — має збігатися. Рахується лише для підсумкового рядка «Разом».">В наявн. (парсер/сайт)</th>' +
-      '</tr></thead><tbody>' +
-      '<tr><td>' + escapeHtml(ownRowLabel) + '</td>' +
-      '<td style="text-align:center;" class="fw-count-cell">' + ownTotal + '</td>' +
-      '<td style="text-align:center;"><span class="stock-badge yes">' + ownYes + '</span></td>' +
-      '<td style="text-align:center;"><span class="stock-badge no">' + ownNo + '</span></td>' +
-      '<td style="text-align:center;">—</td></tr>' +
-      (subTotal > 0
-        ? '<tr><td>Товари в підкатегоріях</td>' +
-          '<td style="text-align:center;" class="fw-count-cell">' + subTotal + '</td>' +
-          '<td style="text-align:center;"><span class="stock-badge yes">' + subYes + '</span></td>' +
-          '<td style="text-align:center;"><span class="stock-badge no">' + subNo + '</span></td>' +
-          '<td style="text-align:center;">—</td></tr>'
-        : '') +
-      '</tbody><tfoot><tr class="fw-grand-row">' +
-      '<td>Разом</td>' +
-      '<td style="text-align:center;font-size:0.95rem;">' + allTotal + '</td>' +
-      '<td style="text-align:center;"><span class="stock-badge yes fw-grand-badge">' + allYes + '</span></td>' +
-      '<td style="text-align:center;"><span class="stock-badge no fw-grand-badge">' + allNo + '</span></td>' +
-      '<td style="text-align:center;">' + diffBadge(stats) + '</td>' +
-      '</tr></tfoot></table></div>';
-    return block;
   }
 
   // ── ПОШУК ──
@@ -876,17 +827,19 @@ function clientApp(CATALOG_DATA) {
 
     var bc = document.getElementById('breadcrumbs');
     var badge = document.getElementById('cat-level-badge');
+    var totalCell = document.getElementById('cat-total-products');
     var verdict = document.getElementById('cat-verdict-badge');
+    var totalNoCell = document.getElementById('cat-total-no');
     var heading = document.getElementById('cat-heading');
     var siteLink = document.getElementById('cat-site-link');
-    var toggleBar = document.getElementById('level-toggles-bar');
 
     bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
     badge.textContent = matches.length + ' знайдено';
+    totalCell.textContent = ' ';
     verdict.innerHTML = '';
+    totalNoCell.textContent = ' ';
     heading.textContent = 'Пошук за запитом «' + query + '»';
     siteLink.style.display = 'none';
-    if (toggleBar) toggleBar.style.display = 'none';
 
     if (matches.length === 0) {
       body.innerHTML =
@@ -916,8 +869,8 @@ function clientApp(CATALOG_DATA) {
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlight(escapeHtml(p.code || ''), query) + '</span></td>' +
         '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlight(escapeHtml(p.name), query) + '</a></td>' +
-        '<td style="width:220px;"><a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" title="Перейти до розділу в каталозі">📁 ' + highlight(escapeHtml(p.nodeName), query) + '</a></td>' +
-        '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || '—') + '</span></td>' +
+        '<td style="width:220px;"><a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlight(escapeHtml(p.nodeName), query) + '</a></td>' +
+        '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
     }).join('');
@@ -939,10 +892,9 @@ function clientApp(CATALOG_DATA) {
         if (btnClear) btnClear.style.display = 'none';
         state.searchQuery = '';
         state.selectedNodeId = targetId;
-        state.mode = 'selected';
         var curr = parentMap.get(targetId);
         while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
-        updateTabsUI(); renderSidebar(); renderContent();
+        renderSidebar(); renderContent();
       });
     });
 
@@ -976,23 +928,11 @@ function clientApp(CATALOG_DATA) {
 
   // ── ІНІЦІАЛІЗАЦІЯ ПОДІЙ ──
   function setupEvents() {
-    document.getElementById('tab-all').addEventListener('click', function () { state.mode = 'all'; updateTabsUI(); renderSidebar(); renderContent(); });
-    document.getElementById('tab-selected').addEventListener('click', function () { state.mode = 'selected'; updateTabsUI(); renderSidebar(); renderContent(); });
-
     document.getElementById('btn-expand-all').addEventListener('click', function () { state.sidebarCollapsed.clear(); renderSidebar(); });
     document.getElementById('btn-collapse-all').addEventListener('click', function () {
-      allNodes.forEach(function (n) { if (n.children && n.children.length > 0) state.sidebarCollapsed.add(n.id); });
+      // Рівень 1 лишається розгорнутим — згортаються рівні 2+ (те саме, що й дефолтний стан).
+      allNodes.forEach(function (n) { if (n.level >= 2 && n.children && n.children.length > 0) state.sidebarCollapsed.add(n.id); });
       renderSidebar();
-    });
-
-    Array.prototype.forEach.call(document.querySelectorAll('.btn-lvl-toggle'), function (btn) {
-      var lvl = parseInt(btn.dataset.level, 10);
-      btn.addEventListener('click', function () {
-        state.levelVisible[lvl] = !state.levelVisible[lvl];
-        allNodes.forEach(function (n) { if (n.level === lvl) state.nodeOverrides.delete(n.id); });
-        updateLevelTogglesUI();
-        renderContent();
-      });
     });
 
     var btnTheme = document.getElementById('btn-theme-toggle');
@@ -1037,18 +977,104 @@ function clientApp(CATALOG_DATA) {
     }
   }
 
+  // ── ГАРНІ ПІДКАЗКИ (замість нативного title, який погано читається на довгих текстах) ──
+  // Один спільний елемент на всю сторінку, позиційований за координатами наведеного елемента —
+  // це навмисно position:fixed + JS, а не CSS-::after, бо position:absolute всередині
+  // .table-wrap/.main-content (обидва з overflow-y:auto) обрізав би підказку, що виходить
+  // за межі таблиці чи в'юпорта скролу. Делеговані слухачі на document — підказки працюють
+  // і для елементів, доданих пізніше через innerHTML (перерендер дерева/таблиць).
+  function setupTooltips() {
+    var tipEl = document.createElement('div');
+    tipEl.id = 'custom-tooltip';
+    document.body.appendChild(tipEl);
+
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var margin = 8;
+      tipEl.style.left = '0px';
+      tipEl.style.top = '0px';
+      var tr = tipEl.getBoundingClientRect();
+      var left = r.left + r.width / 2 - tr.width / 2;
+      left = Math.max(margin, Math.min(left, window.innerWidth - tr.width - margin));
+      var top = r.bottom + margin;
+      if (top + tr.height > window.innerHeight - margin) top = r.top - tr.height - margin;
+      tipEl.style.left = Math.round(left) + 'px';
+      tipEl.style.top = Math.round(top) + 'px';
+    }
+    function show(el) {
+      var text = el.getAttribute('data-tip');
+      if (!text) return;
+      tipEl.textContent = text;
+      tipEl.classList.add('visible');
+      place(el);
+    }
+    function hide() { tipEl.classList.remove('visible'); }
+
+    document.addEventListener('mouseover', function (e) {
+      var el = e.target.closest('[data-tip]');
+      if (el) show(el);
+    });
+    document.addEventListener('mouseout', function (e) {
+      var el = e.target.closest('[data-tip]');
+      if (el && !el.contains(e.relatedTarget)) hide();
+    });
+    document.addEventListener('focusin', function (e) {
+      var el = e.target.closest('[data-tip]');
+      if (el) show(el);
+    });
+    document.addEventListener('focusout', function (e) {
+      var el = e.target.closest('[data-tip]');
+      if (el) hide();
+    });
+    document.addEventListener('scroll', hide, true);
+  }
+
+  // ── ЗМІНЮВАНА ШИРИНА ЛІВОГО МЕНЮ (перетягування за #sidebar-resize-handle) ──
+  function setupSidebarResize() {
+    var MIN = 220, MAX = 640;
+    var handle = document.getElementById('sidebar-resize-handle');
+    if (!handle) return;
+
+    var saved = null;
+    try { saved = parseInt(localStorage.getItem('map-sidebar-width'), 10); } catch (e) {}
+    if (saved && saved >= MIN && saved <= MAX) {
+      document.documentElement.style.setProperty('--sidebar-width', saved + 'px');
+    }
+
+    var dragging = false;
+    handle.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      handle.classList.add('dragging');
+      handle.setPointerCapture(e.pointerId);
+      document.body.style.userSelect = 'none';
+    });
+    handle.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var width = Math.max(MIN, Math.min(MAX, window.innerWidth - 300, e.clientX));
+      document.documentElement.style.setProperty('--sidebar-width', width + 'px');
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.userSelect = '';
+      var current = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width'), 10);
+      if (current) { try { localStorage.setItem('map-sidebar-width', current); } catch (e) {} }
+    }
+    handle.addEventListener('pointerup', endDrag);
+    handle.addEventListener('pointercancel', endDrag);
+  }
+
   initTheme();
   renderSidebar();
   renderContent();
   setupEvents();
+  setupTooltips();
+  setupSidebarResize();
 }
 
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
-const levelToggleButtonsHtml = Array.from({ length: maxLevelSafe }, (_, i) => i + 1).map(lvl => `
-    <button class="btn-lvl-toggle active" data-level="${lvl}">
-      Рівень ${lvl} (${levelOwnCounts[lvl] || 0} тов.): <span class="status-text">Показано</span>
-    </button>`).join('');
 
 const infoBanner = HAS_CSV ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
@@ -1075,18 +1101,18 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <span class="catalog-subtitle">Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</button>
     </div>
     <div class="header-center">
       <div class="search-wrap">
         <span class="search-icon">\u{1F50D}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
-        <button id="btn-clear-search" class="btn-clear-search" title="Очистити пошук (Esc)" style="display:none;">✕</button>
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
     </div>
     <div class="header-right">
-      <button id="btn-help" class="btn-theme-toggle" title="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
-      <button id="btn-theme-toggle" class="btn-theme-toggle" title="Перемкнути тему">
+      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
       <a href="${rootUrl}" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
@@ -1097,54 +1123,28 @@ const html = `<!DOCTYPE html>
     <div class="help-panel">
       <div class="help-panel-head">
         <h3>Що означають ці цифри та позначки</h3>
-        <button class="btn-help-close" id="btn-help-close" title="Закрити (Esc)">✕</button>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <div class="help-section-title">Категорії та товари</div>
         <div class="help-term">
           <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
-          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту. Рівень 1 — коренева категорія цього прогону (та, з якою запускали scrape-complete.js).</div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню, напр. «MESA (51)»</div>
-          <div class="help-term-desc">Скільки товарів прикріплено <b>напряму</b> до цієї категорії — не рахуючи товарів, що лежать глибше, у підкатегоріях.</div>
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">«Товарів» / «К-сть товарів»</div>
-          <div class="help-term-desc">Загальна кількість товарів у категорії <b>разом з усіма вкладеними підкатегоріями</b> — це те число, яке варто звіряти з сайтом.</div>
-        </div>
-
-        <div class="help-section-title">Наявність</div>
-        <div class="help-term">
-          <div class="help-term-label"><span class="stock-badge yes">В наявності</span></div>
-          <div class="help-term-desc">Товар зі статусом «Готово до відправки» на сайті — за даними парсера.</div>
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label"><span class="stock-badge no">Немає в наявності</span></div>
-          <div class="help-term-desc">Товар зі статусом «Немає в наявності» на сайті — за даними парсера.</div>
-        </div>
-
-        <div class="help-section-title">Звірка з сайтом</div>
-        <div class="help-term">
-          <div class="help-term-label">«В наявн. (парсер/сайт)», напр. <span class="diff-zero">23/23</span></div>
-          <div class="help-term-desc">
-            Перше число — скільки товарів зі статусом «Готово до відправки» нарахував парсер. Друге —
-            <b>незалежний</b> лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії
-            (парсер його не рахує сам, а зчитує напряму з HTML). Числа мають збігатися рівно — це і є
-            перевірка того, що парсер нічого не загубив при зборі.
-          </div>
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував парсер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label"><span class="diff-zero">Зелений</span> / <span class="diff-nonzero">червоний</span></div>
-          <div class="help-term-desc">Зелений — числа збігаються точно. Червоний — будь-яка розбіжність: можливо, частину товарів не вдалось обробити, лічильник сайту оновився з моменту прогону, або змінилась верстка сайту.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label"><span class="stock-badge neutral">н/д</span></div>
-          <div class="help-term-desc">Сайт не показав лічильник «В наявності N» на сторінці цієї категорії — звірка для неї неможлива (сама категорія все одно зібрана коректно).</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label"><span class="stock-badge yes">В наявності (23/23)</span> / <span class="stock-badge no">В наявності (21/23)</span></div>
-          <div class="help-term-desc">Підсумковий вердикт для категорії у заголовку сторінки: те саме порівняння «парсер/сайт», але у вигляді одного вердикту.</div>
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
         </div>
       </div>
     </div>
@@ -1155,33 +1155,37 @@ const html = `<!DOCTYPE html>
       <div class="sidebar-top">
         <span class="sidebar-label">Категорії</span>
         <div class="sidebar-tools">
-          <button id="btn-expand-all" class="btn-link" title="Розгорнути всі підкатегорії">Розгорнути всі</button>
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
           <span class="divider">|</span>
-          <button id="btn-collapse-all" class="btn-link" title="Згорнути всі підкатегорії">Згорнути всі</button>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
         </div>
-      </div>
-      <div class="sidebar-tabs">
-        <button id="tab-selected" class="tab-btn active">Дерево категорій</button>
-        <button id="tab-all" class="tab-btn">Суцільний список</button>
       </div>
       <nav class="category-tree" id="category-tree"></nav>
     </aside>
 
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
     <main class="main-content">
       <div class="category-header" id="category-header">
         <div class="breadcrumbs" id="breadcrumbs"><span>Каталог</span></div>
-        <div class="title-row">
-          <div class="title-wrap">
-            <span id="cat-level-badge" class="level-tag">Рівень 1</span>
-            <h2 id="cat-heading" class="cat-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</h2>
-            <span id="cat-verdict-badge"></span>
-          </div>
-          <div class="title-actions">
-            <a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-site">Відкрити на сайті ↗</a>
-          </div>
-        </div>
-        <div class="level-toggles-bar" id="level-toggles-bar">
-          <span class="toggles-label">Товари:</span>${levelToggleButtonsHtml}
+        <div class="title-row table-wrap">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував парсер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:150px;text-align:center;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними парсера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:140px;text-align:right;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">${CATALOG_DATA.tree.stats.total_products}</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">${CATALOG_DATA.tree.stats.total_no}</span></td>
+            <td style="text-align:right;"><a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a></td>
+          </tr></tbody></table>
         </div>
       </div>
       ${infoBanner}
