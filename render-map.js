@@ -1,39 +1,50 @@
 // render-map.js — генерує інтерактивну HTML-мапу дерева категорій з файлу
-// category_map_<ID>.json (від scrape-complete.js), опційно збагачену
-// товарами (назва/код/наявність) з cncprom_complete_<ID>.csv.
+// <ID>_category_map.json (від scrape-complete.js), опційно збагачену
+// товарами (назва/код/наявність) з <ID>_cncprom_complete.csv — обидва
+// шукаються автоматично в output/ за ID категорії. Ім'я файлу починається з
+// ID (не з типу файлу), щоб усі файли однієї категорії стояли поруч при
+// сортуванні за іменем у провіднику — те саме, що й у scrape-complete.js.
 //
 // Дизайн — діловий "desktop"-стиль (сайдбар з деревом категорій зліва +
 // таблиці товарів праворуч, світла/темна тема, живий пошук).
 //
 // Використання:
-//   node render-map.js category_map_<ID>.json
-//   node render-map.js category_map_<ID>.json cncprom_complete_<ID>.csv
+//   node render-map.js <ID>
 //
-// Результат: map_<ID>.html — самодостатня сторінка (без окремих файлів
-// стилів/скриптів), працює прямо з диска подвійним кліком у браузері.
+// Результат (усе в output/, поруч зі скриптом, не в корені проєкту):
+// <ID>_map.html + спільні map-common.css/map-common.js (стилі й клієнтський
+// додаток, однакові для будь-якої категорії — пишуться/перезаписуються при
+// кожному запуску) + <ID>_map.summary.json (короткий підсумок для індексної
+// build-maps.js/map.html). Відкривається прямо з диска подвійним кліком у
+// браузері, але вже НЕ одним самодостатнім файлом — map-common.css/.js
+// мають лежати поруч у тій самій теці.
 
 const fs = require('fs');
 const path = require('path');
 
-const mapFile = process.argv[2];
-const csvFile = process.argv[3];
+const OUTPUT_DIR = path.join(__dirname, 'output');
 
-if (!mapFile) {
-  console.error('Використання: node render-map.js category_map_<ID>.json [cncprom_complete_<ID>.csv]');
+const categoryId = process.argv[2];
+if (!categoryId) {
+  console.error('Використання: node render-map.js <ID категорії>');
+  console.error('Приклад: node render-map.js 1022485');
   process.exit(1);
 }
+
+const mapFile = path.join(OUTPUT_DIR, `${categoryId}_category_map.json`);
+const csvFile = path.join(OUTPUT_DIR, `${categoryId}_cncprom_complete.csv`);
+
 if (!fs.existsSync(mapFile)) {
   console.error(`Файл не знайдено: ${mapFile}`);
+  console.error(`Спершу запустіть: node scrape-complete.js "<URL категорії ${categoryId}>"`);
   process.exit(1);
 }
 
-const idMatch = mapFile.match(/category_map_(.+)\.json$/);
-const categoryId = idMatch ? idMatch[1] : path.basename(mapFile, '.json');
-const OUTPUT_HTML = `map_${categoryId}.html`;
+const OUTPUT_HTML = path.join(OUTPUT_DIR, `${categoryId}_map.html`);
 
 const tree = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
 
-// Час веб-скрапінгу — беремо час запису category_map_<ID>.json, бо саме
+// Час веб-скрапінгу — беремо час запису <ID>_category_map.json, бо саме
 // цей файл scrape-complete.js зберігає одразу після обходу дерева категорій
 // (до нього дата модифікації не має сенсу — файл щойно згенеровано).
 const scrapedAtDate = fs.statSync(mapFile).mtime;
@@ -78,13 +89,13 @@ function splitCsvLine(line) {
   return out;
 }
 
-const HAS_CSV = Boolean(csvFile);
+// csvFile — той самий ID, шукається поруч у output/ автоматично; якщо ще не
+// готовий (ЕТАП 2 scrape-complete.js не завершився), мапа будується лише зі
+// структури дерева, без товарів — так само, як і раніше при відсутньому
+// другому аргументі.
+const HAS_CSV = fs.existsSync(csvFile);
 const productsByCategory = new Map();
 if (HAS_CSV) {
-  if (!fs.existsSync(csvFile)) {
-    console.error(`Файл не знайдено: ${csvFile}`);
-    process.exit(1);
-  }
   const rows = parseCsv(fs.readFileSync(csvFile, 'utf-8'));
   rows.forEach(r => {
     if (!productsByCategory.has(r.categoryId)) productsByCategory.set(r.categoryId, []);
@@ -469,11 +480,38 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 }
 `;
 
+// ==================== ПЕРЕМИКАЧ ТЕМИ (спільний для map_<id>.html і map.html) ====================
+// Винесено з initCatalogMap top-level, теж пишеться як звичайна функція і теж
+// іде в map-common.js через .toString() — на відміну від решти клієнтського
+// додатку, це потрібне і на індексній map.html (build-maps.js), яка не має
+// дерева категорій CATALOG_DATA, тож не може викликати initCatalogMap.
+// Самодостатня: шукає #btn-theme-toggle сама, застосовує збережену/системну
+// тему одразу при виклику й одразу ж навішує обробник кліку.
+function initThemeToggle() {
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('map-theme', theme); } catch (e) {}
+    var btn = document.getElementById('btn-theme-toggle');
+    if (!btn) return;
+    if (theme === 'dark') { btn.innerHTML = '<span class="theme-icon">☀️</span> <span class="theme-text">Світла</span>'; }
+    else { btn.innerHTML = '<span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>'; }
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('map-theme'); } catch (e) {}
+  applyTheme(saved === 'light' ? 'light' : (saved === 'dark' ? 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')));
+
+  var btn = document.getElementById('btn-theme-toggle');
+  if (btn) btn.addEventListener('click', function () {
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+}
+
 // ==================== КЛІЄНТСЬКИЙ ДОДАТОК ====================
 // Пишеться як звичайна функція (не рядок!) — при генерації сторінки
 // перетворюється у текст через .toString(), тому шаблонні рядки й лапки
 // всередині не потребують екранування.
-function clientApp(CATALOG_DATA) {
+function initCatalogMap(CATALOG_DATA) {
   var state = {
     selectedNodeId: CATALOG_DATA.tree.id,
     sidebarCollapsed: new Set(),
@@ -921,21 +959,6 @@ function clientApp(CATALOG_DATA) {
     }
   }
 
-  // ── ТЕМА ──
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    try { localStorage.setItem('map-theme', theme); } catch (e) {}
-    var btn = document.getElementById('btn-theme-toggle');
-    if (!btn) return;
-    if (theme === 'dark') { btn.innerHTML = '<span class="theme-icon">☀️</span> <span class="theme-text">Світла</span>'; }
-    else { btn.innerHTML = '<span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>'; }
-  }
-  function initTheme() {
-    var saved = null;
-    try { saved = localStorage.getItem('map-theme'); } catch (e) {}
-    applyTheme(saved === 'light' ? 'light' : (saved === 'dark' ? 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')));
-  }
-
   // ── ІНІЦІАЛІЗАЦІЯ ПОДІЙ ──
   function setupEvents() {
     document.getElementById('btn-expand-all').addEventListener('click', function () { state.sidebarCollapsed.clear(); renderSidebar(); });
@@ -958,12 +981,6 @@ function clientApp(CATALOG_DATA) {
         if (orphanOverlayEl) orphanOverlayEl.classList.remove('open');
         renderSidebar(); renderContent();
       });
-    });
-
-    var btnTheme = document.getElementById('btn-theme-toggle');
-    if (btnTheme) btnTheme.addEventListener('click', function () {
-      var current = document.documentElement.getAttribute('data-theme') || 'light';
-      applyTheme(current === 'dark' ? 'light' : 'dark');
     });
 
     // Спільна поведінка для будь-якої модальної панелі в стилі Довідки (відкрити/
@@ -1098,7 +1115,7 @@ function clientApp(CATALOG_DATA) {
     handle.addEventListener('pointercancel', endDrag);
   }
 
-  initTheme();
+  initThemeToggle();
   renderSidebar();
   renderContent();
   setupEvents();
@@ -1106,14 +1123,27 @@ function clientApp(CATALOG_DATA) {
   setupSidebarResize();
 }
 
+// ==================== СПІЛЬНІ ФАЙЛИ (map-common.css / map-common.js) ====================
+// css та initCatalogMap побайтово однакові для будь-якої категорії — раніше
+// вбудовувались у кожен map_<id>.html окремо (роздуваючи однакову копію в
+// кожному файлі), тепер пишуться один раз як спільні файли поруч з мапами.
+// Перезаписуються при кожному запуску render-map.js (і, відповідно, кожному
+// виклику з build-maps.js) — завжди відповідають поточній версії генератора.
+// Плата за це: map_<id>.html більше не самодостатній один файл, потребує
+// map-common.css/.js поруч (обидва — в тій самій, згенерованій, теці).
+const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
+const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
+fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
+fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
+
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
 
 const infoBanner = HAS_CSV ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
       <span>⚠️</span>
-      <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту. Щоб побачити самі товари, запустіть:
-      <code>node render-map.js ${path.basename(mapFile)} cncprom_complete_${categoryId}.csv</code></span>
+      <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту. Це станеться само:
+      запустіть <code>node render-map.js ${categoryId}</code> ще раз, коли в output/ з'явиться ${categoryId}_cncprom_complete.csv (ЕТАП 2 scrape-complete.js).</span>
     </div>`;
 
 // Кнопка в шапці (поряд з "Мапа розділу") + модальна панель зі списком —
@@ -1152,7 +1182,7 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>${css}</style>
+<link rel="stylesheet" href="map-common.css">
 </head>
 <body>
   <header class="app-header">
@@ -1251,9 +1281,10 @@ const html = `<!DOCTYPE html>
     </main>
   </div>
 
+<script src="map-common.js"></script>
 <script>
 const CATALOG_DATA = ${JSON.stringify(CATALOG_DATA)};
-(${clientApp.toString()})(CATALOG_DATA);
+initCatalogMap(CATALOG_DATA);
 </script>
 </body>
 </html>`;
@@ -1263,5 +1294,11 @@ function escapeHtmlOuter(str) {
 }
 
 fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
+
+// Невеликий супутній файл з тими самими global_stats, що вбудовані в саму
+// мапу — щоб build-maps.js міг зібрати зведену таблицю для map.html (індексу
+// всіх категорій), не розпаковуючи CATALOG_DATA з готового HTML.
+fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_map.summary.json`), JSON.stringify({ id: categoryId, ...globalStats }, null, 2), 'utf-8');
+
 console.log(`Мапу збережено: ${OUTPUT_HTML}`);
 console.log(`Категорій: ${categoriesCount}, рівнів: ${maxLevelSafe}, товарів: ${appTree.stats.total_products}${HAS_CSV ? ` (в наявності: ${appTree.stats.total_yes})` : ' (без CSV — лише структура)'}`);

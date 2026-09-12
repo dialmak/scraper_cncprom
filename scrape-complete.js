@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
+const path = require('path');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -12,11 +13,20 @@ const RETRY_DELAY_MS = 6000;
 const BREADCRUMB_WAIT_MS = 8000;
 const MAX_PAGES_SAFETY = 200;
 
+// Усі згенеровані файли (per-run і спільні) лежать поруч зі скриптом у output/,
+// не в корені проєкту — прив'язано до __dirname, а не process.cwd(), тому
+// поводиться однаково незалежно від того, звідки саме викликано `node`.
+const OUTPUT_DIR = path.join(__dirname, 'output');
+if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+// Ім'я файлу починається з ID категорії (не з назви типу файлу) — так усі
+// файли однієї категорії стоять поруч один з одним при сортуванні за іменем
+// у провіднику/файловому менеджері, замість групування за типом файлу.
 const START_CATEGORY_ID = (START_URL.match(/\/g(\d+)-/) || [, "unknown"])[1];
-const OUTPUT_CSV = `cncprom_complete_${START_CATEGORY_ID}.csv`;
-const OUTPUT_MAP = `category_map_${START_CATEGORY_ID}.json`;
-const OUTPUT_FAILED = `failed_urls_${START_CATEGORY_ID}.json`;
-const OUTPUT_REPORT = `report_${START_CATEGORY_ID}.md`;
+const OUTPUT_CSV = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_cncprom_complete.csv`);
+const OUTPUT_MAP = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_category_map.json`);
+const OUTPUT_FAILED = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_failed_urls.json`);
+const OUTPUT_REPORT = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_report.md`);
 
 const BLOCKED_PATTERNS = [
   'google-analytics.com', 'googletagmanager.com', 'doubleclick.net',
@@ -28,8 +38,9 @@ const BLOCKED_RESOURCE_TYPES = ['image', 'font', 'media', 'stylesheet'];
 
 // ==================== ЛОГ (scrape.log — доповнюється, ніколи не перезаписується) ====================
 // Один файл на весь проєкт (не per-категорія, як CSV/JSON/report), бо це історія
-// запусків скрапера в часі, а не результат конкретного прогону.
-const LOG_FILE = "scrape.log";
+// запусків скрапера в часі, а не результат конкретного прогону. Лежить в output/
+// разом з рештою згенерованого, а не в корені проєкту.
+const LOG_FILE = path.join(OUTPUT_DIR, "scrape.log");
 function nowStr() {
   const d = new Date();
   return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -287,6 +298,13 @@ function isAvailableRow(row) {
   return /готово/i.test(row.availabilityStatus || "");
 }
 
+// ВАЖЛИВО: жодного допуску на розбіжність (раніше тут був поріг
+// Math.abs(diff) <= 2, обґрунтований тим, що лічильник сайту "В наявності N"
+// живий і міг змінитись на 1-2 одиниці за час обходу дерева, поки хтось
+// купував/знімав товари з продажу вдень). Скрипт запускається вночі — руху
+// замовлень і живих правок каталогу в цей час практично нема, тому будь-яка
+// відмінність від 0 — це реальна розбіжність (загублений/задвоєний товар чи
+// помилка парсингу), а не природний дрейф. Не повертати цей допуск назад.
 function buildCategoryStats(node, allRows, depth = 0, out = []) {
   if (!node || !node.categoryId) return out;
   const subtreeIds = collectSubtreeCategoryIds(node);
@@ -298,7 +316,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
   const diff = hasCounter ? ourAvailable - siteCounter : null;
   let verdict;
   if (!hasCounter) verdict = "— (лічильник не знайдено)";
-  else if (Math.abs(diff) <= 2) verdict = "✅ збігається";
+  else if (diff === 0) verdict = "✅ збігається";
   else verdict = "⚠️ РОЗБІЖНІСТЬ";
 
   out.push({ depth, name: node.categoryName, categoryId: node.categoryId, ourTotal, ourAvailable, siteCounter, diff, verdict });
