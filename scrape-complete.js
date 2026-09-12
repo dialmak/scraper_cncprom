@@ -177,6 +177,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
   if (treeOut) {
     treeOut.categoryId = categoryId;
     treeOut.categoryName = name;
+    treeOut.url = url;
     treeOut.level = depth;
     treeOut.isLeaf = isLeaf;
     treeOut.siteAvailableCounter = siteCounter;
