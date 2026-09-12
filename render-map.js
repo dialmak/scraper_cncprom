@@ -33,6 +33,13 @@ const OUTPUT_HTML = `map_${categoryId}.html`;
 
 const tree = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
 
+// Час веб-скрапінгу — беремо час запису category_map_<ID>.json, бо саме
+// цей файл scrape-complete.js зберігає одразу після обходу дерева категорій
+// (до нього дата модифікації не має сенсу — файл щойно згенеровано).
+const scrapedAtDate = fs.statSync(mapFile).mtime;
+const scrapedAt = scrapedAtDate.toLocaleDateString('uk-UA') + ' ' +
+  scrapedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
 // ==================== ОПЦІЙНЕ ЗБАГАЧЕННЯ ТОВАРАМИ З CSV ====================
 // CSV: UTF-8 з BOM, роздільник ";". Рядки групуються за categoryId — тим самим
 // полем, яке scrape-complete.js записує і у вузол дерева (канонічна,
@@ -169,7 +176,7 @@ const globalStats = {
   total_no: appTree.stats.total_no,
   site_counter: appTree.stats.site_counter,
   diff: appTree.stats.diff,
-  generated_at: new Date().toLocaleString('uk-UA'),
+  scraped_at: scrapedAt,
   source_map: path.basename(mapFile),
   source_csv: HAS_CSV ? path.basename(csvFile) : null
 };
@@ -234,7 +241,7 @@ const css = `
 html, body {
   height: 100%;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.45;
   color: var(--text-main);
   background-color: var(--bg-page);
@@ -388,6 +395,13 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 .diff-zero { color: var(--status-yes); font-weight: 600; }
 .diff-nonzero { color: var(--status-no); font-weight: 700; }
 
+/* Товщина шрифту — окремий клас на кожен елемент, значення можна міняти тут незалежно одне від одного */
+.fw-cat-link   { font-weight: 600; } /* назва (під)категорії-посилання в таблицях */
+.fw-count-cell { font-weight: 600; } /* числові підсумкові комірки таблиць (товарів, «разом» по категорії) */
+.fw-grand-row  { font-weight: 700; } /* рядок «Разом» підсумкової таблиці — підпис і числа */
+.fw-grand-badge{ font-weight: 700; } /* бейджі «В наявності» / «Немає в наявності» саме в рядку «Разом» */
+.fw-meta-label { font-weight: 600; } /* короткі службові підписи (лічильники, заголовки порожніх станів) */
+
 .all-cat-block { margin-bottom: 12px; border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; }
 .all-cat-head { padding: 8px 12px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; flex-wrap: wrap; gap: 8px; }
 .all-cat-head:hover { background: var(--bg-hover); }
@@ -493,23 +507,22 @@ function clientApp(CATALOG_DATA) {
     if (stats.site_counter === null || stats.site_counter === undefined) {
       return '<span class="stock-badge neutral" title="Сайт не показав лічильник «В наявності N» на сторінці цієї категорії — звірка неможлива.">н/д</span>';
     }
-    var d = stats.diff;
-    var cls = Math.abs(d) <= 2 ? 'diff-zero' : 'diff-nonzero';
-    var sign = d > 0 ? '+' : '';
-    var tip = 'Лічильник сайту cncprom.ua «В наявності N» для цієї категорії (разом з підкатегоріями): ' + stats.site_counter +
-      '. У дужках — різниця (наше «В наявності» мінус лічильник сайту): ' + sign + d +
-      '. ±2 вважається нормою (сайт міг оновитись за час прогону).';
-    return '<span class="' + cls + '" title="' + tip + '">' + stats.site_counter + ' <small>(' + sign + d + ')</small></span>';
+    var match = stats.total_yes === stats.site_counter;
+    var cls = match ? 'diff-zero' : 'diff-nonzero';
+    var tip = 'Парсер нарахував «В наявності»: ' + stats.total_yes +
+      '. Лічильник сайту cncprom.ua «В наявності N» для цієї категорії (разом з підкатегоріями): ' + stats.site_counter +
+      '. ' + (match ? 'Збігається.' : 'Розбіжність — варто перевірити.');
+    return '<span class="' + cls + '" title="' + tip + '">' + stats.total_yes + '/' + stats.site_counter + '</span>';
   }
 
   function verdictBadge(stats) {
     if (stats.site_counter === null || stats.site_counter === undefined) return '';
-    var ok = Math.abs(stats.diff) <= 2;
-    var tip = ok
-      ? 'Наше «В наявності» (' + stats.total_yes + ') збігається з лічильником сайту (' + stats.site_counter + ') з точністю до ±2 — можна довіряти зібраним даним.'
-      : 'Розбіжність між нашим «В наявності» (' + stats.total_yes + ') і лічильником сайту (' + stats.site_counter + ') більша за ±2 — щось загубилось або сайт змінився, варто перевірити.';
-    return '<span class="stock-badge ' + (ok ? 'yes' : 'no') + '" title="' + tip + '">' +
-      (ok ? '✅ Збігається' : '⚠️ Δ=' + (stats.diff > 0 ? '+' : '') + stats.diff) + '</span>';
+    var match = stats.total_yes === stats.site_counter;
+    var tip = match
+      ? 'Парсер нарахував «В наявності» (' + stats.total_yes + '), і це збігається з лічильником сайту (' + stats.site_counter + ') — можна довіряти зібраним даним.'
+      : 'Парсер нарахував «В наявності» (' + stats.total_yes + '), а лічильник сайту показує (' + stats.site_counter + ') — щось загубилось або сайт змінився з моменту прогону, варто перевірити.';
+    return '<span class="stock-badge ' + (match ? 'yes' : 'no') + '" title="' + tip + '">' +
+      'В наявності (' + stats.total_yes + '/' + stats.site_counter + ')</span>';
   }
 
   // ── ЛІВЕ МЕНЮ КАТЕГОРІЙ ──
@@ -692,18 +705,16 @@ function clientApp(CATALOG_DATA) {
         '<th class="col-n">№</th><th>Назва підкатегорії</th>' +
         '<th style="width:80px;text-align:center;" title="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>' +
         '<th style="width:90px;text-align:center;" title="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>' +
-        '<th style="width:100px;text-align:center;" title="Скільки з них зараз мають статус «Готово до відправки» за нашими даними.">В наявн.</th>' +
-        '<th style="width:120px;text-align:center;" title="Незалежний лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії. У дужках — різниця з нашим «В наявності» (Δ).">Лічильник сайту (Δ)</th>' +
+        '<th style="width:120px;text-align:center;" title="Дані парсера «В наявності» і незалежний лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії — має збігатися.">В наявн. (парсер/сайт)</th>' +
         '<th style="width:140px;text-align:right;">Перейти на сайт</th>' +
         '</tr></thead><tbody>' +
         node.children.map(function (ch, i) {
           return (
             '<tr>' +
             '<td class="col-n">' + (i + 1) + '</td>' +
-            '<td><a href="#" class="cat-jump-link" data-id="' + ch.id + '"><strong>' + escapeHtml(ch.name) + '</strong></a></td>' +
+            '<td><a href="#" class="cat-jump-link fw-cat-link" data-id="' + ch.id + '">' + escapeHtml(ch.name) + '</a></td>' +
             '<td style="text-align:center;"><span class="level-tag" title="Глибина вкладеності в дереві категорій (1 = коренева категорія цього прогону).">Рівень ' + ch.level + '</span></td>' +
-            '<td style="text-align:center;font-weight:600;">' + ch.stats.total_products + '</td>' +
-            '<td style="text-align:center;"><span class="stock-badge yes">' + ch.stats.total_yes + '</span></td>' +
+            '<td style="text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="text-align:right;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a>' : '—') + '</td>' +
             '</tr>'
@@ -772,7 +783,7 @@ function clientApp(CATALOG_DATA) {
         '<div class="all-cat-title"><span class="level-tag" title="Глибина вкладеності в дереві категорій.">Рівень ' + node.level + '</span><span>' + escapeHtml(node.name) + '</span></div>' +
         '<div class="all-cat-meta">' +
         (hasChildren ? '<span style="color:var(--text-subtle);font-size:0.75rem;">Підкатегорій: ' + node.children.length + '</span>' : '') +
-        '<span style="font-weight:600;font-size:0.75rem;">' + (hasChildren ? 'Не в підкат.: ' + prods.length : prods.length + ' тов.') + '</span>' +
+        '<span class="fw-meta-label" style="font-size:0.75rem;">' + (hasChildren ? 'Не в підкат.: ' + prods.length : prods.length + ' тов.') + '</span>' +
         (node.stats.own_yes > 0 ? '<span class="stock-badge yes" title="Власних товарів цієї категорії (без підкатегорій) зі статусом «Готово до відправки».">' + node.stats.own_yes + ' в наявн.</span>' : '') +
         diffBadge(node.stats) +
         (node.url ? '<a href="' + node.url + '" target="_blank" rel="noopener noreferrer" class="link-site" onclick="event.stopPropagation()">Сайт ↗</a>' : '') +
@@ -802,6 +813,7 @@ function clientApp(CATALOG_DATA) {
   // ── ПІДСУМКОВА ТАБЛИЧКА ──
   function createSummaryBlock(node) {
     var stats = node.stats || {};
+    var hasChildren = node.children && node.children.length > 0;
     var ownTotal = stats.own_products || 0;
     var ownYes = stats.own_yes || 0;
     var ownNo = stats.own_no || 0;
@@ -811,6 +823,7 @@ function clientApp(CATALOG_DATA) {
     var subTotal = allTotal - ownTotal;
     var subYes = allYes - ownYes;
     var subNo = allNo - ownNo;
+    var ownRowLabel = hasChildren ? 'Товари категорії, які не входять до підкатегорій' : 'Товари категорії';
 
     var block = document.createElement('div');
     block.className = 'section-block summary-block';
@@ -819,27 +832,27 @@ function clientApp(CATALOG_DATA) {
       '<div class="table-wrap"><table class="simple-table summary-table"><thead><tr>' +
       '<th>Розділ / Категорія</th>' +
       '<th style="width:130px;text-align:center;" title="Загальна кількість товарів у цьому рядку.">К-сть товарів</th>' +
-      '<th style="width:110px;text-align:center;" title="Статус «Готово до відправки» за нашими даними.">В наявності</th>' +
-      '<th style="width:150px;text-align:center;" title="Статус «Немає в наявності» за нашими даними.">Немає в наявності</th>' +
-      '<th style="width:140px;text-align:center;" title="Незалежний лічильник «В наявності N» самого сайту cncprom.ua і різниця з нашими даними (Δ). Рахується лише для підсумкового рядка «Разом».">Лічильник сайту (Δ)</th>' +
+      '<th style="width:110px;text-align:center;" title="Статус «Готово до відправки» за даними парсера.">В наявності</th>' +
+      '<th style="width:150px;text-align:center;" title="Статус «Немає в наявності» за даними парсера.">Немає в наявності</th>' +
+      '<th style="width:140px;text-align:center;" title="Дані парсера «В наявності» і незалежний лічильник «В наявності N» самого сайту cncprom.ua — має збігатися. Рахується лише для підсумкового рядка «Разом».">В наявн. (парсер/сайт)</th>' +
       '</tr></thead><tbody>' +
-      '<tr><td>Товари категорії, які не входять до підкатегорій</td>' +
-      '<td style="text-align:center;font-weight:600;">' + ownTotal + '</td>' +
+      '<tr><td>' + escapeHtml(ownRowLabel) + '</td>' +
+      '<td style="text-align:center;" class="fw-count-cell">' + ownTotal + '</td>' +
       '<td style="text-align:center;"><span class="stock-badge yes">' + ownYes + '</span></td>' +
       '<td style="text-align:center;"><span class="stock-badge no">' + ownNo + '</span></td>' +
       '<td style="text-align:center;">—</td></tr>' +
       (subTotal > 0
         ? '<tr><td>Товари в підкатегоріях</td>' +
-          '<td style="text-align:center;font-weight:600;">' + subTotal + '</td>' +
+          '<td style="text-align:center;" class="fw-count-cell">' + subTotal + '</td>' +
           '<td style="text-align:center;"><span class="stock-badge yes">' + subYes + '</span></td>' +
           '<td style="text-align:center;"><span class="stock-badge no">' + subNo + '</span></td>' +
           '<td style="text-align:center;">—</td></tr>'
         : '') +
-      '</tbody><tfoot><tr style="font-weight:700;">' +
-      '<td><strong>Разом</strong></td>' +
-      '<td style="text-align:center;font-weight:700;font-size:0.95rem;">' + allTotal + '</td>' +
-      '<td style="text-align:center;"><span class="stock-badge yes" style="font-weight:700;">' + allYes + '</span></td>' +
-      '<td style="text-align:center;"><span class="stock-badge no" style="font-weight:700;">' + allNo + '</span></td>' +
+      '</tbody><tfoot><tr class="fw-grand-row">' +
+      '<td>Разом</td>' +
+      '<td style="text-align:center;font-size:0.95rem;">' + allTotal + '</td>' +
+      '<td style="text-align:center;"><span class="stock-badge yes fw-grand-badge">' + allYes + '</span></td>' +
+      '<td style="text-align:center;"><span class="stock-badge no fw-grand-badge">' + allNo + '</span></td>' +
       '<td style="text-align:center;">' + diffBadge(stats) + '</td>' +
       '</tr></tfoot></table></div>';
     return block;
@@ -879,7 +892,7 @@ function clientApp(CATALOG_DATA) {
       body.innerHTML =
         '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
         '<div style="font-size:2rem;margin-bottom:12px;">🔍</div>' +
-        '<div style="font-size:1.05rem;font-weight:600;margin-bottom:8px;color:var(--text-main);">За запитом «' + escapeHtml(query) + '» нічого не знайдено</div>' +
+        '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">За запитом «' + escapeHtml(query) + '» нічого не знайдено</div>' +
         '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Перевірте написання або спробуйте інше слово (назву, код товару чи категорію).</div>' +
         '</div>';
       return;
@@ -1062,7 +1075,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <span class="catalog-subtitle">Мапа розділу (${rootLevelsLabel})</span>
+      <span class="catalog-subtitle">Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</span>
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -1104,37 +1117,34 @@ const html = `<!DOCTYPE html>
         <div class="help-section-title">Наявність</div>
         <div class="help-term">
           <div class="help-term-label"><span class="stock-badge yes">В наявності</span></div>
-          <div class="help-term-desc">Товар зі статусом «Готово до відправки» на сайті — за нашими зібраними даними.</div>
+          <div class="help-term-desc">Товар зі статусом «Готово до відправки» на сайті — за даними парсера.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label"><span class="stock-badge no">Немає в наявності</span></div>
-          <div class="help-term-desc">Товар зі статусом «Немає в наявності» на сайті — за нашими зібраними даними.</div>
+          <div class="help-term-desc">Товар зі статусом «Немає в наявності» на сайті — за даними парсера.</div>
         </div>
 
         <div class="help-section-title">Звірка з сайтом</div>
         <div class="help-term">
-          <div class="help-term-label">«Лічильник сайту (Δ)», напр. <span class="diff-zero">28 (0)</span></div>
+          <div class="help-term-label">«В наявн. (парсер/сайт)», напр. <span class="diff-zero">23/23</span></div>
           <div class="help-term-desc">
-            Перше число — <b>незалежний</b> лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії
-            (ми його ні з чого не рахуємо, а зчитуємо напряму з HTML). Друге число в дужках — <b>Δ (дельта)</b>:
-            різниця «наше В наявності» мінус «лічильник сайту». Це і є перевірка того, що ми нічого не загубили при зборі.
+            Перше число — скільки товарів зі статусом «Готово до відправки» нарахував парсер. Друге —
+            <b>незалежний</b> лічильник «В наявності N», який сам сайт cncprom.ua показує на сторінці категорії
+            (парсер його не рахує сам, а зчитує напряму з HTML). Числа мають збігатися рівно — це і є
+            перевірка того, що парсер нічого не загубив при зборі.
           </div>
         </div>
         <div class="help-term">
-          <div class="help-term-label"><span class="diff-zero">Δ у межах ±2 (зелений)</span></div>
-          <div class="help-term-desc">Норма. Лічильник сайту оновлюється сам по собі, тож невелика розбіжність — це природна зміна за час, поки працював скрипт.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label"><span class="diff-nonzero">Δ більше ±2 (червоний)</span></div>
-          <div class="help-term-desc">Розбіжність, яку варто перевірити: можливо, частину товарів не вдалось обробити, або змінилась верстка сайту.</div>
+          <div class="help-term-label"><span class="diff-zero">Зелений</span> / <span class="diff-nonzero">червоний</span></div>
+          <div class="help-term-desc">Зелений — числа збігаються точно. Червоний — будь-яка розбіжність: можливо, частину товарів не вдалось обробити, лічильник сайту оновився з моменту прогону, або змінилась верстка сайту.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label"><span class="stock-badge neutral">н/д</span></div>
           <div class="help-term-desc">Сайт не показав лічильник «В наявності N» на сторінці цієї категорії — звірка для неї неможлива (сама категорія все одно зібрана коректно).</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label"><span class="stock-badge yes">✅ Збігається</span> / <span class="stock-badge no">⚠️ Δ=+N</span></div>
-          <div class="help-term-desc">Підсумковий висновок для категорії у заголовку сторінки: те саме порівняння «наші дані ↔ лічильник сайту», але у вигляді одного вердикту.</div>
+          <div class="help-term-label"><span class="stock-badge yes">В наявності (23/23)</span> / <span class="stock-badge no">В наявності (21/23)</span></div>
+          <div class="help-term-desc">Підсумковий вердикт для категорії у заголовку сторінки: те саме порівняння «парсер/сайт», але у вигляді одного вердикту.</div>
         </div>
       </div>
     </div>
