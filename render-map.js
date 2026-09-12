@@ -159,9 +159,17 @@ if (!appTree) {
 
 let maxLevel = 1;
 let categoriesCount = 0;
+// Категорії, у яких є і підкатегорії, і власні товари, що не входять до жодної
+// з них ("сироти" на рівні відображення) — та ж умова, що для бейджа (N) в
+// сайдбарі; список іде в попередження над змістом, бо в дереві ці товари не
+// видно, поки категорію не розгорнути.
+const orphanCategories = [];
 (function walk(n) {
   categoriesCount++;
   maxLevel = Math.max(maxLevel, n.level);
+  if (n.children.length > 0 && n.stats.own_products > 0) {
+    orphanCategories.push({ id: n.id, name: n.name, level: n.level, own: n.stats.own_products });
+  }
   n.children.forEach(walk);
 })(appTree);
 
@@ -257,7 +265,7 @@ a:hover { text-decoration: underline; }
 .catalog-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .catalog-subtitle-btn { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
 
-.header-center { flex: 1; max-width: 480px; margin: 0 16px; }
+.header-center { flex: 1; max-width: 480px; margin: 0 16px 0 28px; }
 .search-wrap { position: relative; display: flex; align-items: center; width: 100%; }
 .search-icon { position: absolute; left: 10px; font-size: 0.8rem; opacity: 0.6; pointer-events: none; }
 .header-search-input {
@@ -407,6 +415,8 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
   border-radius: 4px; font-size: 0.8rem; line-height: 1.45; color: var(--text-main); display: flex; align-items: flex-start; gap: 10px;
 }
 .info-banner.warning { border-left-color: #eab308; background: var(--bg-subtle); }
+
+.orphan-cat-list { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 
 /* Гарні підказки замість нативного title (той не переноситься й губиться на довгому тексті).
    Позиціонується через JS (setupTooltips) в координатах в'юпорта — саме тому fixed, а не
@@ -935,21 +945,44 @@ function clientApp(CATALOG_DATA) {
       renderSidebar();
     });
 
+    // Посилання в панелі "Товари поза категоріями" — статичний список (рахується
+    // один раз при генерації), тож слухачі теж достатньо навісити один раз тут,
+    // а не при кожному renderContent.
+    var orphanOverlayEl = document.getElementById('orphan-overlay');
+    Array.prototype.forEach.call(document.querySelectorAll('.orphan-cat-link'), function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        state.selectedNodeId = link.dataset.id;
+        var curr = parentMap.get(link.dataset.id);
+        while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
+        if (orphanOverlayEl) orphanOverlayEl.classList.remove('open');
+        renderSidebar(); renderContent();
+      });
+    });
+
     var btnTheme = document.getElementById('btn-theme-toggle');
     if (btnTheme) btnTheme.addEventListener('click', function () {
       var current = document.documentElement.getAttribute('data-theme') || 'light';
       applyTheme(current === 'dark' ? 'light' : 'dark');
     });
 
-    var helpOverlay = document.getElementById('help-overlay');
-    var btnHelp = document.getElementById('btn-help');
-    var btnHelpClose = document.getElementById('btn-help-close');
-    function openHelp() { if (helpOverlay) helpOverlay.classList.add('open'); }
-    function closeHelp() { if (helpOverlay) helpOverlay.classList.remove('open'); }
-    if (btnHelp) btnHelp.addEventListener('click', openHelp);
-    if (btnHelpClose) btnHelpClose.addEventListener('click', closeHelp);
-    if (helpOverlay) helpOverlay.addEventListener('click', function (e) { if (e.target === helpOverlay) closeHelp(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && helpOverlay && helpOverlay.classList.contains('open')) closeHelp(); });
+    // Спільна поведінка для будь-якої модальної панелі в стилі Довідки (відкрити/
+    // закрити кнопкою, кліком поза панеллю, Esc) — Довідка й "Товари поза
+    // категоріями" використовують один і той самий overlay/panel вигляд.
+    function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
+      var overlay = document.getElementById(overlayId);
+      if (!overlay) return;
+      var openBtn = document.getElementById(openBtnId);
+      var closeBtn = document.getElementById(closeBtnId);
+      function open() { overlay.classList.add('open'); }
+      function close() { overlay.classList.remove('open'); }
+      if (openBtn) openBtn.addEventListener('click', open);
+      if (closeBtn) closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+    }
+    setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
+    setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 
     var searchInput = document.getElementById('search-input');
     var btnClear = document.getElementById('btn-clear-search');
@@ -1083,6 +1116,30 @@ const infoBanner = HAS_CSV ? '' : `
       <code>node render-map.js ${path.basename(mapFile)} cncprom_complete_${categoryId}.csv</code></span>
     </div>`;
 
+// Кнопка в шапці (поряд з "Мапа розділу") + модальна панель зі списком —
+// замість банера прямо над змістом (той засмічував основну мапу постійно
+// видимим блоком). Панель — не окрема сутність, а другий екземпляр того
+// самого overlay/panel вигляду, що й Довідка (див. setupModalOverlay).
+// Обидва рахуються один раз при генерації, тож коли orphanCategories порожній
+// (немає жодної такої категорії), ні кнопки, ні панелі в розмітці нема.
+const orphanMenuButtonHtml = orphanCategories.length === 0 ? '' : `
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
+
+const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій:</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="orphan-cat-list">${orphanCategories.map(c =>
+          '<a href="#" class="cat-found-badge orphan-cat-link" data-id="' + c.id + '">📁 ' + escapeHtmlOuter(c.name) + ' <span class="node-count">(' + c.own + ')</span></a>'
+        ).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
 const rootUrl = CATALOG_DATA.tree.url || '#';
 const rootLevelsLabel = maxLevelSafe > 1 ? `1–${maxLevelSafe} рівні` : 'рівень 1';
 
@@ -1101,7 +1158,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</button>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -1149,6 +1206,7 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
   </div>
+  ${orphanPanelHtml}
 
   <div class="workspace">
     <aside class="sidebar">

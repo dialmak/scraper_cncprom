@@ -26,6 +26,23 @@ const BLOCKED_PATTERNS = [
 ];
 const BLOCKED_RESOURCE_TYPES = ['image', 'font', 'media', 'stylesheet'];
 
+// ==================== ЛОГ (scrape.log — доповнюється, ніколи не перезаписується) ====================
+// Один файл на весь проєкт (не per-категорія, як CSV/JSON/report), бо це історія
+// запусків скрапера в часі, а не результат конкретного прогону.
+const LOG_FILE = "scrape.log";
+function nowStr() {
+  const d = new Date();
+  return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+function logLine(text) {
+  try { fs.appendFileSync(LOG_FILE, `[${nowStr()}] ${text}\n`, "utf-8"); } catch (e) { /* лог не критичний для роботи скрапера */ }
+}
+const runErrors = [];
+function logError(text) {
+  runErrors.push(text);
+  logLine(`ПОМИЛКА: ${text}`);
+}
+
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -43,6 +60,7 @@ async function gotoWithRetry(page, url, waitForBreadcrumbs = false) {
     }
   }
   console.error(`  ПРОПУЩЕНО після ${MAX_RETRIES} спроб: ${url}`);
+  logError(`Не вдалось завантажити після ${MAX_RETRIES} спроб: ${url}`);
   return false;
 }
 
@@ -156,6 +174,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
   if (!name) {
     name = await page.$eval('h1', el => el.textContent.trim()).catch(() => `Категорія ${extractCategoryIdFromUrl(url)}`);
     console.log(`Стартова категорія: ${name}`);
+    logLine(`Категорія: "${name}" (id ${extractCategoryIdFromUrl(url)})`);
   }
   const fullPath = [...path, name];
 
@@ -329,6 +348,8 @@ function generateReport(tree, allRows) {
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (async () => {
   const startTime = Date.now();
+  logLine(`СТАРТ: ${START_URL} (категорія ${START_CATEGORY_ID})`);
+
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -341,49 +362,63 @@ function generateReport(tree, allRows) {
     route.continue();
   });
 
-  console.log(`=== ЕТАП 1: обхід дерева категорій, починаючи з ${START_URL} ===`);
-  const productAssignments = new Map();
-  const tree = {};
-  await crawlTree(page, START_URL, null, 1, [], productAssignments, tree);
+  let allRows = [];
+  let availableCount = 0;
 
-  fs.writeFileSync(OUTPUT_MAP, JSON.stringify(tree, null, 2), "utf-8");
-  console.log(`Дерево збережено: ${OUTPUT_MAP}`);
-  console.log(`Унікальних товарів знайдено на етапі 1: ${productAssignments.size}`);
+  try {
+    console.log(`=== ЕТАП 1: обхід дерева категорій, починаючи з ${START_URL} ===`);
+    const productAssignments = new Map();
+    const tree = {};
+    await crawlTree(page, START_URL, null, 1, [], productAssignments, tree);
 
-  const orphanCount = [...productAssignments.values()].filter(a => !a.isLeafCategory).length;
-  console.log(`З них товарів-сиріт (прив'язані до проміжної категорії): ${orphanCount}`);
+    fs.writeFileSync(OUTPUT_MAP, JSON.stringify(tree, null, 2), "utf-8");
+    console.log(`Дерево збережено: ${OUTPUT_MAP}`);
+    console.log(`Унікальних товарів знайдено на етапі 1: ${productAssignments.size}`);
 
-  console.log(`\n=== ЕТАП 2: збір повних даних по кожному унікальному товару ===`);
-  const allRows = [];
-  const failedUrls = [];
-  let idx = 0;
-  const total = productAssignments.size;
-  for (const [id, assignment] of productAssignments) {
-    idx++;
-    const row = await extractProductData(page, assignment.url, assignment);
-    if (row) allRows.push(row); else failedUrls.push(assignment.url);
-    if (idx % 20 === 0 || idx === total) console.log(`  товарів оброблено: ${idx}/${total}`);
+    const orphanCount = [...productAssignments.values()].filter(a => !a.isLeafCategory).length;
+    console.log(`З них товарів-сиріт (прив'язані до проміжної категорії): ${orphanCount}`);
+    logLine(`ЕТАП 1 завершено: унікальних товарів ${productAssignments.size}, сиріт ${orphanCount}.`);
+
+    console.log(`\n=== ЕТАП 2: збір повних даних по кожному унікальному товару ===`);
+    const failedUrls = [];
+    let idx = 0;
+    const total = productAssignments.size;
+    for (const [id, assignment] of productAssignments) {
+      idx++;
+      const row = await extractProductData(page, assignment.url, assignment);
+      if (row) allRows.push(row); else failedUrls.push(assignment.url);
+      if (idx % 20 === 0 || idx === total) console.log(`  товарів оброблено: ${idx}/${total}`);
+    }
+
+    console.log(`\nВсього товарів зібрано: ${allRows.length}`);
+    availableCount = allRows.filter(isAvailableRow).length;
+    console.log(`З них "Готово до відправки": ${availableCount}`);
+    console.log(`(Порівняйте це число з лічильником "В наявності N" на сайті для рівня 1 — див. лог ЕТАПУ 1 вище)`);
+
+    if (failedUrls.length > 0) {
+      console.warn(`Не вдалось обробити ${failedUrls.length} товарів:`, failedUrls);
+      fs.writeFileSync(OUTPUT_FAILED, JSON.stringify(failedUrls, null, 2));
+    }
+    logLine(`ЕТАП 2 завершено: зібрано ${allRows.length}, "Готово до відправки" ${availableCount}, не вдалось обробити ${failedUrls.length}.`);
+
+    const csv = toCSV(allRows);
+    fs.writeFileSync(OUTPUT_CSV, "\uFEFF" + csv, "utf-8");
+
+    const report = generateReport(tree, allRows);
+    fs.writeFileSync(OUTPUT_REPORT, report, "utf-8");
+    console.log(`\u0417\u0432\u0456\u0442 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E: ${OUTPUT_REPORT}`);
+
+    const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
+    console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CSV}`);
+    logLine(`ФІНІШ: успішно за ${elapsedMin} хв. Товарів: ${allRows.length} (в наявності: ${availableCount}). ` +
+      (runErrors.length > 0 ? `Помилок за запуск: ${runErrors.length} (див. вище в цьому лозі).` : `Без помилок.`));
+  } catch (fatalErr) {
+    const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
+    logError(`ФАТАЛЬНА: ${fatalErr && fatalErr.message ? fatalErr.message : fatalErr}`);
+    logLine(`ФІНІШ: ПЕРЕРВАНО через помилку після ${elapsedMin} хв. Помилок за запуск: ${runErrors.length}.`);
+    console.error('Скрапінг перервано помилкою:', fatalErr);
+    process.exitCode = 1;
+  } finally {
+    await browser.close();
   }
-
-  console.log(`\nВсього товарів зібрано: ${allRows.length}`);
-  const availableCount = allRows.filter(isAvailableRow).length;
-  console.log(`З них "Готово до відправки": ${availableCount}`);
-  console.log(`(Порівняйте це число з лічильником "В наявності N" на сайті для рівня 1 — див. лог ЕТАПУ 1 вище)`);
-
-  if (failedUrls.length > 0) {
-    console.warn(`Не вдалось обробити ${failedUrls.length} товарів:`, failedUrls);
-    fs.writeFileSync(OUTPUT_FAILED, JSON.stringify(failedUrls, null, 2));
-  }
-
-  const csv = toCSV(allRows);
-  fs.writeFileSync(OUTPUT_CSV, "\uFEFF" + csv, "utf-8");
-
-  const report = generateReport(tree, allRows);
-  fs.writeFileSync(OUTPUT_REPORT, report, "utf-8");
-  console.log(`\u0417\u0432\u0456\u0442 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E: ${OUTPUT_REPORT}`);
-
-  const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
-  console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CSV}`);
-
-  await browser.close();
 })();

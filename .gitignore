@@ -5,3 +5,7 @@ category_map_*.json
 report_*.md
 map_*.html
 failed_urls_*.json
+
+# Лог запусків scrape-complete.js — накопичується локально з кожним
+# прогоном (старт/етапи/помилки/фініш+час), у репозиторії не потрібен.
+scrape.log
