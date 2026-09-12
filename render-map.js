@@ -507,6 +507,26 @@ function initThemeToggle() {
   });
 }
 
+// ==================== МОДАЛЬНА ПАНЕЛЬ (спільна для map_<id>.html і map.html) ====================
+// Відкриття/закриття кнопкою, кліком поза панеллю, Esc — той самий генеричний
+// overlay/panel вигляд для Довідки й "Товари поза категоріями" в map_<id>.html,
+// і для перегляду scrape.log/map.log в індексній map.html (build-maps.js).
+// Винесено top-level так само, як initThemeToggle, — з тієї самої причини:
+// індексна сторінка не має CATALOG_DATA і не викликає initCatalogMap, тож не
+// може дістатись до нього, якби він лишався вкладеним у setupEvents().
+function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
+  var overlay = document.getElementById(overlayId);
+  if (!overlay) return;
+  var openBtn = document.getElementById(openBtnId);
+  var closeBtn = document.getElementById(closeBtnId);
+  function open() { overlay.classList.add('open'); }
+  function close() { overlay.classList.remove('open'); }
+  if (openBtn) openBtn.addEventListener('click', open);
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+}
+
 // ==================== КЛІЄНТСЬКИЙ ДОДАТОК ====================
 // Пишеться як звичайна функція (не рядок!) — при генерації сторінки
 // перетворюється у текст через .toString(), тому шаблонні рядки й лапки
@@ -983,21 +1003,6 @@ function initCatalogMap(CATALOG_DATA) {
       });
     });
 
-    // Спільна поведінка для будь-якої модальної панелі в стилі Довідки (відкрити/
-    // закрити кнопкою, кліком поза панеллю, Esc) — Довідка й "Товари поза
-    // категоріями" використовують один і той самий overlay/panel вигляд.
-    function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
-      var overlay = document.getElementById(overlayId);
-      if (!overlay) return;
-      var openBtn = document.getElementById(openBtnId);
-      var closeBtn = document.getElementById(closeBtnId);
-      function open() { overlay.classList.add('open'); }
-      function close() { overlay.classList.remove('open'); }
-      if (openBtn) openBtn.addEventListener('click', open);
-      if (closeBtn) closeBtn.addEventListener('click', close);
-      overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
-    }
     setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
     setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 
@@ -1134,7 +1139,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
+fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + setupModalOverlay.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;

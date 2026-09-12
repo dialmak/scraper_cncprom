@@ -16,6 +16,8 @@ const STALE_THRESHOLD_HOURS = 5;
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output');
 const LOG_FILE = path.join(DIR, "map.log");
+const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
+const CSV_FILE = path.join(DIR, "categories-site.csv");
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
 function nowStr() {
@@ -26,24 +28,59 @@ function logLine(text) {
   try { fs.appendFileSync(LOG_FILE, `[${nowStr()}] ${text}\n`, "utf-8"); } catch (e) { /* лог не критичний */ }
 }
 
-// ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
-function findCategoryIds() {
-  return fs.readdirSync(DIR)
-    .map(f => (f.match(/^(\d+)_category_map\.json$/) || [])[1])
-    .filter(Boolean);
+// ==================== ЧИТАННЯ categories-site.csv ====================
+// Той самий парсер (роздільник ";", лапки подвоюються), що й у render-map.js /
+// scrape-all-categories.js — формат CSV в проєкті скрізь однаковий. Це
+// джерело істини щодо ПОВНОГО списку категорій 1 рівня (а не сканування
+// output/ на вже наявні <id>_category_map.json — той спосіб бачив лише
+// категорії, які вже хоч раз скрапились, і "губив" усі решта).
+function splitCsvLine(line) {
+  const out = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') { cur += '"'; i++; }
+        else inQuotes = false;
+      } else cur += ch;
+    } else {
+      if (ch === '"') inQuotes = true;
+      else if (ch === ';') { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+  }
+  out.push(cur);
+  return out;
 }
 
+function parseCsv(text) {
+  text = text.replace(/^﻿/, '');
+  const lines = text.split(/\r?\n/).filter(l => l.length > 0);
+  if (lines.length === 0) return [];
+  const header = splitCsvLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const cells = splitCsvLine(line);
+    const row = {};
+    header.forEach((h, i) => { row[h] = cells[i] ?? ''; });
+    return row;
+  });
+}
+
+function readCategoriesFromCsv() {
+  if (!fs.existsSync(CSV_FILE)) return null;
+  const rows = parseCsv(fs.readFileSync(CSV_FILE, "utf-8"));
+  return rows.map(r => ({ id: r.ID, name: r["Назва категорії"], url: r.URL }));
+}
+
+// ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================
 function mtimeHours(filePath) {
   return fs.statSync(filePath).mtimeMs / 3600000; // мс -> год
 }
 
-function readCategoryName(jsonPath) {
-  try {
-    const data = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
-    return data.categoryName || "";
-  } catch (e) {
-    return "";
-  }
+function readLogSafe(filePath) {
+  try { return fs.readFileSync(filePath, "utf-8"); } catch (e) { return "(файл відсутній або порожній)"; }
 }
 
 function writeStub(id, name, reason) {
@@ -94,8 +131,8 @@ function escapeHtmlOuter(str) {
 // Той самий "діловий" вигляд, що й в окремих map_<id>.html (map-common.css
 // підключено так само), але без сайдбару/дерева — просто таблиця-список з
 // посиланнями. Немає власного JS-додатку (initCatalogMap чекає CATALOG_DATA з
-// повним деревом, якого тут нема) — лише initThemeToggle з map-common.js,
-// того самого спільного файлу.
+// повним деревом, якого тут нема) — лише initThemeToggle і setupModalOverlay
+// з map-common.js, того самого спільного файлу.
 function diffBadgeHtml(e) {
   if (e.status !== 'ok' || e.diff === null || e.diff === undefined) {
     return '<span class="stock-badge neutral">н/д</span>';
@@ -105,12 +142,12 @@ function diffBadgeHtml(e) {
 }
 
 function statusBadgeHtml(e) {
-  return e.status === 'ok'
-    ? '<span class="count-yes">✅ Актуально</span>'
-    : '<a href="' + e.id + '_map.html" class="count-no">⚠️ Застаріло</a>';
+  if (e.status === 'ok') return '<span class="count-yes">✅ Актуально</span>';
+  if (e.status === 'not_scraped') return '<a href="' + e.id + '_map.html" class="stock-badge neutral">— Не скрапилось</a>';
+  return '<a href="' + e.id + '_map.html" class="count-no">⚠️ Застаріло</a>';
 }
 
-function buildIndexPage(entries) {
+function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   const sorted = [...entries].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uk'));
   const rows = sorted.map((e, i) => `
             <tr>
@@ -124,6 +161,25 @@ function buildIndexPage(entries) {
               <td style="text-align:center;font-size:0.78rem;color:var(--text-subtle);">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}</td>
             </tr>`).join('');
+
+  // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
+  // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
+  // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
+  // і ростуть необмежено з кожним прогоном; поки що це не проблема (кілька
+  // КБ), але якщо колись виростуть до сотень КБ — варто буде показувати лише
+  // хвіст, а не вміст цілком.
+  const logPanelHtml = (overlayId, closeBtnId, title, content) => `
+  <div class="help-overlay" id="${overlayId}">
+    <div class="help-panel" style="max-width:900px;">
+      <div class="help-panel-head">
+        <h3>${title}</h3>
+        <button class="btn-help-close" id="${closeBtnId}" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <pre style="white-space:pre-wrap;word-break:break-word;font-family:var(--font-mono);font-size:0.76rem;line-height:1.5;max-height:65vh;overflow-y:auto;margin:0;">${escapeHtmlOuter(content)}</pre>
+      </div>
+    </div>
+  </div>`;
 
   const html = `<!DOCTYPE html>
 <html lang="uk">
@@ -152,17 +208,23 @@ function buildIndexPage(entries) {
       <span class="catalog-title">Мапа розділів каталогу — cncprom.ua</span>
     </div>
     <div class="header-right">
+      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/scrape.log">📄 scrape.log</button>
+      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/map.log">📄 map.log</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
       </button>
       <a href="https://cncprom.ua/ua/" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
+${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', 'output/scrape.log', scrapeLogContent)}
+${logPanelHtml('map-log-overlay', 'btn-map-log-close', 'output/map.log', mapLogContent)}
   <div class="index-wrap">
     <h1>Категорії рівня 1 (${entries.length})</h1>
-    <div class="sub">Кожен рядок веде до власної інтерактивної мапи категорії (&lt;ID&gt;_map.html). "⚠️ Застаріло" —
-      category_map/csv цієї категорії розійшлись у часі більш ніж на ${STALE_THRESHOLD_HOURS} год відносно еталона
-      (${REFERENCE_ID}); причина — на самій сторінці категорії та в <code>map.log</code>.</div>
+    <div class="sub">Кожен рядок веде до власної інтерактивної мапи категорії (&lt;ID&gt;_map.html). Статус:
+      ✅ Актуально — мапа побудована зі свіжих даних; ⚠️ Застаріло — category_map/csv цієї категорії
+      розійшлись у часі більш ніж на ${STALE_THRESHOLD_HOURS} год відносно еталона (${REFERENCE_ID}), причина —
+      на самій сторінці категорії та в <code>map.log</code>; — Не скрапилось — категорію ще жодного разу не
+      обробляв <code>scrape-complete.js</code>.</div>
     <div class="section-block">
       <div class="table-wrap">
         <table class="simple-table">
@@ -185,7 +247,11 @@ function buildIndexPage(entries) {
       </div>
     </div>
   </div>
-<script>initThemeToggle();</script>
+<script>
+initThemeToggle();
+setupModalOverlay('scrape-log-overlay', 'btn-scrape-log', 'btn-scrape-log-close');
+setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
+</script>
 </body>
 </html>
 `;
@@ -194,37 +260,53 @@ function buildIndexPage(entries) {
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (() => {
-  const ids = findCategoryIds();
+  const categories = readCategoriesFromCsv();
 
-  if (!ids.includes(REFERENCE_ID)) {
-    console.error(`Еталонна категорія ${REFERENCE_ID} не знайдена (немає ${REFERENCE_ID}_category_map.json) — зупинка.`);
-    logLine(`ПОМИЛКА: еталонна категорія ${REFERENCE_ID} відсутня, побудова мап скасована.`);
+  if (!categories || categories.length === 0) {
+    console.error(`Файл не знайдено або порожній: ${CSV_FILE}`);
+    console.error('Спершу запустіть: node discover-categories.js');
+    process.exit(1);
+  }
+
+  const refJsonPath = path.join(DIR, `${REFERENCE_ID}_category_map.json`);
+  if (!fs.existsSync(refJsonPath)) {
+    console.error(`Еталонна категорія ${REFERENCE_ID} ще не відскрапована (немає ${REFERENCE_ID}_category_map.json) — зупинка.`);
+    console.error(`Запустіть: node scrape-complete.js "https://cncprom.ua/ua/g${REFERENCE_ID}-drajvery-shagovogo-dvigatelya"`);
+    logLine(`ПОМИЛКА: еталонна категорія ${REFERENCE_ID} ще не відскрапована, побудова мап скасована.`);
     process.exit(1);
   }
 
   // Гарантуємо, що еталон обробляється першим
-  ids.sort((a, b) => (a === REFERENCE_ID ? -1 : b === REFERENCE_ID ? 1 : 0));
+  categories.sort((a, b) => (a.id === REFERENCE_ID ? -1 : b.id === REFERENCE_ID ? 1 : 0));
 
-  const refJsonPath = path.join(DIR, `${REFERENCE_ID}_category_map.json`);
   const refCsvPath = path.join(DIR, `${REFERENCE_ID}_cncprom_complete.csv`);
   const refGapHours = fs.existsSync(refCsvPath)
     ? Math.abs(mtimeHours(refCsvPath) - mtimeHours(refJsonPath))
     : 0;
 
+  console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
   console.log(`Еталон: ${REFERENCE_ID} (розрив json/csv: ${refGapHours.toFixed(2)} год)`);
-  logLine(`СТАРТ build-maps: еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
+  logLine(`СТАРТ build-maps: категорій ${categories.length}, еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
 
   const entries = [];
 
-  ids.forEach(id => {
+  categories.forEach(cat => {
+    const { id, name, url } = cat;
     const jsonPath = path.join(DIR, `${id}_category_map.json`);
     const csvPath = path.join(DIR, `${id}_cncprom_complete.csv`);
-    const name = readCategoryName(jsonPath);
 
     if (id === REFERENCE_ID) {
       console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
       buildRealMap(id);
       entries.push({ id, name, status: 'ok', ...readSummary(id) });
+      return;
+    }
+
+    if (!fs.existsSync(jsonPath)) {
+      const reason = `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`;
+      console.log(`[${id}] ${name} — ще не скрапилось. Заглушка замість мапи.`);
+      writeStub(id, name, reason);
+      entries.push({ id, name, status: 'not_scraped', reason });
       return;
     }
 
@@ -254,8 +336,16 @@ function buildIndexPage(entries) {
     }
   });
 
-  buildIndexPage(entries);
+  // map.log читається до фінального logLine нижче — тож знімок, вбудований у
+  // цей map.html, не міститиме власного рядка "ФІНІШ" цього ж прогону
+  // (з'явиться лише в наступному запуску build-maps.js). Це неминучий
+  // порядок дій, а не недогляд: побудувати сторінку з рядком про завершення
+  // до фактичного завершення неможливо.
+  const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
+  const mapLogContent = readLogSafe(LOG_FILE);
+  buildIndexPage(entries, scrapeLogContent, mapLogContent);
+
   console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);
   console.log("Готово. Деталі рішень — у map.log.");
-  logLine(`ФІНІШ build-maps: оброблено категорій ${ids.length}.`);
+  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}.`);
 })();
