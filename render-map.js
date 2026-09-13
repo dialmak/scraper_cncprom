@@ -1,33 +1,44 @@
 // render-map.js — генерує інтерактивну HTML-мапу дерева категорій з файлу
-// <ID>_category_map.json (від scrape-complete.js), опційно збагачену
-// товарами (назва/код/наявність) з <ID>_cncprom_complete.csv — обидва
-// шукаються автоматично в output/ за ID категорії. Ім'я файлу починається з
-// ID (не з типу файлу), щоб усі файли однієї категорії стояли поруч при
-// сортуванні за іменем у провіднику — те саме, що й у scrape-complete.js.
+// <ID>_category_map.json (від scrape-complete.js для output/site/, або від
+// майбутнього build-custom-tree.js для output/new/ — обидва пишуть цей файл
+// в однаковій формі, render-map.js не знає й не питає, звідки він узявся),
+// опційно збагачену товарами (назва/код/наявність) з <ID>_cncprom_complete.csv
+// — обидва шукаються автоматично за ID категорії в цільовій підпапці. Ім'я
+// файлу починається з ID (не з типу файлу), щоб усі файли однієї категорії
+// стояли поруч при сортуванні за іменем у провіднику — те саме, що й у
+// scrape-complete.js.
 //
 // Дизайн — діловий "desktop"-стиль (сайдбар з деревом категорій зліва +
 // таблиці товарів праворуч, світла/темна тема, живий пошук).
 //
 // Використання:
-//   node render-map.js <ID>
+//   node render-map.js <ID>                    — output/site/ (за замовчуванням)
+//   MAP_SUBDIR=new node render-map.js <customID> — output/new/ (кураторська мапа)
 //
-// Результат (усе в output/, поруч зі скриптом, не в корені проєкту):
-// <ID>_map.html + спільні map-common.css/map-common.js (стилі й клієнтський
-// додаток, однакові для будь-якої категорії — пишуться/перезаписуються при
-// кожному запуску) + <ID>_map.summary.json (короткий підсумок для індексної
-// build-maps.js/map.html). Відкривається прямо з диска подвійним кліком у
-// браузері, але вже НЕ одним самодостатнім файлом — map-common.css/.js
-// мають лежати поруч у тій самій теці.
+// Результат (усе в output/<site|new>/, поруч зі скриптом, не в корені
+// проєкту): <ID>_map.html + спільні map-common.css/map-common.js (стилі й
+// клієнтський додаток, однакові для будь-якої категорії — пишуться/
+// перезаписуються при кожному запуску) + <ID>_map.summary.json (короткий
+// підсумок для індексної build-maps.js/map.html). Відкривається прямо з
+// диска подвійним кліком у браузері, але вже НЕ одним самодостатнім файлом —
+// map-common.css/.js мають лежати поруч у тій самій теці.
 
 const fs = require('fs');
 const path = require('path');
 
-const OUTPUT_DIR = path.join(__dirname, 'output');
+// MAP_SUBDIR замість жорсткого "output/" — той самий скрипт має однаково
+// вміти малювати мапу з реальних даних сайту (output/site/) і з майбутньої
+// кураторської таксономії (output/new/), не знаючи різниці між ними: обидва
+// джерела пишуть файли в одній і тій самій формі. Дефолт "site" — щоб
+// існуюче використання (`node render-map.js <ID>`) не зламалось.
+const MAP_SUBDIR = process.env.MAP_SUBDIR || 'site';
+const OUTPUT_DIR = path.join(__dirname, 'output', MAP_SUBDIR);
 
 const categoryId = process.argv[2];
 if (!categoryId) {
   console.error('Використання: node render-map.js <ID категорії>');
   console.error('Приклад: node render-map.js 1022485');
+  console.error('(MAP_SUBDIR=new node render-map.js <ID> — для output/new/)');
   process.exit(1);
 }
 
@@ -36,7 +47,9 @@ const csvFile = path.join(OUTPUT_DIR, `${categoryId}_cncprom_complete.csv`);
 
 if (!fs.existsSync(mapFile)) {
   console.error(`Файл не знайдено: ${mapFile}`);
-  console.error(`Спершу запустіть: node scrape-complete.js "<URL категорії ${categoryId}>"`);
+  console.error(MAP_SUBDIR === 'site'
+    ? `Спершу запустіть: node scrape-complete.js "<URL категорії ${categoryId}>"`
+    : `Спершу згенеруйте output/new/${categoryId}_category_map.json (build-custom-tree.js).`);
   process.exit(1);
 }
 
@@ -1163,7 +1176,7 @@ const infoBanner = HAS_CSV ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
       <span>⚠️</span>
       <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту. Це станеться само:
-      запустіть <code>node render-map.js ${categoryId}</code> ще раз, коли в output/ з'явиться ${categoryId}_cncprom_complete.csv (ЕТАП 2 scrape-complete.js).</span>
+      запустіть <code>${MAP_SUBDIR === 'site' ? 'node' : 'MAP_SUBDIR=new node'} render-map.js ${categoryId}</code> ще раз, коли в output/${MAP_SUBDIR}/ з'явиться ${categoryId}_cncprom_complete.csv${MAP_SUBDIR === 'site' ? ' (ЕТАП 2 scrape-complete.js)' : ''}.</span>
     </div>`;
 
 // Кнопка в шапці (поряд з "Мапа розділу") + модальна панель зі списком —

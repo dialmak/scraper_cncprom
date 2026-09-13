@@ -1,9 +1,20 @@
 // build-maps.js — пакетно генерує мапи (render-map.js) для всіх категорій
 // 1 рівня одразу, замість того щоб запускати render-map.js вручну по одній.
-// Повний список категорій береться з output/categories-site.csv (пише
-// discover-categories.js), а не зі сканування output/ на вже наявні
+// Повний список категорій береться з output/site/categories-site.csv (пише
+// discover-categories.js), а не зі сканування output/site/ на вже наявні
 // <ID>_category_map.json — інакше категорія, яку ще жодного разу не
 // скрапили, просто не з'явилась би в результаті.
+//
+// ПРИМІТКА про MAP_SUBDIR/output/new/: шлях DIR нижче параметризований так
+// само, як у render-map.js (щоб обидва скрипти дивились в один і той самий
+// output/<site|new>/ без розсинхрону), але сама логіка нижче — читання
+// categories-site.csv, звірка REFERENCE_ID на "застарілість" json/csv — існує
+// ТІЛЬКИ для реального сайту (це про часовий розрив між ЕТАП 1/ЕТАП 2
+// scrape-complete.js, якого в майбутньому output/new/ просто не буде — там
+// json+csv писатиме один атомарний скрипт, build-custom-tree.js, за один
+// прохід). Тобто MAP_SUBDIR=new build-maps.js поки НЕ запрацює сам собою —
+// це свідомо відкладено до появи build-custom-tree.js й вирішення, звідки
+// для output/new/ брати аналог "списку категорій 1 рівня".
 //
 // Перед побудовою мапи кожна категорія звіряється на "застарілість" —
 // розрив у часі між її <ID>_category_map.json (пише ЕТАП 1 scrape-complete.js)
@@ -17,7 +28,7 @@
 // Використання:
 //   node build-maps.js
 //
-// Результат (усе в output/, поруч зі скриптами):
+// Результат (усе в output/<site|new>/, поруч зі скриптами):
 // - <ID>_map.html для кожної категорії — реальна мапа (render-map.js) або
 //   заглушка, залежно від стану вище;
 // - map.html — індексна сторінка зі списком усіх категорій 1 рівня,
@@ -41,11 +52,14 @@ const { spawnSync } = require('child_process');
 const REFERENCE_ID = "1022837"; // Драйвери крокового двигуна
 const STALE_THRESHOLD_HOURS = 5;
 // ROOT_DIR — де лежать самі скрипти (render-map.js викликається звідси);
-// DIR — де лежать усі згенеровані файли (output/), включно з тими, що пише
-// цей скрипт (map.html, map.log). Розділені навмисно: колись усе писалось
-// прямо в ROOT_DIR, тепер лише в output/ — не плутати одне з одним.
+// DIR — де лежать усі згенеровані файли (output/<site|new>/), включно з тими,
+// що пише цей скрипт (map.html, map.log). Розділені навмисно: колись усе
+// писалось прямо в ROOT_DIR, тепер лише в output/ — не плутати одне з одним.
+// MAP_SUBDIR — той самий перемикач, що й у render-map.js (див. примітку про
+// output/new/ на початку файлу); дефолт "site" зберігає поточну поведінку.
 const ROOT_DIR = __dirname;
-const DIR = path.join(ROOT_DIR, 'output');
+const MAP_SUBDIR = process.env.MAP_SUBDIR || 'site';
+const DIR = path.join(ROOT_DIR, 'output', MAP_SUBDIR);
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
 const CSV_FILE = path.join(DIR, "categories-site.csv");
@@ -143,9 +157,11 @@ function writeStub(id, name, reason) {
 
 function buildRealMap(id) {
   // render-map.js тепер приймає лише ID — сам шукає <id>_category_map.json /
-  // <id>_cncprom_complete.csv в своєму output/ (те саме DIR, обчислене від
-  // __dirname render-map.js, який лежить у ROOT_DIR поруч з цим скриптом).
-  const res = spawnSync("node", ["render-map.js", id], { cwd: ROOT_DIR, stdio: "inherit" });
+  // <id>_cncprom_complete.csv в своєму output/<MAP_SUBDIR>/ (той самий DIR,
+  // обчислений від __dirname render-map.js, який лежить у ROOT_DIR поруч з
+  // цим скриптом) — MAP_SUBDIR передається через env, щоб обидва скрипти
+  // дивились в одну й ту саму підпапку, а не розсинхронізувались.
+  const res = spawnSync("node", ["render-map.js", id], { cwd: ROOT_DIR, stdio: "inherit", env: { ...process.env, MAP_SUBDIR } });
   return res.status === 0;
 }
 
@@ -324,8 +340,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-right">
-      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/scrape.log">📄 scrape.log</button>
-      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/map.log">📄 map.log</button>
+      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/scrape.log">📄 scrape.log</button>
+      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/map.log">📄 map.log</button>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
@@ -333,8 +349,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <a href="https://cncprom.ua/ua/" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
-${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', 'output/scrape.log', scrapeLogContent)}
-${logPanelHtml('map-log-overlay', 'btn-map-log-close', 'output/map.log', mapLogContent)}
+${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/${MAP_SUBDIR}/scrape.log`, scrapeLogContent)}
+${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/${MAP_SUBDIR}/map.log`, mapLogContent)}
 ${orphanPanelHtml}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">

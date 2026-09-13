@@ -1,7 +1,7 @@
 // discover-categories.js — читає з головної сторінки cncprom.ua повний список
 // категорій 1 рівня (ID, назва, URL) і для кожної робить один швидкий заїзд
 // на її кореневу сторінку, щоб оцінити орієнтовний час майбутнього повного
-// скрапінгу (scrapingTime, у хвилинах). Результат — output/categories-site.csv.
+// скрапінгу (scrapingTime, у хвилинах). Результат — output/site/categories-site.csv.
 //
 // Список категорій 1 рівня не захардкоджений ніде в проєкті (сайт може додати/
 // прибрати категорію в будь-який момент) — цей скрипт це і вирішує: перечитує
@@ -11,7 +11,7 @@
 // Використання:
 //   node discover-categories.js
 //
-// Результат: output/categories-site.csv (UTF-8 з BOM, роздільник ";"),
+// Результат: output/site/categories-site.csv (UTF-8 з BOM, роздільник ";"),
 // колонки: number, categoryId, categoryName, categoryUrl, scrapingTime.
 // Рядки відсортовані за scrapingTime (від найменшого до найбільшого), а
 // number — просто порядковий номер після сортування, 1..N.
@@ -22,7 +22,9 @@ const path = require('path');
 
 const BASE = "https://cncprom.ua";
 const HOMEPAGE_URL = "https://cncprom.ua/ua/";
-const OUTPUT_DIR = path.join(__dirname, 'output');
+// output/site/ — цей скрипт завжди про реальний сайт (немає "custom"-варіанту
+// списку категорій 1 рівня, на відміну від render-map.js/build-maps.js нижче).
+const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 const OUTPUT_CSV = path.join(OUTPUT_DIR, 'categories-site.csv');
 

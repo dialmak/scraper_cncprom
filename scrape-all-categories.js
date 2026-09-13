@@ -1,5 +1,5 @@
 // scrape-all-categories.js — послідовно запускає scrape-complete.js для
-// кожної категорії 1 рівня з output/categories-site.csv (готується
+// кожної категорії 1 рівня з output/site/categories-site.csv (готується
 // discover-categories.js), СТРОГО за зростанням колонки number (1, 2, 3, ...).
 //
 // Ніякого власного сортування чи спецвипадків тут немає навмисно: чергу
@@ -17,7 +17,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ROOT_DIR = __dirname;
-const OUTPUT_DIR = path.join(ROOT_DIR, 'output');
+const OUTPUT_DIR = path.join(ROOT_DIR, 'output', 'site');
 const CSV_FILE = path.join(OUTPUT_DIR, 'categories-site.csv');
 
 // ==================== ЧИТАННЯ categories-site.csv ====================
