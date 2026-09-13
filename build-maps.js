@@ -1,3 +1,34 @@
+// build-maps.js — пакетно генерує мапи (render-map.js) для всіх категорій
+// 1 рівня одразу, замість того щоб запускати render-map.js вручну по одній.
+// Повний список категорій береться з output/categories-site.csv (пише
+// discover-categories.js), а не зі сканування output/ на вже наявні
+// <ID>_category_map.json — інакше категорія, яку ще жодного разу не
+// скрапили, просто не з'явилась би в результаті.
+//
+// Перед побудовою мапи кожна категорія звіряється на "застарілість" —
+// розрив у часі між її <ID>_category_map.json (пише ЕТАП 1 scrape-complete.js)
+// і <ID>_cncprom_complete.csv (пише ЕТАП 2) відносно такого самого розриву в
+// еталонній категорії (REFERENCE_ID нижче). Занадто великий розрив означає,
+// що json і csv, найімовірніше, належать різним прогонам — така категорія
+// отримує заглушку (<ID>_map.html з поясненням причини й готовою командою
+// для повторного скрапінгу), а не мапу з завідомо неузгодженими даними.
+// Категорія, яку взагалі ще не скрапили, отримує таку саму заглушку.
+//
+// Використання:
+//   node build-maps.js
+//
+// Результат (усе в output/, поруч зі скриптами):
+// - <ID>_map.html для кожної категорії — реальна мапа (render-map.js) або
+//   заглушка, залежно від стану вище;
+// - map.html — індексна сторінка зі списком усіх категорій 1 рівня,
+//   посиланнями на кожну мапу, кількостями товарів/реконсиляцією і
+//   статусом (✅ збігається / ⚠️ розбіжність / "⏳ Немає даних");
+// - map.log — доповнюється (як scrape.log) рішенням по кожній категорії.
+//
+// Передумова: категорія REFERENCE_ID має бути вже хоч раз проскрапена
+// (інакше нема з чим звіряти розрив json/csv для решти) — інакше скрипт
+// одразу завершується з помилкою.
+
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -131,8 +162,8 @@ function escapeHtmlOuter(str) {
 // Той самий "діловий" вигляд, що й в окремих map_<id>.html (map-common.css
 // підключено так само), але без сайдбару/дерева — просто таблиця-список з
 // посиланнями. Немає власного JS-додатку (initCatalogMap чекає CATALOG_DATA з
-// повним деревом, якого тут нема) — лише initThemeToggle і setupModalOverlay
-// з map-common.js, того самого спільного файлу.
+// повним деревом, якого тут нема) — лише initThemeToggle, setupModalOverlay й
+// setupTooltips з map-common.js, того самого спільного файлу.
 function diffBadgeHtml(e) {
   if (e.status !== 'ok' || e.diff === null || e.diff === undefined) {
     return '<span class="stock-badge neutral">н/д</span>';
@@ -141,10 +172,13 @@ function diffBadgeHtml(e) {
   return `<span class="${cls}">${e.total_yes}/${e.site_counter ?? '—'}</span>`;
 }
 
+// Лише іконка, без слова поруч (Актуально/Застаріло/Немає даних) — сам напис
+// живе тепер у Довідці й у data-tip на кожній іконці, а не дублюється в
+// кожному рядку таблиці вдруге.
 function statusBadgeHtml(e) {
-  if (e.status === 'ok') return '<span class="count-yes">✅ Актуально</span>';
-  if (e.status === 'not_scraped') return '<a href="' + e.id + '_map.html" class="stock-badge neutral">— Не скрапилось</a>';
-  return '<a href="' + e.id + '_map.html" class="count-no">⚠️ Застаріло</a>';
+  if (e.status === 'ok') return '<span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span>';
+  if (e.status === 'not_scraped') return '<a href="' + e.id + '_map.html" class="stock-badge neutral" data-tip="Немає даних: скрапер ще жодного разу не обробляв цю категорію.">⏳</a>';
+  return '<a href="' + e.id + '_map.html" class="count-no" data-tip="Застаріло: мапа побудована на базі застарілих даних.">⚠️</a>';
 }
 
 function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
@@ -152,15 +186,80 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   const rows = sorted.map((e, i) => `
             <tr>
               <td class="col-n">${i + 1}</td>
-              <td><a href="${e.id}_map.html" class="fw-cat-link">${escapeHtmlOuter(e.name || e.id)}</a></td>
-              <td class="item-code" style="text-align:center;">${e.id}</td>
+              <td><a href="${e.id}_map.html" target="_blank" rel="noopener noreferrer" class="fw-cat-link">${escapeHtmlOuter(e.name || e.id)}</a></td>
               <td style="text-align:center;">${e.levels ?? '—'}</td>
               <td style="text-align:center;" class="fw-count-cell">${e.total_products ?? '—'}</td>
               <td style="text-align:center;">${diffBadgeHtml(e)}</td>
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
               <td style="text-align:center;font-size:0.78rem;color:var(--text-subtle);">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}</td>
+              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${e.url}" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>` : '—'}</td>
             </tr>`).join('');
+
+  // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
+  // кнопка/панель у кожній <id>_map.html (render-map.js), але зібраний по всіх
+  // категоріях 1 рівня одразу і згрупований по них (псевдо-tree: категорія 1
+  // рівня — заголовок групи, її орфан-підкатегорії — пункти під ним), а не
+  // пласким списком із назвою "Категорія › Підкатегорія" в кожному рядку —
+  // при 20-30+ записах на 23 категорії це самé повторення назви батька в
+  // кожному рядку й читалось як простирадло. Джерело — поле orphan_categories,
+  // яке кожен <id>_map.summary.json тепер несе поряд з рештою globalStats (щоб
+  // не перечитувати заново повне дерево кожної категорії тут). Є лише для 'ok'
+  // категорій (readSummary дає дані тільки їм) — те саме обмеження, що й у
+  // Товарів/В наявності/Оновлено вище для stale/not_scraped рядків.
+  // Групи ведуть на map.html ВЛАСНЕ ТІЄЇ категорії 1 рівня (не одразу на
+  // конкретний вкладений розділ — переходу до окремого вузла на чужій
+  // сторінці мапа поки не підтримує).
+  //
+  // ВАЖЛИВО: сирота може бути й самою категорією 1 рівня (own_products > 0
+  // прямо на кореневому вузлі — те саме, що orphanCategories в render-map.js
+  // рахує для будь-якого вузла дерева, корінь не виняток). Наївне групування
+  // "заголовок = назва топ-категорії, пункти під ним = назви орфан-вузлів"
+  // тоді дає пункт із тим самим текстом, що й заголовок групи (стаття
+  // "Категорія X" під заголовком "Категорія X"), що виглядає як помилка. Такий
+  // запис (oc.level === 1, тобто орфан-вузол — сама топ-категорія) підписується
+  // окремо — "Товари категорії, які не входять до підкатегорій" (та сама фраза,
+  // що й у власному/сирітському рядку зведення в render-map.js), а не назвою
+  // категорії вдруге.
+  const orphanGroups = [];
+  const orphanGroupById = new Map();
+  // Сума ТОВАРІВ (oc.own у кожному записі), а не кількість записів/категорій
+  // у списку нижче — заголовок каже "Знайдені товари...", тож і число поруч
+  // має бути кількістю товарів, а не кількістю орфан-категорій, які їх містять.
+  let orphanTotal = 0;
+  sorted.forEach(e => {
+    (e.orphan_categories || []).forEach(oc => {
+      orphanTotal += oc.own;
+      if (!orphanGroupById.has(e.id)) {
+        const group = { topId: e.id, topName: e.name, items: [] };
+        orphanGroupById.set(e.id, group);
+        orphanGroups.push(group);
+      }
+      orphanGroupById.get(e.id).items.push(oc);
+    });
+  });
+  const orphanMenuButtonHtml = orphanTotal === 0 ? '' : `
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
+  const orphanPanelHtml = orphanTotal === 0 ? '' : `
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotal}):</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="orphan-group-list">${orphanGroups.map(g => `
+          <div class="orphan-group">
+            <a href="${g.topId}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
+            <div class="orphan-cat-list">${g.items.map(oc =>
+              '<a href="' + g.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge">' +
+              (oc.level === 1 ? 'Товари категорії, які не входять до підкатегорій' : escapeHtmlOuter(oc.name)) +
+              ' <span class="node-count">(' + oc.own + ')</span></a>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
 
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
@@ -181,6 +280,14 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
     </div>
   </div>`;
 
+  // "Мапа сайту · <дата й час>" поряд з назвою — той самий підпис-годинник,
+  // що й "Мапа розділу · <scrapedAt>" в кожній <id>_map.html, але для map.html
+  // немає єдиного category_map.json, чиє mtime можна було б узяти (як робить
+  // scrapedAt там) — тут це просто момент генерації самого map.html.
+  const generatedAtDate = new Date();
+  const generatedAt = generatedAtDate.toLocaleDateString('uk-UA') + ' ' +
+    generatedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
   const html = `<!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -200,16 +307,26 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   .index-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
   .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+  /* Псевдо-tree для "Товари поза категоріями": категорія 1 рівня — заголовок
+     групи (.orphan-group-head), її орфан-підкатегорії — індентований
+     .orphan-cat-list під ним (той самий спільний клас/вигляд пунктів, що й у
+     плоскому списку render-map.js — лише контейнер тепер один на групу). */
+  .orphan-group-list { display: flex; flex-direction: column; gap: 14px; }
+  .orphan-group-head { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text-link); text-decoration: none; }
+  .orphan-group-head:hover { text-decoration: underline; }
+  .orphan-group .orphan-cat-list { margin-top: 6px; padding-left: 20px; }
 </style>
 </head>
 <body>
   <header class="app-header">
     <div class="header-left">
-      <span class="catalog-title">Мапа розділів каталогу — cncprom.ua</span>
+      <span class="catalog-title">cncprom.ua</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-right">
       <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/scrape.log">📄 scrape.log</button>
       <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/map.log">📄 map.log</button>
+      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
       </button>
@@ -218,13 +335,51 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   </header>
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', 'output/scrape.log', scrapeLogContent)}
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', 'output/map.log', mapLogContent)}
+${orphanPanelHtml}
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label">Рівнів</div>
+          <div class="help-term-desc">Кількість рівнів підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Усього товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера. Друге число: лічильник «В наявності» сайту. н/д: категорію ще не скраплено або дані застаріли.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Немає в наявності</div>
+          <div class="help-term-desc">Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Оновлено</div>
+          <div class="help-term-desc">Дата та час скрапінгу.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">✅ Актуально</div>
+          <div class="help-term-desc">Мапа побудована на базі свіжих даних.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⚠️ Застаріло</div>
+          <div class="help-term-desc">Мапа побудована на базі застарілих даних.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⏳ Немає даних</div>
+          <div class="help-term-desc">Скрапер ще жодного разу не обробляв цю категорію.</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="index-wrap">
-    <h1>Категорії рівня 1 (${entries.length})</h1>
-    <div class="sub">Кожен рядок веде до власної інтерактивної мапи категорії (&lt;ID&gt;_map.html). Статус:
-      ✅ Актуально — мапа побудована зі свіжих даних; ⚠️ Застаріло — category_map/csv цієї категорії
-      розійшлись у часі більш ніж на ${STALE_THRESHOLD_HOURS} год відносно еталона (${REFERENCE_ID}), причина —
-      на самій сторінці категорії та в <code>map.log</code>; — Не скрапилось — категорію ще жодного разу не
-      обробляв <code>scrape-complete.js</code>.</div>
+    <h1>Категорії (${entries.length})</h1>
     <div class="section-block">
       <div class="table-wrap">
         <table class="simple-table">
@@ -232,13 +387,13 @@ ${logPanelHtml('map-log-overlay', 'btn-map-log-close', 'output/map.log', mapLogC
             <tr>
               <th class="col-n">№</th>
               <th>Назва категорії</th>
-              <th style="text-align:center;">ID</th>
-              <th style="text-align:center;">Рівнів</th>
-              <th style="text-align:center;">Товарів</th>
-              <th style="text-align:center;">В наявності</th>
-              <th style="text-align:center;">Немає в наявності</th>
-              <th style="text-align:center;">Оновлено</th>
-              <th style="text-align:center;">Статус</th>
+              <th style="text-align:center;" data-tip="Кількість рівнів підкатегорій">Рівнів</th>
+              <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
+              <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
+              <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+              <th style="text-align:center;" data-tip="Дата та час скрапінгу">Оновлено</th>
+              <th style="text-align:center;" data-tip="✅ Актуально\n⚠️ Застаріло\n⏳ Немає даних">Статус</th>
+              <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
             </tr>
           </thead>
           <tbody>${rows}
@@ -251,6 +406,9 @@ ${logPanelHtml('map-log-overlay', 'btn-map-log-close', 'output/map.log', mapLogC
 initThemeToggle();
 setupModalOverlay('scrape-log-overlay', 'btn-scrape-log', 'btn-scrape-log-close');
 setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
+setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
+setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
+setupTooltips();
 </script>
 </body>
 </html>
@@ -298,7 +456,7 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
     if (id === REFERENCE_ID) {
       console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
       buildRealMap(id);
-      entries.push({ id, name, status: 'ok', ...readSummary(id) });
+      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
       return;
     }
 
@@ -306,7 +464,7 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
       const reason = `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`;
       console.log(`[${id}] ${name} — ще не скрапилось. Заглушка замість мапи.`);
       writeStub(id, name, reason);
-      entries.push({ id, name, status: 'not_scraped', reason });
+      entries.push({ id, name, url, status: 'not_scraped', reason });
       return;
     }
 
@@ -315,7 +473,7 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
       console.warn(`[${id}] ${name} — ${reason} Заглушка замість мапи.`);
       logLine(`Категорія ${id} (${name}) пропущена: ${reason}`);
       writeStub(id, name, reason);
-      entries.push({ id, name, status: 'stale', reason });
+      entries.push({ id, name, url, status: 'stale', reason });
       return;
     }
 
@@ -328,11 +486,11 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
       console.warn(`[${id}] ${name} — ЗАСТАРІЛІ ДАНІ: ${reason}`);
       logLine(`Категорія ${id} (${name}) пропущена: ${reason}`);
       writeStub(id, name, reason);
-      entries.push({ id, name, status: 'stale', reason });
+      entries.push({ id, name, url, status: 'stale', reason });
     } else {
       console.log(`[${id}] ${name} — свіжі дані (розрив ${gapHours.toFixed(2)} год), будуємо повну мапу.`);
       buildRealMap(id);
-      entries.push({ id, name, status: 'ok', ...readSummary(id) });
+      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
     }
   });
 

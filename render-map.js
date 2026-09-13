@@ -195,7 +195,12 @@ const globalStats = {
   diff: appTree.stats.diff,
   scraped_at: scrapedAt,
   source_map: path.basename(mapFile),
-  source_csv: HAS_CSV ? path.basename(csvFile) : null
+  source_csv: HAS_CSV ? path.basename(csvFile) : null,
+  // Дублюється в summary.json (а не лише в самій сторінці нижче) так само, як
+  // усе інше в globalStats, — щоб build-maps.js міг зібрати "Товари поза
+  // категоріями" для ВСЬОГО сайту з самих summary.json, не перечитуючи заново
+  // повне дерево кожної категорії 1 рівня.
+  orphan_categories: orphanCategories
 };
 
 const CATALOG_DATA = { global_stats: globalStats, tree: appTree };
@@ -437,7 +442,10 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
   position: fixed; z-index: 200; max-width: 300px;
   background: var(--text-main); color: var(--bg-white);
   padding: 8px 10px; border-radius: 6px;
-  font-size: 0.74rem; font-weight: 400; line-height: 1.45; white-space: normal;
+  /* pre-line, не normal: дає звичайне перенесення по ширині (max-width вище) і
+     водночас зберігає явні "\n" у тексті data-tip як переноси рядків — для
+     підказок з кількома окремими реченнями/варіантами (кожен на своєму рядку). */
+  font-size: 0.74rem; font-weight: 400; line-height: 1.45; white-space: pre-line;
   box-shadow: 0 6px 18px rgba(0,0,0,0.28);
   opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
 }
@@ -525,6 +533,65 @@ function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
   if (closeBtn) closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+}
+
+// ==================== ПІДКАЗКИ (спільні для map_<id>.html і map.html) ====================
+// Гарні підказки замість нативного title (той не переноситься й губиться на довгому
+// тексті). Один спільний елемент на всю сторінку, позиційований за координатами
+// наведеного елемента — навмисно position:fixed + JS, а не CSS-::after, бо
+// position:absolute всередині .table-wrap/.main-content (обидва з overflow-y:auto)
+// обрізав би підказку, що виходить за межі таблиці чи в'юпорта скролу. Делеговані
+// слухачі на document — підказки працюють і для елементів, доданих пізніше через
+// innerHTML (перерендер дерева/таблиць), і для розмітки, яка взагалі не змінюється
+// (map.html). Винесено top-level так само й з тієї самої причини, що й
+// initThemeToggle/setupModalOverlay: індексна map.html має власні <th data-tip="...">,
+// але не викликає initCatalogMap (нема CATALOG_DATA), тож не могла дістатись до цієї
+// функції, поки вона була вкладена туди, — сам `cursor: help` з CSS спрацьовував, а
+// показ підказки по наведенню — ні.
+function setupTooltips() {
+  var tipEl = document.createElement('div');
+  tipEl.id = 'custom-tooltip';
+  document.body.appendChild(tipEl);
+
+  function place(el) {
+    var r = el.getBoundingClientRect();
+    var margin = 8;
+    tipEl.style.left = '0px';
+    tipEl.style.top = '0px';
+    var tr = tipEl.getBoundingClientRect();
+    var left = r.left + r.width / 2 - tr.width / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - tr.width - margin));
+    var top = r.bottom + margin;
+    if (top + tr.height > window.innerHeight - margin) top = r.top - tr.height - margin;
+    tipEl.style.left = Math.round(left) + 'px';
+    tipEl.style.top = Math.round(top) + 'px';
+  }
+  function show(el) {
+    var text = el.getAttribute('data-tip');
+    if (!text) return;
+    tipEl.textContent = text;
+    tipEl.classList.add('visible');
+    place(el);
+  }
+  function hide() { tipEl.classList.remove('visible'); }
+
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) show(el);
+  });
+  document.addEventListener('mouseout', function (e) {
+    var el = e.target.closest('[data-tip]');
+    if (el && !el.contains(e.relatedTarget)) hide();
+  });
+  document.addEventListener('focusin', function (e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) show(el);
+  });
+  document.addEventListener('focusout', function (e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) hide();
+  });
+  document.addEventListener('scroll', hide, true);
 }
 
 // ==================== КЛІЄНТСЬКИЙ ДОДАТОК ====================
@@ -1032,58 +1099,6 @@ function initCatalogMap(CATALOG_DATA) {
     }
   }
 
-  // ── ГАРНІ ПІДКАЗКИ (замість нативного title, який погано читається на довгих текстах) ──
-  // Один спільний елемент на всю сторінку, позиційований за координатами наведеного елемента —
-  // це навмисно position:fixed + JS, а не CSS-::after, бо position:absolute всередині
-  // .table-wrap/.main-content (обидва з overflow-y:auto) обрізав би підказку, що виходить
-  // за межі таблиці чи в'юпорта скролу. Делеговані слухачі на document — підказки працюють
-  // і для елементів, доданих пізніше через innerHTML (перерендер дерева/таблиць).
-  function setupTooltips() {
-    var tipEl = document.createElement('div');
-    tipEl.id = 'custom-tooltip';
-    document.body.appendChild(tipEl);
-
-    function place(el) {
-      var r = el.getBoundingClientRect();
-      var margin = 8;
-      tipEl.style.left = '0px';
-      tipEl.style.top = '0px';
-      var tr = tipEl.getBoundingClientRect();
-      var left = r.left + r.width / 2 - tr.width / 2;
-      left = Math.max(margin, Math.min(left, window.innerWidth - tr.width - margin));
-      var top = r.bottom + margin;
-      if (top + tr.height > window.innerHeight - margin) top = r.top - tr.height - margin;
-      tipEl.style.left = Math.round(left) + 'px';
-      tipEl.style.top = Math.round(top) + 'px';
-    }
-    function show(el) {
-      var text = el.getAttribute('data-tip');
-      if (!text) return;
-      tipEl.textContent = text;
-      tipEl.classList.add('visible');
-      place(el);
-    }
-    function hide() { tipEl.classList.remove('visible'); }
-
-    document.addEventListener('mouseover', function (e) {
-      var el = e.target.closest('[data-tip]');
-      if (el) show(el);
-    });
-    document.addEventListener('mouseout', function (e) {
-      var el = e.target.closest('[data-tip]');
-      if (el && !el.contains(e.relatedTarget)) hide();
-    });
-    document.addEventListener('focusin', function (e) {
-      var el = e.target.closest('[data-tip]');
-      if (el) show(el);
-    });
-    document.addEventListener('focusout', function (e) {
-      var el = e.target.closest('[data-tip]');
-      if (el) hide();
-    });
-    document.addEventListener('scroll', hide, true);
-  }
-
   // ── ЗМІНЮВАНА ШИРИНА ЛІВОГО МЕНЮ (перетягування за #sidebar-resize-handle) ──
   function setupSidebarResize() {
     var MIN = 220, MAX = 640;
@@ -1139,7 +1154,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + setupModalOverlay.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
+fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + setupModalOverlay.toString() + '\n\n' + setupTooltips.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
@@ -1157,6 +1172,10 @@ const infoBanner = HAS_CSV ? '' : `
 // самого overlay/panel вигляду, що й Довідка (див. setupModalOverlay).
 // Обидва рахуються один раз при генерації, тож коли orphanCategories порожній
 // (немає жодної такої категорії), ні кнопки, ні панелі в розмітці нема.
+// Число в заголовку панелі — сума ТОВАРІВ (c.own у кожній категорії), а не
+// кількість самих орфан-категорій у списку: заголовок каже "Знайдені
+// товари...", тож і число має рахувати товари, а не категорії, які їх містять.
+const orphanTotalProducts = orphanCategories.reduce((sum, c) => sum + c.own, 0);
 const orphanMenuButtonHtml = orphanCategories.length === 0 ? '' : `
       <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
 
@@ -1164,7 +1183,7 @@ const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
   <div class="help-overlay" id="orphan-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Знайдені товари, які не входять до підкатегорій:</h3>
+        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotalProducts}):</h3>
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -1232,7 +1251,7 @@ const html = `<!DOCTYPE html>
         </div>
         <div class="help-term">
           <div class="help-term-label">В наявності</div>
-          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував парсер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
@@ -1267,8 +1286,8 @@ const html = `<!DOCTYPE html>
             <th>Назва категорії</th>
             <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
             <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
-            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував парсер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
-            <th style="width:150px;text-align:center;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними парсера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:150px;text-align:center;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
             <th style="width:140px;text-align:right;">Перейти на сайт</th>
           </tr></thead><tbody><tr>
             <td class="col-n"></td>
