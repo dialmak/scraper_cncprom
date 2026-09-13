@@ -59,6 +59,12 @@ const STALE_THRESHOLD_HOURS = 5;
 // output/new/ на початку файлу); дефолт "site" зберігає поточну поведінку.
 const ROOT_DIR = __dirname;
 const MAP_SUBDIR = process.env.MAP_SUBDIR || 'site';
+// IS_SITE_MODE вимикає весь блок "еталон + розрив json/csv" нижче для
+// MAP_SUBDIR=new (Фаза 5, build-custom-tree.js) — там json і csv завжди
+// пишуться одним атомарним синхронним проходом, тож розриву, який ця логіка
+// виявляє, там структурно не може виникнути; звірятись немає з чим і не
+// проти чого.
+const IS_SITE_MODE = MAP_SUBDIR === 'site';
 const DIR = path.join(ROOT_DIR, 'output', MAP_SUBDIR);
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
@@ -464,25 +470,31 @@ initSiteSearch();
     process.exit(1);
   }
 
-  const refJsonPath = path.join(DIR, `${REFERENCE_ID}_category_map.json`);
-  if (!fs.existsSync(refJsonPath)) {
-    console.error(`Еталонна категорія ${REFERENCE_ID} ще не відскрапована (немає ${REFERENCE_ID}_category_map.json) — зупинка.`);
-    console.error(`Запустіть: node scrape-complete.js "https://cncprom.ua/ua/g${REFERENCE_ID}-drajvery-shagovogo-dvigatelya"`);
-    logLine(`ПОМИЛКА: еталонна категорія ${REFERENCE_ID} ще не відскрапована, побудова мап скасована.`);
-    process.exit(1);
+  let refGapHours = 0;
+  if (IS_SITE_MODE) {
+    const refJsonPath = path.join(DIR, `${REFERENCE_ID}_category_map.json`);
+    if (!fs.existsSync(refJsonPath)) {
+      console.error(`Еталонна категорія ${REFERENCE_ID} ще не відскрапована (немає ${REFERENCE_ID}_category_map.json) — зупинка.`);
+      console.error(`Запустіть: node scrape-complete.js "https://cncprom.ua/ua/g${REFERENCE_ID}-drajvery-shagovogo-dvigatelya"`);
+      logLine(`ПОМИЛКА: еталонна категорія ${REFERENCE_ID} ще не відскрапована, побудова мап скасована.`);
+      process.exit(1);
+    }
+
+    // Гарантуємо, що еталон обробляється першим
+    categories.sort((a, b) => (a.id === REFERENCE_ID ? -1 : b.id === REFERENCE_ID ? 1 : 0));
+
+    const refCsvPath = path.join(DIR, `${REFERENCE_ID}_cncprom_complete.csv`);
+    refGapHours = fs.existsSync(refCsvPath)
+      ? Math.abs(mtimeHours(refCsvPath) - mtimeHours(refJsonPath))
+      : 0;
+
+    console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
+    console.log(`Еталон: ${REFERENCE_ID} (розрив json/csv: ${refGapHours.toFixed(2)} год)`);
+    logLine(`СТАРТ build-maps: категорій ${categories.length}, еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
+  } else {
+    console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length} (MAP_SUBDIR=${MAP_SUBDIR}, без перевірки застарілості — див. IS_SITE_MODE).`);
+    logLine(`СТАРТ build-maps (${MAP_SUBDIR}): категорій ${categories.length}.`);
   }
-
-  // Гарантуємо, що еталон обробляється першим
-  categories.sort((a, b) => (a.id === REFERENCE_ID ? -1 : b.id === REFERENCE_ID ? 1 : 0));
-
-  const refCsvPath = path.join(DIR, `${REFERENCE_ID}_cncprom_complete.csv`);
-  const refGapHours = fs.existsSync(refCsvPath)
-    ? Math.abs(mtimeHours(refCsvPath) - mtimeHours(refJsonPath))
-    : 0;
-
-  console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
-  console.log(`Еталон: ${REFERENCE_ID} (розрив json/csv: ${refGapHours.toFixed(2)} год)`);
-  logLine(`СТАРТ build-maps: категорій ${categories.length}, еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
 
   const entries = [];
   const searchEntries = [];
@@ -492,7 +504,7 @@ initSiteSearch();
     const jsonPath = path.join(DIR, `${id}_category_map.json`);
     const csvPath = path.join(DIR, `${id}_cncprom_complete.csv`);
 
-    if (id === REFERENCE_ID) {
+    if (IS_SITE_MODE && id === REFERENCE_ID) {
       console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
       buildRealMap(id);
       entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
@@ -501,10 +513,23 @@ initSiteSearch();
     }
 
     if (!fs.existsSync(jsonPath)) {
-      const reason = `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`;
+      const reason = IS_SITE_MODE
+        ? `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`
+        : `Категорії нема в output/${MAP_SUBDIR}/ — запустіть: node build-custom-tree.js`;
       console.log(`[${id}] ${name} — ще не скрапилось. Заглушка замість мапи.`);
       writeStub(id, name, reason);
       entries.push({ id, name, url, status: 'not_scraped', reason });
+      return;
+    }
+
+    // Поза MAP_SUBDIR=site (Фаза 5, build-custom-tree.js) json+csv завжди
+    // пишуться разом, атомарно — жодної перевірки розриву/застарілості не
+    // потрібно, наявність json уже означає "готово, будуємо мапу".
+    if (!IS_SITE_MODE) {
+      console.log(`[${id}] ${name} — будуємо повну мапу.`);
+      buildRealMap(id);
+      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
+      searchEntries.push(...readSearchEntries(id));
       return;
     }
 
