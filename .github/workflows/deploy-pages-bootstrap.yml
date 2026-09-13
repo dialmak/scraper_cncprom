@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout знімка з pages-bootstrap
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: pages-bootstrap
 
       - name: Підготувати Pages-артефакт
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: output
 
@@ -43,4 +43,4 @@ jobs:
     steps:
       - name: Опублікувати на GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
