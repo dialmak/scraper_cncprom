@@ -1,0 +1,73 @@
+name: Скрапінг + деплой мапи на GitHub Pages
+
+# Фаза 2 плану (див. phase.md / пам'ять cncprom-github-architecture-plan):
+# нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
+# build-maps) на ubuntu-latest, публікація output/ як Pages-артефакт напряму —
+# output/ в git не потрапляє.
+on:
+  schedule:
+    # 22:00 UTC = 01:00 за Києвом під час літнього часу (EEST, UTC+3, зараз).
+    # GitHub Actions cron не враховує DST: після переходу України на зимовий
+    # час (EET, UTC+2, кінець жовтня) цей самий запис почне відповідати
+    # 00:00 за Києвом. Якщо це стане проблемою — зсунути на '0 21 * * *' восени.
+    - cron: '0 22 * * *'
+  workflow_dispatch: {} # можливість запустити вручну з вкладки Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Не даємо двом прогонам публікувати одночасно (нічний за розкладом міг
+# накластися на ручний запуск через workflow_dispatch).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scrape-and-build:
+    runs-on: ubuntu-latest
+    # Реальний нічний прогін усіх 23 категорій зараз ~3 год (scrape.log) — лишаємо
+    # запас, але нижче платформного ліміту в 360 хв, щоб зависання падало явно,
+    # а не мовчки з'їдало весь ліміт.
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Встановити Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Встановити Chromium для Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Етап 1 — знайти категорії 1 рівня
+        run: node discover-categories.js
+
+      - name: Етап 2 — відскрапити всі категорії за чергою
+        run: node scrape-all-categories.js
+
+      - name: Етап 3 — згенерувати мапи + індекс
+        run: node build-maps.js
+
+      - name: Підготувати Pages-артефакт
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output
+
+  deploy:
+    needs: scrape-and-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Опублікувати на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
