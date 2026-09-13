@@ -170,6 +170,17 @@ function readSummary(id) {
   try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return null; }
 }
 
+// Фаза 4 (search-index.json): кожен <id>_search.json (пише render-map.js,
+// лише для 'ok' категорій — той самий виняток, що й у readSummary/
+// orphan_categories вище, бо тільки вони реально отримали buildRealMap) просто
+// конкатенується в один файл — сама структура запису (code/name/url/
+// availability/categoryId/categoryName/topId/topName) уже самодостатня, тут
+// нема чого агрегувати чи перераховувати.
+function readSearchEntries(id) {
+  const p = path.join(DIR, `${id}_search.json`);
+  try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return []; }
+}
+
 function escapeHtmlOuter(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -339,6 +350,13 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <span class="catalog-title">cncprom.ua</span>
       <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}
     </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
     <div class="header-right">
       <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/scrape.log">📄 scrape.log</button>
       <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/map.log">📄 map.log</button>
@@ -395,28 +413,31 @@ ${orphanPanelHtml}
     </div>
   </div>
   <div class="index-wrap">
-    <h1>Категорії (${entries.length})</h1>
-    <div class="section-block">
-      <div class="table-wrap">
-        <table class="simple-table">
-          <thead>
-            <tr>
-              <th class="col-n">№</th>
-              <th>Назва категорії</th>
-              <th style="text-align:center;" data-tip="Кількість рівнів підкатегорій">Рівнів</th>
-              <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
-              <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
-              <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
-              <th style="text-align:center;" data-tip="Дата та час скрапінгу">Оновлено</th>
-              <th style="text-align:center;" data-tip="✅ Актуально\n⚠️ Застаріло\n⏳ Немає даних">Статус</th>
-              <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
-            </tr>
-          </thead>
-          <tbody>${rows}
-          </tbody>
-        </table>
+    <div id="index-content">
+      <h1>Категорії (${entries.length})</h1>
+      <div class="section-block">
+        <div class="table-wrap">
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th class="col-n">№</th>
+                <th>Назва категорії</th>
+                <th style="text-align:center;" data-tip="Кількість рівнів підкатегорій">Рівнів</th>
+                <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
+                <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
+                <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Оновлено</th>
+                <th style="text-align:center;" data-tip="✅ Актуально\n⚠️ Застаріло\n⏳ Немає даних">Статус</th>
+                <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+              </tr>
+            </thead>
+            <tbody>${rows}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+    <div id="search-results" style="display:none;"></div>
   </div>
 <script>
 initThemeToggle();
@@ -425,6 +446,7 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
 setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 setupTooltips();
+initSiteSearch();
 </script>
 </body>
 </html>
@@ -463,6 +485,7 @@ setupTooltips();
   logLine(`СТАРТ build-maps: категорій ${categories.length}, еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
 
   const entries = [];
+  const searchEntries = [];
 
   categories.forEach(cat => {
     const { id, name, url } = cat;
@@ -473,6 +496,7 @@ setupTooltips();
       console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
       buildRealMap(id);
       entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
+      searchEntries.push(...readSearchEntries(id));
       return;
     }
 
@@ -507,8 +531,13 @@ setupTooltips();
       console.log(`[${id}] ${name} — свіжі дані (розрив ${gapHours.toFixed(2)} год), будуємо повну мапу.`);
       buildRealMap(id);
       entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
+      searchEntries.push(...readSearchEntries(id));
     }
   });
+
+  // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
+  // людям його не читати; орієнтовний розмір — див. phase.md.
+  fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
 
   // map.log читається до фінального logLine нижче — тож знімок, вбудований у
   // цей map.html, не міститиме власного рядка "ФІНІШ" цього ж прогону

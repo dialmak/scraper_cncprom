@@ -181,6 +181,36 @@ if (!appTree) {
   process.exit(1);
 }
 
+// ==================== ІНДЕКС ДЛЯ ПОШУКУ (Фаза 4, <id>_search.json) ====================
+// Той самий обхід дерева, що indexTree() робить у браузері для allProductsList
+// (initCatalogMap нижче), тільки на боці Node і по СИРОМУ дереву (raw tree,
+// categoryId/categoryName без префікса "node-", який має сенс лише як DOM id
+// в клієнтському додатку) — легший, самодостатній запис на товар: код/назва/
+// URL/наявність/категорія-як-текст, плюс topId/topName (це завжди ця сама
+// категорія 1 рівня) — щоб build-maps.js міг просто зконкатенувати всі
+// <id>_search.json в один output/<MAP_SUBDIR>/search-index.json, а
+// map.html — знаючи topId, відкрити потрібний <id>_map.html в новій вкладці.
+// Пишеться порожнім масивом, якщо CSV ще нема (HAS_CSV=false) — так само,
+// як own_products вище, а не пропускається — build-maps.js завжди читає
+// файл, без розгалуження "може не існувати".
+function buildSearchEntries(node, topId, topName, out) {
+  (productsByCategory.get(node.categoryId) || []).forEach(r => {
+    out.push({
+      code: r.sku || '',
+      name: r.productName || r.productId || '',
+      url: r.finalUrl || '',
+      availability: r.availabilityStatus || '',
+      categoryId: node.categoryId,
+      categoryName: node.categoryName,
+      topId,
+      topName,
+    });
+  });
+  (node.children || []).forEach(child => buildSearchEntries(child, topId, topName, out));
+}
+const searchEntries = [];
+if (HAS_CSV) buildSearchEntries(tree, categoryId, tree.categoryName, searchEntries);
+
 let maxLevel = 1;
 let categoriesCount = 0;
 // Категорії, у яких є і підкатегорії, і власні товари, що не входять до жодної
@@ -607,6 +637,112 @@ function setupTooltips() {
   document.addEventListener('scroll', hide, true);
 }
 
+// ==================== ПОШУК (спільний алгоритм для map_<id>.html і map.html) ====================
+// Винесено top-level так само й з тієї самої причини, що й initThemeToggle/
+// setupModalOverlay/setupTooltips: пошук на індексній map.html (build-maps.js)
+// не має дерева CATALOG_DATA і не викликає initCatalogMap. filterProducts не
+// знає нічого про "категорію" чи "вузол" — приймає довільний масив записів і
+// список полів для збігу, тож і per-category пошук (allProductsList нижче,
+// поля name/code/nodeName), і сайтовий (search-index.json, поля
+// name/code/categoryName) використовують ОДНУ реалізацію збігу/підсвітки, не
+// дві — лише поля різні, бо на кожній сторінці свій запис товару. Єдина
+// реальна відмінність між сторінками — що робить клік по категорії (jump по
+// дереву тут-таки vs відкриття чужого <id>_map.html у новій вкладці) — це
+// свідомо лишається окремим для кожної сторінки, а не третьою спільною
+// функцією заради самої лише "спільності".
+function filterProducts(products, query, fields) {
+  var q = (query || '').toLowerCase();
+  if (!q) return [];
+  return products.filter(function (p) {
+    return fields.some(function (f) { return String(p[f] || '').toLowerCase().indexOf(q) !== -1; });
+  });
+}
+function highlightMatch(text, query) {
+  if (!query || !text) return text || '';
+  var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var regex = new RegExp('(' + escaped + ')', 'gi');
+  return String(text).replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
+// ==================== САЙТОВИЙ ПОШУК (лише map.html, build-maps.js) ====================
+// Самодостатня, як і три функції вище: шукає свої власні #search-input/
+// #btn-clear-search/#index-content/#search-results сама. search-index.json
+// (зібраний build-maps.js з усіх <id>_search.json) підвантажується через
+// fetch лише при першому реальному пошуку (не інлайном у сторінку, як
+// CATALOG_DATA в map_<id>.html) — щоб початкове завантаження самого
+// індексу лишалось легким. Обсяг пошуку — лише товари (Variant A, узгоджено
+// заздалегідь): назва/код/категорія-як-текст, без окремого типу результату
+// "перейти на категорію 1 рівня за назвою".
+function initSiteSearch() {
+  var input = document.getElementById('search-input');
+  var btnClear = document.getElementById('btn-clear-search');
+  var indexContent = document.getElementById('index-content');
+  var resultsEl = document.getElementById('search-results');
+  if (!input || !indexContent || !resultsEl) return;
+
+  var indexData = null;
+  var indexPromise = null;
+  function loadIndex() {
+    if (!indexPromise) {
+      indexPromise = fetch('search-index.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) { indexData = data; return data; })
+        .catch(function () { indexData = []; return indexData; });
+    }
+    return indexPromise;
+  }
+
+  function renderResults(query) {
+    function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+    var matches = filterProducts(indexData || [], query, ['name', 'code', 'categoryName']);
+    if (matches.length === 0) {
+      resultsEl.innerHTML =
+        '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
+        '<div style="font-size:2rem;margin-bottom:12px;">🔍</div>' +
+        '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">За запитом «' + escapeHtml(query) + '» нічого не знайдено</div>' +
+        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Перевірте написання або спробуйте інше слово (назву, код товару чи категорію).</div>' +
+        '</div>';
+      return;
+    }
+    var rowsHtml = matches.map(function (p, idx) {
+      var isYes = /готово/i.test(p.availability || '');
+      return (
+        '<tr><td class="col-n">' + (idx + 1) + '</td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
+        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
+        '<td style="width:220px;"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a></td>' +
+        '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
+        '</tr>'
+      );
+    }).join('');
+    resultsEl.innerHTML =
+      '<div class="section-block"><div class="section-head"><div style="display:flex;align-items:center;gap:8px;"><span>Знайдені товари</span>' +
+      '<span style="font-size:0.72rem;color:var(--text-muted);">(' + matches.length + ' позицій)</span></div></div>' +
+      '<div class="table-wrap"><table class="simple-table"><thead><tr>' +
+      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th style="width:220px;">Категорія</th><th class="col-avail">Наявність</th>' +
+      '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div></div>';
+  }
+
+  function showIndex() { resultsEl.style.display = 'none'; resultsEl.innerHTML = ''; indexContent.style.display = ''; }
+  function showSearch(query) {
+    indexContent.style.display = 'none';
+    resultsEl.style.display = '';
+    loadIndex().then(function () { renderResults(query); });
+  }
+
+  input.addEventListener('input', function (e) {
+    var q = e.target.value.trim();
+    if (btnClear) btnClear.style.display = q ? 'inline-flex' : 'none';
+    if (q) showSearch(q); else showIndex();
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { input.value = ''; if (btnClear) btnClear.style.display = 'none'; showIndex(); }
+  });
+  if (btnClear) btnClear.addEventListener('click', function () {
+    input.value = ''; btnClear.style.display = 'none'; input.focus(); showIndex();
+  });
+}
+
 // ==================== КЛІЄНТСЬКИЙ ДОДАТОК ====================
 // Пишеться як звичайна функція (не рядок!) — при генерації сторінки
 // перетворюється у текст через .toString(), тому шаблонні рядки й лапки
@@ -957,21 +1093,10 @@ function initCatalogMap(CATALOG_DATA) {
     }
   }
 
-  // ── ПОШУК ──
-  function highlight(text, q) {
-    if (!q || !text) return text || '';
-    var escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    var regex = new RegExp('(' + escaped + ')', 'gi');
-    return String(text).replace(regex, '<mark class="search-highlight">$1</mark>');
-  }
-
+  // ── ПОШУК (filterProducts/highlightMatch — спільні з map.html, див. їх власний
+  // блок вище в цьому файлі) ──
   function renderSearchResultsView(body, query) {
-    var qLower = query.toLowerCase();
-    var matches = allProductsList.filter(function (p) {
-      return (p.name || '').toLowerCase().indexOf(qLower) !== -1 ||
-        (p.code || '').toLowerCase().indexOf(qLower) !== -1 ||
-        (p.nodeName || '').toLowerCase().indexOf(qLower) !== -1;
-    });
+    var matches = filterProducts(allProductsList, query, ['name', 'code', 'nodeName']);
 
     var bc = document.getElementById('breadcrumbs');
     var badge = document.getElementById('cat-level-badge');
@@ -1015,9 +1140,9 @@ function initCatalogMap(CATALOG_DATA) {
       var isYes = isAvailableProduct(p);
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlight(escapeHtml(p.code || ''), query) + '</span></td>' +
-        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlight(escapeHtml(p.name), query) + '</a></td>' +
-        '<td style="width:220px;"><a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlight(escapeHtml(p.nodeName), query) + '</a></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
+        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
+        '<td style="width:220px;"><a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(escapeHtml(p.nodeName), query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1167,7 +1292,8 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, initThemeToggle.toString() + '\n\n' + setupModalOverlay.toString() + '\n\n' + setupTooltips.toString() + '\n\n' + initCatalogMap.toString() + '\n', 'utf-8');
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, filterProducts, highlightMatch, initSiteSearch, initCatalogMap]
+  .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
@@ -1336,6 +1462,11 @@ fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
 // мапу — щоб build-maps.js міг зібрати зведену таблицю для map.html (індексу
 // всіх категорій), не розпаковуючи CATALOG_DATA з готового HTML.
 fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_map.summary.json`), JSON.stringify({ id: categoryId, ...globalStats }, null, 2), 'utf-8');
+
+// Індекс для сайтового пошуку (Фаза 4) — компактний (без відступів, це не для
+// читання людиною), build-maps.js конкатенує всі <id>_search.json в один
+// search-index.json.
+fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_search.json`), JSON.stringify(searchEntries), 'utf-8');
 
 console.log(`Мапу збережено: ${OUTPUT_HTML}`);
 console.log(`Категорій: ${categoriesCount}, рівнів: ${maxLevelSafe}, товарів: ${appTree.stats.total_products}${HAS_CSV ? ` (в наявності: ${appTree.stats.total_yes})` : ' (без CSV — лише структура)'}`);
