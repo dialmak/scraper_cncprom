@@ -5,6 +5,11 @@
 # потрібне жодним чином.
 output/
 
+# Робоча копія гілки `data` (Фаза 3) — git worktree, який готує сама
+# deploy-pages.yml перед generate-snapshot.js/diff-map.js; це і є дефолтний
+# outDir цих двох скриптів, якщо запустити їх локально без аргумента.
+data-branch/
+
 # Залежності npm — відтворюються командою `npm install` за package-lock.json,
 # у репозиторії не потрібні (випадково закомічені в 27f71c1, прибрані звідси).
 node_modules/

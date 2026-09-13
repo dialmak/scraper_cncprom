@@ -4,6 +4,12 @@ name: Скрапінг + деплой мапи на GitHub Pages
 # нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
 # build-maps) на ubuntu-latest, публікація output/ як Pages-артефакт напряму —
 # output/ в git не потрапляє.
+#
+# Фаза 3 (data + diff-map.js): після build-maps.js той самий job готує робочу
+# копію гілки `data` через git worktree (створює її як orphan при першому
+# запуску — той самий прийом, що й для pages-bootstrap), пише туди сьогоднішній
+# знімок (generate-snapshot.js) і diff-звіт (diff-map.js), і комітить/пушить
+# лише ці два нові файли в `data` — output/ це не зачіпає.
 on:
   schedule:
     # 00:00 UTC = 03:00 за Києвом під час літнього часу (EEST, UTC+3, зараз).
@@ -14,7 +20,7 @@ on:
   workflow_dispatch: {} # можливість запустити вручну з вкладки Actions
 
 permissions:
-  contents: read
+  contents: write # write — потрібно комітити/пушити знімок+звіт у гілку data (Фаза 3)
   pages: write
   id-token: write
 
@@ -55,6 +61,29 @@ jobs:
 
       - name: Етап 3 — згенерувати мапи + індекс
         run: node build-maps.js
+
+      - name: "Фаза 3 — підготувати робочу копію гілки data"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin data:refs/remotes/origin/data 2>/dev/null || true
+          if git show-ref --verify --quiet refs/remotes/origin/data; then
+            git worktree add data-branch data
+          else
+            git worktree add --orphan -b data data-branch
+          fi
+
+      - name: "Фаза 3 — знімок дня + diff-звіт"
+        run: |
+          node generate-snapshot.js data-branch
+          node diff-map.js data-branch
+
+      - name: "Фаза 3 — закомітити й запушити гілку data"
+        run: |
+          cd data-branch
+          git add snapshots reports
+          git commit -m "Знімок і diff-звіт за $(date -u +%F)" || echo "Немає змін для коміту"
+          git push origin data
 
       - name: Підготувати Pages-артефакт
         uses: actions/upload-pages-artifact@v3
