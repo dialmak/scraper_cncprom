@@ -1,0 +1,46 @@
+name: Bootstrap-деплой мапи (без скрапінгу)
+
+# ТИМЧАСОВИЙ службовий workflow. Публікує на GitHub Pages вже готовий знімок
+# output/site/ з гілки pages-bootstrap (23 категорії, зроблено вручну
+# 2026-09-13) — щоб мапа стала доступною одразу, не чекаючи першого нічного
+# прогону deploy-pages.yml (~3 год). Не чіпає main і не запускає жоден скрапінг.
+#
+# Видалити цей файл і гілку pages-bootstrap після того, як deploy-pages.yml
+# хоч раз успішно відпрацює вночі — далі сайт живиться вже реальними,
+# щоденно оновленими даними, і цей bootstrap більше не потрібен.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout знімка з pages-bootstrap
+        uses: actions/checkout@v4
+        with:
+          ref: pages-bootstrap
+
+      - name: Підготувати Pages-артефакт
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output
+
+  deploy:
+    needs: publish-snapshot
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Опублікувати на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
