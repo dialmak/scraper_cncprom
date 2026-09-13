@@ -1095,54 +1095,54 @@ function initCatalogMap(CATALOG_DATA) {
 
   // ── ПОШУК (filterProducts/highlightMatch — спільні з map.html, див. їх власний
   // блок вище в цьому файлі) ──
-  function renderSearchResultsView(body, query) {
-    var matches = filterProducts(allProductsList, query, ['name', 'code', 'nodeName']);
-
-    var bc = document.getElementById('breadcrumbs');
-    var badge = document.getElementById('cat-level-badge');
-    var totalCell = document.getElementById('cat-total-products');
-    var verdict = document.getElementById('cat-verdict-badge');
-    var totalNoCell = document.getElementById('cat-total-no');
-    var heading = document.getElementById('cat-heading');
-    var siteLink = document.getElementById('cat-site-link');
-
-    bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
-    badge.textContent = matches.length + ' знайдено';
-    totalCell.textContent = ' ';
-    verdict.innerHTML = '';
-    totalNoCell.textContent = ' ';
-    heading.textContent = 'Пошук за запитом «' + query + '»';
-    siteLink.style.display = 'none';
-
-    if (matches.length === 0) {
-      body.innerHTML =
-        '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
-        '<div style="font-size:2rem;margin-bottom:12px;">🔍</div>' +
-        '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">За запитом «' + escapeHtml(query) + '» нічого не знайдено</div>' +
-        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Перевірте написання або спробуйте інше слово (назву, код товару чи категорію).</div>' +
-        '</div>';
-      return;
+  // Пошук у категорії свідомо охоплює й увесь сайт, не лише цю категорію
+  // (за проханням користувача, 2026-09-14 — раніше кожна <id>_map.html знала
+  // лише про власні товари). Локальні збіги (allProductsList, вже вбудовані
+  // в CATALOG_DATA) рендеряться одразу, синхронно — як і раніше, без затримки
+  // на мережу. search-index.json (той самий файл, що на map.html) підвантажується
+  // ЛЕНИВО й ОДИН РАЗ при першому пошуку (siteIndexData кешується в цьому ж
+  // замиканні), топ-категорія query фільтрується з нього, щоб не дублювати
+  // локальні результати (вони й так уже свої). Коли індекс завантажиться,
+  // сторінка перемальовується (renderContent()) — але лише якщо запит з того
+  // часу не змінився (інакше застаріла відповідь просто відкидається).
+  var siteIndexData = null;
+  var siteIndexPromise = null;
+  function loadSiteIndex() {
+    if (!siteIndexPromise) {
+      siteIndexPromise = fetch('search-index.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) { siteIndexData = data; return data; })
+        .catch(function () { siteIndexData = []; return siteIndexData; });
     }
+    return siteIndexPromise;
+  }
 
+  // isLocal=true — товар цієї категорії (allProductsList): клік по категорії
+  // робить jump у межах цієї самої сторінки, як і раніше. isLocal=false —
+  // товар з іншої категорії 1 рівня (search-index.json): клік відкриває
+  // <topId>_map.html у новій вкладці, як на map.html — переходу до вузла на
+  // чужій сторінці мапа не підтримує.
+  function buildResultsSection(title, matches, query, isLocal) {
     var section = document.createElement('div');
     section.className = 'section-block';
     var head = document.createElement('div');
     head.className = 'section-head';
-    head.innerHTML =
-      '<div style="display:flex;align-items:center;gap:8px;"><span>Знайдені товари</span>' +
-      '<span style="font-size:0.72rem;color:var(--text-muted);">(' + matches.length + ' позицій)</span></div>' +
-      '<button class="btn-link" id="btn-reset-search-in-view" style="font-size:0.75rem;">✕ Скинути пошук</button>';
+    head.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span>' + title + '</span>' +
+      '<span style="font-size:0.72rem;color:var(--text-muted);">(' + matches.length + ' позицій)</span></div>';
     section.appendChild(head);
 
     var tableWrap = document.createElement('div');
     tableWrap.className = 'table-wrap';
     var rowsHtml = matches.map(function (p, idx) {
       var isYes = isAvailableProduct(p);
+      var categoryCell = isLocal
+        ? '<a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(escapeHtml(p.nodeName), query) + '</a>'
+        : '<a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a>';
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
         '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
-        '<td style="width:220px;"><a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(escapeHtml(p.nodeName), query) + '</a></td>' +
+        '<td style="width:220px;">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1152,34 +1152,93 @@ function initCatalogMap(CATALOG_DATA) {
       '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th style="width:220px;">Категорія</th><th class="col-avail">Наявність</th>' +
       '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
     section.appendChild(tableWrap);
-    body.appendChild(section);
 
-    Array.prototype.forEach.call(section.querySelectorAll('.cat-found-badge'), function (el) {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        var targetId = el.getAttribute('data-node-id');
-        if (!targetId) return;
-        var searchInput = document.getElementById('search-input');
-        var btnClear = document.getElementById('btn-clear-search');
-        if (searchInput) searchInput.value = '';
-        if (btnClear) btnClear.style.display = 'none';
-        state.searchQuery = '';
-        state.selectedNodeId = targetId;
-        var curr = parentMap.get(targetId);
-        while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
-        renderSidebar(); renderContent();
+    if (isLocal) {
+      Array.prototype.forEach.call(section.querySelectorAll('.cat-found-badge'), function (el) {
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          var targetId = el.getAttribute('data-node-id');
+          if (!targetId) return;
+          var searchInput = document.getElementById('search-input');
+          var btnClear = document.getElementById('btn-clear-search');
+          if (searchInput) searchInput.value = '';
+          if (btnClear) btnClear.style.display = 'none';
+          state.searchQuery = '';
+          state.selectedNodeId = targetId;
+          var curr = parentMap.get(targetId);
+          while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
+          renderSidebar(); renderContent();
+        });
       });
-    });
+    }
+    return section;
+  }
 
-    var btnReset = section.querySelector('#btn-reset-search-in-view');
-    if (btnReset) {
-      btnReset.addEventListener('click', function () {
+  function renderSearchResultsView(body, query) {
+    var localMatches = filterProducts(allProductsList, query, ['name', 'code', 'nodeName']);
+    var currentTopId = CATALOG_DATA.tree.id.replace(/^node-/, '');
+    // null = ще не підвантажено (запит іде нижче) — відрізняється від "уже
+    // перевірили, там нуль", щоб не показати "нічого не знайдено" завчасно.
+    var remoteMatches = siteIndexData
+      ? filterProducts(siteIndexData.filter(function (e) { return e.topId !== currentTopId; }), query, ['name', 'code', 'categoryName'])
+      : null;
+
+    var bc = document.getElementById('breadcrumbs');
+    var badge = document.getElementById('cat-level-badge');
+    var totalCell = document.getElementById('cat-total-products');
+    var verdict = document.getElementById('cat-verdict-badge');
+    var totalNoCell = document.getElementById('cat-total-no');
+    var heading = document.getElementById('cat-heading');
+    var siteLink = document.getElementById('cat-site-link');
+
+    var totalKnown = localMatches.length + (remoteMatches ? remoteMatches.length : 0);
+    bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
+    badge.textContent = totalKnown + ' знайдено' + (remoteMatches === null ? ' (ще шукаємо по сайту…)' : '');
+    totalCell.textContent = ' ';
+    verdict.innerHTML = '';
+    totalNoCell.textContent = ' ';
+    heading.textContent = 'Пошук за запитом «' + query + '»';
+    siteLink.style.display = 'none';
+
+    if (localMatches.length === 0 && remoteMatches !== null && remoteMatches.length === 0) {
+      body.innerHTML =
+        '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
+        '<div style="font-size:2rem;margin-bottom:12px;">🔍</div>' +
+        '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">За запитом «' + escapeHtml(query) + '» нічого не знайдено</div>' +
+        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Перевірте написання або спробуйте інше слово (назву, код товару чи категорію).</div>' +
+        '</div>';
+    } else if (localMatches.length === 0 && remoteMatches === null) {
+      body.innerHTML =
+        '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
+        '<div style="font-size:1.6rem;margin-bottom:10px;">🔍</div>' +
+        '<div class="fw-meta-label" style="font-size:0.9rem;color:var(--text-muted);">У цій категорії нічого немає — перевіряємо решту сайту…</div>' +
+        '</div>';
+    } else {
+      body.innerHTML = '';
+      var resetHead = document.createElement('div');
+      resetHead.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:8px;';
+      resetHead.innerHTML = '<button class="btn-link" id="btn-reset-search-in-view" style="font-size:0.75rem;">✕ Скинути пошук</button>';
+      body.appendChild(resetHead);
+      resetHead.querySelector('#btn-reset-search-in-view').addEventListener('click', function () {
         var searchInput = document.getElementById('search-input');
         var btnClear = document.getElementById('btn-clear-search');
         if (searchInput) searchInput.value = '';
         if (btnClear) btnClear.style.display = 'none';
         state.searchQuery = '';
         renderContent();
+      });
+
+      if (localMatches.length > 0) {
+        body.appendChild(buildResultsSection('Знайдені товари (у цій категорії)', localMatches, query, true));
+      }
+      if (remoteMatches && remoteMatches.length > 0) {
+        body.appendChild(buildResultsSection('Знайдені в інших категоріях', remoteMatches, query, false));
+      }
+    }
+
+    if (remoteMatches === null) {
+      loadSiteIndex().then(function () {
+        if (state.searchQuery === query) renderContent();
       });
     }
   }
