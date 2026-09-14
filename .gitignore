@@ -16,6 +16,7 @@ node_modules/
 
 # Документація/нотатки — лишаються тільки локально
 CLAUDE.md
+CLAUDE_uk.md
 README.md
 phase.md
 run.txt
