@@ -1,34 +1,23 @@
 name: Скрапінг + деплой мапи на GitHub Pages
 
-# Фаза 2 плану (див. phase.md / пам'ять cncprom-github-architecture-plan):
-# нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
+# Нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
 # build-maps) на ubuntu-latest, публікація output/ як Pages-артефакт напряму —
 # output/ в git не потрапляє.
 #
-# Фаза 3 (data + diff-map.js): після build-maps.js той самий job готує робочу
-# копію гілки `data` через git worktree (створює її як orphan при першому
-# запуску — той самий прийом, що й для pages-bootstrap), пише туди сьогоднішній
+# Після build-maps.js той самий job готує робочу копію гілки `data` через git
+# worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
 # знімок (generate-snapshot.js) і diff-звіт (diff-map.js), і комітить/пушить
 # лише ці два нові файли в `data` — output/ це не зачіпає.
 on:
   schedule:
-    # 00:07 UTC = 03:07 за Києвом під час літнього часу (EEST, UTC+3, зараз).
-    # Хвилина навмисно не кругла (не :00) — GitHub Actions офіційно попереджає,
-    # що заплановані прогони на круглі позначки (особливо :00) можуть
-    # затримуватись або повністю пропускатись через перевантаження черги, бо
-    # величезна кількість репозиторіїв по всьому світу ставить cron саме на
-    # круглий час. Перевірено на практиці: '0 0 * * *' жодного разу не
-    # спрацював у ніч на 2026-09-14 (0 запусків за даними Actions API), хоча
-    # workflow-файл лежав на main із суттєвим запасом до запланованого часу.
-    #
-    # GitHub Actions cron не враховує DST: після переходу України на зимовий
-    # час (EET, UTC+2, кінець жовтня) цей самий запис почне відповідати
-    # 02:07 за Києвом. Якщо це стане проблемою — зсунути на '7 1 * * *' восени.
-    - cron: '7 0 * * *'
+    # cron-хвилина навмисно не кругла (не :00) — на круглих позначках GitHub
+    # Actions відомо затримує/пропускає заплановані прогони через перевантаження
+    # черги. DST теж не враховується — Києву відповідає інша година взимку.
+    - cron: '18 18 * * *'
   workflow_dispatch: {} # можливість запустити вручну з вкладки Actions
 
 permissions:
-  contents: write # write — потрібно комітити/пушити знімок+звіт у гілку data (Фаза 3)
+  contents: write # write — потрібно комітити/пушити знімок+звіт у гілку data
   pages: write
   id-token: write
 
@@ -70,7 +59,7 @@ jobs:
       - name: Етап 3 — згенерувати мапи + індекс
         run: node build-maps.js
 
-      - name: "Фаза 3 — підготувати робочу копію гілки data"
+      - name: "Підготувати робочу копію гілки data"
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -81,12 +70,12 @@ jobs:
             git worktree add --orphan -b data data-branch
           fi
 
-      - name: "Фаза 3 — знімок дня + diff-звіт"
+      - name: "Знімок дня + diff-звіт"
         run: |
           node generate-snapshot.js data-branch
           node diff-map.js data-branch
 
-      - name: "Фаза 3 — закомітити й запушити гілку data"
+      - name: "Закомітити й запушити гілку data"
         run: |
           cd data-branch
           git add snapshots reports
