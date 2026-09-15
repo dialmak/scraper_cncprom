@@ -105,11 +105,11 @@ function htmlReportPage(bodyHtml, subtitle) {
   /* Третій акцентний колір поза status-yes/status-no map-common.css — лише
      для "товар перейшов у іншу категорію" (ні добре, ні погано, просто інше),
      локальний для цієї сторінки, не додається у спільний файл. */
-  :root { --accent-move: #7c3aed; --accent-move-bg: #f5f3ff; --accent-move-border: #ddd6fe; }
+  :root { --accent-move: #7c3aed; }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --accent-move: #b794f6; --accent-move-bg: rgba(183,148,246,0.14); --accent-move-border: rgba(183,148,246,0.28); }
+    :root:not([data-theme="light"]) { --accent-move: #b794f6; }
   }
-  :root[data-theme="dark"] { --accent-move: #b794f6; --accent-move-bg: rgba(183,148,246,0.14); --accent-move-border: rgba(183,148,246,0.28); }
+  :root[data-theme="dark"] { --accent-move: #b794f6; }
 
   .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
   .stat-tile { background: var(--bg-white); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
@@ -130,11 +130,6 @@ function htmlReportPage(bodyHtml, subtitle) {
   .group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
   .group-head h3 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
   .group-block { display: flex; flex-direction: column; gap: 8px; }
-
-  .move-card { background: var(--bg-white); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-move); border-radius: 0 6px 6px 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-  .move-path { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; flex-wrap: wrap; }
-  .move-path .cat { padding: 3px 9px; border-radius: 5px; background: var(--accent-move-bg); color: var(--accent-move); font-weight: 500; }
-  .move-path .arrow { color: var(--text-subtle); }
 </style>
 </head>
 <body>
@@ -215,7 +210,7 @@ today.products.forEach(p => {
     prodsAvailChanged.push({ id: p.id, name: p.name, sku: p.sku, url: p.url, before: before.availability, after: p.availability });
   }
   if (before.categoryId !== p.categoryId) {
-    prodsMoved.push({ id: p.id, name: p.name, sku: p.sku, url: p.url, before: catName(before.categoryId), after: catName(p.categoryId) });
+    prodsMoved.push({ id: p.id, name: p.name, sku: p.sku, url: p.url, availability: p.availability, before: catName(before.categoryId), after: catName(p.categoryId) });
   }
 });
 
@@ -381,17 +376,17 @@ const availSectionHtml = availTotal === 0
     ${availGroup('Знову в наявності', restocked, 'good', 'Немає в наявності', 'Готово до відправки')}
     ${availGroup('Вже немає в наявності', wentOos, 'bad', 'Готово до відправки', 'Немає в наявності')}`;
 
-const moveSectionHtml = prodsMoved.length === 0 ? '' : `
-    <div class="group-block">
-      <div class="group-head"><h3>Перейшли в іншу категорію</h3><span style="font-weight:600;font-family:var(--font-mono);color:var(--accent-move);">${prodsMoved.length}</span></div>
-      ${prodsMoved.slice(0, MAX_LISTED).map(p => `
-      <div class="move-card">
-        <span class="item-code">${escapeHtml(p.sku || '—')}</span>
-        <span style="font-size:0.9rem;font-weight:500;">${p.url ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.name)}</a>` : escapeHtml(p.name)}</span>
-        <div class="move-path"><span class="cat">${escapeHtml(p.before)}</span><span class="arrow">→</span><span class="cat">${escapeHtml(p.after)}</span></div>
-      </div>`).join('')}
-      ${prodsMoved.length > MAX_LISTED ? `<div class="quiet-note">…і ще ${prodsMoved.length - MAX_LISTED}.</div>` : ''}
-    </div>`;
+// Той самий рядок-примітив, що й productRow (.col-code/.item-code,
+// .col-name-лінк, .col-avail/badge) плюс єдина колонка, специфічна саме для
+// цього розділу — категорія було→стало; той самий стандартний вигляд
+// товарного рядка, що й у решті звіту, а не окрема картка.
+const moveSectionHtml = listSectionHtml('Перейшли в іншу категорію', prodsMoved, ['Код', 'Товар', 'Наявність', 'Категорія'],
+  p => `<tr>
+    <td class="col-code"><span class="item-code">${escapeHtml(p.sku || '—')}</span></td>
+    <td class="col-name">${p.url ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.name)}</a>` : escapeHtml(p.name)}</td>
+    <td class="col-avail">${availBadge(p.availability)}</td>
+    <td>${escapeHtml(p.before)} <span style="color:var(--text-subtle);">→</span> ${escapeHtml(p.after)}</td>
+  </tr>`);
 
 const bodyHtml = `
     <div class="report-sticky">
