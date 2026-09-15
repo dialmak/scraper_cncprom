@@ -341,7 +341,7 @@ a:hover { text-decoration: underline; }
 }
 .btn-clear-search:hover { background: var(--bg-hover); color: var(--text-main); }
 
-mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; padding: 0 2px; border-radius: 2px; }
+mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; border-radius: 2px; }
 [data-theme="dark"] mark.search-highlight { background: rgba(56, 189, 248, 0.28); color: #7dd3fc; }
 
 .cat-found-badge {
@@ -430,7 +430,7 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; pad
 .table-wrap { width: 100%; overflow-x: auto; }
 .simple-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
 .simple-table th { background: var(--bg-subtle); color: var(--text-muted); font-weight: 600; padding: 6px 10px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-.simple-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+.simple-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
 .simple-table tbody tr:nth-child(even) { background: var(--bg-row-alt); }
 .simple-table tbody tr:hover { background: var(--bg-hover); }
 .simple-table tfoot td { padding: 8px 10px; border-top: 2px solid var(--border-color); border-bottom: none; background: var(--bg-subtle); vertical-align: middle; }
