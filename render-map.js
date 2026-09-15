@@ -414,6 +414,8 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
    мають лишатись вирівняними по вертикалі — фіксований layout читає ширини з першого рядка. */
 .aligned-table { table-layout: fixed; }
 .level-tag { font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: var(--bg-tag); border: 1px solid var(--border-dark); color: var(--text-muted); white-space: nowrap; }
+.search-header-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.search-header-row #search-heading { font-size: 0.92rem; }
 .btn-default {
   display: inline-flex; align-items: center; padding: 4px 10px; font-size: 0.76rem; font-weight: 500;
   border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; color: var(--text-main); cursor: pointer;
@@ -945,6 +947,9 @@ function initCatalogMap(CATALOG_DATA) {
     totalNoCell.innerHTML = '<span class="count-no">' + node.stats.total_no + '</span>';
     heading.textContent = node.name;
     if (node.url) { siteLink.href = node.url; siteLink.style.display = ''; } else siteLink.style.display = 'none';
+
+    document.getElementById('node-header-row').style.display = '';
+    document.getElementById('search-header-row').style.display = 'none';
   }
 
   function renderTableHtml(products) {
@@ -1209,21 +1214,15 @@ function initCatalogMap(CATALOG_DATA) {
       : null;
 
     var bc = document.getElementById('breadcrumbs');
-    var badge = document.getElementById('cat-level-badge');
-    var totalCell = document.getElementById('cat-total-products');
-    var verdict = document.getElementById('cat-verdict-badge');
-    var totalNoCell = document.getElementById('cat-total-no');
-    var heading = document.getElementById('cat-heading');
-    var siteLink = document.getElementById('cat-site-link');
+    document.getElementById('node-header-row').style.display = 'none';
+    document.getElementById('search-header-row').style.display = '';
+    var heading = document.getElementById('search-heading');
+    var badge = document.getElementById('search-found-badge');
 
     var totalKnown = localMatches.length + (remoteMatches ? remoteMatches.length : 0);
     bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
-    badge.textContent = totalKnown + ' знайдено' + (remoteMatches === null ? ' (ще шукаємо по сайту…)' : '');
-    totalCell.textContent = ' ';
-    verdict.innerHTML = '';
-    totalNoCell.textContent = ' ';
     heading.textContent = 'Пошук за запитом «' + query + '»';
-    siteLink.style.display = 'none';
+    badge.textContent = totalKnown + ' знайдено' + (remoteMatches === null ? ' (ще шукаємо по сайту…)' : '');
 
     if (localMatches.length === 0 && remoteMatches !== null && remoteMatches.length === 0) {
       body.innerHTML =
@@ -1503,7 +1502,7 @@ const html = `<!DOCTYPE html>
     <main class="main-content">
       <div class="category-header" id="category-header">
         <div class="breadcrumbs" id="breadcrumbs"><span>Каталог</span></div>
-        <div class="title-row table-wrap">
+        <div class="title-row table-wrap" id="node-header-row">
           <table class="simple-table aligned-table"><thead><tr>
             <th class="col-n"></th>
             <th>Назва категорії</th>
@@ -1521,6 +1520,20 @@ const html = `<!DOCTYPE html>
             <td style="text-align:center;" id="cat-total-no"><span class="count-no">${CATALOG_DATA.tree.stats.total_no}</span></td>
             <td style="text-align:right;"><a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a></td>
           </tr></tbody></table>
+        </div>
+        <!-- Повністю окремий заголовок для режиму пошуку — НЕ переиспользує
+             таблицю/колонки/data-tip вище (Рівень/Товарів/В наявності/…), які
+             мають сенс лише для вибраного вузла дерева. Раніше renderSearchResultsView
+             напряму писала в #cat-heading/#cat-level-badge тощо — через це
+             бейдж кількості знахідок успадковував чужий data-tip колонки
+             "Рівень" ("Глибина вкладеності..."), а сама таблиця показувала
+             неактуальні заголовки колонок під час пошуку. #node-header-row/
+             #search-header-row перемикаються видимістю в updateHeader()/
+             renderSearchResultsView() — той самий патерн, що вже є для
+             #index-content/#search-results на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
         </div>
       </div>
       ${infoBanner}
