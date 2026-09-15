@@ -319,6 +319,11 @@ a:hover { text-decoration: underline; }
 .app-header {
   height: 44px; background: var(--bg-header); border-bottom: 1px solid var(--border-color);
   display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10;
+  /* sticky, не static — на <id>_map.html не помітно різниці (там сторінка сама
+     не скролиться, лише .main-content всередині), але на map.html build-maps.js
+     навмисно вмикає звичайний скрол усього документа (html,body{overflow:auto}),
+     тож без sticky цей хедер їхав би разом з довгою таблицею категорій. */
+  position: sticky; top: 0;
 }
 .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .catalog-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -340,8 +340,16 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
      і результати пошуку) у центральну колонку 1100px, хоча <id>_map.html
      розтягуються на всю ширину вікна без такого обмеження. Тепер уніфіковано
      з ними. На дуже широких моніторах таблиця категорій (мало колонок) може
-     виглядати розрідженою — прийнятний компроміс, обраний свідомо. */
-  html, body { height: auto; overflow: auto; }
+     виглядати розрідженою — прийнятний компроміс, обраний свідомо.
+
+     overflow: visible, НЕ auto — навмисно (2026-09-15). .app-header тепер
+     position: sticky (щоб не їхав разом з довгою таблицею), а sticky working
+     тільки якщо body фактично не є ВЛАСНИМ скрол-контейнером. auto на html
+     І body одночасно змушує body стати окремим (хоч і не переповненим —
+     висота:auto якраз під контент) скрол-боксом, і sticky прив'язується до
+     НЬОГО замість справжнього скролу сторінки — заголовок тоді все одно їде.
+     Перевірено Playwright-скріншотом до і після виправлення. */
+  html, body { height: auto; overflow: visible; }
   .index-wrap { padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
   .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
