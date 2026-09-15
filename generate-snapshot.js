@@ -7,8 +7,10 @@
 // те, що потрібно для виявлення змін день-до-дня:
 // - дерево категорій: id, name, parentId, level (додано/видалено/перейменовано/
 //   переміщено);
-// - скорочений список товарів: id, name, sku, categoryId, availability (без
-//   breadcrumbs/finalUrl/baseCategoryPath — шум, не потрібен для diff).
+// - скорочений список товарів: id, name, sku, categoryId, availability, url
+//   (finalUrl — потрібен diff-map.js для HTML-звіту, посилання "Товар" на
+//   сайт; без breadcrumbs/baseCategoryPath — це й досі шум, не потрібен ні
+//   для diff, ні для звіту).
 //
 // Знімок пишеться НЕ в output/ (те гітигнориться на main), а в окрему теку —
 // у реальному нічному прогоні це робочий checkout гілки `data`
@@ -98,6 +100,7 @@ function readProducts(categoryId) {
     sku: row.sku,
     categoryId: row.categoryId,
     availability: row.availabilityStatus,
+    url: row.finalUrl,
   }));
 }
 

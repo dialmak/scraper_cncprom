@@ -1499,7 +1499,8 @@ const html = `<!DOCTYPE html>
         <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
     </div>
-    <div class="header-right">
+    <div class="header-right">${MAP_SUBDIR === 'site' ? `
+      <a href="reports/latest.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="День-до-дня зміни каталогу: категорії й наявність товарів">📄 Diff-звіт</a>` : ''}
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
