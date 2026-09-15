@@ -1106,7 +1106,7 @@ function initCatalogMap(CATALOG_DATA) {
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="width:150px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
-            '<td style="width:140px;text-align:right;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a>' : ' ') + '</td>' +
+            '<td style="width:140px;text-align:center;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -1561,7 +1561,7 @@ const html = `<!DOCTYPE html>
             <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
             <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
             <th style="width:150px;text-align:center;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
-            <th style="width:140px;text-align:right;">Перейти на сайт</th>
+            <th style="width:140px;text-align:center;">Перейти на сайт</th>
           </tr></thead><tbody><tr>
             <td class="col-n"></td>
             <td id="cat-heading" class="fw-cat-link">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</td>
@@ -1569,7 +1569,7 @@ const html = `<!DOCTYPE html>
             <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">${CATALOG_DATA.tree.stats.total_products}</td>
             <td style="text-align:center;" id="cat-verdict-badge"></td>
             <td style="text-align:center;" id="cat-total-no"><span class="count-no">${CATALOG_DATA.tree.stats.total_no}</span></td>
-            <td style="text-align:right;"><a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="link-site">Перейти на сайт ↗</a></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="link-site">↗</a></td>
           </tr></tbody></table>
         </div>
         <!-- Повністю окремий заголовок для режиму пошуку — НЕ переиспользує
