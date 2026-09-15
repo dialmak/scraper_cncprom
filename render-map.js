@@ -440,6 +440,15 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .table-wrap { width: 100%; overflow-x: auto; }
 .simple-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
 .simple-table th { background: var(--bg-subtle); color: var(--text-muted); font-weight: 600; padding: 6px 10px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+/* top, не middle — свідомо ГЛОБАЛЬНО для всіх .simple-table, не лише
+   .search-table нижче (той коментар про "лише .search-table" стосується
+   тільки ширин колонок біля нього, не цього рядка). Раніше middle
+   центрувало короткі однорядкові комірки (№, бейджи) відносно висоти
+   БАГАТОРЯДКОВОГО сусіда в тому самому рядку (довга назва категорії/
+   підкатегорії, що переноситься) — виглядало як збите вирівнювання. top
+   узгоджено й для звичайних таблиць (список підкатегорій у renderSingleView
+   тощо), не лише для результатів пошуку — той самий принцип "один стиль
+   скрізь", що й для .count-yes/.count-no. */
 .simple-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
 .simple-table tbody tr:nth-child(even) { background: var(--bg-row-alt); }
 .simple-table tbody tr:hover { background: var(--bg-hover); }
@@ -684,11 +693,31 @@ function filterProducts(products, query, fields) {
     return fields.some(function (f) { return String(p[f] || '').toLowerCase().indexOf(q) !== -1; });
   });
 }
+// Приймає СИРИЙ (неекранований) текст і сам відповідає за екранування — не
+// escapeHtml(text) до виклику. Причина: старий контракт (escapeHtml спершу,
+// потім обгортання <mark>) ламав багатосимвольні HTML-сутності, коли запит
+// збігався всередині них — напр. пошук "amp" проти назви з "&" всередині:
+// escapeHtml перетворює "&" на "&amp;", а regex-заміна далі знаходить "amp"
+// і всередині цієї сутності теж, вставляючи туди <mark> й розбиваючи саму
+// сутність навпіл ("&<mark>amp</mark>;" замість "&amp;" — рендериться як
+// зайвий видимий текст "amp" замість символу "&"). Екранування тепер
+// відбувається ПІСЛЯ розбиття на збіг/не-збіг, тому нема способу випадково
+// розрізати сутність, яка сама виникає лише під час екранування.
 function highlightMatch(text, query) {
-  if (!query || !text) return text || '';
-  var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  var regex = new RegExp('(' + escaped + ')', 'gi');
-  return String(text).replace(regex, '<mark class="search-highlight">$1</mark>');
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  var str = String(text || '');
+  if (!query) return esc(str);
+  var escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var regex = new RegExp('(' + escapedQuery + ')', 'gi');
+  var out = '';
+  var lastIndex = 0;
+  var m;
+  while ((m = regex.exec(str))) {
+    out += esc(str.slice(lastIndex, m.index)) + '<mark class="search-highlight">' + esc(m[0]) + '</mark>';
+    lastIndex = m.index + m[0].length;
+  }
+  out += esc(str.slice(lastIndex));
+  return out;
 }
 
 // ==================== САЙТОВИЙ ПОШУК (лише map.html, build-maps.js) ====================
@@ -708,13 +737,19 @@ function initSiteSearch() {
   if (!input || !indexContent || !resultsEl) return;
 
   var indexData = null;
+  var indexFailed = false; // окремо від indexData=[] — той означає "завантажили, порожньо",
+  // це — "не вдалося завантажити взагалі" (search-index.json відсутній,
+  // напр. запуск render-map.js напряму без build-maps.js, або сторінка
+  // відкрита подвійним кліком з диска — fetch() локальних файлів блокує
+  // браузер). Без цього прапорця збій мовчки виглядав як "чесно перевірили,
+  // нічого немає" — оманливо, коли пошук насправді жодного разу не відбувся.
   var indexPromise = null;
   function loadIndex() {
     if (!indexPromise) {
       indexPromise = fetch('search-index.json')
         .then(function (r) { return r.json(); })
         .then(function (data) { indexData = data; return data; })
-        .catch(function () { indexData = []; return indexData; });
+        .catch(function () { indexData = []; indexFailed = true; return indexData; });
     }
     return indexPromise;
   }
@@ -722,6 +757,15 @@ function initSiteSearch() {
   function renderResults(query) {
     function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
     var matches = filterProducts(indexData || [], query, ['name', 'code', 'categoryName']);
+    if (indexFailed) {
+      resultsEl.innerHTML =
+        '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
+        '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
+        '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">Не вдалося завантажити пошуковий індекс (search-index.json)</div>' +
+        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Якщо сторінка відкрита подвійним кліком з диска — браузер блокує fetch() локальних файлів; відкрий через сервер (напр. Live Server). Якщо через сервер — переконайся, що search-index.json взагалі існує поруч (пишеться build-maps.js).</div>' +
+        '</div>';
+      return;
+    }
     if (matches.length === 0) {
       resultsEl.innerHTML =
         '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
@@ -735,9 +779,9 @@ function initSiteSearch() {
       var isYes = /готово/i.test(p.availability || '');
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
-        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
-        '<td class="col-cat"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
+        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-cat"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1136,13 +1180,17 @@ function initCatalogMap(CATALOG_DATA) {
   // сторінка перемальовується (renderContent()) — але лише якщо запит з того
   // часу не змінився (інакше застаріла відповідь просто відкидається).
   var siteIndexData = null;
+  var siteIndexFailed = false; // окремо від siteIndexData=[] — див. те саме
+  // розрізнення в initSiteSearch/loadIndex вище: без цього прапорця збій
+  // fetch() виглядав би як "решту сайту перевірили, там нуль", хоча
+  // насправді перевірка не відбулась узагалі.
   var siteIndexPromise = null;
   function loadSiteIndex() {
     if (!siteIndexPromise) {
       siteIndexPromise = fetch('search-index.json')
         .then(function (r) { return r.json(); })
         .then(function (data) { siteIndexData = data; return data; })
-        .catch(function () { siteIndexData = []; return siteIndexData; });
+        .catch(function () { siteIndexData = []; siteIndexFailed = true; return siteIndexData; });
     }
     return siteIndexPromise;
   }
@@ -1166,12 +1214,12 @@ function initCatalogMap(CATALOG_DATA) {
     var rowsHtml = matches.map(function (p, idx) {
       var isYes = isAvailableProduct(p);
       var categoryCell = isLocal
-        ? '<a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(escapeHtml(p.nodeName), query) + '</a>'
-        : '<a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a>';
+        ? '<a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(p.nodeName, query) + '</a>'
+        : '<a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
-        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
+        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -1222,7 +1270,10 @@ function initCatalogMap(CATALOG_DATA) {
     var totalKnown = localMatches.length + (remoteMatches ? remoteMatches.length : 0);
     bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
     heading.textContent = 'Пошук за запитом «' + query + '»';
-    badge.textContent = totalKnown + ' знайдено' + (remoteMatches === null ? ' (ще шукаємо по сайту…)' : '');
+    badge.textContent = totalKnown + ' знайдено' + (
+      siteIndexFailed ? ' (у цій категорії; решту сайту перевірити не вдалося)' :
+      remoteMatches === null ? ' (ще шукаємо по сайту…)' : ''
+    );
 
     if (localMatches.length === 0 && remoteMatches !== null && remoteMatches.length === 0) {
       body.innerHTML =
