@@ -345,7 +345,15 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 [data-theme="dark"] mark.search-highlight { background: rgba(56, 189, 248, 0.28); color: #7dd3fc; }
 
 .cat-found-badge {
-  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-size: 0.74rem; font-weight: 500;
+  /* display: inline, NOT inline-flex — this badge's text can be long enough to wrap
+     across lines (search-result category names) and can contain a <mark> in the
+     middle of it. With inline-flex, the text before/after the <mark> and the <mark>
+     itself become separate flex items that each wrap independently instead of
+     flowing as one continuous line of text — the highlighted word visibly detaches
+     onto its own line. Plain inline reflows exactly like the rest of the page's
+     text, mark included. The icon-to-text gap comes from the literal space already
+     in the markup ("📁 " + text), not from a flex gap property. */
+  display: inline; padding: 2px 8px; font-size: 0.74rem; font-weight: 500;
   border-radius: 4px; background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-link);
   cursor: pointer; text-decoration: none; transition: all 0.12s ease;
 }
