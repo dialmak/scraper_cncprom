@@ -224,7 +224,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
               <td style="text-align:center;" class="fw-count-cell">${e.total_products ?? '—'}</td>
               <td style="text-align:center;">${diffBadgeHtml(e)}</td>
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
-              <td style="text-align:center;font-size:0.78rem;color:var(--text-subtle);">${escapeHtmlOuter(e.scraped_at || '—')}</td>
+              <td style="text-align:center;">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}</td>
               <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${e.url}" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>` : '—'}</td>
             </tr>`).join('');
