@@ -326,7 +326,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мапа розділів — cncprom.ua</title>
+<title>Мапа сайту cncprom.ua</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -405,7 +405,7 @@ ${orphanPanelHtml}
           <div class="help-term-desc">Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">Оновлено</div>
+          <div class="help-term-label">Час оновлення</div>
           <div class="help-term-desc">Дата та час скрапінгу.</div>
         </div>
         <div class="help-term">
@@ -437,7 +437,7 @@ ${orphanPanelHtml}
                 <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
                 <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
                 <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
-                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Оновлено</th>
+                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Час оновлення</th>
                 <th style="text-align:center;" data-tip="✅ Актуально\n⚠️ Застаріло\n⏳ Немає даних">Статус</th>
                 <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
               </tr>
