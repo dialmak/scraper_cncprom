@@ -87,8 +87,7 @@ function htmlReportPage(bodyHtml, subtitle) {
      4K/ультраширокому текст не розтягувався в непрочитну стрічку; на
      вузьких екранах 80% і так лишає щонайменше 16px гутер з кожного боку. */
   .report-wrap { width: 80%; max-width: 1400px; margin: 0 auto; padding: 0 0 40px; display: flex; flex-direction: column; gap: 18px; }
-  .report-wrap h1 { font-size: 1.15rem; margin: 0 0 2px; }
-  .report-wrap .sub { font-size: 0.8rem; color: var(--text-muted); }
+  .report-wrap h1 { font-size: 1.15rem; margin: 0; }
   .report-wrap h2 { font-size: 0.92rem; margin: 4px 0 0; color: var(--text-main); }
 
   /* Заголовок + підсумкова статистика закріплені під шапкою (.app-header
@@ -325,7 +324,7 @@ function availGroup(title, items, tone, fromLabel, toLabel) {
       <span class="${tone === 'good' ? 'count-yes' : 'count-no'}" style="font-weight:600;font-family:var(--font-mono);">${items.length}</span>
       <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">${escapeHtml(fromLabel)} → ${escapeHtml(toLabel)}</span>
     </div>
-    ${itemsTableBlock(items, ['Код', 'Товар', 'Наявність'], p => productRow(p, p.after))}
+    ${itemsTableBlock(items, ['Код', 'Назва товару', 'Наявність'], p => productRow(p, p.after))}
   </div>`;
 }
 
@@ -361,8 +360,8 @@ const catsBlockHtml = catsChangedTotal === 0
 const prodsStructTotal = prodsAdded.length + prodsRemoved.length;
 const prodsStructHtml = prodsStructTotal === 0
   ? `<div class="quiet-note">Товарів не додано і не видалено.</div>`
-  : `${listSectionHtml('Додано', prodsAdded, ['Код', 'Товар', 'Наявність'], p => productRow(p))}
-    ${listSectionHtml('Видалено', prodsRemoved, ['Код', 'Товар', 'Наявність'], p => productRow(p))}`;
+  : `${listSectionHtml('Додано', prodsAdded, ['Код', 'Назва товару', 'Наявність'], p => productRow(p))}
+    ${listSectionHtml('Видалено', prodsRemoved, ['Код', 'Назва товару', 'Наявність'], p => productRow(p))}`;
 
 const availSectionHtml = availTotal === 0
   ? `<div class="quiet-note">Наявність товарів без змін.</div>`
@@ -379,19 +378,26 @@ const availSectionHtml = availTotal === 0
 // Той самий рядок-примітив, що й productRow (.col-code/.item-code,
 // .col-name-лінк, .col-avail/badge) плюс єдина колонка, специфічна саме для
 // цього розділу — категорія було→стало; той самий стандартний вигляд
-// товарного рядка, що й у решті звіту, а не окрема картка.
-const moveSectionHtml = listSectionHtml('Перейшли в іншу категорію', prodsMoved, ['Код', 'Товар', 'Наявність', 'Категорія'],
-  p => `<tr>
+// товарного рядка, що й у решті звіту, а не окрема картка. Заголовок секції —
+// той самий .group-head/.group-block стиль, що й у availGroup (Знову в
+// наявності / Вже немає в наявності), а не .section-block/.table-subhead.
+const moveSectionHtml = prodsMoved.length === 0 ? '' : `<div class="group-block">
+    <div class="group-head">
+      <h3>Перейшли в іншу категорію</h3>
+      <span style="font-weight:600;font-family:var(--font-mono);color:var(--accent-move);">${prodsMoved.length}</span>
+    </div>
+    ${itemsTableBlock(prodsMoved, ['Код', 'Назва товару', 'Категорія', 'Наявність'],
+      p => `<tr>
     <td class="col-code"><span class="item-code">${escapeHtml(p.sku || '—')}</span></td>
     <td class="col-name">${p.url ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.name)}</a>` : escapeHtml(p.name)}</td>
-    <td class="col-avail">${availBadge(p.availability)}</td>
     <td>${escapeHtml(p.before)} <span style="color:var(--text-subtle);">→</span> ${escapeHtml(p.after)}</td>
-  </tr>`);
+    <td class="col-avail">${availBadge(p.availability)}</td>
+  </tr>`)}
+  </div>`;
 
 const bodyHtml = `
     <div class="report-sticky">
       <h1>Diff-звіт: ${escapeHtml(prevDate)} → ${escapeHtml(TODAY)}</h1>
-      <div class="sub">Порівняння знімків <span class="item-code">${escapeHtml(prevDate)}.json</span> → <span class="item-code">${escapeHtml(TODAY)}.json</span>.</div>
       ${statStripHtml}
     </div>
 
