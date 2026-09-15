@@ -1068,8 +1068,8 @@ function initCatalogMap(CATALOG_DATA) {
       '<td style="width:80px;text-align:center;"> </td>' +
       '<td style="width:90px;text-align:center;"' + countClass + '>' + total + '</td>' +
       '<td style="width:100px;text-align:center;"><span class="count-yes' + badgeExtra + '">' + yes + '</span></td>' +
-      '<td style="width:150px;text-align:center;"><span class="count-no' + badgeExtra + '">' + no + '</span></td>' +
-      '<td style="width:140px;text-align:right;"> </td>' +
+      '<td style="width:78px;text-align:center;"><span class="count-no' + badgeExtra + '">' + no + '</span></td>' +
+      '<td style="width:72px;text-align:center;"> </td>' +
       '</tr>'
     );
   }
@@ -1105,8 +1105,8 @@ function initCatalogMap(CATALOG_DATA) {
             '<td style="width:80px;text-align:center;"><span class="level-tag" data-tip="Глибина вкладеності в дереві категорій (1 = коренева категорія цього прогону).">Рівень ' + ch.level + '</span></td>' +
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
-            '<td style="width:150px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
-            '<td style="width:140px;text-align:center;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
+            '<td style="width:78px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
+            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -1560,8 +1560,8 @@ const html = `<!DOCTYPE html>
             <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
             <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
             <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
-            <th style="width:150px;text-align:center;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
-            <th style="width:140px;text-align:center;">Перейти на сайт</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
           </tr></thead><tbody><tr>
             <td class="col-n"></td>
             <td id="cat-heading" class="fw-cat-link">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</td>
