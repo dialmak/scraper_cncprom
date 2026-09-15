@@ -452,6 +452,23 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .col-name a:hover { color: var(--text-link); text-decoration: underline; }
 .col-avail { width: 150px; text-align: center; }
 
+/* Результати пошуку (initSiteSearch на map.html, buildResultsSection в кожній
+   <id>_map.html) — окремий, ширший стовпчик категорії, тому % замість px:
+   table-layout: fixed тримає пропорції при будь-якій ширині вікна (сторінка
+   тепер розтягується на всю ширину, .index-wrap без max-width). Раніше
+   Категорія була фіксовані 220px — довгі назви з бейджами наявності постійно
+   переносились на купу рядків; тепер їй свідомо більше місця, ніж Коду/№/
+   Наявності, які завжди короткі за змістом. Назва товару лишається без
+   явного % — забирає все, що лишилось (100% - решта = ~40%). Ці правила
+   зачіпають ЛИШЕ таблиці з класом .search-table, не звичайний
+   renderTableHtml (список товарів вузла) — у нього немає стовпця Категорія
+   і фіксовані px тут не заважають. */
+table.search-table { table-layout: fixed; }
+table.search-table .col-n { width: 4%; }
+table.search-table .col-code { width: 8%; }
+table.search-table .col-cat { width: 32%; }
+table.search-table .col-avail { width: 16%; }
+
 .stock-badge { display: inline-block; padding: 1px 6px; font-size: 0.72rem; font-weight: 500; border-radius: 3px; white-space: nowrap; }
 .stock-badge.yes { background: var(--status-yes-bg); color: var(--status-yes); border: 1px solid var(--status-yes-border); }
 .stock-badge.no { background: var(--status-no-bg); color: var(--status-no); border: 1px solid var(--status-no-border); }
@@ -718,7 +735,7 @@ function initSiteSearch() {
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
         '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
-        '<td style="width:220px;"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a></td>' +
+        '<td class="col-cat"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(escapeHtml(p.categoryName), query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -726,8 +743,8 @@ function initSiteSearch() {
     resultsEl.innerHTML =
       '<div class="section-block"><div class="section-head"><div style="display:flex;align-items:center;gap:8px;"><span>Знайдені товари</span>' +
       '<span style="font-size:0.72rem;color:var(--text-muted);">(' + matches.length + ' позицій)</span></div></div>' +
-      '<div class="table-wrap"><table class="simple-table"><thead><tr>' +
-      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th style="width:220px;">Категорія</th><th class="col-avail">Наявність</th>' +
+      '<div class="table-wrap"><table class="simple-table search-table"><thead><tr>' +
+      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th><th class="col-avail">Наявність</th>' +
       '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div></div>';
   }
 
@@ -1150,14 +1167,14 @@ function initCatalogMap(CATALOG_DATA) {
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(escapeHtml(p.code || ''), query) + '</span></td>' +
         '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(escapeHtml(p.name), query) + '</a></td>' +
-        '<td style="width:220px;">' + categoryCell + '</td>' +
+        '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
     }).join('');
     tableWrap.innerHTML =
-      '<table class="simple-table"><thead><tr>' +
-      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th style="width:220px;">Категорія</th><th class="col-avail">Наявність</th>' +
+      '<table class="simple-table search-table"><thead><tr>' +
+      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th><th class="col-avail">Наявність</th>' +
       '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
     section.appendChild(tableWrap);
 

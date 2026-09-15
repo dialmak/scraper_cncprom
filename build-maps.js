@@ -335,9 +335,14 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
 <style>
   /* map-common.css розрахований на .workspace з фіксованою висотою вікна
      (сайдбар + скрол свого контенту) — індексна сторінка цього не має, тож
-     повертаємо звичайний скрол сторінки й додаємо власну центровану обгортку. */
+     повертаємо звичайний скрол сторінки. Без max-width/margin:auto — свідомо
+     (2026-09-15): раніше .index-wrap затискав ВЕСЬ вміст (і таблицю категорій,
+     і результати пошуку) у центральну колонку 1100px, хоча <id>_map.html
+     розтягуються на всю ширину вікна без такого обмеження. Тепер уніфіковано
+     з ними. На дуже широких моніторах таблиця категорій (мало колонок) може
+     виглядати розрідженою — прийнятний компроміс, обраний свідомо. */
   html, body { height: auto; overflow: auto; }
-  .index-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .index-wrap { padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
   .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
   /* Псевдо-tree для "Товари поза категоріями": категорія 1 рівня — заголовок
