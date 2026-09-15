@@ -973,14 +973,14 @@ function initCatalogMap(CATALOG_DATA) {
     var siteLink = document.getElementById('cat-site-link');
 
     var path = getPath(node);
-    bc.innerHTML = '<span class="crumb-link" data-id="root">Каталог</span>' +
+    bc.innerHTML = '<a href="map.html" class="crumb-link">Мапа</a>' +
       path.map(function (p, idx) {
         return '<span class="sep">/</span><span class="' + (idx === path.length - 1 ? 'crumb-current' : 'crumb-link') + '" data-id="' + p.id + '">' + escapeHtml(p.name) + '</span>';
       }).join('');
 
-    Array.prototype.forEach.call(bc.querySelectorAll('.crumb-link'), function (el) {
+    Array.prototype.forEach.call(bc.querySelectorAll('span.crumb-link'), function (el) {
       el.addEventListener('click', function () {
-        var targetId = el.dataset.id === 'root' ? CATALOG_DATA.tree.id : el.dataset.id;
+        var targetId = el.dataset.id;
         state.selectedNodeId = targetId;
         // Те саме, що для .cat-jump-link — розкрити гілку до вибраної категорії.
         var curr = parentMap.get(targetId);
@@ -1273,7 +1273,7 @@ function initCatalogMap(CATALOG_DATA) {
     var badge = document.getElementById('search-found-badge');
 
     var totalKnown = localMatches.length + (remoteMatches ? remoteMatches.length : 0);
-    bc.innerHTML = '<span>Каталог</span> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
+    bc.innerHTML = '<a href="map.html" class="crumb-link">Мапа</a> <span class="sep">/</span> <span class="crumb-current">Результати пошуку</span>';
     heading.textContent = 'Пошук за запитом «' + query + '»';
     badge.textContent = totalKnown + ' знайдено' + (
       siteIndexFailed ? ' (у цій категорії; решту сайту перевірити не вдалося)' :
@@ -1557,7 +1557,7 @@ const html = `<!DOCTYPE html>
 
     <main class="main-content">
       <div class="category-header" id="category-header">
-        <div class="breadcrumbs" id="breadcrumbs"><span>Каталог</span></div>
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
         <div class="title-row table-wrap" id="node-header-row">
           <table class="simple-table aligned-table"><thead><tr>
             <th class="col-n"></th>
