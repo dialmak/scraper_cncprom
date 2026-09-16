@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diff-звіт · cncprom.ua</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../map-common.css">
+<script src="../map-common.js"></script>
+<style>
+  /* map-common.css розрахований на .workspace фіксованої висоти — тут, як і в
+     map.html (build-maps.js), звичайний скрол сторінки замість нього. */
+  html, body { height: auto; overflow: visible; }
+  /* 80% ширини body на великих (HD+) екранах, з розумною стелею, щоб на
+     4K/ультраширокому текст не розтягувався в непрочитну стрічку; на
+     вузьких екранах 80% і так лишає щонайменше 16px гутер з кожного боку. */
+  .report-wrap { width: 80%; max-width: 1400px; margin: 0 auto; padding: 0 0 40px; display: flex; flex-direction: column; gap: 18px; }
+  .report-wrap h1 { font-size: 1.15rem; margin: 0 0 2px; }
+  .report-wrap .sub { font-size: 0.8rem; color: var(--text-muted); }
+  .report-wrap h2 { font-size: 0.92rem; margin: 4px 0 0; color: var(--text-main); }
+
+  /* Заголовок + підсумкова статистика закріплені під шапкою (.app-header
+     сама sticky top:0, 44px заввишки) під час скролу довгих таблиць нижче —
+     видно "що взагалі сталось" не гортаючи назад до початку сторінки.
+     Розділ "Категорії" і все далі за ним прокручується під цим блоком
+     звичайно. */
+  .report-sticky {
+    position: sticky; top: 44px; z-index: 9; background: var(--bg-page);
+    padding: 18px 0 14px; margin: 0; border-bottom: 1px solid var(--border-color);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* Третій акцентний колір поза status-yes/status-no map-common.css — лише
+     для "товар перейшов у іншу категорію" (ні добре, ні погано, просто інше),
+     локальний для цієї сторінки, не додається у спільний файл. */
+  :root { --accent-move: #7c3aed; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --accent-move: #b794f6; }
+  }
+  :root[data-theme="dark"] { --accent-move: #b794f6; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
+  .stat-tile { background: var(--bg-white); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .stat-tile .stat-n { font-family: var(--font-mono); font-weight: 600; font-size: 1.7rem; line-height: 1; color: var(--text-main); }
+  .stat-tile .stat-l { font-size: 0.76rem; color: var(--text-muted); line-height: 1.3; }
+  .stat-tile.good .stat-n { color: var(--status-yes); }
+  .stat-tile.bad .stat-n { color: var(--status-no); }
+  .stat-tile.move .stat-n { color: var(--accent-move); }
+
+  .netbar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .netbar-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); }
+  .netbar { height: 10px; border-radius: 5px; overflow: hidden; display: flex; border: 1px solid var(--border-dark); }
+  .netbar .seg-good { background: var(--status-yes); }
+  .netbar .seg-bad { background: var(--status-no); }
+
+  .quiet-note { font-size: 0.82rem; color: var(--text-muted); background: var(--bg-white); border: 1px solid var(--border-color); border-left: 3px solid var(--border-dark); border-radius: 0 6px 6px 0; padding: 10px 14px; line-height: 1.5; }
+
+  .group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .group-head h3 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
+  .group-block { display: flex; flex-direction: column; gap: 8px; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Diff-звіт · 2026-09-15 → 2026-09-16</button>
+    </div>
+    <div class="header-right">
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Повернутись до мапи сайту">🗂️ Мапа сайту</a>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+    </div>
+  </header>
+  <div class="report-wrap">
+
+    <div class="report-sticky">
+      <h1>Diff-звіт: 2026-09-15 → 2026-09-16</h1>
+      <div class="sub">Порівняння знімків <span class="item-code">2026-09-15.json</span> → <span class="item-code">2026-09-16.json</span>.</div>
+      
+  <div class="stat-strip">
+    <div class="stat-tile"><div class="stat-n">6</div><div class="stat-l">товарів змінили наявність</div></div>
+    <div class="stat-tile good"><div class="stat-n">1</div><div class="stat-l">знову в наявності</div></div>
+    <div class="stat-tile bad"><div class="stat-n">5</div><div class="stat-l">вже немає в наявності</div></div>
+    <div class="stat-tile move"><div class="stat-n">0</div><div class="stat-l">перейшли в іншу категорію</div></div>
+  </div>
+    </div>
+
+    <div class="group-block">
+      <h2>Категорії</h2>
+      <table class="simple-table"><tbody><tr><td>Додано</td><td class="fw-count-cell" style="text-align:right;">2</td></tr><tr><td>Видалено</td><td class="fw-count-cell" style="text-align:right;">0</td></tr><tr><td>Перейменовано</td><td class="fw-count-cell" style="text-align:right;">0</td></tr><tr><td>Переміщено</td><td class="fw-count-cell" style="text-align:right;">0</td></tr></tbody></table>
+    <div class="section-block">
+    <div class="table-subhead">Додано (2)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва</th><th>Рівень</th><th>Батьківська категорія</th></tr></thead>
+      <tbody><tr><td class="item-code">156761646</td><td>Підшипникові вузли серій KP та KFL</td><td style="text-align:center;">2</td><td>Механіка</td></tr><tr><td class="item-code">154934685</td><td>3D-принтери та аксесуари</td><td style="text-align:center;">2</td><td>Верстати та промислове обладнання</td></tr></tbody>
+    </table>
+  </div>
+  </div>
+    
+    
+    
+    </div>
+
+    <div class="group-block">
+      <h2>Товари</h2>
+      <div class="section-block">
+    <div class="table-subhead">Додано (13)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Товар</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">01-041</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197775847-enkoder-e38s6g5-600b.html" target="_blank" rel="noopener noreferrer">Енкодер E38S6G5-600B-G24N NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-150</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197776429-kronshtejn-dvigatelya-shkivyremnye.html" target="_blank" rel="noopener noreferrer">Кронштейн двигуна + шківи+ремні  NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-055</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197776430-kronshtejn-enkodera-new.html" target="_blank" rel="noopener noreferrer">Кронштейн енкодера NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">88-064</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3146631603-flantsevyj-podshipnik-kfl001.html" target="_blank" rel="noopener noreferrer">Фланцевий підшипник KFL001 для вала Ø12 мм, корпусний кульковий підшипниковий вузол</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-266</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197776428-kontroller-new.html" target="_blank" rel="noopener noreferrer">Контролер NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-268</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197907137-kontroler-hr021-new.html" target="_blank" rel="noopener noreferrer">Kонтролер  HR021 NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-267</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197907697-generator-impulsiv-hf020.html" target="_blank" rel="noopener noreferrer">Генератор імпульсів HF020  NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-269</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197911182-panel-keruvannya-new.html" target="_blank" rel="noopener noreferrer">Панель керування NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-184</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197776426-klemmnaya-kolodka-extb.html" target="_blank" rel="noopener noreferrer">Клемна колодка EXTB-DF25S-42D NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-183</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197776427-klemmnaya-kolodka-extb.html" target="_blank" rel="noopener noreferrer">Клемна колодка EXTB-DM25S-42D NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-148</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197777028-upakovochnyj-stanok-new.html" target="_blank" rel="noopener noreferrer">Пакувальний верстат NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-271</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3197511928-printer-ideaformer-ir3.html" target="_blank" rel="noopener noreferrer">3D-принтер IdeaFormer IR3 V2 NEW</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">21-125</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2930756167-suhar-pazovyj-sn4590.html" target="_blank" rel="noopener noreferrer">Сухар пазовий SN4590-45S-M10 (паз 10 мм, різьба М10) для конструкційного профілю серій 45 і 90</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="section-block">
+    <div class="table-subhead">Видалено (1)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Товар</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">61-103</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1201713956-blok-smazki-hiwin.html" target="_blank" rel="noopener noreferrer">Блок змащення HIWIN HG25-E2</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+      <div class="netbar-wrap">
+      <div class="netbar-label"><span>чистий приріст наявності</span><span>-4 (1 / 5)</span></div>
+      <div class="netbar" role="img" aria-label="1 товарів знову в наявності, 5 закінчились">
+        <div class="seg-good" style="width:16.7%"></div>
+        <div class="seg-bad" style="width:83.3%"></div>
+      </div>
+    </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Знову в наявності</h3>
+      <span class="count-yes" style="font-weight:600;font-family:var(--font-mono);">1</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Немає в наявності → Готово до відправки</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Товар</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">05-365</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2962735553-bms-bd6a20s-10rd.html" target="_blank" rel="noopener noreferrer">BMS JK-BD6A20S-10РD, 100A, для LiFePO4/Li-ion/LTO (8S-20S), 0.6A активного балансування</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Вже немає в наявності</h3>
+      <span class="count-no" style="font-weight:600;font-family:var(--font-mono);">5</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Готово до відправки → Немає в наявності</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Товар</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">04-020</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1601078299-gibridnyj-servodrajver-hss758.html" target="_blank" rel="noopener noreferrer">Гібридний серводрайвер HSS758, 8 А, 0~75VDC, 75 VАC</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-364</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2995818303-elektricheskij-linejnyj-privod.html" target="_blank" rel="noopener noreferrer">Електричний лінійний привід 4 мм/с, 12 В, хід 100 мм, тяга 150 Н (15 кг), актуатор 100/158-S1-12V-Y</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-360</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2995818304-elektricheskij-linejnyj-privod.html" target="_blank" rel="noopener noreferrer">Електричний лінійний привід 4 мм/с, 12 В, хід 100 мм, тяга 150 Н (15 кг), актуатор 100/158-S1-12V-W</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-038</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p993706614-kontroller-mesa-7i75.html" target="_blank" rel="noopener noreferrer">Контролер MESA 7I75</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">91-028</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2912200824-akkumulyatornaya-batareya-deye.html" target="_blank" rel="noopener noreferrer">Акумуляторна батарея Deye SE-G5.1 Pro-B, LiFePO4 51.2V, 100Ah, 5.1 kWh, для інверторних систем</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+      
+    </div>
+
+  </div>
+<script>
+initThemeToggle();
+setupTooltips();
+</script>
+</body>
+</html>
