@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diff-звіт · cncprom.ua</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../map-common.css">
+<script src="../map-common.js"></script>
+<style>
+  /* map-common.css розрахований на .workspace фіксованої висоти — тут, як і в
+     map.html (build-maps.js), звичайний скрол сторінки замість нього. */
+  html, body { height: auto; overflow: visible; }
+  /* 80% ширини body на великих (HD+) екранах, з розумною стелею, щоб на
+     4K/ультраширокому текст не розтягувався в непрочитну стрічку; на
+     вузьких екранах 80% і так лишає щонайменше 16px гутер з кожного боку. */
+  .report-wrap { width: 80%; max-width: 1400px; margin: 0 auto; padding: 0 0 40px; display: flex; flex-direction: column; gap: 18px; }
+  .report-wrap h1 { font-size: 1.15rem; margin: 0; }
+  .report-wrap h2 { font-size: 0.92rem; margin: 4px 0 0; color: var(--text-main); }
+
+  /* Заголовок + підсумкова статистика закріплені під шапкою (.app-header
+     сама sticky top:0, 44px заввишки) під час скролу довгих таблиць нижче —
+     видно "що взагалі сталось" не гортаючи назад до початку сторінки.
+     Розділ "Категорії" і все далі за ним прокручується під цим блоком
+     звичайно. */
+  .report-sticky {
+    position: sticky; top: 44px; z-index: 9; background: var(--bg-page);
+    padding: 18px 0 14px; margin: 0; border-bottom: 1px solid var(--border-color);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* Третій акцентний колір поза status-yes/status-no map-common.css — лише
+     для "товар перейшов у іншу категорію" (ні добре, ні погано, просто інше),
+     локальний для цієї сторінки, не додається у спільний файл. */
+  :root { --accent-move: #7c3aed; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --accent-move: #b794f6; }
+  }
+  :root[data-theme="dark"] { --accent-move: #b794f6; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
+  .stat-tile { background: var(--bg-white); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .stat-tile .stat-n { font-family: var(--font-mono); font-weight: 600; font-size: 1.7rem; line-height: 1; color: var(--text-main); }
+  .stat-tile .stat-l { font-size: 0.76rem; color: var(--text-muted); line-height: 1.3; }
+  .stat-tile.good .stat-n { color: var(--status-yes); }
+  .stat-tile.bad .stat-n { color: var(--status-no); }
+  .stat-tile.move .stat-n { color: var(--accent-move); }
+
+  .netbar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .netbar-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); }
+  .netbar { height: 10px; border-radius: 5px; overflow: hidden; display: flex; border: 1px solid var(--border-dark); }
+  .netbar .seg-good { background: var(--status-yes); }
+  .netbar .seg-bad { background: var(--status-no); }
+
+  .quiet-note { font-size: 0.82rem; color: var(--text-muted); background: var(--bg-white); border: 1px solid var(--border-color); border-left: 3px solid var(--border-dark); border-radius: 0 6px 6px 0; padding: 10px 14px; line-height: 1.5; }
+
+  .group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .group-head h3 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
+  .group-block { display: flex; flex-direction: column; gap: 8px; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Diff-звіт · 2026-09-17 → 2026-09-18</button>
+    </div>
+    <div class="header-right">
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Повернутись до мапи сайту">🗂️ Мапа сайту</a>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+    </div>
+  </header>
+  <div class="report-wrap">
+
+    <div class="report-sticky">
+      <h1>Diff-звіт: 2026-09-17 → 2026-09-18</h1>
+      
+  <div class="stat-strip">
+    <div class="stat-tile"><div class="stat-n">49</div><div class="stat-l">товарів змінили наявність</div></div>
+    <div class="stat-tile good"><div class="stat-n">31</div><div class="stat-l">знову в наявності</div></div>
+    <div class="stat-tile bad"><div class="stat-n">18</div><div class="stat-l">вже немає в наявності</div></div>
+    <div class="stat-tile move"><div class="stat-n">0</div><div class="stat-l">перейшли в іншу категорію</div></div>
+  </div>
+    </div>
+
+    <div class="group-block">
+      <h2>Категорії</h2>
+      <table class="simple-table"><tbody><tr><td>Додано</td><td class="fw-count-cell" style="text-align:right;">5</td></tr><tr><td>Видалено</td><td class="fw-count-cell" style="text-align:right;">1</td></tr><tr><td>Перейменовано</td><td class="fw-count-cell" style="text-align:right;">0</td></tr><tr><td>Переміщено</td><td class="fw-count-cell" style="text-align:right;">0</td></tr></tbody></table>
+    <div class="section-block">
+    <div class="table-subhead">Додано (5)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва</th><th>Рівень</th><th>Батьківська категорія</th></tr></thead>
+      <tbody><tr><td class="item-code">154934685</td><td>3D-принтери та аксесуари</td><td style="text-align:center;">2</td><td>Верстати та промислове обладнання</td></tr><tr><td class="item-code">133013638</td><td>Косозубые шестерни модуль 2.0</td><td style="text-align:center;">3</td><td>Рейкова передача</td></tr><tr><td class="item-code">104993823</td><td>Зубчасті шківи і натягувачі</td><td style="text-align:center;">3</td><td>Ремінна передача</td></tr><tr><td class="item-code">104993855</td><td>Шківи і натяжні ролики HTD3M (крок зубів 3 мм)</td><td style="text-align:center;">4</td><td>Зубчасті шківи і натягувачі</td></tr><tr><td class="item-code">155281396</td><td>Натяжные гладкие ролики HTD3M (тип AF)</td><td style="text-align:center;">5</td><td>Шківи і натяжні ролики HTD3M (крок зубів 3 мм)</td></tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="section-block">
+    <div class="table-subhead">Видалено (1)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва</th><th>Рівень</th></tr></thead>
+      <tbody><tr><td class="item-code">156761646</td><td>Підшипникові вузли серій KP та KFL</td><td style="text-align:center;">2</td></tr></tbody>
+    </table>
+  </div>
+  </div>
+    
+    
+    </div>
+
+    <div class="group-block">
+      <h2>Товари</h2>
+      <div class="section-block">
+    <div class="table-subhead">Додано (29)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">05-263</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3137667201-termometr-tpm-tsifrovoj.html" target="_blank" rel="noopener noreferrer">Термометр TPM-10 цифровий, виносний датчик 1 м, -50…+110 °C</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-260</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3108217262-probka-rezbovaya-konicheskaya.html" target="_blank" rel="noopener noreferrer">Пробка різьбова конічна DIN 906 R1/8 сталева, заглушка з внутрішнім шестигранником</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-261</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3108217263-probka-rezbovaya-konicheskaya.html" target="_blank" rel="noopener noreferrer">Пробка різьбова конічна DIN 906 R1/4 сталева, заглушка з внутрішнім шестигранником</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-262</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3108217264-probka-rezbovaya-konicheskaya.html" target="_blank" rel="noopener noreferrer">Пробка різьбова конічна DIN 906 R3/8 сталева, заглушка з внутрішнім шестигранником</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-263</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3108217265-probka-rezbovaya-konicheskaya.html" target="_blank" rel="noopener noreferrer">Пробка різьбова конічна DIN 906 R1/2 сталева, заглушка з внутрішнім шестигранником</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">91-151</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2930755144-ekvalajzer-heltec-10c.html" target="_blank" rel="noopener noreferrer">Еквалайзер Heltec HT-10C (балансувальний струм 10 А, 7-18 В), балансир для свинцево-кислотних та літієвих акумуляторів</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">91-150</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2930755145-ekvalajzer-b5a16v2c-balansirovochnyj.html" target="_blank" rel="noopener noreferrer">Еквалайзер MK-B5A16V2C (балансувальний струм 5 А, 16 В), балансир для свинцево-кислотних та літієвих акумуляторів</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-146</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3111051097-fotopolimernaya-smola-creality.html" target="_blank" rel="noopener noreferrer">Фотополімерна UV-смола Creality Fast Resin Grey 1000 г + набір інструментів UV Resin Tool Kit</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-147</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3112566722-smola-dlya-fotopolimernoj.html" target="_blank" rel="noopener noreferrer">Смола для фотополімерного 3D-друку ELEGOO Standard Photopolymer Resin 2.0, сіра (Grey), 405 нм, 1 кг</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-251</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3137666874-filament-bambu-lab.html" target="_blank" rel="noopener noreferrer">Філамент Bambu Lab PLA Basic Jade White, 1.75 мм, 1 кг, на котушці, пластик для 3D-принтера</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-218</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855411-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z100-D16 для зубчастої рейки (100 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-201</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855412-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z12-D8 для зубчастої рейки (12 зубів, діам. 8 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-202</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855413-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z16-D10 для зубчастої рейки (16 зубів, діам. 10 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-203</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855414-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z18-D10 для зубчастої рейки (18 зубів, діам. 10 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-204</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855415-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z20-D10 для зубчастої рейки (20 зубів, діам. 10 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-205</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855416-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z26-D14 для зубчастої рейки (26 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-206</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855417-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z30-D14 для зубчастої рейки (30 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-207</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855418-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z34-D12 для зубчастої рейки (34 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-208</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855419-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z38-D12 для зубчастої рейки (38 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-209</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855420-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z40-D14 для зубчастої рейки (40 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-210</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855421-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z42-D12 для зубчастої рейки (42 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-211</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855422-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z48-D14 для зубчастої рейки (48 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-212</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855423-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z50-D15 для зубчастої рейки (50 зубів, діам. 15 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-213</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855424-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z55-D15 для зубчастої рейки (55 зубів, діам. 15 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-214</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855425-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z60-D15 для зубчастої рейки (60 зубів, діам. 15 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-215</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855426-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z70-D16 для зубчастої рейки (70 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-216</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855427-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z80-D16 для зубчастої рейки (80 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-217</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2871855428-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.0 GHLM2.0-Z90-D16 для зубчастої рейки (90 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">167-729</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3137667199-rolik-natyazhnoj-gladkij.html" target="_blank" rel="noopener noreferrer">Ролик натяжний гладкий HTD3M-AF-2B-W16-SS25-D7 (D = 25 мм, d = 7 мм) шків без зубів з підшипниками</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="section-block">
+    <div class="table-subhead">Видалено (1)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">88-064</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3146631603-flantsevyj-podshipnik-kfl001.html" target="_blank" rel="noopener noreferrer">Фланцевий підшипник KFL001 для вала Ø12 мм, корпусний кульковий підшипниковий вузол</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+      <div class="netbar-wrap">
+      <div class="netbar-label"><span>чистий приріст наявності</span><span>+13 (31 / 18)</span></div>
+      <div class="netbar" role="img" aria-label="31 товарів знову в наявності, 18 закінчились">
+        <div class="seg-good" style="width:63.3%"></div>
+        <div class="seg-bad" style="width:36.7%"></div>
+      </div>
+    </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Знову в наявності</h3>
+      <span class="count-yes" style="font-weight:600;font-family:var(--font-mono);">31</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Немає в наявності → Готово до відправки</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">03-310</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1408141723-kabel-mednyj-mnogozhilnyj.html" target="_blank" rel="noopener noreferrer">Кабель екранований мідний багатожильний вита пара RVSP-8х2х0.14</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-402</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383968-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z16-D6 для зубчастої рейки (16 зубів, діам. 6 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-403</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383969-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z18-D6 для зубчастої рейки (18 зубів, діам. 6 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-404</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383970-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z20-D6 для зубчастої рейки (20 зубів, діам. 6 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-405</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383971-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z22-D8 для зубчастої рейки (22 зубів, діам. 8 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-406</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383972-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z24-D8 для зубчастої рейки (24 зубів, діам. 8 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-407</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383973-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z26-D8 для зубчастої рейки (26 зубів, діам. 8 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-408</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383974-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z30-D10 для зубчастої рейки (30 зубів, діам. 15 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-409</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383975-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z34-D10 для зубчастої рейки (34 зубів, діам. 10 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-410</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383976-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z40-D12 для зубчастої рейки (40 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-401</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2863383977-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z12-D6 для зубчастої рейки (12 зубів, діам. 6 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-419</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118727-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z100-D16 для зубчастої рейки (100 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-412</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118728-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z48-D12 для зубчастої рейки (48 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-413</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118729-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z50-D12 для зубчастої рейки (50 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-414</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118730-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z55-D12 для зубчастої рейки (55 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-415</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118731-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z65-D12 для зубчастої рейки (65 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-416</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118732-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z70-D12 для зубчастої рейки (70 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-417</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118733-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z80-D16 для зубчастої рейки (80 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-418</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2866118734-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z90-D16 для зубчастої рейки (90 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">64-411</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2869954293-shesternya-kosozubaya-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 1.0 GHLM1.0-Z42-D12 для зубчастої рейки (42 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-312</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514856-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z100-D16 для зубчастої рейки (100 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-301</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514857-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.5-Z12-D12 для зубчастої рейки (12 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-302</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514858-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z18-D14 для зубчастої рейки (18 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-303</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514859-zubchasta-shesternya-kosozuba.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z20-D14 для зубчастої рейки (20 зубів, діам. 14 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-304</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514860-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z25-D12 для зубчастої рейки (25 зубів, діам. 12 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-306</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514861-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z40-D16 для зубчастої рейки (40 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-307</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514862-zubchasta-shesternya-kosozuba.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z50-D16 для зубчастої рейки (50 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-308</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514863-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z60-D16 для зубчастої рейки (60 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-309</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514864-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z70-D16 для зубчастої рейки (70 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-310</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514865-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z80-D16 для зубчастої рейки (80 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">66-311</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2896514866-shesternya-kosozuba-stalnaya.html" target="_blank" rel="noopener noreferrer">Шестерня косозуба сталева модуль 2.5 GHLM2.0-Z90-D16 для зубчастої рейки (90 зубів, діам. 16 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Вже немає в наявності</h3>
+      <span class="count-no" style="font-weight:600;font-family:var(--font-mono);">18</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Готово до відправки → Немає в наявності</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">01-004</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p6290347-pult-ruchnogo-upravleniya.html" target="_blank" rel="noopener noreferrer">Пульт ручного управління з енкодером для Mach3 (USB COM)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-116</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2224940221-vihrevoj-vakuumnyj-kompressor.html" target="_blank" rel="noopener noreferrer">Вихровий вакуумний компресор HG-1100, 220V, 1.1kW, компресор для аерації</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">91-131</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2353677614-nabor-krepleniya-vint.html" target="_blank" rel="noopener noreferrer">Набір кріплення М4 (гвинт, шайба, гровер) для АКБ (2 шт. комплект)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-365</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2962735553-bms-bd6a20s-10rd.html" target="_blank" rel="noopener noreferrer">BMS JK-BD6A20S-10РD, 100A, для LiFePO4/Li-ion/LTO (8S-20S), 0.6A активного балансування</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-368</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2962735554-bms-bd6a24s-12rd.html" target="_blank" rel="noopener noreferrer">BMS JK-BD6A24S-12РD, 120A, для LiFePO4/Li-ion/LTO (8S-24S), 0.6A активного балансування</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">—</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2818285983-ultrazvukovoj-datchik-ub1000.html" target="_blank" rel="noopener noreferrer"></a></td>
+    <td class="col-avail"><span class="stock-badge neutral">—</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">—</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p6716737-razem-gx16.html" target="_blank" rel="noopener noreferrer"></a></td>
+    <td class="col-avail"><span class="stock-badge neutral">—</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">—</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p792148298-razem-xlr.html" target="_blank" rel="noopener noreferrer"></a></td>
+    <td class="col-avail"><span class="stock-badge neutral">—</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-226</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1166960286-datchik-kasaniya-instrumenta.html" target="_blank" rel="noopener noreferrer">Датчик торкання інструмента годинниковий SAX ZDI-50A</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-820</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1486519557-derzhatel-zerkala-mhr2.html" target="_blank" rel="noopener noreferrer">Тримач дзеркала 25 мм MHR2-25 для лазерного CO2 верстата, кріплення для дзеркала лазера, юстувальний майданчик</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-801</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1265259058-lazernaya-trubka-co2.html" target="_blank" rel="noopener noreferrer">Лазерна трубка CO2 Reci W1 75 Вт</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">15-103</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p865342188-derzhatel-tsangovogo-patrona.html" target="_blank" rel="noopener noreferrer">Тримач цангового патрона HsK63F</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">59-302</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2054086512-linejnyj-nejlonovyj-podshipnik.html" target="_blank" rel="noopener noreferrer">Лінійний нейлоновий підшипник RJMP-01-8 (8*16*25)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">59-204</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2053933279-linejnyj-nejlonovyj-podshipnik.html" target="_blank" rel="noopener noreferrer">Лінійний нейлоновий підшипник відкритий J-LIN-01RK-20 (20*32*45)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">60-313</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1465658415-zaglushki-dlya-relsovyh.html" target="_blank" rel="noopener noreferrer">Заглушки для рейкових напрямних HIWIN С6, 11 мм для EG25, EG30, HG25 (10 шт.)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">68-528</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1974840703-zubchatyj-remen-zamknutyj.html" target="_blank" rel="noopener noreferrer">Зубчастий ремінь замкнутий HTD 510-3M, довжина по колу 510 мм, ширина 15 мм</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">167-618</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1401079496-shkiv-zubchatyj-htd3m.html" target="_blank" rel="noopener noreferrer">Шків зубчастий HTD3M-AF-W17-Z24-D6.35 (24 зуби, посадковий діаметр 6.35 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">167-711</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1405043712-rolik-natyazhnoj-zubchatyj.html" target="_blank" rel="noopener noreferrer">Ролик натяжний зубчастий HTD3M-AF-2B-W16-Z30-D8 (30 зубців, посадковий діаметр 8 мм)</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+      
+    </div>
+
+  </div>
+<script>
+initThemeToggle();
+setupTooltips();
+</script>
+</body>
+</html>
