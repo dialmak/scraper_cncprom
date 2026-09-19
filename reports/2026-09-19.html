@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diff-звіт · cncprom.ua</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../map-common.css">
+<script src="../map-common.js"></script>
+<style>
+  /* map-common.css розрахований на .workspace фіксованої висоти — тут, як і в
+     map.html (build-maps.js), звичайний скрол сторінки замість нього. */
+  html, body { height: auto; overflow: visible; }
+  /* 80% ширини body на великих (HD+) екранах, з розумною стелею, щоб на
+     4K/ультраширокому текст не розтягувався в непрочитну стрічку; на
+     вузьких екранах 80% і так лишає щонайменше 16px гутер з кожного боку. */
+  .report-wrap { width: 80%; max-width: 1400px; margin: 0 auto; padding: 0 0 40px; display: flex; flex-direction: column; gap: 18px; }
+  .report-wrap h1 { font-size: 1.15rem; margin: 0; }
+  .report-wrap h2 { font-size: 0.92rem; margin: 4px 0 0; color: var(--text-main); }
+
+  /* Заголовок + підсумкова статистика закріплені під шапкою (.app-header
+     сама sticky top:0, 44px заввишки) під час скролу довгих таблиць нижче —
+     видно "що взагалі сталось" не гортаючи назад до початку сторінки.
+     Розділ "Категорії" і все далі за ним прокручується під цим блоком
+     звичайно. */
+  .report-sticky {
+    position: sticky; top: 44px; z-index: 9; background: var(--bg-page);
+    padding: 18px 0 14px; margin: 0; border-bottom: 1px solid var(--border-color);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* Третій акцентний колір поза status-yes/status-no map-common.css — лише
+     для "товар перейшов у іншу категорію" (ні добре, ні погано, просто інше),
+     локальний для цієї сторінки, не додається у спільний файл. */
+  :root { --accent-move: #7c3aed; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --accent-move: #b794f6; }
+  }
+  :root[data-theme="dark"] { --accent-move: #b794f6; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
+  .stat-tile { background: var(--bg-white); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .stat-tile .stat-n { font-family: var(--font-mono); font-weight: 600; font-size: 1.7rem; line-height: 1; color: var(--text-main); }
+  .stat-tile .stat-l { font-size: 0.76rem; color: var(--text-muted); line-height: 1.3; }
+  .stat-tile.good .stat-n { color: var(--status-yes); }
+  .stat-tile.bad .stat-n { color: var(--status-no); }
+  .stat-tile.move .stat-n { color: var(--accent-move); }
+
+  .netbar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .netbar-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); }
+  .netbar { height: 10px; border-radius: 5px; overflow: hidden; display: flex; border: 1px solid var(--border-dark); }
+  .netbar .seg-good { background: var(--status-yes); }
+  .netbar .seg-bad { background: var(--status-no); }
+
+  .quiet-note { font-size: 0.82rem; color: var(--text-muted); background: var(--bg-white); border: 1px solid var(--border-color); border-left: 3px solid var(--border-dark); border-radius: 0 6px 6px 0; padding: 10px 14px; line-height: 1.5; }
+
+  .group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .group-head h3 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
+  .group-block { display: flex; flex-direction: column; gap: 8px; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Diff-звіт · 2026-09-18 → 2026-09-19</button>
+    </div>
+    <div class="header-right">
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Повернутись до мапи сайту">🗂️ Мапа сайту</a>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+    </div>
+  </header>
+  <div class="report-wrap">
+
+    <div class="report-sticky">
+      <h1>Diff-звіт: 2026-09-18 → 2026-09-19</h1>
+      
+  <div class="stat-strip">
+    <div class="stat-tile"><div class="stat-n">14</div><div class="stat-l">товарів змінили наявність</div></div>
+    <div class="stat-tile good"><div class="stat-n">9</div><div class="stat-l">знову в наявності</div></div>
+    <div class="stat-tile bad"><div class="stat-n">5</div><div class="stat-l">вже немає в наявності</div></div>
+    <div class="stat-tile move"><div class="stat-n">16</div><div class="stat-l">перейшли в іншу категорію</div></div>
+  </div>
+    </div>
+
+    <div class="group-block">
+      <h2>Категорії</h2>
+      <table class="simple-table"><tbody><tr><td>Додано</td><td class="fw-count-cell" style="text-align:right;">0</td></tr><tr><td>Видалено</td><td class="fw-count-cell" style="text-align:right;">1</td></tr><tr><td>Перейменовано</td><td class="fw-count-cell" style="text-align:right;">0</td></tr><tr><td>Переміщено</td><td class="fw-count-cell" style="text-align:right;">0</td></tr></tbody></table>
+    
+    <div class="section-block">
+    <div class="table-subhead">Видалено (1)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва</th><th>Рівень</th></tr></thead>
+      <tbody><tr><td class="item-code">154934685</td><td>3D-принтери та аксесуари</td><td style="text-align:center;">2</td></tr></tbody>
+    </table>
+  </div>
+  </div>
+    
+    
+    </div>
+
+    <div class="group-block">
+      <h2>Товари</h2>
+      <div class="section-block">
+    <div class="table-subhead">Додано (11)</div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">08-254</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2913182729-osnovanie-solenoidnogo-vozdushnogo.html" target="_blank" rel="noopener noreferrer">Основа соленоїдного повітряного клапана 200M-4F, колектор для пневморозподільника</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-253</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2913182730-osnovanie-solenoidnogo-vozdushnogo.html" target="_blank" rel="noopener noreferrer">Основа соленоїдного повітряного клапана 200M-5F, колектор для пневморозподільника</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-247</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2913183304-pnevmaticheskij-bystrosemnyj-razem.html" target="_blank" rel="noopener noreferrer">Пневматичний швидкоз'ємний роз'єм SP10 з різьбою 1/8&quot; та отвором для трубки 6х4 мм (фітинг типу C)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-246</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2914011746-pnevmaticheskij-bystrosemnyj-razem.html" target="_blank" rel="noopener noreferrer">Пневматичний швидкоз'ємний роз'єм SP30 з різьбою 1/4&quot; та отвором для трубки 10х6.5 мм (фітинг типу C)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">08-248</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2913183305-pnevmaticheskij-bystrosemnyj-razem.html" target="_blank" rel="noopener noreferrer">Пневматичний швидкоз'ємний роз'єм SP20 з різьбою 1/4&quot; та отвором для трубки 8х5 мм (фітинг типу C)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-361</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2899604544-displej-dlya-bms.html" target="_blank" rel="noopener noreferrer">Дисплей 3.2″ для JK BMS, LCD екран для контролю акумулятора</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-362</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2899604545-sensornyj-displej-ekran.html" target="_blank" rel="noopener noreferrer">Сенсорний CD JK-4 дисплей 4.3″, екран для JK-BMS з кнопкою активації</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-360</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2899604968-sensornyj-displej-ekran.html" target="_blank" rel="noopener noreferrer">Сенсорний CD JK-7 дисплей 4.3″, екран для JK-BMS серії PB для контролю акумулятора</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">60-318</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2913182955-zaglushki-dlya-relsovyh.html" target="_blank" rel="noopener noreferrer">Заглушки для рейкових напрямних HIWIN 6 мм (10 шт.)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">21-126</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3137578721-vint-m4h20-polukrugloj.html" target="_blank" rel="noopener noreferrer">Гвинт M4х20 з напівкруглою головкою і внутрішнім шестигранником DIN 7380-1</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">21-422</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3108220260-gajka-zakladnaya-nakatkoj.html" target="_blank" rel="noopener noreferrer">Гайка закладна з накаткою і внутрішньою різьбою RM10x12.6-12.7</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    
+      <div class="netbar-wrap">
+      <div class="netbar-label"><span>чистий приріст наявності</span><span>+4 (9 / 5)</span></div>
+      <div class="netbar" role="img" aria-label="9 товарів знову в наявності, 5 закінчились">
+        <div class="seg-good" style="width:64.3%"></div>
+        <div class="seg-bad" style="width:35.7%"></div>
+      </div>
+    </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Знову в наявності</h3>
+      <span class="count-yes" style="font-weight:600;font-family:var(--font-mono);">9</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Немає в наявності → Готово до відправки</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">12-321</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2850294697-linejnyj-modulnyj-skolzyaschij.html" target="_blank" rel="noopener noreferrer">Лінійний модульний ковзаючий механізм GX80 (хід 500 мм) з кульковим підшипником SFU1605</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-322</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2850294698-linejnyj-modulnyj-skolzyaschij.html" target="_blank" rel="noopener noreferrer">Лінійний модульний ковзаючий механізм GX60 (хід 300 мм) з кульковим підшипником SFU1610</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-323</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2850294699-modul-skolzheniya-peredachi.html" target="_blank" rel="noopener noreferrer">Модуль ковзання передачі GF80 (хід 300 мм ) з герметичним кульковим підшипником SFU1610</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-268</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2818285983-ultrazvukovoj-datchik-ub1000.html" target="_blank" rel="noopener noreferrer">Ультразвуковий датчик UB1000-18GM75-E4-V15, циліндричний М18, NPN, 70-1000 мм</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-006</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p6716737-razem-gx16.html" target="_blank" rel="noopener noreferrer">Роз'єм GX16-4</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">03-020</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p792148298-razem-xlr.html" target="_blank" rel="noopener noreferrer">Роз'єм XLR-8</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">12-973</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3009207703-48v-1500w-beskollektornyj.html" target="_blank" rel="noopener noreferrer">48V 1500W  безколекторний електродвигун BLDC</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">59-204</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2053933279-linejnyj-nejlonovyj-podshipnik.html" target="_blank" rel="noopener noreferrer">Лінійний нейлоновий підшипник відкритий J-LIN-01RK-20 (20*32*45)</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">31-006</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1351676657-stanochnyj-alyuminievyj-profil.html" target="_blank" rel="noopener noreferrer">Верстатний алюмінієвий профіль для стола 30*60 2500 мм</a></td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    <div class="group-block">
+    <div class="group-head">
+      <h3>Вже немає в наявності</h3>
+      <span class="count-no" style="font-weight:600;font-family:var(--font-mono);">5</span>
+      <span style="font-size:0.74rem;color:var(--text-subtle);font-family:var(--font-mono);">Готово до відправки → Немає в наявності</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">10-753</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1298602983-tiski-stanochnye-lekalnye.html" target="_blank" rel="noopener noreferrer">Лещата верстатні лекальні QGG100 (TS) тип 3320, інструментальна сталь</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-247</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2343086275-odnokanalnyj-modul-optoelektronnoj.html" target="_blank" rel="noopener noreferrer">Одноканальний модуль оптоелектронної розв'язки з PNP-виходом 3.3-5V</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">05-354</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2892112986-bms-pb1a16s-10p.html" target="_blank" rel="noopener noreferrer">BMS JK-PB1A16S-10P, 100A, для LiFePO4/Li-ion/LTO (8S-16S), 1 A активного балансування</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-041</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p1220745355-lazernyj-stanok-so2.html" target="_blank" rel="noopener noreferrer">Лазерний верстат СО2 LEM3020-AB-40W, 40 Вт</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">22-052</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2641253156-sharnirnaya-reguliruemaya-opora.html" target="_blank" rel="noopener noreferrer">Шарнірна регульована опора SRO-М20х100-D80, верстатна різьбова віброопора М20, промислова плаваюча опорна ніжка</a></td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+      <div class="group-block">
+    <div class="group-head">
+      <h3>Перейшли в іншу категорію</h3>
+      <span style="font-weight:600;font-family:var(--font-mono);color:var(--accent-move);">16</span>
+    </div>
+    <div class="table-wrap">
+    <table class="simple-table">
+      <thead><tr><th>Код</th><th>Назва товару</th><th>Категорія</th><th>Наявність</th></tr></thead>
+      <tbody><tr>
+    <td class="col-code"><span class="item-code">01-044</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034247-tormoznoj-rezistor-500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 500 Вт, 40 Ом, RXLG500W40RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-052</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034248-tormoznoj-rezistor-1000.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 1000 Вт, 40 Ом, RXLG1000W40RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-051</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034932-tormoznoj-rezistor-rxlg.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 1000 Вт, 75 Ом,  RXLG1000W75RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-043</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034934-tormoznoj-rezistor-1500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 1500 Вт, 40 Ом, RXLG1500W40RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-054</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034936-tormoznoj-rezistor-300.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 300 Вт, 40 Ом, RXLG300W40RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-053</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034938-tormoznoj-rezistor-500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 500 Вт, 100 Ом, RXLG500W100RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-049</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034939-tormoznoj-rezistor-500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 500 Вт,150 Ом, RXLG500W150RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-045</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034940-tormoznoj-rezistor-500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 500 Вт, 30 Ом, RXLG500W30RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-046</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034941-tormoznoj-rezistor-rxlg50w50rj.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 50 Вт, 50 Ом, RXLG50W50RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-040</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p2944521322-tormoznoj-rezistor-rxlv.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор RXLВ 40W 33R в алюмінієвому корпусі, потужний алюмінієвий резистор</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-047</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034249-tormoznoj-rezistor-1000.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 1000 Вт, 50 Ом, RXLG 1000W 50 RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-048</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034933-tormoznoj-rezistor-100.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 100 Вт, 50 Ом, RXLG100W50RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-042</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034935-tormoznoj-rezistor-1500.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 1500 Вт, 50 Ом, RXLG1500W50RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">01-050</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3100034937-tormoznoj-rezistor-300.html" target="_blank" rel="noopener noreferrer">Гальмівний резистор 300 Вт, 50 Ом, RXLG300W50RJ в алюмінієвому корпусі</a></td>
+    <td>Гальмівні резистори <span style="color:var(--text-subtle);">→</span> Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</td>
+    <td class="col-avail"><span class="stock-badge no">Немає в наявності</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-146</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3111051097-fotopolimernaya-smola-creality.html" target="_blank" rel="noopener noreferrer">Фотополімерна UV-смола Creality Fast Resin Grey 1000 г + набір інструментів UV Resin Tool Kit</a></td>
+    <td>3D-принтери та аксесуари <span style="color:var(--text-subtle);">→</span> 3D-принтери та аксесуари</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr><tr>
+    <td class="col-code"><span class="item-code">10-147</span></td>
+    <td class="col-name"><a href="https://cncprom.ua/ua/p3112566722-smola-dlya-fotopolimernoj.html" target="_blank" rel="noopener noreferrer">Смола для фотополімерного 3D-друку ELEGOO Standard Photopolymer Resin 2.0, сіра (Grey), 405 нм, 1 кг</a></td>
+    <td>3D-принтери та аксесуари <span style="color:var(--text-subtle);">→</span> 3D-принтери та аксесуари</td>
+    <td class="col-avail"><span class="stock-badge yes">Готово до відправки</span></td>
+  </tr></tbody>
+    </table>
+  </div>
+  </div>
+    </div>
+
+  </div>
+<script>
+initThemeToggle();
+setupTooltips();
+</script>
+</body>
+</html>
