@@ -227,14 +227,14 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   const rows = sorted.map((e, i) => `
             <tr>
               <td class="col-n">${i + 1}</td>
-              <td><a href="${e.id}_map.html" target="_blank" rel="noopener noreferrer" class="fw-cat-link">${escapeHtmlOuter(e.name || e.id)}</a></td>
+              <td><a href="${e.id}_map.html" class="fw-cat-link">${escapeHtmlOuter(e.name || e.id)}</a></td>
               <td style="text-align:center;">${e.levels ?? '—'}</td>
               <td style="text-align:center;" class="fw-count-cell">${e.total_products ?? '—'}</td>
               <td style="text-align:center;">${diffBadgeHtml(e)}</td>
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
               <td style="text-align:center;">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}</td>
-              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>` : '—'}</td>
+              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" class="link-site">↗</a>` : '—'}</td>
             </tr>`).join('');
 
   // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
@@ -291,9 +291,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <div class="help-panel-body">
         <div class="orphan-group-list">${orphanGroups.map(g => `
           <div class="orphan-group">
-            <a href="${escapeHtmlOuter(g.topId)}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
+            <a href="${escapeHtmlOuter(g.topId)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
             <div class="orphan-cat-list">${g.items.map(oc =>
-              '<a href="' + escapeHtmlOuter(g.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge">' +
+              '<a href="' + escapeHtmlOuter(g.topId) + '_map.html" class="cat-found-badge">' +
               (oc.level === 1 ? 'Товари категорії, які не входять до підкатегорій' : escapeHtmlOuter(oc.name)) +
               ' <span class="node-count">(' + oc.own + ')</span></a>'
             ).join('')}</div>
@@ -323,9 +323,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
         <p class="failed-note">Скрапер не зміг прочитати сторінку цих товарів навіть після повторного проходу, тому їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту — наступний нічний прогін їх підхопить.</p>
         <div class="orphan-group-list">${failedGroups.map(e => `
           <div class="orphan-group">
-            <a href="${escapeHtmlOuter(e.id)}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.failed_urls.length})</span></a>
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.failed_urls.length})</span></a>
             <div class="failed-url-list">${e.failed_urls.map(u =>
-              '<a href="' + escapeHtmlOuter(u) + '" target="_blank" rel="noopener noreferrer" class="failed-url">↗ ' + escapeHtmlOuter(failedLabel(u)) + '</a>'
+              '<a href="' + escapeHtmlOuter(u) + '" class="failed-url">↗ ' + escapeHtmlOuter(failedLabel(u)) + '</a>'
             ).join('')}</div>
           </div>`).join('')}</div>
       </div>
@@ -419,14 +419,14 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       </div>
     </div>
     <div class="header-right">${IS_SITE_MODE ? `
-      <a href="reports/index.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
       <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/scrape.log">📄 scrape.log</button>
       <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/map.log">📄 map.log</button>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="https://cncprom.ua/ua/" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
+      <a href="https://cncprom.ua/ua/" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/${MAP_SUBDIR}/scrape.log`, scrapeLogContent)}

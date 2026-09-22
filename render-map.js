@@ -189,7 +189,7 @@ if (!appTree) {
 // URL/наявність/категорія-як-текст, плюс topId/topName (це завжди ця сама
 // категорія 1 рівня) — щоб build-maps.js міг просто зконкатенувати всі
 // <id>_search.json в один output/<MAP_SUBDIR>/search-index.json, а
-// map.html — знаючи topId, відкрити потрібний <id>_map.html в новій вкладці.
+// map.html — знаючи topId, відкрити потрібний <id>_map.html.
 // Пишеться порожнім масивом, якщо CSV ще нема (HAS_CSV=false) — так само,
 // як own_products вище, а не пропускається — build-maps.js завжди читає
 // файл, без розгалуження "може не існувати".
@@ -688,7 +688,7 @@ function setupTooltips() {
 // name/code/categoryName) використовують ОДНУ реалізацію збігу/підсвітки, не
 // дві — лише поля різні, бо на кожній сторінці свій запис товару. Єдина
 // реальна відмінність між сторінками — що робить клік по категорії (jump по
-// дереву тут-таки vs відкриття чужого <id>_map.html у новій вкладці) — це
+// дереву тут-таки vs відкриття чужого <id>_map.html) — це
 // свідомо лишається окремим для кожної сторінки, а не третьою спільною
 // функцією заради самої лише "спільності".
 function filterProducts(products, query, fields) {
@@ -797,8 +797,8 @@ function initSiteSearch() {
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
-        '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1020,7 +1020,7 @@ function initCatalogMap(CATALOG_DATA) {
         '<tr>' +
         '<td class="col-n">' + (p.index || i + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span></td>' +
-        '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
+        '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1123,7 +1123,7 @@ function initCatalogMap(CATALOG_DATA) {
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="width:78px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
-            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + escapeAttr(ch.url) + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
+            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + escapeAttr(ch.url) + '" class="link-site">↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -1215,7 +1215,7 @@ function initCatalogMap(CATALOG_DATA) {
   // isLocal=true — товар цієї категорії (allProductsList): клік по категорії
   // робить jump у межах цієї самої сторінки, як і раніше. isLocal=false —
   // товар з іншої категорії 1 рівня (search-index.json): клік відкриває
-  // <topId>_map.html у новій вкладці, як на map.html — переходу до вузла на
+  // <topId>_map.html, як на map.html — переходу до вузла на
   // чужій сторінці мапа не підтримує.
   function buildResultsSection(title, matches, query, isLocal) {
     var section = document.createElement('div');
@@ -1232,11 +1232,11 @@ function initCatalogMap(CATALOG_DATA) {
       var isYes = isAvailableProduct(p);
       var categoryCell = isLocal
         ? '<a href="#" class="cat-found-badge" data-node-id="' + escapeAttr(p.nodeId) + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(p.nodeName, query) + '</a>'
-        : '<a href="' + escapeAttr(p.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
+        : '<a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -1531,12 +1531,12 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
     <div class="header-right">${MAP_SUBDIR === 'site' ? `
-      <a href="reports/index.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="${escapeHtmlOuter(rootUrl)}" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
+      <a href="${escapeHtmlOuter(rootUrl)}" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
 
@@ -1606,7 +1606,7 @@ const html = `<!DOCTYPE html>
             <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">${CATALOG_DATA.tree.stats.total_products}</td>
             <td style="text-align:center;" id="cat-verdict-badge"></td>
             <td style="text-align:center;" id="cat-total-no"><span class="count-no">${CATALOG_DATA.tree.stats.total_no}</span></td>
-            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" target="_blank" rel="noopener noreferrer" class="link-site">↗</a></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site">↗</a></td>
           </tr></tbody></table>
         </div>
         <!-- Повністю окремий заголовок для режиму пошуку — НЕ переиспользує
