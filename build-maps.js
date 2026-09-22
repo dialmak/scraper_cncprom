@@ -377,7 +377,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       </div>
     </div>
     <div class="header-right">${IS_SITE_MODE ? `
-      <a href="reports/latest.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="День-до-дня зміни каталогу: категорії й наявність товарів">📄 Diff-звіт</a>` : ''}
+      <a href="reports/index.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
       <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/scrape.log">📄 scrape.log</button>
       <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/map.log">📄 map.log</button>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>

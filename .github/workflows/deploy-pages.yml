@@ -82,19 +82,14 @@ jobs:
           git commit -m "Знімок і diff-звіт за $(date -u +%F)" || echo "Немає змін для коміту"
           git push origin data
 
-      - name: "Скопіювати diff-звіт (HTML) у output/site/reports/ для публікації на Pages"
-        # data-branch сама на Pages не публікується (тільки output/); тож
-        # HTML-версію diff-звіту (пише diff-map.js поряд із .md) копіюємо в
-        # output/site/reports/, звідки її вже підхопить крок нижче. Додатково
-        # кладемо копію сьогоднішнього звіту під стабільним ім'ям latest.html —
-        # саме на нього веде кнопка "📄 Diff-звіт" у шапці map.html/<id>_map.html
-        # (build-maps.js/render-map.js), які самі виконуються РАНІШЕ за
-        # diff-map.js в цьому ж прогоні й тому не можуть послатись на файл
-        # сьогоднішньої дати напряму.
-        run: |
-          mkdir -p output/site/reports
-          cp data-branch/reports/*.html output/site/reports/ 2>/dev/null || true
-          cp "data-branch/reports/$(date -u +%F).html" output/site/reports/latest.html
+      - name: "Сторінка змін каталогу (reports/index.html)"
+        # Будує output/site/reports/ з УСІХ знімків гілки data: дашборд зі шкалою
+        # змін по днях і порівнянням будь-яких двох дат (diff рахується в
+        # браузері з компактних знімків — див. build-reports.js). Замінює
+        # колишнє копіювання щоденних HTML-звітів diff-map.js; той тепер пише
+        # лише Markdown-історію в гілку data. reports/latest.html лишається
+        # переадресацією на index.html для старих посилань.
+        run: node build-reports.js data-branch
 
       - name: Підготувати Pages-артефакт
         uses: actions/upload-pages-artifact@v5

@@ -1512,7 +1512,7 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
     <div class="header-right">${MAP_SUBDIR === 'site' ? `
-      <a href="reports/latest.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="День-до-дня зміни каталогу: категорії й наявність товарів">📄 Diff-звіт</a>` : ''}
+      <a href="reports/index.html" target="_blank" rel="noopener noreferrer" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
