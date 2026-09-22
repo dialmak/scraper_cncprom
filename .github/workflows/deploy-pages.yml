@@ -1,8 +1,10 @@
 name: Скрапінг + деплой мапи на GitHub Pages
 
 # Нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
-# build-maps) на ubuntu-latest, публікація output/ як Pages-артефакт напряму —
-# output/ в git не потрапляє.
+# build-maps) на ubuntu-latest, публікація output/site/ як Pages-артефакт напряму
+# (вміст output/site/ — корінь сайту, тож адреси без /site/: /map.html,
+# /<id>_map.html, /reports/index.html; старі /site/… — заглушки-переадресації
+# від build-maps.js) — output/ в git не потрапляє.
 #
 # Після build-maps.js той самий job готує робочу копію гілки `data` через git
 # worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
@@ -116,7 +118,7 @@ jobs:
       - name: Підготувати Pages-артефакт
         uses: actions/upload-pages-artifact@v5
         with:
-          path: output
+          path: output/site
 
   deploy:
     needs: scrape-and-build

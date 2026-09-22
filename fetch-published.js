@@ -16,8 +16,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const PAGES_URL = (process.argv[2] || 'https://dialmak.github.io/scraper_cncprom/').replace(/\/?$/, '/');
-const BASE = PAGES_URL + 'site/';
+// Власний домен з 22.09.2026 (Settings → Pages → Custom domain); стара адреса
+// dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
+const PAGES_URL = (process.argv[2] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
+// Сайт публікує output/site/ у корені (з 22.09.2026); до того все лежало під
+// site/. База визначається на старті: корінь, а якщо там нема
+// categories-site.csv — стара розкладка site/ (перший прогін після переходу).
+let BASE = PAGES_URL;
 const DIR = path.join(__dirname, 'output', 'site');
 
 async function get(name) {
@@ -34,12 +39,13 @@ function parseUtc(s) {
 
 (async () => {
   fs.mkdirSync(DIR, { recursive: true });
-  const csv = await get('categories-site.csv');
+  let csv;
+  try { csv = await get('categories-site.csv'); } catch (e) { BASE = PAGES_URL + 'site/'; csv = await get('categories-site.csv'); }
   const ids = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1)
     .map(l => l.split(';')[1]).filter(x => /^\d+$/.test(x || ''));
   if (ids.length === 0) throw new Error('categories-site.csv з Pages не містить жодної категорії');
   fs.writeFileSync(path.join(DIR, 'categories-site.csv'), csv);
-  console.log(`${PAGES_URL}: категорій ${ids.length}`);
+  console.log(`${BASE}: категорій ${ids.length}`);
 
   let ok = 0;
   for (const id of ids) {

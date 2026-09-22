@@ -521,17 +521,33 @@ initSiteSearch();
 `;
   fs.writeFileSync(path.join(DIR, "map.html"), html, "utf-8");
 
-  // Корінь GitHub Pages (публікується вся тека output/) — переадресація на
-  // site/map.html. Без неї https://dialmak.github.io/scraper_cncprom/ віддавав
-  // 404, а точку входу треба було знати напам'ять. Лише для site: output/new/
-  // (build-custom-tree.js) — окрема, необов'язкова частина, не головна сторінка.
+  // На GitHub Pages публікується САМА тека output/site/ (з 22.09.2026, раніше —
+  // уся output/, і адреси мали зайве /site/). Тому:
+  //   - index.html поруч із map.html: корінь https://map.cncprom.pp.ua/ веде на
+  //     мапу, а не дає 404;
+  //   - site/… — заглушки на місці старих адрес (…/site/map.html,
+  //     …/site/<id>_map.html, …/site/reports/…), щоб збережені посилання не
+  //     ламались. JS переносить ?from=&to= і #cat=<id> (meta-refresh їх губить),
+  //     meta лишається запасним варіантом без JS.
+  // Лише для site: output/new/ — окрема кураторська мапа, у CI не публікується.
   if (IS_SITE_MODE) {
-    fs.writeFileSync(path.join(ROOT_DIR, 'output', 'index.html'), `<!DOCTYPE html>
-<html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=site/map.html">
-<title>Мапа сайту cncprom.ua</title></head>
-<body><p><a href="site/map.html">Мапа сайту cncprom.ua</a></p></body></html>
-`, "utf-8");
+    writeRedirect(path.join(DIR, 'index.html'), 'map.html');
+    writeRedirect(path.join(DIR, 'site', 'map.html'), '../map.html');
+    entries.forEach(e => writeRedirect(path.join(DIR, 'site', `${e.id}_map.html`), `../${e.id}_map.html`));
+    writeRedirect(path.join(DIR, 'site', 'reports', 'index.html'), '../../reports/index.html');
+    writeRedirect(path.join(DIR, 'site', 'reports', 'latest.html'), '../../reports/index.html');
   }
+}
+
+function writeRedirect(file, target) {
+  const t = escapeHtmlOuter(target);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `<!DOCTYPE html>
+<html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=${t}">
+<script>location.replace('${target}' + location.search + location.hash);</script>
+<title>Мапа сайту cncprom.ua</title></head>
+<body><p><a href="${t}">Мапа сайту cncprom.ua</a></p></body></html>
+`, "utf-8");
 }
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
