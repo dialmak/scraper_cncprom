@@ -11,6 +11,9 @@ const DELAY_MS = 700;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 6000;
 const BREADCRUMB_WAIT_MS = 8000;
+// Пауза перед повторним проходом по товарах, що не вдались на ЕТАПІ 2 —
+// щоб короткий збій сайту встиг минути (див. кінець ЕТАПУ 2).
+const RETRY_PASS_DELAY_MS = 60000;
 // Скільки чекати на появу сітки товарів (її малює React уже після
 // domcontentloaded). Див. waitForProductGrid — без цього очікування
 // категорія тихо отримувала 0 товарів.
@@ -65,11 +68,23 @@ function logError(text) {
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function gotoWithRetry(page, url, waitForBreadcrumbs = false) {
+// opts.waitForBreadcrumbs — дочекатися хлібних крихт (етап 2, їх малює React);
+// opts.silent — не рахувати остаточну невдачу помилкою прогону (етап 2 спершу
+// збирає такі товари для повторного проходу й логує лише тих, що не вдались
+// і вдруге — див. кінець ЕТАПУ 2).
+async function gotoWithRetry(page, url, opts = {}) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      if (waitForBreadcrumbs) {
+      const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      // Раніше статус відповіді не перевірявся зовсім: сторінка помилки сайту
+      // (429/5xx під час короткого збою) вважалась успіхом. Так у знімку за
+      // 18.09.2026 три сусідні товари отримали порожні назву, код і статус —
+      // а в diff це виглядало як "зникли з наявності" й наступного дня "знову
+      // в наявності". Звичайні сторінки сайту віддають 200, неіснуючий товар —
+      // 404 (перевірено), тож >= 400 — завжди збій, який варто повторити.
+      // resp буває null для навігації в межах того самого документа — це не збій.
+      if (resp && resp.status() >= 400) throw new Error(`HTTP ${resp.status()}`);
+      if (opts.waitForBreadcrumbs) {
         await page.waitForSelector('[data-qaid="breadcrumbs_item"]', { timeout: BREADCRUMB_WAIT_MS }).catch(() => {});
       }
       return true;
@@ -79,7 +94,7 @@ async function gotoWithRetry(page, url, waitForBreadcrumbs = false) {
     }
   }
   console.error(`  ПРОПУЩЕНО після ${MAX_RETRIES} спроб: ${url}`);
-  logError(`Не вдалось завантажити після ${MAX_RETRIES} спроб: ${url}`);
+  if (!opts.silent) logError(`Не вдалось завантажити після ${MAX_RETRIES} спроб: ${url}`);
   return false;
 }
 
@@ -289,15 +304,8 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
 }
 
 // ==================== ЕТАП 2: ПОВНІ ДАНІ ПО КОЖНОМУ УНІКАЛЬНОМУ ТОВАРУ ====================
-async function extractProductData(page, url, assignment) {
-  const ok = await gotoWithRetry(page, url, true);
-  await sleep(DELAY_MS);
-  if (!ok) return null;
-
-  const idMatch = url.match(/\/p(\d+)-/);
-  const productId = idMatch ? idMatch[1] : "";
-
-  const data = await page.evaluate(() => {
+function readProductPage(page) {
+  return page.evaluate(() => {
     const nameEl = document.querySelector('[data-qaid="product_name"]');
     const skuEl = document.querySelector('[data-qaid="product_code"]');
     const availEl = document.querySelector('[data-qaid="presence_data"]');
@@ -309,7 +317,38 @@ async function extractProductData(page, url, assignment) {
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
       breadcrumbs
     };
-  });
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", breadcrumbs: "" }));
+}
+
+// Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
+// усі вже в DOM на domcontentloaded), тож гонки рендеру тут немає — на відміну
+// від сітки товарів на етапі 1. Сторінка без назви означає, що прочитано НЕ
+// сторінку товару (заглушку/помилку сайту, яку не впіймала перевірка статусу),
+// і такий рядок не можна писати в CSV: порожній статус diff сприйме як "зник з
+// наявності". Тому — ще одна спроба, а якщо знову без назви — null (товар
+// піде в повторний прохід наприкінці ЕТАПУ 2).
+// silent: true — перший прохід, невдача ще не рахується помилкою прогону.
+async function extractProductData(page, url, assignment, silent = false) {
+  let data = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const ok = await gotoWithRetry(page, url, { waitForBreadcrumbs: true, silent });
+    await sleep(DELAY_MS);
+    if (!ok) return null;
+    data = await readProductPage(page);
+    if (data.productName) break;
+    if (attempt < 2) {
+      console.warn(`  Сторінка товару без назви (спроба ${attempt}/2): ${url} — пробуємо ще раз`);
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+  if (!data.productName) {
+    const msg = `Сторінка товару без даних (немає назви) після 2 спроб: ${url}`;
+    if (silent) console.warn(`  ${msg}`); else logError(msg);
+    return null;
+  }
+
+  const idMatch = url.match(/\/p(\d+)-/);
+  const productId = idMatch ? idMatch[1] : "";
 
   return {
     productId,
@@ -482,13 +521,32 @@ function generateReport(tree, allRows) {
 
     console.log(`\n=== ЕТАП 2: збір повних даних по кожному унікальному товару ===`);
     const failedUrls = [];
+    const retryLater = [];
     let idx = 0;
     const total = productAssignments.size;
     for (const [id, assignment] of productAssignments) {
       idx++;
-      const row = await extractProductData(page, assignment.url, assignment);
-      if (row) allRows.push(row); else failedUrls.push(assignment.url);
+      const row = await extractProductData(page, assignment.url, assignment, true);
+      if (row) allRows.push(row); else retryLater.push(assignment);
       if (idx % 20 === 0 || idx === total) console.log(`  товарів оброблено: ${idx}/${total}`);
+    }
+
+    // Повторний прохід. Збої сайту бувають пачками (18.09.2026 постраждали три
+    // СУСІДНІ товари), а ретраї всередині gotoWithRetry розтягнуті лише на
+    // ~12 с — пачку вони не переживають. Тому товари, що не вдались, пробуємо
+    // ще раз наприкінці, після окремої паузи. Помилкою прогону (logError)
+    // стає лише те, що не вдалось і вдруге.
+    if (retryLater.length > 0) {
+      console.log(`\n  Не вдалось з першого разу: ${retryLater.length} — повторний прохід через ${RETRY_PASS_DELAY_MS / 1000} с`);
+      logLine(`ЕТАП 2: ${retryLater.length} товарів не вдалось з першого разу — повторний прохід.`);
+      await sleep(RETRY_PASS_DELAY_MS);
+      let recovered = 0;
+      for (const assignment of retryLater) {
+        const row = await extractProductData(page, assignment.url, assignment, false);
+        if (row) { allRows.push(row); recovered++; } else failedUrls.push(assignment.url);
+      }
+      console.log(`  Повторний прохід: відновлено ${recovered} з ${retryLater.length}`);
+      logLine(`ЕТАП 2: повторний прохід відновив ${recovered} з ${retryLater.length}.`);
     }
 
     console.log(`\nВсього товарів зібрано: ${allRows.length}`);
