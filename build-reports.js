@@ -16,6 +16,8 @@
 //   reports/data/products.json   — словник id → [назва, код, URL] по всіх
 //                                  знімках (назви змінюються рідко, тож не
 //                                  дублюються в кожному дні).
+//   reports/data/categories.json — словник id категорії → URL на сайті (див.
+//                                  readCategoryUrls).
 // Історія росте на ~12 МБ на рік — далеко від ліміту GitHub Pages (1 ГБ).
 //
 // ОДНА функція diff (reportDiff) для Node і для браузера — той самий механізм
@@ -34,6 +36,21 @@ const path = require('path');
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
 const OUT_DIR = path.join(__dirname, 'output', 'site', 'reports');
+const SITE_DIR = path.join(__dirname, 'output', 'site');
+
+// id категорії → URL на сайті (data/categories.json). Знімки несуть url
+// категорії лише відтоді, як generate-snapshot.js почав його писати
+// (23.09.2026); для старіших дат і як запас беремо URL зі свіжих
+// <id>_category_map.json (у нічному прогоні build-maps.js уже відпрацював).
+// URL зі знімків має пріоритет.
+function readCategoryUrls(fromSnapshots) {
+  const out = {};
+  const walk = n => { if (n.url) out[n.categoryId] = n.url; (n.children || []).forEach(walk); };
+  let files = [];
+  try { files = fs.readdirSync(SITE_DIR).filter(f => f.endsWith('_category_map.json')); } catch (e) { /* немає output/site — лише знімки */ }
+  files.forEach(f => { try { walk(JSON.parse(fs.readFileSync(path.join(SITE_DIR, f), 'utf-8'))); } catch (e) { /* пошкоджений файл — пропускаємо */ } });
+  return Object.assign(out, fromSnapshots);
+}
 const OUT_DATA = path.join(OUT_DIR, 'data');
 
 // ==================== СПІЛЬНЕ ДЛЯ NODE І БРАУЗЕРА ====================
@@ -66,9 +83,17 @@ function reportDiff(a, b, products) {
     while (cur && cur.parentId && guard++ < 12) cur = b.cats.get(cur.parentId) || a.cats.get(cur.parentId);
     return cur || null;
   }
+  // Повний шлях "Розділ › … › Категорія" — у таблиці видно лише розділ і саму
+  // категорію, а проміжні рівні (часто 2–3) показуються в підказці, інакше
+  // категорію важко знайти на сайті.
+  function pathOf(id) {
+    var out = [], cur = b.cats.get(id) || a.cats.get(id), guard = 0;
+    while (cur && guard++ < 12) { out.unshift(cur.name); cur = cur.parentId ? (b.cats.get(cur.parentId) || a.cats.get(cur.parentId)) : null; }
+    return out.length ? out.join(' › ') : '#' + id;
+  }
   function row(type, id, cat, avail) {
     var p = products[id] || ['#' + id, '', ''], t = topOf(cat);
-    return { type: type, id: id, name: p[0], sku: p[1], url: p[2], cat: cat, catName: catName(cat),
+    return { type: type, id: id, name: p[0], sku: p[1], url: p[2], cat: cat, catName: catName(cat), catPath: pathOf(cat),
       top: t ? t.id : '', topName: t ? t.name : '—', avail: avail };
   }
   var rows = [], cats = [];
@@ -76,18 +101,18 @@ function reportDiff(a, b, products) {
     var pa = a.prods.get(id);
     if (!pa) { rows.push(row('added', id, pb.cat, pb.avail)); return; }
     if (reportIsYes(pa.avail) !== reportIsYes(pb.avail)) rows.push(row(reportIsYes(pb.avail) ? 'in' : 'out', id, pb.cat, pb.avail));
-    if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); rows.push(r); }
+    if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); r.fromCatPath = pathOf(pa.cat); rows.push(r); }
   });
   a.prods.forEach(function (pa, id) { if (!b.prods.has(id)) rows.push(row('removed', id, pa.cat, pa.avail)); });
   b.cats.forEach(function (cb, id) {
     var ca = a.cats.get(id), t = topOf(id), top = t ? t.name : '—';
-    if (!ca) { cats.push({ type: 'added', id: id, name: cb.name, level: cb.level, topName: top }); return; }
-    if (ca.name !== cb.name) cats.push({ type: 'renamed', id: id, name: cb.name, oldName: ca.name, level: cb.level, topName: top });
-    if (ca.parentId !== cb.parentId) cats.push({ type: 'moved', id: id, name: cb.name, level: cb.level, topName: top,
+    if (!ca) { cats.push({ type: 'added', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top }); return; }
+    if (ca.name !== cb.name) cats.push({ type: 'renamed', id: id, name: cb.name, path: pathOf(id), oldName: ca.name, level: cb.level, topName: top });
+    if (ca.parentId !== cb.parentId) cats.push({ type: 'moved', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top,
       fromName: ca.parentId ? catName(ca.parentId) : '(корінь)', toName: cb.parentId ? catName(cb.parentId) : '(корінь)' });
   });
   a.cats.forEach(function (ca, id) {
-    if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, level: ca.level, topName: t ? t.name : '—' }); }
+    if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, path: pathOf(id), level: ca.level, topName: t ? t.name : '—' }); }
   });
   var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
   rows.forEach(function (r) { totals[r.type]++; });
@@ -109,7 +134,7 @@ function initReportsPage() {
   var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4 };
   var PAGE = 200;
 
-  var idx, products, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, q: '', top: '', limit: PAGE };
+  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, q: '', top: '', limit: PAGE };
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -261,10 +286,18 @@ function initReportsPage() {
   }
 
   // ---------- Таблиці ----------
+  // Назва категорії → посилання на її сторінку на сайті; повний шлях — у
+  // підказці. Без URL (категорія зникла раніше, ніж знімки почали зберігати
+  // URL) — просто текст із тією ж підказкою.
+  function catLink(id, name, path) {
+    var u = catUrls[id];
+    return u ? '<a class="cat-site" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer" data-tip="' + esc(path) + '">' + esc(name) + '</a>'
+      : '<span data-tip="' + esc(path) + '">' + esc(name) + '</span>';
+  }
   function detail(r) {
     if (r.type === 'in')  return '<span class="subtle">Немає</span><span class="arrow-to">→</span><b class="count-yes">В наявності</b>';
     if (r.type === 'out') return '<span class="subtle">В наявності</span><span class="arrow-to">→</span><b class="count-no">Немає</b>';
-    if (r.type === 'moved') return '<span class="subtle">' + esc(r.fromCatName) + '</span><span class="arrow-to">→</span>' + esc(r.catName);
+    if (r.type === 'moved') return '<span class="subtle">' + catLink(r.fromCat, r.fromCatName, r.fromCatPath) + '</span><span class="arrow-to">→</span>' + catLink(r.cat, r.catName, r.catPath);
     if (r.type === 'added') return '<span class="muted">' + (reportIsYes(r.avail) ? 'В наявності' : 'Немає в наявності') + '</span>';
     return '<span class="subtle">зник із сайту</span>';
   }
@@ -278,7 +311,7 @@ function initReportsPage() {
           '<td>' + (r.sku ? '<span class="code">' + esc(r.sku) + '</span>' : '<span class="subtle">—</span>') + '</td>' +
           '<td>' + (r.url ? '<a class="pname" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.name) + '</a>' : esc(r.name)) + '</td>' +
           '<td>' + (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html" target="_blank" rel="noopener noreferrer">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
-          (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + esc(r.catName) : '') + '</td>' +
+          (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + catLink(r.cat, r.catName, r.catPath) : '') + '</td>' +
           '<td>' + detail(r) + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
       (rows.length > st.limit ? '<div class="more-row"><button class="chip" data-more>Показати ще ' + Math.min(PAGE, rows.length - st.limit) + ' з ' + (rows.length - st.limit) + '</button></div>' : '');
@@ -291,7 +324,7 @@ function initReportsPage() {
         var d = c.type === 'renamed' ? '<span class="subtle">' + esc(c.oldName) + '</span><span class="arrow-to">→</span>' + esc(c.name)
           : c.type === 'moved' ? '<span class="subtle">' + esc(c.fromName) + '</span><span class="arrow-to">→</span>' + esc(c.toName)
           : '<span class="muted">рівень ' + c.level + '</span>';
-        return '<tr><td><span class="tb ' + k[2] + '"><span class="ic" aria-hidden="true">' + k[0] + '</span>' + k[1] + '</span></td><td>' + esc(c.name) + '</td><td class="muted">' + esc(c.topName) + '</td><td>' + d + '</td></tr>';
+        return '<tr><td><span class="tb ' + k[2] + '"><span class="ic" aria-hidden="true">' + k[0] + '</span>' + k[1] + '</span></td><td>' + catLink(c.id, c.name, c.path) + '</td><td class="muted">' + esc(c.topName) + '</td><td>' + d + '</td></tr>';
       }).join('') + '</tbody></table></div>';
   }
   function filtered() {
@@ -377,8 +410,9 @@ function initReportsPage() {
   initThemeToggle();
   setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
   setupTooltips();
-  Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json')]).then(function (r) {
-    idx = r[0]; products = r[1];
+  Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json'),
+    getJson(DATA + 'categories.json').catch(function () { return {}; })]).then(function (r) {
+    idx = r[0]; products = r[1]; catUrls = r[2];
     $('generated').textContent = fmtLong(idx.dates[idx.dates.length - 1]);
     if (idx.dates.length < 2) {
       $('panel-wrap').innerHTML = '<div class="card empty"><b>Поки що є лише один знімок (' + fmtLong(idx.dates[0]) + ')</b>Порівняння з\'явиться після наступного нічного прогону.</div>';
@@ -489,6 +523,10 @@ details.data-table th:first-child, details.data-table td:first-child { text-alig
 .pname:hover { color: var(--text-link); text-decoration: underline; }
 .cat-link { color: var(--text-muted); text-decoration: none; }
 .cat-link:hover { color: var(--text-link); text-decoration: underline; }
+/* Посилання з data-tip: [data-tip] у map-common.css ставить cursor: help,
+   а на посиланні правильний курсор — pointer. */
+.cat-site, .cat-site[data-tip] { color: inherit; text-decoration: none; cursor: pointer; }
+.cat-site:hover { color: var(--text-link); text-decoration: underline; }
 .muted { color: var(--text-muted); }
 .subtle { color: var(--text-subtle); }
 .arrow-to { color: var(--text-subtle); padding: 0 4px; }
@@ -619,13 +657,14 @@ if (require.main === module) {
 
   fs.mkdirSync(OUT_DATA, { recursive: true });
   // Прибрати компактні знімки дат, яких більше немає в гілці data.
-  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json']));
+  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json']));
   fs.readdirSync(OUT_DATA).filter(f => !keep.has(f)).forEach(f => fs.unlinkSync(path.join(OUT_DATA, f)));
 
   // Таблиця статусів наявності спільна для всіх днів: у кожному товарі лише її індекс.
   const avail = [], availIdx = new Map();
   const aIdx = s => { s = s || ''; if (!availIdx.has(s)) { availIdx.set(s, avail.length); avail.push(s); } return availIdx.get(s); };
   const products = {};
+  const catUrls = {};
   const daily = [];
   let prevExpanded = null, bytes = 0;
 
@@ -648,6 +687,7 @@ if (require.main === module) {
       const old = products[p.id] || ['', '', ''];
       products[p.id] = [p.name || old[0], p.sku || old[1], p.url || old[2]];
     });
+    snap.categories.forEach(c => { if (c.url) catUrls[c.id] = c.url; });
     const compact = {
       c: snap.categories.map(c => [c.id, c.parentId, c.name, c.level]),
       p: snap.products.map(p => [p.id, p.categoryId, aIdx(p.availability)])
@@ -669,6 +709,7 @@ if (require.main === module) {
   const usedDates = daily.map(x => x.date);
   fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
+  fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
 
   fs.writeFileSync(path.join(OUT_DIR, 'reports.css'), css.trim() + '\n', 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'reports.js'),

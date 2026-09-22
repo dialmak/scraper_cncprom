@@ -86,6 +86,10 @@ function flattenTree(node, parentId, out) {
     name: node.categoryName,
     parentId,
     level: node.level,
+    // Посилання на сторінку категорії — на нього веде назва категорії на
+    // сторінці змін (build-reports.js). Лише числовий id для URL не годиться:
+    // сайт віддає 404 на /ua/g<id> без slug.
+    url: node.url || '',
   });
   (node.children || []).forEach(child => flattenTree(child, node.categoryId, out));
 }
