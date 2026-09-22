@@ -142,7 +142,22 @@ function initReportsPage() {
     var from = ds.indexOf(q.get('from')) >= 0 && q.get('from') < to ? q.get('from') : ds[ds.indexOf(to) - 1];
     range.from = from; range.to = to;
   }
-  function quickFrom(q) { var ds = idx.dates, i = ds.indexOf(range.to); return q === 'all' ? ds[0] : ds[Math.max(0, i - (+q))]; }
+  // Швидкі кнопки завжди рахуються від ОСТАННЬОГО знімка, а не від вибраного
+  // "по" — інакше "Останній день" при періоді 16.09→17.09 підсвічувався як
+  // активний і по кліку давав 16→17, а не передостанній→останній.
+  // "Тиждень" — календарні 7 днів: найпізніший знімок не пізніше last − 7 днів
+  // (якщо якоїсь ночі знімка нема, період трохи довший, а не коротший).
+  function quickRange(q) {
+    var ds = idx.dates, last = ds[ds.length - 1];
+    if (q === 'all') return { from: ds[0], to: last };
+    if (q === 'week') {
+      var t = new Date(last + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - 7);
+      var bound = t.toISOString().slice(0, 10);
+      var older = ds.filter(function (d) { return d <= bound; });
+      return { from: older.length ? older[older.length - 1] : ds[0], to: last };
+    }
+    return { from: ds[ds.length - 2], to: last };
+  }
   function drawRange() {
     var ds = idx.dates;
     $('rf').innerHTML = ds.filter(function (d) { return d < range.to; }).map(function (d) {
@@ -150,7 +165,8 @@ function initReportsPage() {
     $('rt').innerHTML = ds.slice(1).map(function (d) {
       return '<option value="' + d + '"' + (d === range.to ? ' selected' : '') + '>' + fmtLong(d) + (d === ds[ds.length - 1] ? ' (останній)' : '') + '</option>'; }).join('');
     Array.prototype.forEach.call(document.querySelectorAll('[data-q]'), function (b) {
-      b.setAttribute('aria-pressed', String(quickFrom(b.getAttribute('data-q')) === range.from));
+      var r = quickRange(b.getAttribute('data-q'));
+      b.setAttribute('aria-pressed', String(r.from === range.from && r.to === range.to));
     });
     $('period-label').textContent = fmtLong(range.from) + ' → ' + fmtLong(range.to);
   }
@@ -329,7 +345,7 @@ function initReportsPage() {
   function bindEvents() {
     $('rf').addEventListener('change', function (e) { setRange(e.target.value, range.to); });
     $('rt').addEventListener('change', function (e) { setRange(range.from, e.target.value); });
-    $('quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) setRange(quickFrom(b.getAttribute('data-q')), range.to); });
+    $('quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) { var r = quickRange(b.getAttribute('data-q')); setRange(r.from, r.to); } });
     var svg = $('chart');
     svg.addEventListener('mousemove', chartTip);
     svg.addEventListener('mouseleave', function () { $('chart-tip').style.display = 'none'; });
@@ -548,7 +564,7 @@ const html = `<!DOCTYPE html>
         <label for="rf">Порівняти</label><select id="rf"></select><span class="range-arrow" aria-hidden="true">→</span>
         <select id="rt" aria-label="по дату"></select>
         <div class="chips" id="quick" role="group" aria-label="Швидкий вибір періоду">
-          <button class="chip" data-q="1">Останній день</button><button class="chip" data-q="7">Тиждень</button><button class="chip" data-q="all">Увесь період</button>
+          <button class="chip" data-q="day">Останній день</button><button class="chip" data-q="week">Тиждень</button><button class="chip" data-q="all">Увесь період</button>
         </div>
       </div>
     </div>
