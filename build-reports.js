@@ -86,6 +86,13 @@ function reportDiff(a, b, products) {
   // Повний шлях "Розділ › … › Категорія" — у таблиці видно лише розділ і саму
   // категорію, а проміжні рівні (часто 2–3) показуються в підказці, інакше
   // категорію важко знайти на сайті.
+  // Шлях у ОДНОМУ знімку як [{id, name}] від 1 рівня — для "до" (a) і "після"
+  // (b) на вкладці "Категорії": там назви предків саме того дня, а не змішані.
+  function chainIn(s, id) {
+    var out = [], cur = s.cats.get(id), guard = 0;
+    while (cur && guard++ < 12) { out.unshift({ id: cur.id, name: cur.name }); cur = cur.parentId ? s.cats.get(cur.parentId) : null; }
+    return out;
+  }
   function pathOf(id) {
     var out = [], cur = b.cats.get(id) || a.cats.get(id), guard = 0;
     while (cur && guard++ < 12) { out.unshift(cur.name); cur = cur.parentId ? (b.cats.get(cur.parentId) || a.cats.get(cur.parentId)) : null; }
@@ -106,13 +113,13 @@ function reportDiff(a, b, products) {
   a.prods.forEach(function (pa, id) { if (!b.prods.has(id)) rows.push(row('removed', id, pa.cat, pa.avail)); });
   b.cats.forEach(function (cb, id) {
     var ca = a.cats.get(id), t = topOf(id), top = t ? t.name : '—';
-    if (!ca) { cats.push({ type: 'added', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top }); return; }
-    if (ca.name !== cb.name) cats.push({ type: 'renamed', id: id, name: cb.name, path: pathOf(id), oldName: ca.name, level: cb.level, topName: top });
-    if (ca.parentId !== cb.parentId) cats.push({ type: 'moved', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top,
+    if (!ca) { cats.push({ type: 'added', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top, after: chainIn(b, id) }); return; }
+    if (ca.name !== cb.name) cats.push({ type: 'renamed', id: id, name: cb.name, path: pathOf(id), oldName: ca.name, level: cb.level, topName: top, before: chainIn(a, id), after: chainIn(b, id) });
+    if (ca.parentId !== cb.parentId) cats.push({ type: 'moved', id: id, name: cb.name, path: pathOf(id), level: cb.level, topName: top, before: chainIn(a, id), after: chainIn(b, id),
       fromName: ca.parentId ? catName(ca.parentId) : '(корінь)', toName: cb.parentId ? catName(cb.parentId) : '(корінь)' });
   });
   a.cats.forEach(function (ca, id) {
-    if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, path: pathOf(id), level: ca.level, topName: t ? t.name : '—' }); }
+    if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, path: pathOf(id), level: ca.level, topName: t ? t.name : '—', before: chainIn(a, id) }); }
   });
   var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
   rows.forEach(function (r) { totals[r.type]++; });
@@ -318,13 +325,24 @@ function initReportsPage() {
   }
   function catTable(cats) {
     if (!cats.length) return '<div class="empty"><b>Структура каталогу не змінилась</b>За цей період жодна категорія не з\'явилась, не зникла, не перейменована й не перенесена.</div>';
-    return '<div class="table-wrap"><table class="simple-table rep-table"><thead><tr><th style="width:170px">Зміна</th><th>Категорія</th><th style="width:26%">Розділ 1 рівня</th><th style="width:30%">Що змінилось</th></tr></thead><tbody>' +
+    // "Що змінилось" — повний шлях від 1 рівня до і після; кожна ланка веде на
+    // мапу розділу одразу на цю категорію (#cat=<id>, див. selectFromHash у
+    // render-map.js). Назва в колонці "Категорія" веде на сайт (catLink).
+    function pathHtml(chain) {
+      if (!chain || !chain.length) return '<span class="subtle">—</span>';
+      var top = chain[0].id;
+      return chain.map(function (n) {
+        return '<a class="path-link" href="../' + esc(top) + '_map.html#cat=' + encodeURIComponent(n.id) + '" target="_blank" rel="noopener noreferrer">' + esc(n.name) + '</a>';
+      }).join('<span class="arrow-to">›</span>');
+    }
+    function line(label, chain) { return '<div class="path-line"><span class="path-label">' + label + '</span>' + pathHtml(chain) + '</div>'; }
+    return '<div class="table-wrap"><table class="simple-table rep-table"><thead><tr><th style="width:170px">Зміна</th><th style="width:26%">Категорія</th><th>Що змінилось</th></tr></thead><tbody>' +
       cats.map(function (c) {
         var k = CAT[c.type];
-        var d = c.type === 'renamed' ? '<span class="subtle">' + esc(c.oldName) + '</span><span class="arrow-to">→</span>' + esc(c.name)
-          : c.type === 'moved' ? '<span class="subtle">' + esc(c.fromName) + '</span><span class="arrow-to">→</span>' + esc(c.toName)
-          : '<span class="muted">рівень ' + c.level + '</span>';
-        return '<tr><td><span class="tb ' + k[2] + '"><span class="ic" aria-hidden="true">' + k[0] + '</span>' + k[1] + '</span></td><td>' + catLink(c.id, c.name, c.path) + '</td><td class="muted">' + esc(c.topName) + '</td><td>' + d + '</td></tr>';
+        var d = c.type === 'added' ? line('Стало:', c.after)
+          : c.type === 'removed' ? line('Було:', c.before)
+          : line('Було:', c.before) + line('Стало:', c.after);
+        return '<tr><td><span class="tb ' + k[2] + '"><span class="ic" aria-hidden="true">' + k[0] + '</span>' + k[1] + '</span></td><td>' + catLink(c.id, c.name, c.path) + '</td><td>' + d + '</td></tr>';
       }).join('') + '</tbody></table></div>';
   }
   function filtered() {
@@ -527,6 +545,10 @@ details.data-table th:first-child, details.data-table td:first-child { text-alig
    а на посиланні правильний курсор — pointer. */
 .cat-site, .cat-site[data-tip] { color: inherit; text-decoration: none; cursor: pointer; }
 .cat-site:hover { color: var(--text-link); text-decoration: underline; }
+.path-line + .path-line { margin-top: 4px; }
+.path-label { display: inline-block; min-width: 48px; color: var(--text-muted); }
+.path-link { color: inherit; text-decoration: none; }
+.path-link:hover { color: var(--text-link); text-decoration: underline; }
 .muted { color: var(--text-muted); }
 .subtle { color: var(--text-subtle); }
 .arrow-to { color: var(--text-subtle); padding: 0 4px; }

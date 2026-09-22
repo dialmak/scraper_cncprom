@@ -1424,6 +1424,25 @@ function initCatalogMap(CATALOG_DATA) {
     handle.addEventListener('pointercancel', endDrag);
   }
 
+  // Посилання ззовні на конкретну категорію: <id>_map.html#cat=<categoryId>
+  // (без префікса "node-"). Використовує сторінка змін (build-reports.js) —
+  // шлях категорії там веде на мапу саме цього вузла, а не на корінь розділу.
+  // Невідомий id (категорії вже нема в дереві) просто лишає корінь.
+  function selectFromHash() {
+    var m = /^#cat=([^&]+)$/.exec(location.hash);
+    if (!m) return false;
+    var targetId = 'node-' + decodeURIComponent(m[1]);
+    if (!nodeMap.has(targetId)) return false;
+    state.selectedNodeId = targetId;
+    var curr = parentMap.get(targetId);
+    while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
+    return true;
+  }
+  selectFromHash();
+  window.addEventListener('hashchange', function () {
+    if (selectFromHash()) { renderSidebar(); renderContent(); }
+  });
+
   initThemeToggle();
   renderSidebar();
   renderContent();
