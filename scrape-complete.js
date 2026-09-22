@@ -11,6 +11,10 @@ const DELAY_MS = 700;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 6000;
 const BREADCRUMB_WAIT_MS = 8000;
+// Скільки чекати на появу сітки товарів (її малює React уже після
+// domcontentloaded). Див. waitForProductGrid — без цього очікування
+// категорія тихо отримувала 0 товарів.
+const GRID_WAIT_MS = 10000;
 const MAX_PAGES_SAFETY = 200;
 
 // Усі згенеровані файли (per-run і спільні) лежать поруч зі скриптом у
@@ -84,15 +88,24 @@ function extractCategoryIdFromUrl(url) {
   return m ? m[1] : "";
 }
 
-async function getSubcategoryLinks(page) {
+// Єдине місце в скрапері, де збій розмітки міг покласти ВЕСЬ прогін категорії:
+// <li> без жодного з двох посилань давав TypeError усередині evaluate, і той
+// спливав крізь усю рекурсію crawlTree до фатального catch. Тепер такий вузол
+// просто пропускається, а збій самого $$eval логується — інакше категорія з
+// поламаним списком тихо виглядала б як листок без підкатегорій.
+async function getSubcategoryLinks(page, url) {
   return page.$$eval(
     "ul.cs-product-groups-list > li.cs-product-groups-list__item",
     (items, base) => items.map(li => {
       const a = li.querySelector("a.cs-product-groups-list__title") || li.querySelector("a.cs-product-groups-list__image-link");
+      if (!a || !a.getAttribute("href")) return null;
       return { url: new URL(a.getAttribute("href"), base).href, name: a.textContent.trim() };
-    }),
+    }).filter(Boolean),
     BASE
-  );
+  ).catch(e => {
+    logError(`Не вдалось прочитати список підкатегорій: ${url} — ${e.message}`);
+    return [];
+  });
 }
 
 async function getPagerMaxPage(page) {
@@ -114,7 +127,9 @@ async function getPagerMaxPage(page) {
 }
 
 // Тільки справжня сітка товарів категорії — виключає карусельні блоки
-// ("Подібні товари компанії" / "Ви переглядали" / "Ми рекомендуємо")
+// ("Подібні товари компанії" / "Ви переглядали" / "Ми рекомендуємо").
+// Повертає кількість знайдених НА СТОРІНЦІ позицій, а не приріст мапи: саме
+// вона відрізняє "сторінка порожня" від "усі ці товари вже були в мапі".
 async function collectProductsFromCurrentPage(page, mapOut) {
   const items = await page.$$eval(
     'ul.cs-product-gallery > li.cs-product-gallery__item a[href]',
@@ -123,31 +138,72 @@ async function collectProductsFromCurrentPage(page, mapOut) {
       .filter(href => /\/ua\/p\d+-[^/]*\.html$/i.test(href))
       .map(href => new URL(href, base).href),
     BASE
-  );
+  ).catch(() => []);
   items.forEach(url => {
     const m = url.match(/\/p(\d+)-/);
     if (m) mapOut.set(m[1], url);
   });
+  return items.length;
+}
+
+// Сітку товарів малює React уже ПІСЛЯ domcontentloaded, тому чекаємо саме її
+// появу, а не фіксовану паузу. Це ключове місце: page.$$eval на нуль збігів
+// НЕ кидає виняток, а повертає порожній масив — тож сторінка, яка не встигла
+// відрендеритись за DELAY_MS (700 мс), давала категорії 0 товарів без жодної
+// помилки, без ретраю і без рядка в scrape.log, а прогін звітував "успішно".
+// Саме так у ніч на 19.09.2026 усі 14 товарів "Гальмівних резисторів"
+// (154899610) втратили свою категорію й успадкували батьківську, а 20.09
+// повернулись назад — у diff-звітах це виглядало як 28 справжніх переміщень.
+async function waitForProductGrid(page) {
+  return page.waitForSelector('ul.cs-product-gallery > li.cs-product-gallery__item', { timeout: GRID_WAIT_MS })
+    .then(() => true).catch(() => false);
+}
+
+// Запобіжник на випадок СИСТЕМНОГО збою (сайт змінив розмітку сітки): без
+// нього 403 вузли × (GRID_WAIT_MS + RETRY_DELAY_MS) додали б до нічного
+// прогону кілька годин і вибили б timeout-minutes: 300 у deploy-pages.yml.
+// Після такої кількості порожніх сторінок ретраї вимикаються — помилки все
+// одно вже в лозі, і прогін має впасти швидко, а не через 6 годин.
+const EMPTY_GRID_GIVE_UP = 10;
+let emptyGridFailures = 0;
+
+// Жоден з 403 вузлів дерева не має 0 прямих товарів (перевірено на повному
+// зрізі сайту): сторінка категорії завжди показує власну сітку, навіть коли
+// має підкатегорії. Тому "зібрали 0" — це не валідний стан, а ознака того,
+// що сітка не відрендерилась; таку сторінку треба перепробувати, а не
+// записати порожнечу як факт.
+async function loadListingPage(page, url, mapOut) {
+  const attempts = emptyGridFailures >= EMPTY_GRID_GIVE_UP ? 1 : 2;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    if (!(await gotoWithRetry(page, url))) return false; // причину вже залоговано в gotoWithRetry
+    await waitForProductGrid(page);
+    if ((await collectProductsFromCurrentPage(page, mapOut)) > 0) return true;
+    if (attempt < attempts) {
+      console.warn(`  Сітка товарів порожня (спроба ${attempt}/${attempts}): ${url} — пробуємо ще раз`);
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+  emptyGridFailures++;
+  logError(`Сітка товарів порожня після ${attempts} спроб: ${url}`);
+  return false;
 }
 
 async function getDirectProducts(page, catUrl) {
   const productMap = new Map();
   const baseNoSlash = catUrl.replace(/\/$/, "");
 
-  const ok1 = await gotoWithRetry(page, catUrl);
+  const ok1 = await loadListingPage(page, catUrl, productMap);
   await sleep(DELAY_MS);
   if (!ok1) return productMap;
 
-  await collectProductsFromCurrentPage(page, productMap);
   let maxPage = await getPagerMaxPage(page);
 
   let p = 2;
   while (p <= maxPage) {
     const pageUrl = `${baseNoSlash}/page_${p}`;
-    const ok = await gotoWithRetry(page, pageUrl);
+    const ok = await loadListingPage(page, pageUrl, productMap);
     await sleep(DELAY_MS);
     if (ok) {
-      await collectProductsFromCurrentPage(page, productMap);
       const pageMax = await getPagerMaxPage(page);
       if (pageMax > maxPage) maxPage = pageMax;
     }
@@ -193,7 +249,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
   }
   const fullPath = [...path, name];
 
-  const subs = await getSubcategoryLinks(page);
+  const subs = await getSubcategoryLinks(page, url);
   const siteCounter = await getSiteAvailableCounter(page);
   const directProducts = await getDirectProducts(page, url);
   const categoryId = extractCategoryIdFromUrl(url);
@@ -337,6 +393,24 @@ function generateReport(tree, allRows) {
   const root = stats[0];
   const lines = [];
 
+  // Кореня немає у двох випадках: стартова сторінка не завантажилась (дерево
+  // лишилось порожнім) або URL не містив /gNNN- і categoryId вийшов порожнім,
+  // через що гард у buildCategoryStats відсік корінь. Раніше тут одразу стояв
+  // root.ourTotal — тобто TypeError уже ПІСЛЯ запису порожнього CSV на диск, і
+  // прогін падав у "ФІНІШ: ПЕРЕРВАНО" замість того, щоб назвати причину.
+  if (!root) {
+    return [
+      `# Звіт по категорії "${(tree && tree.categoryName) || START_URL}"`, "",
+      `## ⚠️ Дерево категорій порожнє — звіряти нема чого`, "",
+      `Найімовірніша причина: стартова сторінка не завантажилась після ${MAX_RETRIES} спроб,`,
+      `або URL не містить фрагмента \`/gNNN-\`, тому з нього не вдалось витягти ID категорії.`, "",
+      `- Стартовий URL: ${START_URL}`,
+      `- ID категорії: ${START_CATEGORY_ID}`,
+      `- Товарів зібрано: ${allRows.length}`, "",
+      `Подробиці — у \`scrape.log\` за цей запуск.`, ""
+    ].join("\n");
+  }
+
   lines.push(`# Звіт по категорії "${tree.categoryName}"`, "");
   lines.push(`## Підсумок`, "");
   lines.push(`| Зібрано (всього) | "В наявності" за даними скрапера | Лічильник сайту | Різниця | Висновок |`);
@@ -379,9 +453,14 @@ function generateReport(tree, allRows) {
   await page.route('**/*', route => {
     const url = route.request().url();
     const type = route.request().resourceType();
-    if (BLOCKED_RESOURCE_TYPES.includes(type)) return route.abort();
-    if (BLOCKED_PATTERNS.some(p => url.includes(p))) return route.abort();
-    route.continue();
+    // .catch() тут обов'язковий: якщо сторінка навігує, поки роут ще не
+    // завершено, Playwright відхиляє цей проміс. Без обробника це unhandled
+    // rejection, який у сучасних Node кладе процес В ОБХІД try/finally нижче —
+    // тобто browser.close() не виконується і Chromium лишається сиротою.
+    const done = (BLOCKED_RESOURCE_TYPES.includes(type) || BLOCKED_PATTERNS.some(p => url.includes(p)))
+      ? route.abort()
+      : route.continue();
+    return done.catch(() => {});
   });
 
   let allRows = [];

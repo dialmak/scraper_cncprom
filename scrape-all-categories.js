@@ -20,6 +20,12 @@ const ROOT_DIR = __dirname;
 const OUTPUT_DIR = path.join(ROOT_DIR, 'output', 'site');
 const CSV_FILE = path.join(OUTPUT_DIR, 'categories-site.csv');
 
+// Стеля на одну категорію. Найдовша реальна ("Передачі", 96553590) — 33.5 хв,
+// тож 90 хв це ~2.7× запасу і водночас гарантія, що зависла категорія не
+// з'їсть увесь timeout-minutes: 300 у deploy-pages.yml, лишивши чергу
+// недокрученою. Перевищення приходить сюди як res.error від spawnSync.
+const CATEGORY_TIMEOUT_MS = 90 * 60 * 1000;
+
 // ==================== ЧИТАННЯ categories-site.csv ====================
 // Той самий парсер (роздільник ";", лапки подвоюються), що й у render-map.js /
 // build-maps.js — формат CSV в проєкті скрізь однаковий.
@@ -84,15 +90,57 @@ queue.forEach(r => {
 // прогону послідовно). Помилка однієї категорії (ненульовий код виходу) не
 // зупиняє чергу — scrape-complete.js сам логує причину в scrape.log.
 let ok = 0, failed = 0;
+const failures = [];
 for (let i = 0; i < queue.length; i++) {
   const r = queue[i];
   console.log(`\n=== [${i + 1}/${queue.length}] ${r.categoryName} (${r.categoryId}) ===`);
-  const res = spawnSync('node', ['scrape-complete.js', r.categoryUrl], { cwd: ROOT_DIR, stdio: 'inherit' });
-  if (res.status === 0) ok++;
-  else {
+
+  // Порожній categoryUrl раніше проходив мовчки й НАЙГІРШИМ чином: argv[2]
+  // ставав порожнім рядком, scrape-complete.js брав свій DEFAULT_START_URL і
+  // перескрапував зовсім іншу категорію, перезаписуючи її власні файли.
+  if (!r.categoryUrl || !/^https?:\/\//i.test(r.categoryUrl)) {
     failed++;
+    failures.push(`${r.categoryId} (${r.categoryName}): порожній або некоректний categoryUrl у CSV`);
+    console.error(`Категорія ${r.categoryId}: некоректний URL "${r.categoryUrl}" — пропускаємо, щоб не скрапити чужу категорію.`);
+    continue;
+  }
+
+  const res = spawnSync('node', ['scrape-complete.js', r.categoryUrl], {
+    cwd: ROOT_DIR, stdio: 'inherit', timeout: CATEGORY_TIMEOUT_MS
+  });
+
+  // res.error — це "процес не вдалось запустити взагалі" (немає node в PATH)
+  // або "вбито по timeout". Раніше перевірявся лише res.status, тому в
+  // першому випадку status був null, лічильник помилок ріс на всю чергу, а
+  // скрипт усе одно завершувався кодом 0.
+  if (res.error) {
+    failed++;
+    failures.push(`${r.categoryId} (${r.categoryName}): ${res.error.message}`);
+    console.error(`Категорія ${r.categoryId}: процес не завершився штатно — ${res.error.message}`);
+  } else if (res.status === 0) {
+    ok++;
+  } else {
+    failed++;
+    failures.push(`${r.categoryId} (${r.categoryName}): код виходу ${res.status}${res.signal ? `, сигнал ${res.signal}` : ''}`);
     console.warn(`Категорія ${r.categoryId} завершилась з кодом ${res.status} — продовжуємо чергу далі.`);
   }
 }
 
 console.log(`\nГотово: ${ok} успішно, ${failed} з помилками, разом ${queue.length}.`);
+if (failures.length > 0) {
+  console.error('\nКатегорії з помилками:');
+  failures.forEach(f => console.error(`  - ${f}`));
+}
+
+// Ненульовий код — ЛИШЕ для катастрофічного прогону (не вдалась жодна або
+// впала більшість). Окрема невдала категорія свідомо лишає код 0: інакше
+// крок "Етап 2" у deploy-pages.yml падає, і разом з ним зникає весь нічний
+// результат — знімок, diff і деплой — через одну категорію з 23.
+// А от коли впала більшість, продовжувати не можна: generate-snapshot.js
+// запише вкорочений знімок, diff-map.js оформить це як "видалено ~4000
+// товарів" і закомітить у гілку data, отруївши базу й на наступний день.
+if (ok === 0 || failed > ok) {
+  console.error(`\nКАТАСТРОФІЧНИЙ ПРОГІН: успішних ${ok} з ${queue.length}.`);
+  console.error('Зупиняємо конвеєр, щоб зіпсовані дані не потрапили в гілку data.');
+  process.exit(1);
+}

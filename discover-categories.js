@@ -139,50 +139,58 @@ function csvEscape(val) {
 
   await page.route('**/*', route => {
     const type = route.request().resourceType();
-    if (['image', 'font', 'media', 'stylesheet'].includes(type)) return route.abort();
-    route.continue();
+    // .catch() обов'язковий — див. той самий коментар у scrape-complete.js:
+    // відхилений роут під час навігації інакше стає unhandled rejection і
+    // кладе процес в обхід try/finally нижче.
+    const done = ['image', 'font', 'media', 'stylesheet'].includes(type) ? route.abort() : route.continue();
+    return done.catch(() => {});
   });
 
-  console.log("Зчитую категорії 1 рівня з головної сторінки...");
-  const categories = await getLevel1Categories(page);
-  console.log(`Знайдено ${categories.length} категорій.\n`);
+  try {
+    console.log("Зчитую категорії 1 рівня з головної сторінки...");
+    const categories = await getLevel1Categories(page);
+    console.log(`Знайдено ${categories.length} категорій.\n`);
 
-  const rows = [];
-  for (let i = 0; i < categories.length; i++) {
-    const cat = categories[i];
-    const id = extractCategoryIdFromUrl(cat.url);
-    const { subCount, siteCounter } = await probeCategory(page, cat.url);
-    const scrapingTime = estimateMinutes(subCount, siteCounter);
-    console.log(`[${i + 1}/${categories.length}] ${cat.name} (${id}) — підкатегорій: ${subCount}, ` +
-      `в наявності: ${siteCounter}, оцінка: ${scrapingTime !== null ? scrapingTime.toFixed(1) + ' хв' : 'н/д'}`);
-    rows.push({
-      id,
-      name: cat.name,
-      url: cat.url,
-      scrapingTimeValue: scrapingTime, // число (для сортування) — null, якщо оцінити не вдалось
-      scrapingTime: scrapingTime !== null ? scrapingTime.toFixed(1) : ""
+    const rows = [];
+    for (let i = 0; i < categories.length; i++) {
+      const cat = categories[i];
+      const id = extractCategoryIdFromUrl(cat.url);
+      const { subCount, siteCounter } = await probeCategory(page, cat.url);
+      const scrapingTime = estimateMinutes(subCount, siteCounter);
+      console.log(`[${i + 1}/${categories.length}] ${cat.name} (${id}) — підкатегорій: ${subCount}, ` +
+        `в наявності: ${siteCounter}, оцінка: ${scrapingTime !== null ? scrapingTime.toFixed(1) + ' хв' : 'н/д'}`);
+      rows.push({
+        id,
+        name: cat.name,
+        url: cat.url,
+        scrapingTimeValue: scrapingTime, // число (для сортування) — null, якщо оцінити не вдалось
+        scrapingTime: scrapingTime !== null ? scrapingTime.toFixed(1) : ""
+      });
+    }
+
+    // Сортування за scrapingTime, від найменшого до найбільшого — так
+    // scrape-all-categories.js потім просто йде по стовпцю number 1..N, без
+    // жодної власної логіки сортування (і користувач може вручну відредагувати
+    // CSV — переставити/видалити рядки/перенумерувати — щоб скрапити не все,
+    // а вибірково чи в іншому порядку). Рядки без оцінки (scrapingTimeValue
+    // === null) — в кінці, в порядку виявлення на сайті.
+    rows.sort((a, b) => {
+      if (a.scrapingTimeValue === null && b.scrapingTimeValue === null) return 0;
+      if (a.scrapingTimeValue === null) return 1;
+      if (b.scrapingTimeValue === null) return -1;
+      return a.scrapingTimeValue - b.scrapingTimeValue;
     });
+
+    const header = ["number", "categoryId", "categoryName", "categoryUrl", "scrapingTime"];
+    const lines = [header.join(";")];
+    rows.forEach((r, i) => lines.push([i + 1, r.id, csvEscape(r.name), r.url, r.scrapingTime].join(";")));
+    fs.writeFileSync(OUTPUT_CSV, "﻿" + lines.join("\n"), "utf-8");
+
+    console.log(`\nЗбережено: ${OUTPUT_CSV} (${rows.length} категорій, відсортовано за scrapingTime)`);
+  } finally {
+    // Раніше try/finally тут не було зовсім: будь-який кидок між launch() і
+    // close() (наприклад, недоступний для запису CSV або зміна розмітки
+    // головної сторінки) лишав процес Chromium живим після виходу скрипта.
+    await browser.close();
   }
-
-  // Сортування за scrapingTime, від найменшого до найбільшого — так
-  // scrape-all-categories.js потім просто йде по стовпцю number 1..N, без
-  // жодної власної логіки сортування (і користувач може вручну відредагувати
-  // CSV — переставити/видалити рядки/перенумерувати — щоб скрапити не все,
-  // а вибірково чи в іншому порядку). Рядки без оцінки (scrapingTimeValue
-  // === null) — в кінці, в порядку виявлення на сайті.
-  rows.sort((a, b) => {
-    if (a.scrapingTimeValue === null && b.scrapingTimeValue === null) return 0;
-    if (a.scrapingTimeValue === null) return 1;
-    if (b.scrapingTimeValue === null) return -1;
-    return a.scrapingTimeValue - b.scrapingTimeValue;
-  });
-
-  const header = ["number", "categoryId", "categoryName", "categoryUrl", "scrapingTime"];
-  const lines = [header.join(";")];
-  rows.forEach((r, i) => lines.push([i + 1, r.id, csvEscape(r.name), r.url, r.scrapingTime].join(";")));
-  fs.writeFileSync(OUTPUT_CSV, "﻿" + lines.join("\n"), "utf-8");
-
-  console.log(`\nЗбережено: ${OUTPUT_CSV} (${rows.length} категорій, відсортовано за scrapingTime)`);
-
-  await browser.close();
 })();

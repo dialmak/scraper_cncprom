@@ -140,7 +140,7 @@ function writeStub(id, name, reason) {
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<title>Категорія ${id}${name ? " — " + name : ""} — немає актуальних даних</title>
+<title>Категорія ${id}${name ? " — " + escapeHtmlOuter(name) : ""} — немає актуальних даних</title>
 <style>
   body { font-family: system-ui, sans-serif; background:#f5f5f5; color:#333; display:flex;
          align-items:center; justify-content:center; height:100vh; margin:0; text-align:center; }
@@ -152,8 +152,8 @@ function writeStub(id, name, reason) {
 <body>
   <div class="box">
     <h1>⚠️ Немає актуальних даних</h1>
-    <p>Категорія ${id}${name ? " (" + name + ")" : ""} — мапу не згенеровано.</p>
-    <p>${reason}</p>
+    <p>Категорія ${id}${name ? " (" + escapeHtmlOuter(name) + ")" : ""} — мапу не згенеровано.</p>
+    <p>${escapeHtmlOuter(reason)}</p>
   </div>
 </body>
 </html>
@@ -226,7 +226,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
               <td style="text-align:center;">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}</td>
-              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${e.url}" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>` : '—'}</td>
+              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>` : '—'}</td>
             </tr>`).join('');
 
   // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
@@ -283,9 +283,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <div class="help-panel-body">
         <div class="orphan-group-list">${orphanGroups.map(g => `
           <div class="orphan-group">
-            <a href="${g.topId}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
+            <a href="${escapeHtmlOuter(g.topId)}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
             <div class="orphan-cat-list">${g.items.map(oc =>
-              '<a href="' + g.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge">' +
+              '<a href="' + escapeHtmlOuter(g.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge">' +
               (oc.level === 1 ? 'Товари категорії, які не входять до підкатегорій' : escapeHtmlOuter(oc.name)) +
               ' <span class="node-count">(' + oc.own + ')</span></a>'
             ).join('')}</div>
@@ -512,6 +512,27 @@ initSiteSearch();
 
   const entries = [];
   const searchEntries = [];
+  let renderFailures = 0;
+
+  // Раніше результат buildRealMap() відкидався у всіх трьох місцях виклику:
+  // якщо render-map.js падав, категорія все одно потрапляла в індекс як 'ok'
+  // із зеленою ✅, а readSummary() підтягував цифри з ПОПЕРЕДНЬОГО прогону й
+  // показував їх як свіжі. Тепер невдалий рендер дає ту саму заглушку й той
+  // самий ⚠️, що й застарілі дані: стан, якого не видно, гірший за стан,
+  // який видно.
+  function pushBuilt(id, name, url) {
+    if (buildRealMap(id)) {
+      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
+      searchEntries.push(...readSearchEntries(id));
+      return;
+    }
+    renderFailures++;
+    const reason = `render-map.js завершився з помилкою для категорії ${id} — мапу не згенеровано.`;
+    console.error(`[${id}] ${name} — ПОМИЛКА РЕНДЕРУ. Заглушка замість мапи.`);
+    logLine(`ПОМИЛКА: категорія ${id} (${name}) — render-map.js завершився з ненульовим кодом, заглушка замість мапи.`);
+    writeStub(id, name, reason);
+    entries.push({ id, name, url, status: 'stale', reason });
+  }
 
   categories.forEach(cat => {
     const { id, name, url } = cat;
@@ -520,9 +541,7 @@ initSiteSearch();
 
     if (IS_SITE_MODE && id === REFERENCE_ID) {
       console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
-      buildRealMap(id);
-      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
-      searchEntries.push(...readSearchEntries(id));
+      pushBuilt(id, name, url);
       return;
     }
 
@@ -541,9 +560,7 @@ initSiteSearch();
     // потрібно, наявність json уже означає "готово, будуємо мапу".
     if (!IS_SITE_MODE) {
       console.log(`[${id}] ${name} — будуємо повну мапу.`);
-      buildRealMap(id);
-      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
-      searchEntries.push(...readSearchEntries(id));
+      pushBuilt(id, name, url);
       return;
     }
 
@@ -568,9 +585,7 @@ initSiteSearch();
       entries.push({ id, name, url, status: 'stale', reason });
     } else {
       console.log(`[${id}] ${name} — свіжі дані (розрив ${gapHours.toFixed(2)} год), будуємо повну мапу.`);
-      buildRealMap(id);
-      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
-      searchEntries.push(...readSearchEntries(id));
+      pushBuilt(id, name, url);
     }
   });
 
@@ -587,7 +602,16 @@ initSiteSearch();
   const mapLogContent = readLogSafe(LOG_FILE);
   buildIndexPage(entries, scrapeLogContent, mapLogContent);
 
+  const notOk = entries.filter(e => e.status !== 'ok').length;
   console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);
+  if (renderFailures > 0) {
+    console.error(`УВАГА: категорій із помилкою рендеру: ${renderFailures} — у map.html вони позначені ⚠️.`);
+  }
   console.log("Готово. Деталі рішень — у map.log.");
-  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}.`);
+  // Свідомо БЕЗ ненульового коду виходу: часткова невдача не має валити крок
+  // "Етап 3" у deploy-pages.yml, бо разом з ним зник би весь нічний результат
+  // (знімок, diff, деплой) через одну категорію з 23. Сигналом лишається ⚠️
+  // в самому індексі + рядок ПОМИЛКА в map.log, які видно там, де дивляться.
+  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
+    (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
 })();

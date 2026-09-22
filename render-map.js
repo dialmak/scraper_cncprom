@@ -734,6 +734,18 @@ function highlightMatch(text, query) {
 // індексу лишалось легким. Обсяг пошуку — лише товари (Variant A, узгоджено
 // заздалегідь): назва/код/категорія-як-текст, без окремого типу результату
 // "перейти на категорію 1 рівня за назвою".
+// Екранування значення, що йде в АТРИБУТ (href). Окрема функція, а не
+// escapeHtml: у initSiteSearch власний escapeHtml зроблений через
+// textContent → innerHTML, а він НЕ екранує подвійні лапки, тобто для href
+// не годиться. Усі атрибути в шаблонах проєкту в подвійних лапках, тож
+// мінімально достатньо & < > ", але екрануємо і ' — щоб заміна лапок у
+// розмітці колись не відкрила діру мовчки.
+function escapeAttr(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function initSiteSearch() {
   var input = document.getElementById('search-input');
   var btnClear = document.getElementById('btn-clear-search');
@@ -785,8 +797,8 @@ function initSiteSearch() {
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
-        '<td class="col-cat"><a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1008,7 +1020,7 @@ function initCatalogMap(CATALOG_DATA) {
         '<tr>' +
         '<td class="col-n">' + (p.index || i + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span></td>' +
-        '<td class="col-name">' + (p.url ? '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
+        '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1111,7 +1123,7 @@ function initCatalogMap(CATALOG_DATA) {
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="width:78px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
-            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + ch.url + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
+            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + escapeAttr(ch.url) + '" target="_blank" rel="noopener noreferrer" class="link-site">↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -1219,12 +1231,12 @@ function initCatalogMap(CATALOG_DATA) {
     var rowsHtml = matches.map(function (p, idx) {
       var isYes = isAvailableProduct(p);
       var categoryCell = isLocal
-        ? '<a href="#" class="cat-found-badge" data-node-id="' + p.nodeId + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(p.nodeName, query) + '</a>'
-        : '<a href="' + p.topId + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
+        ? '<a href="#" class="cat-found-badge" data-node-id="' + escapeAttr(p.nodeId) + '" data-tip="Перейти до розділу в каталозі">📁 ' + highlightMatch(p.nodeName, query) + '</a>'
+        : '<a href="' + escapeAttr(p.topId) + '_map.html" target="_blank" rel="noopener noreferrer" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener noreferrer">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -1431,7 +1443,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, filterProducts, highlightMatch, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
@@ -1505,7 +1517,7 @@ const html = `<!DOCTYPE html>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="${rootUrl}" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
+      <a href="${escapeHtmlOuter(rootUrl)}" target="_blank" rel="noopener noreferrer" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
 
