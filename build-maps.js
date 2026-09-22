@@ -520,6 +520,18 @@ initSiteSearch();
 </html>
 `;
   fs.writeFileSync(path.join(DIR, "map.html"), html, "utf-8");
+
+  // Корінь GitHub Pages (публікується вся тека output/) — переадресація на
+  // site/map.html. Без неї https://dialmak.github.io/scraper_cncprom/ віддавав
+  // 404, а точку входу треба було знати напам'ять. Лише для site: output/new/
+  // (build-custom-tree.js) — окрема, необов'язкова частина, не головна сторінка.
+  if (IS_SITE_MODE) {
+    fs.writeFileSync(path.join(ROOT_DIR, 'output', 'index.html'), `<!DOCTYPE html>
+<html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=site/map.html">
+<title>Мапа сайту cncprom.ua</title></head>
+<body><p><a href="site/map.html">Мапа сайту cncprom.ua</a></p></body></html>
+`, "utf-8");
+  }
 }
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
