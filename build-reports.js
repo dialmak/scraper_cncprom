@@ -382,6 +382,20 @@ const css = `
 :root[data-theme="dark"] { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); } }
 
+/* map-common.css робить html,body { height:100%; overflow:hidden } — для
+   <id>_map.html, де прокручується лише внутрішня .main-content. Тут, як і на
+   map.html, прокручується весь документ; без цього перевизначення сторінка
+   колесом не прокручувалась узагалі й таблиця нижче першого екрана була
+   недосяжна. Саме visible, НЕ auto — з тієї ж причини, що й у build-maps.js:
+   auto на html і body разом робить body окремим скрол-контейнером, і липка
+   .app-header їде разом зі сторінкою. */
+html, body { height: auto; overflow: visible; }
+/* Смуга прокрутки й нативні елементи (select) — у кольорах поточної теми.
+   Без color-scheme браузер малює світлу смугу навіть на темній сторінці.
+   Тема задається перемикачем (data-theme) або системою — враховано обидва. */
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
 .rep-wrap { max-width: 1280px; margin: 0 auto; padding: 20px 20px 48px; }
 .card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; }
 .top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
