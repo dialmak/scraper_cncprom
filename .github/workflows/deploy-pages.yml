@@ -14,7 +14,15 @@ on:
     # Actions відомо затримує/пропускає заплановані прогони через перевантаження
     # черги. DST теж не враховується — Києву відповідає інша година взимку.
     - cron: '18 18 * * *'
-  workflow_dispatch: {} # можливість запустити вручну з вкладки Actions
+  workflow_dispatch: # можливість запустити вручну з вкладки Actions
+    inputs:
+      rebuild_only:
+        # Лише перебудувати мапи й сторінку змін НОВИМ кодом з даних останнього
+        # опублікованого прогону (fetch-published.js) — ~2 хв замість ~3 год.
+        # Без скрапінгу, без нового знімка й без коміту в гілку data.
+        description: 'Без скрапінгу: перебудувати сайт з уже опублікованих даних'
+        type: boolean
+        default: false
 
 permissions:
   contents: write # write — потрібно комітити/пушити знімок+звіт у гілку data
@@ -48,13 +56,25 @@ jobs:
         run: npm ci
 
       - name: Встановити Chromium для Playwright
+        if: ${{ !inputs.rebuild_only }}
         run: npx playwright install --with-deps chromium
 
+      - name: Адреса GitHub Pages
+        id: pages-url
+        if: ${{ inputs.rebuild_only }}
+        run: echo "url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
+
       - name: Етап 1 — знайти категорії 1 рівня
+        if: ${{ !inputs.rebuild_only }}
         run: node discover-categories.js
 
       - name: Етап 2 — відскрапити всі категорії за чергою
+        if: ${{ !inputs.rebuild_only }}
         run: node scrape-all-categories.js
+
+      - name: "Без скрапінгу: дані останнього опублікованого прогону"
+        if: ${{ inputs.rebuild_only }}
+        run: node fetch-published.js "${{ steps.pages-url.outputs.url }}"
 
       - name: Етап 3 — згенерувати мапи + індекс
         run: node build-maps.js
@@ -71,11 +91,13 @@ jobs:
           fi
 
       - name: "Знімок дня + diff-звіт"
+        if: ${{ !inputs.rebuild_only }}
         run: |
           node generate-snapshot.js data-branch
           node diff-map.js data-branch
 
       - name: "Закомітити й запушити гілку data"
+        if: ${{ !inputs.rebuild_only }}
         run: |
           cd data-branch
           git add snapshots reports
