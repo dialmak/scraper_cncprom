@@ -557,6 +557,10 @@ function generateReport(tree, allRows) {
     if (failedUrls.length > 0) {
       console.warn(`Не вдалось обробити ${failedUrls.length} товарів:`, failedUrls);
       fs.writeFileSync(OUTPUT_FAILED, JSON.stringify(failedUrls, null, 2));
+    } else if (fs.existsSync(OUTPUT_FAILED)) {
+      // Список від попереднього прогону інакше лишився б поруч зі свіжим CSV
+      // і виглядав би як поточні збої.
+      fs.unlinkSync(OUTPUT_FAILED);
     }
     logLine(`ЕТАП 2 завершено: зібрано ${allRows.length}, "Готово до відправки" ${availableCount}, не вдалось обробити ${failedUrls.length}.`);
 

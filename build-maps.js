@@ -187,6 +187,14 @@ function readSearchEntries(id) {
   try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return []; }
 }
 
+// <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
+// проходу етапу 2 лишились товари без даних (і видаляє, коли таких нема), тож
+// файл завжди відповідає поточному CSV. Читаємо лише для 'ok' — як readSummary.
+function readFailedUrls(id) {
+  const p = path.join(DIR, `${id}_failed_urls.json`);
+  try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
+}
+
 function escapeHtmlOuter(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -294,6 +302,36 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
     </div>
   </div>`;
 
+  // "Не оброблено N" — товари, сторінку яких скрапер не зміг прочитати навіть
+  // після повторного проходу (<id>_failed_urls.json). Такий товар відсутній у
+  // CSV, тож на мапі й у звірці його просто не видно — ця кнопка єдине місце,
+  // де він помітний. Та сама схема, що й "Товари поза категоріями": кнопка й
+  // панель не рендеряться зовсім, коли невдач нема (звичайний стан).
+  const failedGroups = sorted.filter(e => (e.failed_urls || []).length > 0);
+  const failedTotal = failedGroups.reduce((n, e) => n + e.failed_urls.length, 0);
+  const failedLabel = u => { try { return decodeURIComponent(new URL(u).pathname); } catch (e) { return u; } };
+  const failedMenuButtonHtml = failedTotal === 0 ? '' : `
+      <button id="btn-failed-urls" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Товари, сторінку яких скрапер не зміг прочитати навіть із повторної спроби. Їх немає на мапі й у звірці.">⛔ Не оброблено ${failedTotal}</button>`;
+  const failedPanelHtml = failedTotal === 0 ? '' : `
+  <div class="help-overlay" id="failed-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Товари, які не вдалося обробити (${failedTotal}):</h3>
+        <button class="btn-help-close" id="btn-failed-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Скрапер не зміг прочитати сторінку цих товарів навіть після повторного проходу, тому їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту — наступний нічний прогін їх підхопить.</p>
+        <div class="orphan-group-list">${failedGroups.map(e => `
+          <div class="orphan-group">
+            <a href="${escapeHtmlOuter(e.id)}_map.html" target="_blank" rel="noopener noreferrer" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.failed_urls.length})</span></a>
+            <div class="failed-url-list">${e.failed_urls.map(u =>
+              '<a href="' + escapeHtmlOuter(u) + '" target="_blank" rel="noopener noreferrer" class="failed-url">↗ ' + escapeHtmlOuter(failedLabel(u)) + '</a>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
   // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
@@ -361,13 +399,17 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   .orphan-group-head { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text-link); text-decoration: none; }
   .orphan-group-head:hover { text-decoration: underline; }
   .orphan-group .orphan-cat-list { margin-top: 6px; padding-left: 20px; }
+  .failed-note { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px; }
+  .failed-url-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding-left: 20px; }
+  .failed-url { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+  .failed-url:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${failedMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -390,6 +432,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/${MAP_SUBDIR}/scrape.log`, scrapeLogContent)}
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/${MAP_SUBDIR}/map.log`, mapLogContent)}
 ${orphanPanelHtml}
+${failedPanelHtml}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
@@ -429,6 +472,10 @@ ${orphanPanelHtml}
           <div class="help-term-label">⏳ Немає даних</div>
           <div class="help-term-desc">Скрапер ще жодного разу не обробляв цю категорію.</div>
         </div>
+        <div class="help-term">
+          <div class="help-term-label">⛔ Не оброблено N</div>
+          <div class="help-term-desc">Кнопка в шапці з'являється лише тоді, коли скрапер не зміг прочитати сторінку якихось товарів навіть після повторної спроби. Відкриває їхній список за категоріями. Таких товарів немає на мапі й у звірці.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -465,6 +512,7 @@ setupModalOverlay('scrape-log-overlay', 'btn-scrape-log', 'btn-scrape-log-close'
 setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
 setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
+setupModalOverlay('failed-overlay', 'btn-failed-urls', 'btn-failed-close');
 setupTooltips();
 initSiteSearch();
 </script>
@@ -522,7 +570,7 @@ initSiteSearch();
   // який видно.
   function pushBuilt(id, name, url) {
     if (buildRealMap(id)) {
-      entries.push({ id, name, url, status: 'ok', ...readSummary(id) });
+      entries.push({ id, name, url, status: 'ok', ...readSummary(id), failed_urls: readFailedUrls(id) });
       searchEntries.push(...readSearchEntries(id));
       return;
     }
