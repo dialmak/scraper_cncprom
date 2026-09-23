@@ -23,3 +23,6 @@ phase.md
 run.txt
 SESSION-GUIDE.md
 baseline-*/
+
+# Локальна копія гілки data до перезапису 23.09.2026 (історія — у гілці archive).
+data-archive/

@@ -1,9 +1,14 @@
 name: Скрапінг + деплой мапи на GitHub Pages
 
-# Нічний прогін повного пайплайну (scrape-site → build-maps) на ubuntu-latest, публікація output/site/ як Pages-артефакт напряму
-# (вміст output/site/ — корінь сайту, тож адреси без /site/: /map.html,
-# /<id>_map.html, /reports/index.html; старі /site/… — заглушки-переадресації
-# від build-maps.js) — output/ в git не потрапляє.
+# Нічний прогін повного пайплайну (scrape-site → build-maps) на ubuntu-latest.
+# Готовий output/site/ пушиться одним orphan-комітом у гілку `site`, з якої
+# GitHub Pages публікує сайт (Settings → Pages → Deploy from a branch, site /).
+# Вміст гілки — корінь сайту, тож адреси без /site/: /map.html, /<id>_map.html,
+# /reports/index.html; старі /site/… — заглушки-переадресації від build-maps.js.
+# У `main` output/ не потрапляє.
+#
+# Гілка `site` існує ще й для того, щоб згенеровані сторінки можна було
+# переглядати прямо на GitHub — раніше вони жили лише в Pages-артефакті.
 #
 # Після build-maps.js той самий job готує робочу копію гілки `data` через git
 # worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
@@ -26,9 +31,9 @@ on:
         default: false
 
 permissions:
-  contents: write # write — потрібно комітити/пушити знімок+звіт у гілку data
-  pages: write
-  id-token: write
+  # Пушимо знімок у гілку `data` і готовий сайт у гілку `site`. Прав pages/
+  # id-token більше не треба: Pages збирається сама з гілки, а не з артефакту.
+  contents: write
 
 # Не даємо двом прогонам публікувати одночасно (нічний за розкладом міг
 # накластися на ручний запуск через workflow_dispatch).
@@ -107,18 +112,26 @@ jobs:
         # старих посилань.
         run: node build-reports.js data-branch
 
-      - name: Підготувати Pages-артефакт
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: output/site
-
-  deploy:
-    needs: scrape-and-build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Опублікувати на GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: "Опублікувати сайт у гілку site"
+        # Окремий репозиторій просто в output/site: `main` цю теку гітигнорить,
+        # тож додати її як звичайні файли з основного checkout не вийде.
+        # Щоразу один orphan-коміт із force — гілка лишається одним знімком
+        # поточного сайту, історія не накопичується (її роль виконують знімки
+        # в гілці `data`).
+        #
+        # CNAME тут ОБОВ'ЯЗКОВИЙ, на відміну від колишньої публікації через
+        # Actions, де GitHub його ігнорував: при збірці з гілки власний домен
+        # береться саме з цього файлу, і без нього map.cncprom.pp.ua відвалиться.
+        # .nojekyll — щоб Pages не ганяв Jekyll по згенерованих файлах.
+        run: |
+          cd output/site
+          touch .nojekyll
+          echo "map.cncprom.pp.ua" > CNAME
+          git init -q -b site
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Сайт за $(date -u +%F)"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
