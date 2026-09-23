@@ -10,7 +10,6 @@ const MAX_DEPTH = 6;
 const DELAY_MS = 700;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 6000;
-const BREADCRUMB_WAIT_MS = 8000;
 // Пауза перед повторним проходом по товарах, що не вдались на ЕТАПІ 2 —
 // щоб короткий збій сайту встиг минути (див. кінець ЕТАПУ 2).
 const RETRY_PASS_DELAY_MS = 60000;
@@ -34,14 +33,17 @@ if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 // файли однієї категорії стоять поруч один з одним при сортуванні за іменем
 // у провіднику/файловому менеджері, замість групування за типом файлу.
 const START_CATEGORY_ID = (START_URL.match(/\/g(\d+)-/) || [, "unknown"])[1];
-const OUTPUT_CSV = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_cncprom_complete.csv`);
-const OUTPUT_MAP = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_category_map.json`);
+// Один файл на категорію: дерево + товари + звірка, записується ОДИН раз у
+// кінці прогону. Раніше було двоє — дерево в кінці етапу 1 і CSV у кінці
+// етапу 2, — і через цей розрив build-maps.js мусив вгадувати, чи не зібрано
+// мапу з дерева одного прогону й товарів іншого (еталонна категорія, поріг у
+// годинах, заглушки "застаріло"). З одним файлом такої ситуації не буває.
+const OUTPUT_CATALOG = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_catalog.json`);
 const OUTPUT_FAILED = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_failed_urls.json`);
 // Помилки цього прогону — те саме, що рядки ПОМИЛКА в scrape.log, але окремо по
 // категорії, щоб build-maps.js міг показати їх на map.html. Інакше збій видно
 // лише тому, хто здогадається відкрити лог і знайти там потрібний прогін.
 const OUTPUT_ERRORS = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_errors.json`);
-const OUTPUT_REPORT = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_report.md`);
 
 const BLOCKED_PATTERNS = [
   'google-analytics.com', 'googletagmanager.com', 'doubleclick.net',
@@ -77,7 +79,6 @@ function logWarn(text) {
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// opts.waitForBreadcrumbs — дочекатися хлібних крихт (етап 2, їх малює React);
 // opts.silent — не рахувати остаточну невдачу помилкою прогону (етап 2 спершу
 // збирає такі товари для повторного проходу й логує лише тих, що не вдались
 // і вдруге — див. кінець ЕТАПУ 2).
@@ -93,9 +94,6 @@ async function gotoWithRetry(page, url, opts = {}) {
       // 404 (перевірено), тож >= 400 — завжди збій, який варто повторити.
       // resp буває null для навігації в межах того самого документа — це не збій.
       if (resp && resp.status() >= 400) throw new Error(`HTTP ${resp.status()}`);
-      if (opts.waitForBreadcrumbs) {
-        await page.waitForSelector('[data-qaid="breadcrumbs_item"]', { timeout: BREADCRUMB_WAIT_MS }).catch(() => {});
-      }
       return true;
     } catch (e) {
       console.warn(`  Помилка навігації (спроба ${attempt}/${MAX_RETRIES}): ${url} — ${e.message}`);
@@ -323,20 +321,49 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
 }
 
 // ==================== ЕТАП 2: ПОВНІ ДАНІ ПО КОЖНОМУ УНІКАЛЬНОМУ ТОВАРУ ====================
+// Хлібні крихти беруться з JSON-LD (`BreadcrumbList`), а не з DOM: цей блок
+// сервер віддає вже у вихідному HTML (перевірено curl'ом), тобто чекати React
+// не треба, і кожна ланка має посилання виду /ua/g<id>-<slug> — тобто ID
+// категорії, а не лише назву. Саме це робить звірку точною: назви сайт міняє
+// (22.09 "Фланцеві гайки" стали "Гайки (фланцеві, шестигранні, квадратні)"),
+// ID — ні. DOM-крихти лишаються запасним варіантом.
 function readProductPage(page) {
   return page.evaluate(() => {
     const nameEl = document.querySelector('[data-qaid="product_name"]');
     const skuEl = document.querySelector('[data-qaid="product_code"]');
     const availEl = document.querySelector('[data-qaid="presence_data"]');
-    const crumbEls = document.querySelectorAll('[data-qaid="breadcrumbs_item"]');
-    const breadcrumbs = [...crumbEls].map(el => el.textContent.trim()).filter(t => t.length > 0).join(" > ");
+
+    let crumbs = [];
+    for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
+      if (!/BreadcrumbList/.test(el.textContent || '')) continue;
+      try {
+        const data = JSON.parse(el.textContent);
+        crumbs = (data.itemListElement || [])
+          .map(it => {
+            const item = it.item || {};
+            const m = String(item['@id'] || '').match(/\/g(\d+)-/);
+            return m ? { id: m[1], name: String(item.name || '').trim() } : null;
+          })
+          .filter(Boolean);
+      } catch (e) { /* побитий JSON-LD — лишаємось із DOM-варіантом нижче */ }
+      if (crumbs.length) break;
+    }
+    if (!crumbs.length) {
+      crumbs = [...document.querySelectorAll('a[data-qaid="breadcrumbs_item"]')]
+        .map(a => {
+          const m = (a.getAttribute('href') || '').match(/\/g(\d+)-/);
+          return m ? { id: m[1], name: a.textContent.trim() } : null;
+        })
+        .filter(Boolean);
+    }
+
     return {
       productName: nameEl ? nameEl.textContent.trim() : "",
       sku: skuEl ? skuEl.textContent.trim() : "",
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
-      breadcrumbs
+      crumbs
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", breadcrumbs: "" }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [] }));
 }
 
 // Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
@@ -350,7 +377,7 @@ function readProductPage(page) {
 async function extractProductData(page, url, assignment, silent = false) {
   let data = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const ok = await gotoWithRetry(page, url, { waitForBreadcrumbs: true, silent });
+    const ok = await gotoWithRetry(page, url, { silent });
     await sleep(DELAY_MS);
     if (!ok) return null;
     data = await readProductPage(page);
@@ -375,25 +402,42 @@ async function extractProductData(page, url, assignment, silent = false) {
     sku: data.sku,
     categoryId: assignment.categoryId,
     categoryName: assignment.categoryName,
-    foundAtLevel: assignment.level,
-    isOrphan: !assignment.isLeafCategory, // товар прив'язаний до проміжної категорії, не до листка
     availabilityStatus: data.availabilityStatus,
     finalUrl: url,
-    baseCategoryPath: assignment.path,
-    breadcrumbs: data.breadcrumbs
+    crumbIds: data.crumbs.map(c => c.id),
+    crumbNames: data.crumbs.map(c => c.name)
   };
 }
 
-function csvEscape(val) {
-  const s = String(val ?? "");
-  if (s.includes(";") || s.includes('"') || s.includes("\n")) return `"${s.replace(/"/g, '""')}"`;
-  return s;
+// ==================== ЗВІРКА З ХЛІБНИМИ КРИХТАМИ ====================
+// Обхід дерева каже, до якої категорії товар належить за розкладкою сайту;
+// крихти на сторінці товару кажуть, до якої категорії сайт відносить його сам.
+// Порівнюємо ID (назви змінюються, ID — ні) і класифікуємо:
+//   match      — крихти закінчуються тією самою категорією;
+//   ancestor   — сайт назвав предка нашої категорії (товар лежить глибше;
+//                звичайна річ на Prom, де крихти ведуть до "головної" категорії);
+//   descendant — сайт назвав нащадка (наше призначення надто мілке — так
+//                виглядає товар-сирота);
+//   other      — зовсім інша гілка; це справжній сигнал. Саме так виглядав би
+//                збій 19.09.2026, коли 14 товарів отримали категорію батька;
+//   unknown    — крихт на сторінці не знайшлось.
+function classifyCrumbs(crumbIds, assignedId, chainOf) {
+  if (!crumbIds || crumbIds.length === 0) return "unknown";
+  const crumbLeaf = crumbIds[crumbIds.length - 1];
+  if (crumbLeaf === assignedId) return "match";
+  const ourChain = chainOf(assignedId) || [];
+  if (ourChain.includes(crumbLeaf)) return "ancestor";
+  if (crumbIds.includes(assignedId)) return "descendant";
+  return "other";
 }
-function toCSV(rows) {
-  const header = ["productId", "productName", "sku", "categoryId", "categoryName", "foundAtLevel", "isOrphan", "availabilityStatus", "finalUrl", "baseCategoryPath", "breadcrumbs"];
-  const lines = [header.join(";")];
-  for (const r of rows) lines.push(header.map(h => csvEscape(r[h])).join(";"));
-  return lines.join("\n");
+
+// categoryId -> ланцюг ID від кореня до цього вузла включно.
+function buildChainMap(node, parents = [], out = new Map()) {
+  if (!node || !node.categoryId) return out;
+  const chain = [...parents, node.categoryId];
+  out.set(node.categoryId, chain);
+  (node.children || []).forEach(c => buildChainMap(c, chain, out));
+  return out;
 }
 
 // ==================== ЕТАП 3: MD-ЗВІТ ЗІ ЗВІРКОЮ ====================
@@ -442,62 +486,6 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
   return out;
 }
 
-function mdEscape(s) {
-  return String(s ?? "").replace(/\|/g, "\\|");
-}
-
-function generateReport(tree, allRows) {
-  const stats = buildCategoryStats(tree, allRows);
-  const root = stats[0];
-  const lines = [];
-
-  // Кореня немає у двох випадках: стартова сторінка не завантажилась (дерево
-  // лишилось порожнім) або URL не містив /gNNN- і categoryId вийшов порожнім,
-  // через що гард у buildCategoryStats відсік корінь. Раніше тут одразу стояв
-  // root.ourTotal — тобто TypeError уже ПІСЛЯ запису порожнього CSV на диск, і
-  // прогін падав у "ФІНІШ: ПЕРЕРВАНО" замість того, щоб назвати причину.
-  if (!root) {
-    return [
-      `# Звіт по категорії "${(tree && tree.categoryName) || START_URL}"`, "",
-      `## ⚠️ Дерево категорій порожнє — звіряти нема чого`, "",
-      `Найімовірніша причина: стартова сторінка не завантажилась після ${MAX_RETRIES} спроб,`,
-      `або URL не містить фрагмента \`/gNNN-\`, тому з нього не вдалось витягти ID категорії.`, "",
-      `- Стартовий URL: ${START_URL}`,
-      `- ID категорії: ${START_CATEGORY_ID}`,
-      `- Товарів зібрано: ${allRows.length}`, "",
-      `Подробиці — у \`scrape.log\` за цей запуск.`, ""
-    ].join("\n");
-  }
-
-  lines.push(`# Звіт по категорії "${tree.categoryName}"`, "");
-  lines.push(`## Підсумок`, "");
-  lines.push(`| Зібрано (всього) | "В наявності" за даними скрапера | Лічильник сайту | Різниця | Висновок |`);
-  lines.push(`|---|---|---|---|---|`);
-  lines.push(`| ${root.ourTotal} | ${root.ourAvailable} | ${root.siteCounter ?? "н/д"} | ${root.diff ?? "—"} | ${root.verdict} |`, "");
-
-  lines.push(`## Звірка по категоріях`, "");
-  lines.push(`| Категорія | Всього зібрано | "В наявності" (дані скрапера) | Лічильник сайту | Різниця | Висновок |`);
-  lines.push(`|---|---|---|---|---|---|`);
-  stats.forEach(s => {
-    const indent = "&nbsp;&nbsp;".repeat(s.depth) + (s.depth > 0 ? "↳ " : "");
-    lines.push(`| ${indent}${mdEscape(s.name)} | ${s.ourTotal} | ${s.ourAvailable} | ${s.siteCounter ?? "н/д"} | ${s.diff ?? "—"} | ${s.verdict} |`);
-  });
-  lines.push("");
-
-  const orphans = allRows.filter(r => r.isOrphan);
-  lines.push(`## Товари-сироти (${orphans.length})`, "");
-  if (orphans.length === 0) {
-    lines.push("_Немає._");
-  } else {
-    lines.push(`Товари, прикріплені напряму до проміжної категорії (не до жодної з її підкатегорій):`, "");
-    orphans.forEach(r => {
-      lines.push(`- [${mdEscape(r.productName || r.productId)}](${r.finalUrl}) — категорія: \`${mdEscape(r.baseCategoryPath)}\``);
-    });
-  }
-  lines.push("");
-
-  return lines.join("\n");
-}
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (async () => {
@@ -530,8 +518,6 @@ function generateReport(tree, allRows) {
     const tree = {};
     await crawlTree(page, START_URL, null, 1, [], productAssignments, tree);
 
-    fs.writeFileSync(OUTPUT_MAP, JSON.stringify(tree, null, 2), "utf-8");
-    console.log(`Дерево збережено: ${OUTPUT_MAP}`);
     console.log(`Унікальних товарів знайдено на етапі 1: ${productAssignments.size}`);
 
     const orphanCount = [...productAssignments.values()].filter(a => !a.isLeafCategory).length;
@@ -583,16 +569,53 @@ function generateReport(tree, allRows) {
     }
     logLine(`ЕТАП 2 завершено: зібрано ${allRows.length}, "Готово до відправки" ${availableCount}, не вдалось обробити ${failedUrls.length}.`);
 
-    const csv = toCSV(allRows);
-    fs.writeFileSync(OUTPUT_CSV, "\uFEFF" + csv, "utf-8");
+    // ==================== ЕТАП 3: ЗВІРКА І ЗАПИС КАТАЛОГУ ====================
+    const chains = buildChainMap(tree);
+    const chainOf = id => chains.get(id);
+    const crumbSummary = { match: 0, ancestor: 0, descendant: 0, other: 0, unknown: 0 };
+    allRows.forEach(r => {
+      r.categoryPath = chainOf(r.categoryId) || [];
+      r.crumbVerdict = classifyCrumbs(r.crumbIds, r.categoryId, chainOf);
+      crumbSummary[r.crumbVerdict]++;
+    });
+    const crumbOther = allRows.filter(r => r.crumbVerdict === 'other');
+    if (crumbOther.length > 0) {
+      console.warn(`  Крихти сайту вказують на іншу гілку для ${crumbOther.length} товарів`);
+      logWarn(`Крихти вказують на іншу гілку для ${crumbOther.length} товарів (перший: ${crumbOther[0].finalUrl}).`);
+    }
 
-    const report = generateReport(tree, allRows);
-    fs.writeFileSync(OUTPUT_REPORT, report, "utf-8");
-    console.log(`\u0417\u0432\u0456\u0442 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E: ${OUTPUT_REPORT}`);
+    const stats = buildCategoryStats(tree, allRows);
+    const root = stats[0] || null;
+    const mismatchNodes = stats
+      .filter(s => s.diff !== null && s.diff !== 0)
+      .map(s => ({ categoryId: s.categoryId, name: s.name, collected: s.ourAvailable, siteCounter: s.siteCounter, diff: s.diff }));
+
+    fs.writeFileSync(OUTPUT_CATALOG, JSON.stringify({
+      categoryId: START_CATEGORY_ID,
+      categoryName: tree.categoryName || null,
+      url: START_URL,
+      scrapedAt: new Date().toISOString(),
+      tree,
+      products: allRows,
+      reconciliation: {
+        collected: root ? root.ourTotal : allRows.length,
+        available: root ? root.ourAvailable : availableCount,
+        siteCounter: root ? root.siteCounter : null,
+        diff: root ? root.diff : null,
+        mismatchNodes
+      },
+      crumbSummary
+    }), "utf-8");
+    console.log(`Каталог збережено: ${OUTPUT_CATALOG}`);
 
     const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
-    console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CSV}`);
+    console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CATALOG}`);
+    const recon = !root || root.diff === null ? 'звірка н/д'
+      : root.diff === 0 ? `звірка ✅ ${root.ourAvailable}/${root.siteCounter}`
+      : `звірка ⚠️ ${root.ourAvailable}/${root.siteCounter}, вузлів з розбіжністю ${mismatchNodes.length}`;
     logLine(`ФІНІШ: успішно за ${elapsedMin} хв. Товарів: ${allRows.length} (в наявності: ${availableCount}). ` +
+      `${recon}. крихти: match ${crumbSummary.match}, ancestor ${crumbSummary.ancestor}, ` +
+      `descendant ${crumbSummary.descendant}, other ${crumbSummary.other}, unknown ${crumbSummary.unknown}. ` +
       (runErrors.length > 0 ? `Помилок за запуск: ${runErrors.length} (див. вище в цьому лозі).` : `Без помилок.`));
   } catch (fatalErr) {
     const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);

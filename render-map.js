@@ -12,10 +12,9 @@
 // таблиці товарів праворуч, світла/темна тема, живий пошук).
 //
 // Використання:
-//   node render-map.js <ID>                    — output/site/ (за замовчуванням)
-//   MAP_SUBDIR=new node render-map.js <customID> — output/new/ (кураторська мапа)
+//   node render-map.js <ID>
 //
-// Результат (усе в output/<site|new>/, поруч зі скриптом, не в корені
+// Результат (усе в output/site/, поруч зі скриптом, не в корені
 // проєкту): <ID>_map.html + спільні map-common.css/map-common.js (стилі й
 // клієнтський додаток, однакові для будь-якої категорії — пишуться/
 // перезаписуються при кожному запуску) + <ID>_map.summary.json (короткий
@@ -26,95 +25,49 @@
 const fs = require('fs');
 const path = require('path');
 
-// MAP_SUBDIR замість жорсткого "output/" — той самий скрипт має однаково
-// вміти малювати мапу з реальних даних сайту (output/site/) і з майбутньої
-// кураторської таксономії (output/new/), не знаючи різниці між ними: обидва
-// джерела пишуть файли в одній і тій самій формі. Дефолт "site" — щоб
-// існуюче використання (`node render-map.js <ID>`) не зламалось.
-const MAP_SUBDIR = process.env.MAP_SUBDIR || 'site';
-const OUTPUT_DIR = path.join(__dirname, 'output', MAP_SUBDIR);
+const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
 const categoryId = process.argv[2];
 if (!categoryId) {
   console.error('Використання: node render-map.js <ID категорії>');
   console.error('Приклад: node render-map.js 1022485');
-  console.error('(MAP_SUBDIR=new node render-map.js <ID> — для output/new/)');
   process.exit(1);
 }
 
-const mapFile = path.join(OUTPUT_DIR, `${categoryId}_category_map.json`);
-const csvFile = path.join(OUTPUT_DIR, `${categoryId}_cncprom_complete.csv`);
+const catalogFile = path.join(OUTPUT_DIR, `${categoryId}_catalog.json`);
 
-if (!fs.existsSync(mapFile)) {
-  console.error(`Файл не знайдено: ${mapFile}`);
-  console.error(MAP_SUBDIR === 'site'
-    ? `Спершу запустіть: node scrape-complete.js "<URL категорії ${categoryId}>"`
-    : `Спершу згенеруйте output/new/${categoryId}_category_map.json (build-custom-tree.js).`);
+if (!fs.existsSync(catalogFile)) {
+  console.error(`Файл не знайдено: ${catalogFile}`);
+  console.error(`Спершу запустіть: node scrape-complete.js "<URL категорії ${categoryId}>"`);
   process.exit(1);
 }
 
 const OUTPUT_HTML = path.join(OUTPUT_DIR, `${categoryId}_map.html`);
 
-const tree = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
+// Один файл на категорію: дерево, товари і звірка, записані одним прогоном
+// (див. scrape-complete.js). Тому "дерево з одного прогону + товари з іншого"
+// тут структурно неможливе.
+const catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf-8'));
+const tree = catalog.tree;
 
-// Час веб-скрапінгу — беремо час запису <ID>_category_map.json, бо саме
-// цей файл scrape-complete.js зберігає одразу після обходу дерева категорій
-// (до нього дата модифікації не має сенсу — файл щойно згенеровано).
-const scrapedAtDate = fs.statSync(mapFile).mtime;
+// Час скрапінгу пишеться в самому файлі (`scrapedAt`), а не береться з mtime:
+// mtime міняється від копіювання файлу, а зафіксований момент прогону — ні.
+const scrapedAtDate = catalog.scrapedAt ? new Date(catalog.scrapedAt) : fs.statSync(catalogFile).mtime;
 const scrapedAt = scrapedAtDate.toLocaleDateString('uk-UA') + ' ' +
   scrapedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
 
-// ==================== ОПЦІЙНЕ ЗБАГАЧЕННЯ ТОВАРАМИ З CSV ====================
-// CSV: UTF-8 з BOM, роздільник ";". Рядки групуються за categoryId — тим самим
-// полем, яке scrape-complete.js записує і у вузол дерева (канонічна,
-// найглибша категорія товару), тому зіставлення товар -> вузол тут точне.
-function parseCsv(text) {
-  text = text.replace(/^﻿/, '');
-  const lines = text.split(/\r?\n/).filter(l => l.length > 0);
-  if (lines.length === 0) return [];
-  const header = splitCsvLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const cells = splitCsvLine(line);
-    const row = {};
-    header.forEach((h, i) => { row[h] = cells[i] ?? ''; });
-    return row;
-  });
-}
-
-function splitCsvLine(line) {
-  const out = [];
-  let cur = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') { cur += '"'; i++; }
-        else inQuotes = false;
-      } else cur += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ';') { out.push(cur); cur = ''; }
-      else cur += ch;
-    }
-  }
-  out.push(cur);
-  return out;
-}
-
-// csvFile — той самий ID, шукається поруч у output/ автоматично; якщо ще не
-// готовий (ЕТАП 2 scrape-complete.js не завершився), мапа будується лише зі
-// структури дерева, без товарів — так само, як і раніше при відсутньому
-// другому аргументі.
-const HAS_CSV = fs.existsSync(csvFile);
+// Товари групуються за categoryId — тим самим полем, яке scrape-complete.js
+// записує і у вузол дерева (канонічна, найглибша категорія товару), тож
+// зіставлення товар -> вузол точне за побудовою.
 const productsByCategory = new Map();
-if (HAS_CSV) {
-  const rows = parseCsv(fs.readFileSync(csvFile, 'utf-8'));
-  rows.forEach(r => {
-    if (!productsByCategory.has(r.categoryId)) productsByCategory.set(r.categoryId, []);
-    productsByCategory.get(r.categoryId).push(r);
-  });
-}
+(catalog.products || []).forEach(r => {
+  const key = String(r.categoryId);
+  if (!productsByCategory.has(key)) productsByCategory.set(key, []);
+  productsByCategory.get(key).push(r);
+});
+// Категорію без товарів малюємо як і раніше — лише структуру (так буває, якщо
+// етап 2 не встиг відпрацювати або категорія справді порожня).
+const HAS_PRODUCTS = (catalog.products || []).length > 0;
 
 // "наявн" навмисно не використовується — воно є підрядком і в "Немає в наявності"
 function isAvailableProduct(p) {
@@ -128,7 +81,7 @@ function isAvailableProduct(p) {
 function buildAppNode(node) {
   if (!node || !node.categoryId) return null;
 
-  const rawProducts = productsByCategory.get(node.categoryId) || [];
+  const rawProducts = productsByCategory.get(String(node.categoryId)) || [];
   const products = rawProducts.map((r, i) => ({
     index: i + 1,
     code: r.sku || '',
@@ -138,7 +91,7 @@ function buildAppNode(node) {
   }));
   const ownYes = products.filter(isAvailableProduct).length;
   const ownNo = products.length - ownYes;
-  const ownCount = HAS_CSV ? products.length : (node.directProductCount || 0);
+  const ownCount = HAS_PRODUCTS ? products.length : (node.directProductCount || 0);
 
   const children = (node.children || []).map(buildAppNode).filter(Boolean);
   const childAgg = children.reduce((acc, c) => ({
@@ -152,7 +105,7 @@ function buildAppNode(node) {
   const totalNo = ownNo + childAgg.no;
 
   const hasCounter = node.siteAvailableCounter !== null && node.siteAvailableCounter !== undefined;
-  const diff = hasCounter && HAS_CSV ? totalYes - node.siteAvailableCounter : null;
+  const diff = hasCounter && HAS_PRODUCTS ? totalYes - node.siteAvailableCounter : null;
 
   return {
     id: `node-${node.categoryId}`,
@@ -181,36 +134,6 @@ if (!appTree) {
   process.exit(1);
 }
 
-// ==================== ІНДЕКС ДЛЯ ПОШУКУ (Фаза 4, <id>_search.json) ====================
-// Той самий обхід дерева, що indexTree() робить у браузері для allProductsList
-// (initCatalogMap нижче), тільки на боці Node і по СИРОМУ дереву (raw tree,
-// categoryId/categoryName без префікса "node-", який має сенс лише як DOM id
-// в клієнтському додатку) — легший, самодостатній запис на товар: код/назва/
-// URL/наявність/категорія-як-текст, плюс topId/topName (це завжди ця сама
-// категорія 1 рівня) — щоб build-maps.js міг просто зконкатенувати всі
-// <id>_search.json в один output/<MAP_SUBDIR>/search-index.json, а
-// map.html — знаючи topId, відкрити потрібний <id>_map.html.
-// Пишеться порожнім масивом, якщо CSV ще нема (HAS_CSV=false) — так само,
-// як own_products вище, а не пропускається — build-maps.js завжди читає
-// файл, без розгалуження "може не існувати".
-function buildSearchEntries(node, topId, topName, out) {
-  (productsByCategory.get(node.categoryId) || []).forEach(r => {
-    out.push({
-      code: r.sku || '',
-      name: r.productName || r.productId || '',
-      url: r.finalUrl || '',
-      availability: r.availabilityStatus || '',
-      categoryId: node.categoryId,
-      categoryName: node.categoryName,
-      topId,
-      topName,
-    });
-  });
-  (node.children || []).forEach(child => buildSearchEntries(child, topId, topName, out));
-}
-const searchEntries = [];
-if (HAS_CSV) buildSearchEntries(tree, categoryId, tree.categoryName, searchEntries);
-
 let maxLevel = 1;
 let categoriesCount = 0;
 // Категорії, у яких є і підкатегорії, і власні товари, що не входять до жодної
@@ -230,15 +153,21 @@ const orphanCategories = [];
 const globalStats = {
   levels: maxLevel,
   categories_count: categoriesCount,
-  has_products: HAS_CSV,
+  has_products: HAS_PRODUCTS,
   total_products: appTree.stats.total_products,
   total_yes: appTree.stats.total_yes,
   total_no: appTree.stats.total_no,
   site_counter: appTree.stats.site_counter,
   diff: appTree.stats.diff,
   scraped_at: scrapedAt,
-  source_map: path.basename(mapFile),
-  source_csv: HAS_CSV ? path.basename(csvFile) : null,
+  source: path.basename(catalogFile),
+  // Звірка й крихти беруться з каталогу як є — рахує їх скрапер, який єдиний
+  // бачить і лічильник сайту, і сторінку кожного товару.
+  mismatch_categories: (catalog.reconciliation && catalog.reconciliation.mismatchNodes) || [],
+  crumb_summary: catalog.crumbSummary || null,
+  crumb_other: (catalog.products || [])
+    .filter(p => p.crumbVerdict === 'other')
+    .map(p => ({ id: p.productId, name: p.productName, url: p.finalUrl, assigned: p.categoryName, crumbs: (p.crumbNames || []).join(' › ') })),
   // Дублюється в summary.json (а не лише в самій сторінці нижче) так само, як
   // усе інше в globalStats, — щоб build-maps.js міг зібрати "Товари поза
   // категоріями" для ВСЬОГО сайту з самих summary.json, не перечитуючи заново
@@ -886,7 +815,7 @@ function initCatalogMap(CATALOG_DATA) {
   function diffBadge(stats) {
     // stats.diff вже коректно враховує обидві причини неможливості звірки: сайт
     // не показав лічильник (hasCounter=false) АБО скрипт запущено без CSV
-    // (HAS_CSV=false, тоді total_yes завжди 0 — порівнювати з ним не можна,
+    // (HAS_PRODUCTS=false, тоді total_yes завжди 0 — порівнювати з ним не можна,
     // інакше майже кожна категорія хибно підсвітилась би червоним).
     if (stats.diff === null || stats.diff === undefined) {
       return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені (запущено без CSV) — звірка неможлива.">н/д</span>';
@@ -1468,11 +1397,11 @@ fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupToolt
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
 
-const infoBanner = HAS_CSV ? '' : `
+const infoBanner = HAS_PRODUCTS ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
       <span>⚠️</span>
       <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту. Це станеться само:
-      запустіть <code>${MAP_SUBDIR === 'site' ? 'node' : 'MAP_SUBDIR=new node'} render-map.js ${categoryId}</code> ще раз, коли в output/${MAP_SUBDIR}/ з'явиться ${categoryId}_cncprom_complete.csv${MAP_SUBDIR === 'site' ? ' (ЕТАП 2 scrape-complete.js)' : ''}.</span>
+      запустіть <code>node render-map.js ${categoryId}</code> ще раз, коли скрапер допише ${categoryId}_catalog.json (ЕТАП 2 scrape-complete.js).</span>
     </div>`;
 
 // Кнопка в шапці (поряд з "Мапа розділу") + модальна панель зі списком —
@@ -1530,8 +1459,8 @@ const html = `<!DOCTYPE html>
         <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
     </div>
-    <div class="header-right">${MAP_SUBDIR === 'site' ? `
-      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
+    <div class="header-right">
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
@@ -1648,10 +1577,5 @@ fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
 // всіх категорій), не розпаковуючи CATALOG_DATA з готового HTML.
 fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_map.summary.json`), JSON.stringify({ id: categoryId, ...globalStats }, null, 2), 'utf-8');
 
-// Індекс для сайтового пошуку (Фаза 4) — компактний (без відступів, це не для
-// читання людиною), build-maps.js конкатенує всі <id>_search.json в один
-// search-index.json.
-fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_search.json`), JSON.stringify(searchEntries), 'utf-8');
-
 console.log(`Мапу збережено: ${OUTPUT_HTML}`);
-console.log(`Категорій: ${categoriesCount}, рівнів: ${maxLevelSafe}, товарів: ${appTree.stats.total_products}${HAS_CSV ? ` (в наявності: ${appTree.stats.total_yes})` : ' (без CSV — лише структура)'}`);
+console.log(`Категорій: ${categoriesCount}, рівнів: ${maxLevelSafe}, товарів: ${appTree.stats.total_products}${HAS_PRODUCTS ? ` (в наявності: ${appTree.stats.total_yes})` : ' (лише структура, без товарів)'}`);

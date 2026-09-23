@@ -95,17 +95,27 @@ function flattenTree(node, parentId, out) {
 }
 
 // ==================== ТОВАРИ ====================
-function readProducts(categoryId) {
-  const csvPath = path.join(SITE_DIR, `${categoryId}_cncprom_complete.csv`);
-  if (!fs.existsSync(csvPath)) return [];
-  return parseCsv(fs.readFileSync(csvPath, 'utf-8')).map(row => ({
-    id: row.productId,
-    name: row.productName,
-    sku: row.sku,
-    categoryId: row.categoryId,
-    availability: row.availabilityStatus,
-    url: row.finalUrl,
+// З <id>_catalog.json лишаємо те, що потрібне для diff і сторінки змін, плюс
+// crumbVerdict — вердикт звірки з хлібними крихтами сайту (див. scrape-complete.js).
+// Саме він дає змогу через тиждень сказати, чи була та "зміна категорії"
+// справжньою, чи це скрапер помилився.
+function trimProducts(products) {
+  return (products || []).map(p => ({
+    id: String(p.productId),
+    name: p.productName,
+    sku: p.sku,
+    categoryId: String(p.categoryId),
+    availability: p.availabilityStatus,
+    url: p.finalUrl,
+    crumbVerdict: p.crumbVerdict || 'unknown',
   }));
+}
+
+// Помилки прогону цієї категорії — щоб знімок відповідав і на питання "чи все
+// було гаразд тієї ночі", а не лише "що було в каталозі".
+function readRunErrors(categoryId) {
+  const p = path.join(SITE_DIR, `${categoryId}_errors.json`);
+  try { const list = JSON.parse(fs.readFileSync(p, 'utf-8')); return Array.isArray(list) ? list : []; } catch (e) { return []; }
 }
 
 // ==================== ОСНОВНИЙ ПРОХІД ====================
@@ -113,29 +123,40 @@ const rows = readCategoriesFromCsv();
 const categories = [];
 const productsById = new Map(); // захист від дублів, якщо productId колись з'явиться у двох деревах
 
-let missingTree = 0;
-let missingCsv = 0;
+let missingCatalog = 0;
+const run = [];
 
 rows.forEach(row => {
-  const jsonPath = path.join(SITE_DIR, `${row.categoryId}_category_map.json`);
-  if (!fs.existsSync(jsonPath)) {
-    missingTree++;
-    console.warn(`Пропущено (нема ${row.categoryId}_category_map.json): ${row.categoryName}`);
+  const catalogPath = path.join(SITE_DIR, `${row.categoryId}_catalog.json`);
+  if (!fs.existsSync(catalogPath)) {
+    missingCatalog++;
+    console.warn(`Пропущено (нема ${row.categoryId}_catalog.json): ${row.categoryName}`);
     return;
   }
-  const tree = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-  flattenTree(tree, null, categories);
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
+  flattenTree(catalog.tree, null, categories);
 
-  const products = readProducts(row.categoryId);
-  if (products.length === 0) missingCsv++;
-  products.forEach(p => {
+  trimProducts(catalog.products).forEach(p => {
     if (!productsById.has(p.id)) productsById.set(p.id, p);
+  });
+
+  run.push({
+    categoryId: String(row.categoryId),
+    name: row.categoryName,
+    scrapedAt: catalog.scrapedAt || null,
+    reconciliation: catalog.reconciliation || null,
+    crumbSummary: catalog.crumbSummary || null,
+    errors: readRunErrors(row.categoryId),
   });
 });
 
 const snapshot = {
   date: DATE,
   generatedAt: new Date().toISOString(),
+  // Діагностика прогону поряд із даними: звірка, підсумок по крихтах і помилки
+  // кожної категорії. Без цього "чи була проблема тієї ночі" можна було
+  // дізнатись лише з scrape.log, який перезаписується щоночі разом з output/.
+  run,
   categories,
   products: [...productsById.values()],
 };
@@ -148,5 +169,5 @@ fs.writeFileSync(outPath, JSON.stringify(snapshot, null, 2), 'utf-8');
 
 console.log(`Знімок записано: ${outPath}`);
 console.log(`Категорій: ${categories.length}, товарів: ${snapshot.products.length}` +
-  (missingTree ? `, без дерева: ${missingTree}` : '') +
-  (missingCsv ? `, без товарів (csv): ${missingCsv}` : ''));
+  (missingCatalog ? `, без каталогу: ${missingCatalog}` : '') +
+  `, помилок прогону: ${run.reduce((n, r) => n + r.errors.length, 0)}`);

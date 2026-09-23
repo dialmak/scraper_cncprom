@@ -4,12 +4,10 @@
 //   - deploy-pages.yml у ручному запуску з rebuild_only=true;
 //   - локально, щоб оновити застарілий output/site/ до стану сайту.
 //
-// Завантажує categories-site.csv і для кожної категорії _category_map.json,
-// _cncprom_complete.csv, _report.md (+ _failed_urls.json, якщо є; якщо нема —
-// видаляє локальний, щоб не лишився чужий). mtime json/csv виставляється на
-// час скрапінгу з опублікованого _map.summary.json (CI працює в UTC) —
-// render-map.js бере "Мапа розділу · <дата>" саме з mtime, і без цього мапи
-// показували б час завантаження. scrape.log / map.log не чіпає.
+// Завантажує categories-site.csv і для кожної категорії <id>_catalog.json
+// (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
+// <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
+// лишились чужі. scrape.log / map.log не чіпає.
 //
 // node fetch-published.js [pagesUrl]   (за замовчуванням — PAGES_URL нижче)
 
@@ -31,12 +29,6 @@ async function get(name) {
   return Buffer.from(await r.arrayBuffer());
 }
 
-// "22.09.2026 00:42" — так render-map.js форматує scraped_at у CI (часовий пояс UTC).
-function parseUtc(s) {
-  const m = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/.exec(s || '');
-  return m ? new Date(Date.UTC(+m[3], +m[2] - 1, +m[1], +m[4], +m[5])) : null;
-}
-
 (async () => {
   fs.mkdirSync(DIR, { recursive: true });
   let csv;
@@ -49,7 +41,7 @@ function parseUtc(s) {
 
   let ok = 0;
   for (const id of ids) {
-    const files = [`${id}_category_map.json`, `${id}_cncprom_complete.csv`, `${id}_report.md`];
+    const files = [`${id}_catalog.json`];
     let bufs, summary;
     try {
       bufs = await Promise.all(files.map(get));
@@ -60,18 +52,18 @@ function parseUtc(s) {
       console.warn(`  ${id}: пропущено (${e.message})`);
       continue;
     }
-    const when = parseUtc(summary.scraped_at);
-    files.forEach((f, i) => {
-      const p = path.join(DIR, f);
-      fs.writeFileSync(p, bufs[i]);
-      if (when) fs.utimesSync(p, when, when);
-    });
-    const fu = `${id}_failed_urls.json`, fuPath = path.join(DIR, fu);
-    const r = await fetch(BASE + fu);
-    if (r.ok) fs.writeFileSync(fuPath, Buffer.from(await r.arrayBuffer()));
-    else if (fs.existsSync(fuPath)) fs.unlinkSync(fuPath);
+    files.forEach((f, i) => fs.writeFileSync(path.join(DIR, f), bufs[i]));
+
+    // Побічні файли прогону: є на сайті — беремо, нема — прибираємо локальні.
+    const extras = [];
+    for (const name of [`${id}_errors.json`, `${id}_failed_urls.json`]) {
+      const p = path.join(DIR, name);
+      const r = await fetch(BASE + name);
+      if (r.ok) { fs.writeFileSync(p, Buffer.from(await r.arrayBuffer())); extras.push(name.replace(`${id}_`, '')); }
+      else if (fs.existsSync(p)) fs.unlinkSync(p);
+    }
     ok++;
-    console.log(`  ${id}: скрапінг ${summary.scraped_at} UTC${r.ok ? ', є failed_urls' : ''}`);
+    console.log(`  ${id}: скрапінг ${summary.scraped_at} UTC${extras.length ? ', є ' + extras.join(', ') : ''}`);
   }
   console.log(`Завантажено категорій: ${ok} з ${ids.length}`);
   if (ok === 0) process.exit(1);

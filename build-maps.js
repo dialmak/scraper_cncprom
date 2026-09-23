@@ -1,71 +1,15 @@
-// build-maps.js — пакетно генерує мапи (render-map.js) для всіх категорій
-// 1 рівня одразу, замість того щоб запускати render-map.js вручну по одній.
-// Повний список категорій береться з output/site/categories-site.csv (пише
-// discover-categories.js), а не зі сканування output/site/ на вже наявні
-// <ID>_category_map.json — інакше категорія, яку ще жодного разу не
-// скрапили, просто не з'явилась би в результаті.
-//
-// ПРИМІТКА про MAP_SUBDIR/output/new/: шлях DIR нижче параметризований так
-// само, як у render-map.js (щоб обидва скрипти дивились в один і той самий
-// output/<site|new>/ без розсинхрону), але сама логіка нижче — читання
-// categories-site.csv, звірка REFERENCE_ID на "застарілість" json/csv — існує
-// ТІЛЬКИ для реального сайту (це про часовий розрив між ЕТАП 1/ЕТАП 2
-// scrape-complete.js, якого в майбутньому output/new/ просто не буде — там
-// json+csv писатиме один атомарний скрипт, build-custom-tree.js, за один
-// прохід). Тобто MAP_SUBDIR=new build-maps.js поки НЕ запрацює сам собою —
-// це свідомо відкладено до появи build-custom-tree.js й вирішення, звідки
-// для output/new/ брати аналог "списку категорій 1 рівня".
-//
-// Перед побудовою мапи кожна категорія звіряється на "застарілість" —
-// розрив у часі між її <ID>_category_map.json (пише ЕТАП 1 scrape-complete.js)
-// і <ID>_cncprom_complete.csv (пише ЕТАП 2) відносно такого самого розриву в
-// еталонній категорії (REFERENCE_ID нижче). Занадто великий розрив означає,
-// що json і csv, найімовірніше, належать різним прогонам — така категорія
-// отримує заглушку (<ID>_map.html з поясненням причини й готовою командою
-// для повторного скрапінгу), а не мапу з завідомо неузгодженими даними.
-// Категорія, яку взагалі ще не скрапили, отримує таку саму заглушку.
-//
-// Використання:
-//   node build-maps.js
-//
-// Результат (усе в output/<site|new>/, поруч зі скриптами):
-// - <ID>_map.html для кожної категорії — реальна мапа (render-map.js) або
-//   заглушка, залежно від стану вище;
-// - map.html — індексна сторінка зі списком усіх категорій 1 рівня,
-//   посиланнями на кожну мапу, кількостями товарів/реконсиляцією і
-//   статусом (✅ збігається / ⚠️ розбіжність / "⏳ Немає даних");
-// - map.log — доповнюється (як scrape.log) рішенням по кожній категорії.
-//
-// Передумова: категорія REFERENCE_ID має бути вже хоч раз проскрапена
-// (інакше нема з чим звіряти розрив json/csv для решти) — інакше скрипт
-// одразу завершується з помилкою.
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 // ==================== НАЛАШТУВАННЯ ====================
-// Еталонна категорія — з неї починається побудова мап; її розрив між
-// <ID>_category_map.json і <ID>_cncprom_complete.csv (нормально — секунди/
-// хвилини, стільки триває сама ЕТАП 2 всередині одного прогону) є базою
-// порівняння для решти категорій.
-const REFERENCE_ID = "1022837"; // Драйвери крокового двигуна
-const STALE_THRESHOLD_HOURS = 5;
 // ROOT_DIR — де лежать самі скрипти (render-map.js викликається звідси);
-// DIR — де лежать усі згенеровані файли (output/<site|new>/), включно з тими,
-// що пише цей скрипт (map.html, map.log). Розділені навмисно: колись усе
-// писалось прямо в ROOT_DIR, тепер лише в output/ — не плутати одне з одним.
-// MAP_SUBDIR — той самий перемикач, що й у render-map.js (див. примітку про
-// output/new/ на початку файлу); дефолт "site" зберігає поточну поведінку.
+// DIR — де лежать усі згенеровані файли, включно з тими, що пише цей скрипт
+// (map.html, map.log). Розділені навмисно: колись усе писалось прямо в
+// ROOT_DIR, тепер лише в output/site/.
 const ROOT_DIR = __dirname;
-const MAP_SUBDIR = process.env.MAP_SUBDIR || 'site';
-// IS_SITE_MODE вимикає весь блок "еталон + розрив json/csv" нижче для
-// MAP_SUBDIR=new (Фаза 5, build-custom-tree.js) — там json і csv завжди
-// пишуться одним атомарним синхронним проходом, тож розриву, який ця логіка
-// виявляє, там структурно не може виникнути; звірятись немає з чим і не
-// проти чого.
-const IS_SITE_MODE = MAP_SUBDIR === 'site';
-const DIR = path.join(ROOT_DIR, 'output', MAP_SUBDIR);
+const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
 const CSV_FILE = path.join(DIR, "categories-site.csv");
@@ -126,10 +70,6 @@ function readCategoriesFromCsv() {
 }
 
 // ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================
-function mtimeHours(filePath) {
-  return fs.statSync(filePath).mtimeMs / 3600000; // мс -> год
-}
-
 function readLogSafe(filePath) {
   try { return fs.readFileSync(filePath, "utf-8"); } catch (e) { return "(файл відсутній або порожній)"; }
 }
@@ -162,12 +102,9 @@ function writeStub(id, name, reason) {
 }
 
 function buildRealMap(id) {
-  // render-map.js тепер приймає лише ID — сам шукає <id>_category_map.json /
-  // <id>_cncprom_complete.csv в своєму output/<MAP_SUBDIR>/ (той самий DIR,
-  // обчислений від __dirname render-map.js, який лежить у ROOT_DIR поруч з
-  // цим скриптом) — MAP_SUBDIR передається через env, щоб обидва скрипти
-  // дивились в одну й ту саму підпапку, а не розсинхронізувались.
-  const res = spawnSync("node", ["render-map.js", id], { cwd: ROOT_DIR, stdio: "inherit", env: { ...process.env, MAP_SUBDIR } });
+  // render-map.js приймає лише ID — сам шукає <id>_catalog.json у тому самому
+  // output/site/ (шлях рахується від його __dirname, а скрипти лежать поруч).
+  const res = spawnSync("node", ["render-map.js", id], { cwd: ROOT_DIR, stdio: "inherit" });
   return res.status === 0;
 }
 
@@ -176,15 +113,42 @@ function readSummary(id) {
   try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return null; }
 }
 
-// Фаза 4 (search-index.json): кожен <id>_search.json (пише render-map.js,
-// лише для 'ok' категорій — той самий виняток, що й у readSummary/
-// orphan_categories вище, бо тільки вони реально отримали buildRealMap) просто
-// конкатенується в один файл — сама структура запису (code/name/url/
-// availability/categoryId/categoryName/topId/topName) уже самодостатня, тут
-// нема чого агрегувати чи перераховувати.
+// Записи для сайтового пошуку будуються прямо з <id>_catalog.json: обхід
+// дерева + товари цього вузла. Раніше render-map.js писав ще й проміжний
+// <id>_search.json (1.9 МБ на всі категорії), який build-maps лише
+// конкатенував — тобто ті самі дані лежали на диску двічі.
 function readSearchEntries(id) {
-  const p = path.join(DIR, `${id}_search.json`);
-  try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return []; }
+  const p = path.join(DIR, `${id}_catalog.json`);
+  let catalog;
+  try { catalog = JSON.parse(fs.readFileSync(p, "utf-8")); } catch (e) { return []; }
+
+  const byCategory = new Map();
+  (catalog.products || []).forEach(r => {
+    const key = String(r.categoryId);
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(r);
+  });
+
+  const out = [];
+  const topId = String(catalog.categoryId || id);
+  const topName = (catalog.tree && catalog.tree.categoryName) || catalog.categoryName || '';
+  (function walk(node) {
+    if (!node || !node.categoryId) return;
+    (byCategory.get(String(node.categoryId)) || []).forEach(r => {
+      out.push({
+        code: r.sku || '',
+        name: r.productName || r.productId || '',
+        url: r.finalUrl || '',
+        availability: r.availabilityStatus || '',
+        categoryId: node.categoryId,
+        categoryName: node.categoryName,
+        topId,
+        topName,
+      });
+    });
+    (node.children || []).forEach(walk);
+  })(catalog.tree);
+  return out;
 }
 
 // <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
@@ -473,10 +437,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
         <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
     </div>
-    <div class="header-right">${IS_SITE_MODE ? `
-      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>` : ''}
-      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/scrape.log">📄 scrape.log</button>
-      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/${MAP_SUBDIR}/map.log">📄 map.log</button>
+    <div class="header-right">
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>
+      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/site/scrape.log">📄 scrape.log</button>
+      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/site/map.log">📄 map.log</button>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
@@ -484,8 +448,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
       <a href="https://cncprom.ua/ua/" class="link-site">cncprom.ua ↗</a>
     </div>
   </header>
-${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/${MAP_SUBDIR}/scrape.log`, scrapeLogContent)}
-${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/${MAP_SUBDIR}/map.log`, mapLogContent)}
+${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/site/scrape.log`, scrapeLogContent)}
+${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/site/map.log`, mapLogContent)}
 ${orphanPanelHtml}
 ${failedPanelHtml}
 ${errorsPanelHtml}
@@ -597,14 +561,11 @@ initSiteSearch();
   //     …/site/<id>_map.html, …/site/reports/…), щоб збережені посилання не
   //     ламались. JS переносить ?from=&to= і #cat=<id> (meta-refresh їх губить),
   //     meta лишається запасним варіантом без JS.
-  // Лише для site: output/new/ — окрема кураторська мапа, у CI не публікується.
-  if (IS_SITE_MODE) {
-    writeRedirect(path.join(DIR, 'index.html'), 'map.html');
-    writeRedirect(path.join(DIR, 'site', 'map.html'), '../map.html');
-    entries.forEach(e => writeRedirect(path.join(DIR, 'site', `${e.id}_map.html`), `../${e.id}_map.html`));
-    writeRedirect(path.join(DIR, 'site', 'reports', 'index.html'), '../../reports/index.html');
-    writeRedirect(path.join(DIR, 'site', 'reports', 'latest.html'), '../../reports/index.html');
-  }
+  writeRedirect(path.join(DIR, 'index.html'), 'map.html');
+  writeRedirect(path.join(DIR, 'site', 'map.html'), '../map.html');
+  entries.forEach(e => writeRedirect(path.join(DIR, 'site', `${e.id}_map.html`), `../${e.id}_map.html`));
+  writeRedirect(path.join(DIR, 'site', 'reports', 'index.html'), '../../reports/index.html');
+  writeRedirect(path.join(DIR, 'site', 'reports', 'latest.html'), '../../reports/index.html');
 }
 
 function writeRedirect(file, target) {
@@ -628,31 +589,8 @@ function writeRedirect(file, target) {
     process.exit(1);
   }
 
-  let refGapHours = 0;
-  if (IS_SITE_MODE) {
-    const refJsonPath = path.join(DIR, `${REFERENCE_ID}_category_map.json`);
-    if (!fs.existsSync(refJsonPath)) {
-      console.error(`Еталонна категорія ${REFERENCE_ID} ще не відскрапована (немає ${REFERENCE_ID}_category_map.json) — зупинка.`);
-      console.error(`Запустіть: node scrape-complete.js "https://cncprom.ua/ua/g${REFERENCE_ID}-drajvery-shagovogo-dvigatelya"`);
-      logLine(`ПОМИЛКА: еталонна категорія ${REFERENCE_ID} ще не відскрапована, побудова мап скасована.`);
-      process.exit(1);
-    }
-
-    // Гарантуємо, що еталон обробляється першим
-    categories.sort((a, b) => (a.id === REFERENCE_ID ? -1 : b.id === REFERENCE_ID ? 1 : 0));
-
-    const refCsvPath = path.join(DIR, `${REFERENCE_ID}_cncprom_complete.csv`);
-    refGapHours = fs.existsSync(refCsvPath)
-      ? Math.abs(mtimeHours(refCsvPath) - mtimeHours(refJsonPath))
-      : 0;
-
-    console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
-    console.log(`Еталон: ${REFERENCE_ID} (розрив json/csv: ${refGapHours.toFixed(2)} год)`);
-    logLine(`СТАРТ build-maps: категорій ${categories.length}, еталон ${REFERENCE_ID}, розрив ${refGapHours.toFixed(2)} год, поріг ${STALE_THRESHOLD_HOURS} год.`);
-  } else {
-    console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length} (MAP_SUBDIR=${MAP_SUBDIR}, без перевірки застарілості — див. IS_SITE_MODE).`);
-    logLine(`СТАРТ build-maps (${MAP_SUBDIR}): категорій ${categories.length}.`);
-  }
+  console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
+  logLine(`СТАРТ build-maps: категорій ${categories.length}.`);
 
   const entries = [];
   const searchEntries = [];
@@ -678,59 +616,25 @@ function writeRedirect(file, target) {
     entries.push({ id, name, url, status: 'stale', reason });
   }
 
+  // Раніше тут була ціла система перевірки застарілості: дерево писалось у
+  // кінці етапу 1, товари — у кінці етапу 2, і мапу можна було зібрати з
+  // дерева одного прогону й товарів іншого. Звідси бралися еталонна категорія,
+  // поріг у годинах і статус "застаріло". Тепер scrape-complete.js пише один
+  // <id>_catalog.json одним записом у кінці прогону, тож лишилось два стани:
+  // файл є (будуємо) або немає (заглушка).
   categories.forEach(cat => {
     const { id, name, url } = cat;
-    const jsonPath = path.join(DIR, `${id}_category_map.json`);
-    const csvPath = path.join(DIR, `${id}_cncprom_complete.csv`);
 
-    if (IS_SITE_MODE && id === REFERENCE_ID) {
-      console.log(`[${id}] ${name} — еталон, будуємо повну мапу.`);
-      pushBuilt(id, name, url);
-      return;
-    }
-
-    if (!fs.existsSync(jsonPath)) {
-      const reason = IS_SITE_MODE
-        ? `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`
-        : `Категорії нема в output/${MAP_SUBDIR}/ — запустіть: node build-custom-tree.js`;
+    if (!fs.existsSync(path.join(DIR, `${id}_catalog.json`))) {
+      const reason = `Категорію ще не скрапили — запустіть: node scrape-complete.js "${url}"`;
       console.log(`[${id}] ${name} — ще не скрапилось. Заглушка замість мапи.`);
       writeStub(id, name, reason);
       entries.push({ id, name, url, status: 'not_scraped', reason });
       return;
     }
 
-    // Поза MAP_SUBDIR=site (Фаза 5, build-custom-tree.js) json+csv завжди
-    // пишуться разом, атомарно — жодної перевірки розриву/застарілості не
-    // потрібно, наявність json уже означає "готово, будуємо мапу".
-    if (!IS_SITE_MODE) {
-      console.log(`[${id}] ${name} — будуємо повну мапу.`);
-      pushBuilt(id, name, url);
-      return;
-    }
-
-    if (!fs.existsSync(csvPath)) {
-      const reason = `${id}_cncprom_complete.csv відсутній (збір товарів ще не завершено) — дані неповні.`;
-      console.warn(`[${id}] ${name} — ${reason} Заглушка замість мапи.`);
-      logLine(`Категорія ${id} (${name}) пропущена: ${reason}`);
-      writeStub(id, name, reason);
-      entries.push({ id, name, url, status: 'stale', reason });
-      return;
-    }
-
-    const gapHours = Math.abs(mtimeHours(csvPath) - mtimeHours(jsonPath));
-    const diffFromRef = gapHours - refGapHours;
-
-    if (diffFromRef > STALE_THRESHOLD_HOURS) {
-      const reason = `розрив між ${id}_category_map.json і ${id}_cncprom_complete.csv = ${gapHours.toFixed(2)} год — ` +
-        `на ${diffFromRef.toFixed(2)} год більше, ніж у еталона ${REFERENCE_ID} (${refGapHours.toFixed(2)} год).`;
-      console.warn(`[${id}] ${name} — ЗАСТАРІЛІ ДАНІ: ${reason}`);
-      logLine(`Категорія ${id} (${name}) пропущена: ${reason}`);
-      writeStub(id, name, reason);
-      entries.push({ id, name, url, status: 'stale', reason });
-    } else {
-      console.log(`[${id}] ${name} — свіжі дані (розрив ${gapHours.toFixed(2)} год), будуємо повну мапу.`);
-      pushBuilt(id, name, url);
-    }
+    console.log(`[${id}] ${name} — будуємо мапу.`);
+    pushBuilt(id, name, url);
   });
 
   // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
