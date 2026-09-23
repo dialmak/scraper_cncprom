@@ -41,14 +41,14 @@ const SITE_DIR = path.join(__dirname, 'output', 'site');
 // id категорії → URL на сайті (data/categories.json). Знімки несуть url
 // категорії лише відтоді, як generate-snapshot.js почав його писати
 // (23.09.2026); для старіших дат і як запас беремо URL зі свіжих
-// <id>_category_map.json (у нічному прогоні build-maps.js уже відпрацював).
+// <id>_catalog.json (у нічному прогоні build-maps.js уже відпрацював).
 // URL зі знімків має пріоритет.
 function readCategoryUrls(fromSnapshots) {
   const out = {};
   const walk = n => { if (n.url) out[n.categoryId] = n.url; (n.children || []).forEach(walk); };
   let files = [];
-  try { files = fs.readdirSync(SITE_DIR).filter(f => f.endsWith('_category_map.json')); } catch (e) { /* немає output/site — лише знімки */ }
-  files.forEach(f => { try { walk(JSON.parse(fs.readFileSync(path.join(SITE_DIR, f), 'utf-8'))); } catch (e) { /* пошкоджений файл — пропускаємо */ } });
+  try { files = fs.readdirSync(SITE_DIR).filter(f => f.endsWith('_catalog.json')); } catch (e) { /* немає output/site — лише знімки */ }
+  files.forEach(f => { try { walk(JSON.parse(fs.readFileSync(path.join(SITE_DIR, f), 'utf-8')).tree || {}); } catch (e) { /* пошкоджений файл — пропускаємо */ } });
   return Object.assign(out, fromSnapshots);
 }
 const OUT_DATA = path.join(OUT_DIR, 'data');
