@@ -307,6 +307,70 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
     </div>
   </div>`;
 
+  // "Розбіжності звірки N" — вузли, де зібране скрапером не збіглося з
+  // лічильником сайту "В наявності N" (reconciliation.mismatchNodes). Рівно
+  // нуль або нічого: толерантності немає свідомо (прогін нічний, руху
+  // замовлень нема — будь-яка різниця це справжня розбіжність, див. README).
+  // До 23.09.2026 таку розбіжність було видно лише в колонці "В наявності"
+  // окремої категорії, і то без списку конкретних вузлів.
+  const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
+  const mismatchTotal = mismatchGroups.reduce((n, e) => n + e.mismatch_categories.length, 0);
+  const mismatchMenuButtonHtml = mismatchTotal === 0 ? '' : `
+      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Категорії, де кількість зібраних товарів у наявності не збіглася з лічильником сайту.">⚠️ Розбіжності звірки ${mismatchTotal}</button>`;
+  const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
+  <div class="help-overlay" id="mismatch-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Розбіжності звірки з лічильником сайту (${mismatchTotal}):</h3>
+        <button class="btn-help-close" id="btn-mismatch-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності N» для того ж вузла. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не зчиталось. Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <div class="orphan-group-list">${mismatchGroups.map(e => `
+          <div class="orphan-group">
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.mismatch_categories.length})</span></a>
+            <div class="orphan-cat-list">${e.mismatch_categories.map(m =>
+              '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(m.categoryId) + '" class="cat-found-badge">' +
+              escapeHtmlOuter(m.name) +
+              ' <span class="node-count">(зібрано ' + m.collected + ', сайт ' + m.siteCounter + ', різниця ' + (m.diff > 0 ? '+' : '') + m.diff + ')</span></a>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // "Не збігається з крихтами N" — товари, у яких хлібні крихти сайту ведуть
+  // в ІНШУ гілку дерева, ніж та, де скрапер знайшов товар (crumbVerdict
+  // 'other'). Це головний сигнал звірки: ancestor/descendant нормальні (товар
+  // може бути в кількох категоріях, крихти показують лише головну), а 'other'
+  // означає, що обхід і сайт розійшлись по-справжньому — саме так виглядав би
+  // збій 19.09.2026 з "Гальмівними резисторами".
+  const crumbGroups = sorted.filter(e => (e.crumb_other || []).length > 0);
+  const crumbTotal = crumbGroups.reduce((n, e) => n + e.crumb_other.length, 0);
+  const crumbMenuButtonHtml = crumbTotal === 0 ? '' : `
+      <button id="btn-crumbs" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Товари, у яких хлібні крихти сайту ведуть в іншу гілку, ніж та, де їх знайшов скрапер.">🧭 Не збігається з крихтами ${crumbTotal}</button>`;
+  const crumbPanelHtml = crumbTotal === 0 ? '' : `
+  <div class="help-overlay" id="crumbs-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Товари, де крихти сайту ведуть в іншу гілку (${crumbTotal}):</h3>
+        <button class="btn-help-close" id="btn-crumbs-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Для кожного товару скрапер читає хлібні крихти з його сторінки на сайті й порівнює з категорією, до якої відніс товар обхід дерева. Тут лише випадок «зовсім інша гілка»: якщо крихти вказують на батьківську чи дочірню категорію тієї самої гілки, це нормально — товар може стояти в кількох категоріях, а крихти показують лише головну.</p>
+        <div class="orphan-group-list">${crumbGroups.map(e => `
+          <div class="orphan-group">
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.crumb_other.length})</span></a>
+            <div class="run-error-list">${e.crumb_other.map(c =>
+              '<div class="run-error"><a href="' + escapeHtmlOuter(c.url) + '" class="failed-url">↗ ' + escapeHtmlOuter(c.name) + '</a>' +
+              '<div class="crumb-lines"><span class="path-label">Скрапер:</span> ' + escapeHtmlOuter(c.assigned) + '</div>' +
+              '<div class="crumb-lines"><span class="path-label">Крихти:</span> ' + escapeHtmlOuter(c.crumbs) + '</div></div>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
   // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
@@ -382,13 +446,18 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   .run-error { font-size: 0.78rem; line-height: 1.45; color: var(--text-main); overflow-wrap: anywhere; }
   .run-error-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
   .run-error-badge { background: none; border: none; padding: 0; margin-left: 4px; font: inherit; line-height: 1; cursor: pointer; }
+  /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
+     сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
+     де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
+  .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
+  .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
 </head>
 <body>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${mismatchMenuButtonHtml}${crumbMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -411,6 +480,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/site/scrape.log`, scrapeLogContent)}
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/site/map.log`, mapLogContent)}
 ${orphanPanelHtml}
+${mismatchPanelHtml}
+${crumbPanelHtml}
 ${failedPanelHtml}
 ${errorsPanelHtml}
   <div class="help-overlay" id="help-overlay">
@@ -496,6 +567,8 @@ setupModalOverlay('scrape-log-overlay', 'btn-scrape-log', 'btn-scrape-log-close'
 setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
 setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
+setupModalOverlay('mismatch-overlay', 'btn-mismatch', 'btn-mismatch-close');
+setupModalOverlay('crumbs-overlay', 'btn-crumbs', 'btn-crumbs-close');
 setupModalOverlay('failed-overlay', 'btn-failed-urls', 'btn-failed-close');
 setupModalOverlay('errors-overlay', 'btn-run-errors', 'btn-errors-close');
 // Значки ⚠️ в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
