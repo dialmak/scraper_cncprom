@@ -70,6 +70,22 @@ jobs:
         if: ${{ inputs.rebuild_only }}
         run: echo "url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
 
+      - name: Дата знімка
+        if: ${{ !inputs.rebuild_only }}
+        # Знімок датується РАНКОМ, якому належить: прогін стартує ввечері і
+        # триває ~3 год, тож вечірній старт — це дата наступного дня.
+        #
+        # Інакше дата залежала б від того, чи встиг прогін перетнути опівніч
+        # UTC. З колишнім cron 18:18 (реальний старт ~21:26 через чергу
+        # GitHub) він завжди її перетинав; з 20:18 — може і не перетнути, а
+        # може й перетнути, залежно від затримки черги. Тоді два сусідні
+        # нічні прогони записались би в один і той самий snapshots/<дата>.json,
+        # і один з них мовчки зник би — разом з можливістю порівняти дні.
+        run: |
+          if [ "$(date -u +%H)" -ge 12 ]; then d=$(date -u -d '+1 day' +%F); else d=$(date -u +%F); fi
+          echo "SNAPSHOT_DATE=$d" >> "$GITHUB_ENV"
+          echo "Знімок цього прогону буде датовано $d"
+
       - name: Етап 1 — розвідка категорій + скрапінг усіх за чергою
         if: ${{ !inputs.rebuild_only }}
         run: node scrape-site.js
@@ -101,7 +117,7 @@ jobs:
         run: |
           cd data-branch
           git add snapshots
-          git commit -m "Знімок за $(date -u +%F)" || echo "Немає змін для коміту"
+          git commit -m "Знімок за ${SNAPSHOT_DATE}" || echo "Немає змін для коміту"
           git push origin data
 
       - name: "Сторінка змін каталогу (reports/index.html)"
