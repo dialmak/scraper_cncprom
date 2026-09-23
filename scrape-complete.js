@@ -37,6 +37,10 @@ const START_CATEGORY_ID = (START_URL.match(/\/g(\d+)-/) || [, "unknown"])[1];
 const OUTPUT_CSV = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_cncprom_complete.csv`);
 const OUTPUT_MAP = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_category_map.json`);
 const OUTPUT_FAILED = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_failed_urls.json`);
+// Помилки цього прогону — те саме, що рядки ПОМИЛКА в scrape.log, але окремо по
+// категорії, щоб build-maps.js міг показати їх на map.html. Інакше збій видно
+// лише тому, хто здогадається відкрити лог і знайти там потрібний прогін.
+const OUTPUT_ERRORS = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_errors.json`);
 const OUTPUT_REPORT = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_report.md`);
 
 const BLOCKED_PATTERNS = [
@@ -61,8 +65,13 @@ function logLine(text) {
 }
 const runErrors = [];
 function logError(text) {
-  runErrors.push(text);
+  runErrors.push({ time: nowStr(), text });
   logLine(`ПОМИЛКА: ${text}`);
+}
+
+// Попередження — у лог, але НЕ в помилки прогону: стан незвичний, але пояснюваний.
+function logWarn(text) {
+  logLine(`УВАГА: ${text}`);
 }
 
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
@@ -182,12 +191,17 @@ async function waitForProductGrid(page) {
 const EMPTY_GRID_GIVE_UP = 10;
 let emptyGridFailures = 0;
 
-// Жоден з 403 вузлів дерева не має 0 прямих товарів (перевірено на повному
-// зрізі сайту): сторінка категорії завжди показує власну сітку, навіть коли
-// має підкатегорії. Тому "зібрали 0" — це не валідний стан, а ознака того,
-// що сітка не відрендерилась; таку сторінку треба перепробувати, а не
-// записати порожнечу як факт.
-async function loadListingPage(page, url, mapOut) {
+// "Зібрали 0 товарів" майже завжди означає, що сітка не відрендерилась, а не що
+// категорія порожня — тому сторінку перепробовуємо, а не записуємо порожнечу як
+// факт. Виняток, знайдений 23.09.2026: категорія з ПІДКАТЕГОРІЯМИ може справді
+// не мати власних товарів (усі лежать глибше) — "Зубчасті шківи і натягувачі"
+// (g104993823), єдина така з 407 вузлів, перевірено на живій сторінці. Тому:
+//   - кінцева категорія (без підкатегорій) з 0 товарів — ПОМИЛКА, як і було;
+//     саме цей випадок 19.09.2026 перекинув 14 "Гальмівних резисторів" у
+//     батьківську категорію (README, історія, п. 12);
+//   - категорія з підкатегоріями — лише УВАГА в лозі, без помилки прогону.
+// Повторну спробу робимо в обох випадках: наперед їх не відрізнити.
+async function loadListingPage(page, url, mapOut, hasSubcategories) {
   const attempts = emptyGridFailures >= EMPTY_GRID_GIVE_UP ? 1 : 2;
   for (let attempt = 1; attempt <= attempts; attempt++) {
     if (!(await gotoWithRetry(page, url))) return false; // причину вже залоговано в gotoWithRetry
@@ -198,16 +212,21 @@ async function loadListingPage(page, url, mapOut) {
       await sleep(RETRY_DELAY_MS);
     }
   }
+  if (hasSubcategories) {
+    console.warn(`  Власних товарів немає (усі в підкатегоріях): ${url}`);
+    logWarn(`Сітка товарів порожня, але категорія має підкатегорії — власних товарів немає: ${url}`);
+    return false;
+  }
   emptyGridFailures++;
   logError(`Сітка товарів порожня після ${attempts} спроб: ${url}`);
   return false;
 }
 
-async function getDirectProducts(page, catUrl) {
+async function getDirectProducts(page, catUrl, hasSubcategories) {
   const productMap = new Map();
   const baseNoSlash = catUrl.replace(/\/$/, "");
 
-  const ok1 = await loadListingPage(page, catUrl, productMap);
+  const ok1 = await loadListingPage(page, catUrl, productMap, hasSubcategories);
   await sleep(DELAY_MS);
   if (!ok1) return productMap;
 
@@ -216,7 +235,7 @@ async function getDirectProducts(page, catUrl) {
   let p = 2;
   while (p <= maxPage) {
     const pageUrl = `${baseNoSlash}/page_${p}`;
-    const ok = await loadListingPage(page, pageUrl, productMap);
+    const ok = await loadListingPage(page, pageUrl, productMap, hasSubcategories);
     await sleep(DELAY_MS);
     if (ok) {
       const pageMax = await getPagerMaxPage(page);
@@ -266,7 +285,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
 
   const subs = await getSubcategoryLinks(page, url);
   const siteCounter = await getSiteAvailableCounter(page);
-  const directProducts = await getDirectProducts(page, url);
+  const directProducts = await getDirectProducts(page, url, subs.length > 0);
   const categoryId = extractCategoryIdFromUrl(url);
   const isLeaf = subs.length === 0 || depth >= MAX_DEPTH;
 
@@ -582,6 +601,15 @@ function generateReport(tree, allRows) {
     console.error('Скрапінг перервано помилкою:', fatalErr);
     process.exitCode = 1;
   } finally {
+    // Пишеться в обох випадках (успіх і ПЕРЕРВАНО) — фатальна помилка теж має
+    // бути видною на map.html. Порожній список видаляє файл від минулого
+    // прогону, як і <id>_failed_urls.json поруч.
+    try {
+      if (runErrors.length > 0) fs.writeFileSync(OUTPUT_ERRORS, JSON.stringify(runErrors, null, 2), "utf-8");
+      else if (fs.existsSync(OUTPUT_ERRORS)) fs.unlinkSync(OUTPUT_ERRORS);
+    } catch (e) {
+      console.error('Не вдалось записати список помилок прогону:', e.message);
+    }
     await browser.close();
   }
 })();

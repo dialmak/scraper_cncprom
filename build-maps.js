@@ -195,6 +195,15 @@ function readFailedUrls(id) {
   try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
 }
 
+// <id>_errors.json пише scrape-complete.js (ті самі рядки ПОМИЛКА, що й у
+// scrape.log, але по категорії; порожній прогін файл видаляє). Читається для
+// БУДЬ-ЯКОГО статусу, не лише 'ok': категорія, яка впала, найчастіше і є
+// stale — саме там помилки найпотрібніші.
+function readRunErrors(id) {
+  const p = path.join(DIR, `${id}_errors.json`);
+  try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
+}
+
 function escapeHtmlOuter(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -216,6 +225,16 @@ function diffBadgeHtml(e) {
 // Лише іконка, без слова поруч (Актуально/Застаріло/Немає даних) — сам напис
 // живе тепер у Довідці й у data-tip на кожній іконці, а не дублюється в
 // кожному рядку таблиці вдруге.
+// Помилки прогону — окремий значок ПОРЯД зі статусом, а не замість нього:
+// статус каже про актуальність даних, цей — що під час скрапінгу щось пішло не
+// так. Клік відкриває спільну панель "Помилки прогону" (обробник — унизу
+// сторінки, бо setupModalOverlay вміє лише одну кнопку-відкривач).
+function runErrorBadgeHtml(e) {
+  const n = (e.run_errors || []).length;
+  if (n === 0) return '';
+  return ` <button class="run-error-badge" data-tip="${n} ${n === 1 ? 'помилка' : 'помилок'} під час останнього скрапінгу цієї категорії — клік для списку">⚠️</button>`;
+}
+
 function statusBadgeHtml(e) {
   if (e.status === 'ok') return '<span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span>';
   if (e.status === 'not_scraped') return '<a href="' + e.id + '_map.html" class="stock-badge neutral" data-tip="Немає даних: скрапер ще жодного разу не обробляв цю категорію.">⏳</a>';
@@ -233,7 +252,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
               <td style="text-align:center;">${diffBadgeHtml(e)}</td>
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
               <td style="text-align:center;">${escapeHtmlOuter(e.scraped_at || '—')}</td>
-              <td style="text-align:center;">${statusBadgeHtml(e)}</td>
+              <td style="text-align:center;">${statusBadgeHtml(e)}${runErrorBadgeHtml(e)}</td>
               <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" class="link-site">↗</a>` : '—'}</td>
             </tr>`).join('');
 
@@ -332,6 +351,38 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
     </div>
   </div>`;
 
+  // "Помилки прогону N" — рядки ПОМИЛКА останнього скрапінгу кожної категорії
+  // (<id>_errors.json). До 23.09.2026 їх не було видно ніде, крім scrape.log:
+  // нічний прогін мовчки завершувався "успішно", а збій (порожня сітка в
+  // категорії "Зубчасті шківи і натягувачі") помітив лише користувач, читаючи
+  // лог вручну. Тому, крім кнопки, категорія з помилками має ще й значок ⚠️
+  // поруч зі статусом у своєму рядку таблиці (statusBadgeHtml лишається про
+  // актуальність даних — це різні речі).
+  const errorGroups = sorted.filter(e => (e.run_errors || []).length > 0);
+  const errorTotal = errorGroups.reduce((n, e) => n + e.run_errors.length, 0);
+  const errorsMenuButtonHtml = errorTotal === 0 ? '' : `
+      <button id="btn-run-errors" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Помилки останнього скрапінгу цих категорій. Ті самі рядки ПОМИЛКА, що й у scrape.log.">⚠️ Помилки прогону ${errorTotal}</button>`;
+  const errorsPanelHtml = errorTotal === 0 ? '' : `
+  <div class="help-overlay" id="errors-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Помилки останнього прогону (${errorTotal}):</h3>
+        <button class="btn-help-close" id="btn-errors-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Що саме пішло не так під час останнього скрапінгу кожної категорії. Ті самі рядки, що й у scrape.log, але зібрані разом. Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності».</p>
+        <div class="orphan-group-list">${errorGroups.map(e => `
+          <div class="orphan-group">
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.run_errors.length})</span></a>
+            <div class="run-error-list">${e.run_errors.map(err =>
+              '<div class="run-error"><span class="run-error-time">' + escapeHtmlOuter(err.time || '') + '</span>' +
+              escapeHtmlOuter(err.text || err) + '</div>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
   // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
@@ -403,13 +454,17 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   .failed-url-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding-left: 20px; }
   .failed-url { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
   .failed-url:hover { text-decoration: underline; }
+  .run-error-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding-left: 20px; }
+  .run-error { font-size: 0.78rem; line-height: 1.45; color: var(--text-main); overflow-wrap: anywhere; }
+  .run-error-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
+  .run-error-badge { background: none; border: none; padding: 0; margin-left: 4px; font: inherit; line-height: 1; cursor: pointer; }
 </style>
 </head>
 <body>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${failedMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -433,6 +488,7 @@ ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/${MAP_SUBDI
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/${MAP_SUBDIR}/map.log`, mapLogContent)}
 ${orphanPanelHtml}
 ${failedPanelHtml}
+${errorsPanelHtml}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
@@ -471,6 +527,10 @@ ${failedPanelHtml}
         <div class="help-term">
           <div class="help-term-label">⏳ Немає даних</div>
           <div class="help-term-desc">Скрапер ще жодного разу не обробляв цю категорію.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⚠️ Помилки прогону N</div>
+          <div class="help-term-desc">Кнопка в шапці й значок ⚠️ у рядку категорії з'являються, коли під час останнього скрапінгу цієї категорії сталася помилка (наприклад, сторінка не завантажилась). Показують ті самі рядки, що й scrape.log. Дані могли зібратись частково — звіряйте з колонкою «В наявності».</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">⛔ Не оброблено N</div>
@@ -513,6 +573,14 @@ setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
 setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 setupModalOverlay('failed-overlay', 'btn-failed-urls', 'btn-failed-close');
+setupModalOverlay('errors-overlay', 'btn-run-errors', 'btn-errors-close');
+// Значки ⚠️ в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
+Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
+  b.addEventListener('click', function () {
+    var o = document.getElementById('errors-overlay');
+    if (o) o.classList.add('open');
+  });
+});
 setupTooltips();
 initSiteSearch();
 </script>
@@ -674,6 +742,8 @@ function writeRedirect(file, target) {
   // (з'явиться лише в наступному запуску build-maps.js). Це неминучий
   // порядок дій, а не недогляд: побудувати сторінку з рядком про завершення
   // до фактичного завершення неможливо.
+  entries.forEach(e => { e.run_errors = readRunErrors(e.id); });
+
   const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
   const mapLogContent = readLogSafe(LOG_FILE);
   buildIndexPage(entries, scrapeLogContent, mapLogContent);
