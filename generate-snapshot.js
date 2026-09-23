@@ -1,16 +1,15 @@
-// generate-snapshot.js — читає щойно зібрані output/site/<id>_category_map.json
-// + <id>_cncprom_complete.csv для всіх категорій із output/site/categories-site.csv
-// і пише один компактний JSON-знімок дня — сировину для diff-map.js (Фаза 3,
-// щоденна diff-аналітика, гілка `data`, див. phase.md).
+// generate-snapshot.js — читає щойно зібрані output/site/<id>_catalog.json
+// для всіх категорій із output/site/categories.json
+// і пише один компактний JSON-знімок дня — сировину для сторінки змін
+// (build-reports.js), яка рахує diff будь-яких двох знімків у браузері.
 //
 // Свідомо НЕ пише повний output/ (це вже робить scrape-complete.js) — лише
 // те, що потрібно для виявлення змін день-до-дня:
 // - дерево категорій: id, name, parentId, level (додано/видалено/перейменовано/
 //   переміщено);
 // - скорочений список товарів: id, name, sku, categoryId, availability, url
-//   (finalUrl — потрібен diff-map.js для HTML-звіту, посилання "Товар" на
-//   сайт; без breadcrumbs/baseCategoryPath — це й досі шум, не потрібен ні
-//   для diff, ні для звіту).
+//   (finalUrl — на нього веде назва товару на сторінці змін; сирих крихт
+//   тут немає — від них лишається вердикт звірки crumbVerdict, а не рядок).
 //
 // Знімок пишеться НЕ в output/ (те гітигнориться на main), а в окрему теку —
 // у реальному нічному прогоні це робочий checkout гілки `data`
@@ -24,59 +23,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const { readCategoriesOrExit } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const SITE_DIR = path.join(__dirname, 'output', 'site');
-const CSV_FILE = path.join(SITE_DIR, 'categories-site.csv');
 const OUT_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const DATE = process.env.SNAPSHOT_DATE || new Date().toISOString().slice(0, 10); // UTC-дата запуску
 
-// ==================== CSV (той самий парсер, що в build-maps.js/scrape-all-categories.js) ====================
-function splitCsvLine(line) {
-  const out = [];
-  let cur = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') { cur += '"'; i++; }
-        else inQuotes = false;
-      } else cur += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ';') { out.push(cur); cur = ''; }
-      else cur += ch;
-    }
-  }
-  out.push(cur);
-  return out;
-}
-
-function parseCsv(text) {
-  text = text.replace(/^﻿/, '');
-  const lines = text.split(/\r?\n/).filter(l => l.length > 0);
-  if (lines.length === 0) return [];
-  const header = splitCsvLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const cells = splitCsvLine(line);
-    const row = {};
-    header.forEach((h, i) => { row[h] = cells[i] ?? ''; });
-    return row;
-  });
-}
-
-function readCategoriesFromCsv() {
-  if (!fs.existsSync(CSV_FILE)) {
-    console.error(`Файл не знайдено: ${CSV_FILE}`);
-    console.error('Спершу запустіть: node discover-categories.js');
-    process.exit(1);
-  }
-  return parseCsv(fs.readFileSync(CSV_FILE, 'utf-8'));
-}
-
 // ==================== ДЕРЕВО КАТЕГОРІЙ ====================
-// Рекурсивно розгортає <id>_category_map.json (той самий формат, що читає
+// Рекурсивно розгортає дерево з <id>_catalog.json (той самий формат, що читає
 // render-map.js) у плаский список {id, name, parentId, level}. level береться
 // напряму з кожного вузла — його вже пише scrape-complete.js, рахувати заново
 // не треба.
@@ -119,7 +74,7 @@ function readRunErrors(categoryId) {
 }
 
 // ==================== ОСНОВНИЙ ПРОХІД ====================
-const rows = readCategoriesFromCsv();
+const rows = readCategoriesOrExit(SITE_DIR);
 const categories = [];
 const productsById = new Map(); // захист від дублів, якщо productId колись з'явиться у двох деревах
 

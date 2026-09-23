@@ -1,12 +1,9 @@
 // render-map.js — генерує інтерактивну HTML-мапу дерева категорій з файлу
-// <ID>_category_map.json (від scrape-complete.js для output/site/, або від
-// майбутнього build-custom-tree.js для output/new/ — обидва пишуть цей файл
-// в однаковій формі, render-map.js не знає й не питає, звідки він узявся),
-// опційно збагачену товарами (назва/код/наявність) з <ID>_cncprom_complete.csv
-// — обидва шукаються автоматично за ID категорії в цільовій підпапці. Ім'я
-// файлу починається з ID (не з типу файлу), щоб усі файли однієї категорії
-// стояли поруч при сортуванні за іменем у провіднику — те саме, що й у
-// scrape-complete.js.
+// <ID>_catalog.json (його пише scrape-complete.js): дерево категорій плюс
+// товари з назвою, кодом і наявністю в одному файлі. Файл шукається
+// автоматично за ID категорії в output/site/. Ім'я файлу починається з ID (не
+// з типу файлу), щоб усі файли однієї категорії стояли поруч при сортуванні
+// за іменем у провіднику — те саме, що й у scrape-complete.js.
 //
 // Дизайн — діловий "desktop"-стиль (сайдбар з деревом категорій зліва +
 // таблиці товарів праворуч, світла/темна тема, живий пошук).
@@ -24,6 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { escapeHtmlOuter } = require('./lib/html');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -1565,10 +1563,6 @@ initCatalogMap(CATALOG_DATA);
 </script>
 </body>
 </html>`;
-
-function escapeHtmlOuter(str) {
-  return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
 
 fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
 

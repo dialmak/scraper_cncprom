@@ -1,6 +1,8 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const { nowStr, logLine: appendLog } = require('./lib/log');
+const { sleep } = require('./lib/browser');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -58,13 +60,9 @@ const BLOCKED_RESOURCE_TYPES = ['image', 'font', 'media', 'stylesheet'];
 // запусків скрапера в часі, а не результат конкретного прогону. Лежить в output/
 // разом з рештою згенерованого, а не в корені проєкту.
 const LOG_FILE = path.join(OUTPUT_DIR, "scrape.log");
-function nowStr() {
-  const d = new Date();
-  return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
-function logLine(text) {
-  try { fs.appendFileSync(LOG_FILE, `[${nowStr()}] ${text}\n`, "utf-8"); } catch (e) { /* лог не критичний для роботи скрапера */ }
-}
+// nowStr/logLine спільні з build-maps.js (lib/log.js): scrape.log і map.log —
+// одна родина логів прогонів, їхній формат не має розходитись.
+const logLine = text => appendLog(LOG_FILE, text);
 const runErrors = [];
 function logError(text) {
   runErrors.push({ time: nowStr(), text });
@@ -77,7 +75,6 @@ function logWarn(text) {
 }
 
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
-const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // opts.silent — не рахувати остаточну невдачу помилкою прогону (етап 2 спершу
 // збирає такі товари для повторного проходу й логує лише тих, що не вдались

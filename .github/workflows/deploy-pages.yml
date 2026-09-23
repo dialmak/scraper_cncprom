@@ -1,15 +1,14 @@
 name: Скрапінг + деплой мапи на GitHub Pages
 
-# Нічний прогін повного пайплайну (discover-categories → scrape-all-categories →
-# build-maps) на ubuntu-latest, публікація output/site/ як Pages-артефакт напряму
+# Нічний прогін повного пайплайну (scrape-site → build-maps) на ubuntu-latest, публікація output/site/ як Pages-артефакт напряму
 # (вміст output/site/ — корінь сайту, тож адреси без /site/: /map.html,
 # /<id>_map.html, /reports/index.html; старі /site/… — заглушки-переадресації
 # від build-maps.js) — output/ в git не потрапляє.
 #
 # Після build-maps.js той самий job готує робочу копію гілки `data` через git
 # worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
-# знімок (generate-snapshot.js) і diff-звіт (diff-map.js), і комітить/пушить
-# лише ці два нові файли в `data` — output/ це не зачіпає.
+# знімок (generate-snapshot.js) і комітить/пушить лише його в `data` —
+# output/ це не зачіпає.
 on:
   schedule:
     # cron-хвилина навмисно не кругла (не :00) — на круглих позначках GitHub
@@ -66,19 +65,15 @@ jobs:
         if: ${{ inputs.rebuild_only }}
         run: echo "url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
 
-      - name: Етап 1 — знайти категорії 1 рівня
+      - name: Етап 1 — розвідка категорій + скрапінг усіх за чергою
         if: ${{ !inputs.rebuild_only }}
-        run: node discover-categories.js
-
-      - name: Етап 2 — відскрапити всі категорії за чергою
-        if: ${{ !inputs.rebuild_only }}
-        run: node scrape-all-categories.js
+        run: node scrape-site.js
 
       - name: "Без скрапінгу: дані останнього опублікованого прогону"
         if: ${{ inputs.rebuild_only }}
         run: node fetch-published.js "${{ steps.pages-url.outputs.url }}"
 
-      - name: Етап 3 — згенерувати мапи + індекс
+      - name: Етап 2 — згенерувати мапи + індекс
         run: node build-maps.js
 
       - name: "Підготувати робочу копію гілки data"
@@ -92,27 +87,24 @@ jobs:
             git worktree add --orphan -b data data-branch
           fi
 
-      - name: "Знімок дня + diff-звіт"
+      - name: "Знімок дня"
         if: ${{ !inputs.rebuild_only }}
-        run: |
-          node generate-snapshot.js data-branch
-          node diff-map.js data-branch
+        run: node generate-snapshot.js data-branch
 
       - name: "Закомітити й запушити гілку data"
         if: ${{ !inputs.rebuild_only }}
         run: |
           cd data-branch
-          git add snapshots reports
-          git commit -m "Знімок і diff-звіт за $(date -u +%F)" || echo "Немає змін для коміту"
+          git add snapshots
+          git commit -m "Знімок за $(date -u +%F)" || echo "Немає змін для коміту"
           git push origin data
 
       - name: "Сторінка змін каталогу (reports/index.html)"
         # Будує output/site/reports/ з УСІХ знімків гілки data: дашборд зі шкалою
         # змін по днях і порівнянням будь-яких двох дат (diff рахується в
-        # браузері з компактних знімків — див. build-reports.js). Замінює
-        # колишнє копіювання щоденних HTML-звітів diff-map.js; той тепер пише
-        # лише Markdown-історію в гілку data. reports/latest.html лишається
-        # переадресацією на index.html для старих посилань.
+        # браузері з компактних знімків — див. build-reports.js).
+        # reports/latest.html лишається переадресацією на index.html для
+        # старих посилань.
         run: node build-reports.js data-branch
 
       - name: Підготувати Pages-артефакт

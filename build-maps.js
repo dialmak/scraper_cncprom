@@ -2,6 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { logLine: appendLog } = require('./lib/log');
+const { escapeHtmlOuter } = require('./lib/html');
+const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
 // ROOT_DIR — де лежать самі скрипти (render-map.js викликається звідси);
@@ -12,61 +15,22 @@ const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
-const CSV_FILE = path.join(DIR, "categories-site.csv");
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
-function nowStr() {
-  const d = new Date();
-  return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
-function logLine(text) {
-  try { fs.appendFileSync(LOG_FILE, `[${nowStr()}] ${text}\n`, "utf-8"); } catch (e) { /* лог не критичний */ }
-}
+// Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
+// логів прогонів, їм не можна розходитись.
+const logLine = text => appendLog(LOG_FILE, text);
 
-// ==================== ЧИТАННЯ categories-site.csv ====================
-// Той самий парсер (роздільник ";", лапки подвоюються), що й у render-map.js /
-// scrape-all-categories.js — формат CSV в проєкті скрізь однаковий. Це
-// джерело істини щодо ПОВНОГО списку категорій 1 рівня (а не сканування
-// output/ на вже наявні <id>_category_map.json — той спосіб бачив лише
-// категорії, які вже хоч раз скрапились, і "губив" усі решта).
-function splitCsvLine(line) {
-  const out = [];
-  let cur = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') { cur += '"'; i++; }
-        else inQuotes = false;
-      } else cur += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ';') { out.push(cur); cur = ''; }
-      else cur += ch;
-    }
+// ==================== СПИСОК КАТЕГОРІЙ 1 РІВНЯ ====================
+// output/site/categories.json — джерело істини щодо ПОВНОГО списку категорій
+// 1 рівня (а не сканування output/ на вже наявні <id>_catalog.json: той спосіб
+// бачив лише категорії, які вже хоч раз скрапились, і "губив" усі решта).
+function readCategoryList() {
+  try {
+    return readCategories(DIR).map(r => ({ id: r.categoryId, name: r.categoryName, url: r.categoryUrl }));
+  } catch (e) {
+    return null;
   }
-  out.push(cur);
-  return out;
-}
-
-function parseCsv(text) {
-  text = text.replace(/^﻿/, '');
-  const lines = text.split(/\r?\n/).filter(l => l.length > 0);
-  if (lines.length === 0) return [];
-  const header = splitCsvLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const cells = splitCsvLine(line);
-    const row = {};
-    header.forEach((h, i) => { row[h] = cells[i] ?? ''; });
-    return row;
-  });
-}
-
-function readCategoriesFromCsv() {
-  if (!fs.existsSync(CSV_FILE)) return null;
-  const rows = parseCsv(fs.readFileSync(CSV_FILE, "utf-8"));
-  return rows.map(r => ({ id: r.categoryId, name: r.categoryName, url: r.categoryUrl }));
 }
 
 // ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================
@@ -166,10 +130,6 @@ function readFailedUrls(id) {
 function readRunErrors(id) {
   const p = path.join(DIR, `${id}_errors.json`);
   try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
-}
-
-function escapeHtmlOuter(str) {
-  return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ==================== ІНДЕКС УСІХ КАТЕГОРІЙ (map.html) ====================
@@ -581,15 +541,15 @@ function writeRedirect(file, target) {
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (() => {
-  const categories = readCategoriesFromCsv();
+  const categories = readCategoryList();
 
   if (!categories || categories.length === 0) {
-    console.error(`Файл не знайдено або порожній: ${CSV_FILE}`);
-    console.error('Спершу запустіть: node discover-categories.js');
+    console.error(`Файл не знайдено або порожній: ${categoriesFile(DIR)}`);
+    console.error('Спершу запустіть: node scrape-site.js --discover-only');
     process.exit(1);
   }
 
-  console.log(`Категорій 1 рівня в ${path.basename(CSV_FILE)}: ${categories.length}`);
+  console.log(`Категорій 1 рівня в ${path.basename(categoriesFile(DIR))}: ${categories.length}`);
   logLine(`СТАРТ build-maps: категорій ${categories.length}.`);
 
   const entries = [];

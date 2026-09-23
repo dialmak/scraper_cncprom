@@ -4,7 +4,7 @@
 //   - deploy-pages.yml у ручному запуску з rebuild_only=true;
 //   - локально, щоб оновити застарілий output/site/ до стану сайту.
 //
-// Завантажує categories-site.csv і для кожної категорії <id>_catalog.json
+// Завантажує categories.json і для кожної категорії <id>_catalog.json
 // (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
 // <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
 // лишились чужі. scrape.log / map.log не чіпає.
@@ -18,8 +18,8 @@ const path = require('path');
 // dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
 const PAGES_URL = (process.argv[2] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
 // Сайт публікує output/site/ у корені (з 22.09.2026); до того все лежало під
-// site/. База визначається на старті: корінь, а якщо там нема
-// categories-site.csv — стара розкладка site/ (перший прогін після переходу).
+// site/. База визначається на старті: корінь, а якщо там нема списку
+// категорій — стара розкладка site/.
 let BASE = PAGES_URL;
 const DIR = path.join(__dirname, 'output', 'site');
 
@@ -29,22 +29,49 @@ async function get(name) {
   return Buffer.from(await r.arrayBuffer());
 }
 
+// Список категорій: categories.json (з 23.09.2026), із запасним варіантом на
+// categories-site.csv — на сайті ще може лежати прогін у старому форматі, і
+// саме таким прогоном цей скрипт і підхоплює новий код.
+async function getCategoryList() {
+  for (const base of [PAGES_URL, PAGES_URL + 'site/']) {
+    BASE = base;
+    try {
+      const buf = await get('categories.json');
+      const data = JSON.parse(buf.toString('utf8'));
+      const list = Array.isArray(data) ? data : (data.categories || []);
+      const ids = list.map(c => String(c.categoryId)).filter(x => /^\d+$/.test(x));
+      if (ids.length) { fs.writeFileSync(path.join(DIR, 'categories.json'), buf); return ids; }
+    } catch (e) { /* пробуємо CSV нижче */ }
+    try {
+      const csv = await get('categories-site.csv');
+      const ids = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1)
+        .map(l => l.split(';')[1]).filter(x => /^\d+$/.test(x || ''));
+      if (ids.length) {
+        // Перекладаємо на теперішній формат одразу — build-maps.js CSV уже не читає.
+        const rows = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1).filter(Boolean)
+          .map(l => l.split(';'))
+          .map((c, i) => ({ number: i + 1, categoryId: c[1], categoryName: (c[2] || '').replace(/^"|"$/g, ''), categoryUrl: c[3], scrapingTime: c[4] ? +c[4] : null }))
+          .filter(r => /^\d+$/.test(r.categoryId || ''));
+        fs.writeFileSync(path.join(DIR, 'categories.json'),
+          JSON.stringify({ discoveredAt: new Date().toISOString(), categories: rows }, null, 2), 'utf-8');
+        console.log('  (на сайті ще старий categories-site.csv — перекладено в categories.json)');
+        return ids;
+      }
+    } catch (e) { /* спробуємо наступну базу */ }
+  }
+  throw new Error(`Не знайдено списку категорій ні в ${PAGES_URL}, ні в ${PAGES_URL}site/`);
+}
+
 (async () => {
   fs.mkdirSync(DIR, { recursive: true });
-  let csv;
-  try { csv = await get('categories-site.csv'); } catch (e) { BASE = PAGES_URL + 'site/'; csv = await get('categories-site.csv'); }
-  const ids = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1)
-    .map(l => l.split(';')[1]).filter(x => /^\d+$/.test(x || ''));
-  if (ids.length === 0) throw new Error('categories-site.csv з Pages не містить жодної категорії');
-  fs.writeFileSync(path.join(DIR, 'categories-site.csv'), csv);
+  const ids = await getCategoryList();
   console.log(`${BASE}: категорій ${ids.length}`);
 
   let ok = 0;
   for (const id of ids) {
-    const files = [`${id}_catalog.json`];
-    let bufs, summary;
+    let buf, summary;
     try {
-      bufs = await Promise.all(files.map(get));
+      buf = await get(`${id}_catalog.json`);
       summary = JSON.parse((await get(`${id}_map.summary.json`)).toString('utf8'));
     } catch (e) {
       // Категорія на сайті без мапи (not_scraped/stale) — нема що брати; build-maps
@@ -52,7 +79,7 @@ async function get(name) {
       console.warn(`  ${id}: пропущено (${e.message})`);
       continue;
     }
-    files.forEach((f, i) => fs.writeFileSync(path.join(DIR, f), bufs[i]));
+    fs.writeFileSync(path.join(DIR, `${id}_catalog.json`), buf);
 
     // Побічні файли прогону: є на сайті — беремо, нема — прибираємо локальні.
     const extras = [];
