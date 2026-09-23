@@ -15,6 +15,7 @@ const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
+const XLSX_FILE = "catalog.xlsx";
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
 // Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
@@ -31,6 +32,57 @@ function readCategoryList() {
   } catch (e) {
     return null;
   }
+}
+
+// ==================== ЕКСПОРТ МАПИ КАТЕГОРІЙ У XLSX ====================
+// Один аркуш на весь сайт: усі категорії всіх рівнів, БЕЗ товарів (так просив
+// користувач). Числа беруться з nodes у <id>_map.summary.json — того самого
+// плаского списку, який пише render-map.js із уже порахованого дерева. Рахувати
+// їх тут заново означало б другу реалізацію тієї ж арифметики.
+//
+// Запис загорнутий у try/catch і НЕ валить прогін: xlsx — зручність, а не
+// результат, і нічний конвеєр не має падати через неї.
+function buildCatalogXlsx(entries) {
+  const rows = [];
+  entries.filter(e => e.status === 'ok').forEach(e => {
+    (e.nodes || []).forEach(n => rows.push({ top: e.name, ...n }));
+  });
+  if (rows.length === 0) {
+    console.warn('XLSX: нема жодного вузла — файл не створено.');
+    return null;
+  }
+
+  const ExcelJS = require('exceljs');
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'build-maps.js';
+  wb.created = new Date();
+  const ws = wb.addWorksheet('Категорії');
+  ws.columns = [
+    { header: 'Розділ 1 рівня', key: 'top', width: 34 },
+    { header: 'ID', key: 'id', width: 12 },
+    { header: 'Категорія', key: 'name', width: 46 },
+    { header: 'ID батька', key: 'parentId', width: 12 },
+    { header: 'Рівень', key: 'level', width: 8 },
+    { header: 'Товарів', key: 'products', width: 10 },
+    { header: 'Власних товарів', key: 'own', width: 16 },
+    { header: 'В наявності', key: 'yes', width: 12 },
+    { header: 'Немає в наявності', key: 'no', width: 18 },
+    { header: 'Лічильник сайту', key: 'counter', width: 16 },
+    { header: 'Різниця', key: 'diff', width: 10 },
+    { header: 'Посилання', key: 'url', width: 60 }
+  ];
+  rows.forEach(r => ws.addRow(r));
+  ws.getRow(1).font = { bold: true };
+  ws.views = [{ state: 'frozen', ySplit: 1 }];
+  ws.autoFilter = { from: 'A1', to: { row: 1, column: ws.columns.length } };
+  // Ненульова різниця — те, заради чого таблицю й відкривають; підсвічуємо її
+  // тим самим червоним, що й на сторінках.
+  ws.getColumn('diff').eachCell({ includeEmpty: false }, (cell, rowNumber) => {
+    if (rowNumber > 1 && typeof cell.value === 'number' && cell.value !== 0) {
+      cell.font = { color: { argb: 'FFB3261E' }, bold: true };
+    }
+  });
+  return { wb, count: rows.length };
 }
 
 // ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================
@@ -165,7 +217,7 @@ function statusBadgeHtml(e) {
   return '<a href="' + e.id + '_map.html" class="count-no" data-tip="Застаріло: мапа побудована на базі застарілих даних.">⚠️</a>';
 }
 
-function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
+function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   const sorted = [...entries].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uk'));
   const rows = sorted.map((e, i) => `
             <tr>
@@ -371,6 +423,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
     </div>
   </div>`;
 
+  // Посилання на експорт — звичайний <a download>, а не панель: тут нема чого
+  // показувати, є що завантажити. Не рендериться, якщо файл не записався.
+  const xlsxButtonHtml = xlsxReady ? `
+      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій таблицею (XLSX, без товарів): ID, назва, рівень, кількість товарів, звірка з лічильником сайту.">📊 Експорт XLSX</a>` : '';
+
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
   // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
@@ -457,7 +514,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${mismatchMenuButtonHtml}${crumbMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${mismatchMenuButtonHtml}${crumbMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -530,6 +587,18 @@ ${errorsPanelHtml}
         <div class="help-term">
           <div class="help-term-label">⛔ Не оброблено N</div>
           <div class="help-term-desc">Кнопка в шапці з'являється лише тоді, коли скрапер не зміг прочитати сторінку якихось товарів навіть після повторної спроби. Відкриває їхній список за категоріями. Таких товарів немає на мапі й у звірці.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⚠️ Розбіжності звірки N</div>
+          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Назва в списку відкриває саме цей вузол на мапі.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🧭 Не збігається з крихтами N</div>
+          <div class="help-term-desc">Товари, у яких хлібні крихти на сторінці сайту ведуть в іншу гілку дерева, ніж та, де товар знайшов обхід. Якщо крихти вказують на батьківську чи дочірню категорію тієї самої гілки — це нормально (товар може стояти в кількох категоріях) і сюди не потрапляє.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">📊 Експорт XLSX</div>
+          <div class="help-term-desc">Уся мапа категорій таблицею, без товарів: розділ, ID, назва, батько, рівень, кількість товарів, звірка з лічильником сайту. Рядки з ненульовою різницею підсвічені червоним.</div>
         </div>
       </div>
     </div>
@@ -613,7 +682,9 @@ function writeRedirect(file, target) {
 }
 
 // ==================== ГОЛОВНА ЛОГІКА ====================
-(() => {
+// async лише заради запису xlsx: exceljs пише через Promise, а кнопка на
+// map.html не має з'являтись раніше за файл, на який вона веде.
+(async () => {
   const categories = readCategoryList();
 
   if (!categories || categories.length === 0) {
@@ -674,6 +745,23 @@ function writeRedirect(file, target) {
   // людям його не читати; орієнтовний розмір — див. phase.md.
   fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
 
+  // Експорт мапи категорій (без товарів) — кнопка "Експорт XLSX" на map.html.
+  // Помилка тут не валить прогін: xlsx це зручність, а не результат, і нічний
+  // конвеєр не має падати через неї. Кнопка з'являється лише коли файл
+  // справді записався — інакше вона вела б у 404.
+  let xlsxReady = false;
+  try {
+    const built = buildCatalogXlsx(entries);
+    if (built) {
+      await built.wb.xlsx.writeFile(path.join(DIR, XLSX_FILE));
+      console.log(`Експорт збережено: ${XLSX_FILE} (${built.count} категорій).`);
+      xlsxReady = true;
+    }
+  } catch (err) {
+    console.error(`УВАГА: експорт XLSX пропущено — ${err.message}`);
+    logLine(`ПОМИЛКА: експорт XLSX пропущено — ${err.message}`);
+  }
+
   // map.log читається до фінального logLine нижче — тож знімок, вбудований у
   // цей map.html, не міститиме власного рядка "ФІНІШ" цього ж прогону
   // (з'явиться лише в наступному запуску build-maps.js). Це неминучий
@@ -683,7 +771,7 @@ function writeRedirect(file, target) {
 
   const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
   const mapLogContent = readLogSafe(LOG_FILE);
-  buildIndexPage(entries, scrapeLogContent, mapLogContent);
+  buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
 
   const notOk = entries.filter(e => e.status !== 'ok').length;
   console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);

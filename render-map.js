@@ -139,14 +139,32 @@ let categoriesCount = 0;
 // сайдбарі; список іде в попередження над змістом, бо в дереві ці товари не
 // видно, поки категорію не розгорнути.
 const orphanCategories = [];
-(function walk(n) {
+// Плаский список вузлів з тими самими числами, що показує мапа — з нього
+// build-maps.js збирає catalog.xlsx. Рахувати їх там заново означало б другу
+// реалізацію тієї ж арифметики, яка колись розійдеться з першою.
+const flatNodes = [];
+(function walk(n, parentId) {
   categoriesCount++;
   maxLevel = Math.max(maxLevel, n.level);
   if (n.children.length > 0 && n.stats.own_products > 0) {
     orphanCategories.push({ id: n.id, name: n.name, level: n.level, own: n.stats.own_products });
   }
-  n.children.forEach(walk);
-})(appTree);
+  const rawId = String(n.id).replace(/^node-/, '');
+  flatNodes.push({
+    id: rawId,
+    name: n.name,
+    parentId,
+    level: n.level,
+    url: n.url || '',
+    own: n.stats.own_products,
+    products: n.stats.total_products,
+    yes: n.stats.total_yes,
+    no: n.stats.total_no,
+    counter: n.stats.site_counter,
+    diff: n.stats.diff
+  });
+  n.children.forEach(c => walk(c, rawId));
+})(appTree, '');
 
 const globalStats = {
   levels: maxLevel,
@@ -174,6 +192,10 @@ const globalStats = {
 };
 
 const CATALOG_DATA = { global_stats: globalStats, tree: appTree };
+// flatNodes іде лише в summary.json, не в CATALOG_DATA: сторінці мапи цей
+// список не потрібен (вона має саме дерево), а дублювання роздуло б кожен
+// HTML. build-maps.js бере його звідти для catalog.xlsx.
+const SUMMARY_DATA = { ...globalStats, nodes: flatNodes };
 
 // ==================== СТИЛІ (діловий "desktop"-вигляд, світла/темна тема) ====================
 const css = `
@@ -1569,7 +1591,7 @@ fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
 // Невеликий супутній файл з тими самими global_stats, що вбудовані в саму
 // мапу — щоб build-maps.js міг зібрати зведену таблицю для map.html (індексу
 // всіх категорій), не розпаковуючи CATALOG_DATA з готового HTML.
-fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_map.summary.json`), JSON.stringify({ id: categoryId, ...globalStats }, null, 2), 'utf-8');
+fs.writeFileSync(path.join(OUTPUT_DIR, `${categoryId}_map.summary.json`), JSON.stringify({ id: categoryId, ...SUMMARY_DATA }, null, 2), 'utf-8');
 
 console.log(`Мапу збережено: ${OUTPUT_HTML}`);
 console.log(`Категорій: ${categoriesCount}, рівнів: ${maxLevelSafe}, товарів: ${appTree.stats.total_products}${HAS_PRODUCTS ? ` (в наявності: ${appTree.stats.total_yes})` : ' (лише структура, без товарів)'}`);
