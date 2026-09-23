@@ -53,6 +53,30 @@ function readCategoryUrls(fromSnapshots) {
 }
 const OUT_DATA = path.join(OUT_DIR, 'data');
 
+// Діагностика однієї ночі з блоку run знімка → компактний запис для index.json.
+// Список помилок обрізається: index.json вантажиться на кожне відкриття
+// сторінки, а катастрофічна ніч може дати їх сотні.
+const MAX_RUN_ERRORS = 40;
+function summarizeRun(run) {
+  if (!Array.isArray(run) || run.length === 0) return null;
+  const crumbs = { match: 0, ancestor: 0, descendant: 0, other: 0, unknown: 0 };
+  let mismatch = 0;
+  const errors = [];
+  let errorTotal = 0;
+  run.forEach(r => {
+    const rec = r.reconciliation || {};
+    mismatch += (rec.mismatchNodes || []).length;
+    const cs = r.crumbSummary || {};
+    Object.keys(crumbs).forEach(k => { crumbs[k] += cs[k] || 0; });
+    (r.errors || []).forEach(e => {
+      errorTotal++;
+      if (errors.length < MAX_RUN_ERRORS) errors.push({ cat: r.name || r.categoryId, text: e.text || String(e) });
+    });
+  });
+  const hasCrumbs = Object.keys(crumbs).some(k => crumbs[k] > 0);
+  return { cats: run.length, mismatch, errorTotal, errors, crumbs: hasCrumbs ? crumbs : null };
+}
+
 // ==================== СПІЛЬНЕ ДЛЯ NODE І БРАУЗЕРА ====================
 // Чисті функції без замикань на Node-змінні — серіалізуються в reports.js.
 
@@ -201,6 +225,35 @@ function initReportsPage() {
       b.setAttribute('aria-pressed', String(r.from === range.from && r.to === range.to));
     });
     $('period-label').textContent = fmtLong(range.from) + ' → ' + fmtLong(range.to);
+    drawRunNote();
+  }
+
+  // Смужка "як пройшов прогін" за кінцеву дату періоду: помилки скрапера,
+  // розбіжності звірки з лічильником сайту й товари, чиї крихти ведуть в іншу
+  // гілку. Дані з блоку run знімка (generate-snapshot.js). Показується лише
+  // тоді, коли є про що казати — у нормальну ніч сторінка виглядає як раніше.
+  function drawRunNote() {
+    var el = $('run-note'), r = (idx.runs || {})[range.to];
+    if (!el) return;
+    if (!r) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    var other = r.crumbs ? r.crumbs.other : 0;
+    var parts = [];
+    if (r.errorTotal) parts.push('<b>' + r.errorTotal + '</b> ' + plural(r.errorTotal, 'помилка', 'помилки', 'помилок') + ' скрапера');
+    if (r.mismatch) parts.push('<b>' + r.mismatch + '</b> ' + plural(r.mismatch, 'розбіжність', 'розбіжності', 'розбіжностей') + ' звірки з лічильником сайту');
+    if (other) parts.push('<b>' + other + '</b> ' + plural(other, 'товар не збігається', 'товари не збігаються', 'товарів не збігаються') + ' з крихтами');
+    if (parts.length === 0) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    var list = r.errors.length ? '<details class="run-note-list"><summary>Показати помилки</summary><div>' +
+      r.errors.map(function (e) { return '<div class="run-note-err"><span class="run-note-cat">' + esc(e.cat) + '</span>' + esc(e.text) + '</div>'; }).join('') +
+      (r.errorTotal > r.errors.length ? '<div class="run-note-err muted">…і ще ' + (r.errorTotal - r.errors.length) + '.</div>' : '') +
+      '</div></details>' : '';
+    el.innerHTML = '<span class="run-note-head">⚠️ Прогін за ' + fmtLong(range.to) + ':</span> ' + parts.join(', ') + '.' + list;
+    el.style.display = '';
+  }
+  function plural(n, one, few, many) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
   }
   function setRange(from, to) {
     var ds = idx.dates;
@@ -507,6 +560,15 @@ details.data-table table { border-collapse: collapse; margin-top: 6px; }
 details.data-table td, details.data-table th { padding: 2px 10px; border-bottom: 1px solid var(--border-color); text-align: right; font-family: var(--font-mono); }
 details.data-table th:first-child, details.data-table td:first-child { text-align: left; }
 
+/* Смужка діагностики прогону. Не статусний червоний: це не помилка сторінки,
+   а попередження про те, як минула та ніч — тому жовтий бордер і звичайний
+   текст, а не бейдж. */
+.run-note { border: 1px solid var(--chg-mov); border-left-width: 3px; border-radius: 8px; background: var(--surface); padding: 10px 14px; margin-bottom: 16px; font-size: 0.85rem; line-height: 1.5; }
+.run-note-head { font-weight: 600; }
+.run-note-list { margin-top: 8px; }
+.run-note-list summary { cursor: pointer; font-size: 0.8rem; color: var(--text-muted); }
+.run-note-err { font-size: 0.8rem; line-height: 1.45; margin-top: 4px; overflow-wrap: anywhere; }
+.run-note-cat { display: inline-block; min-width: 180px; font-weight: 600; margin-right: 8px; }
 .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
 .tile:hover { border-color: var(--border-dark); }
@@ -629,6 +691,8 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
 
+    <div class="run-note" id="run-note" style="display:none;"></div>
+
     <section class="card chart-card" id="chart-card" aria-labelledby="chart-title">
       <div class="chart-head">
         <h2 id="chart-title">Змін за день</h2>
@@ -688,6 +752,7 @@ if (require.main === module) {
   const products = {};
   const catUrls = {};
   const daily = [];
+  const runs = {};
   let prevExpanded = null, bytes = 0;
 
   for (const d of dates) {
@@ -718,6 +783,13 @@ if (require.main === module) {
     fs.writeFileSync(path.join(OUT_DATA, `${d}.json`), json, 'utf-8');
     bytes += json.length;
 
+    // Діагностика прогону тієї ночі (блок run у знімку, з 23.09.2026):
+    // помилки скрапера, розбіжності звірки з лічильником сайту і підсумок
+    // звірки з хлібними крихтами. Без цього "чи була проблема тієї ночі"
+    // можна було дізнатись лише з поточного scrape.log, який щоночі
+    // перезаписується разом з output/.
+    runs[d] = summarizeRun(snap.run);
+
     const expanded = reportExpand(compact, avail);
     if (prevExpanded) {
       const t = reportDiff(prevExpanded, expanded).totals;
@@ -729,7 +801,7 @@ if (require.main === module) {
   }
 
   const usedDates = daily.map(x => x.date);
-  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily }), 'utf-8');
+  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, runs }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
 
