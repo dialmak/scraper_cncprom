@@ -490,7 +490,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // хвіст, а не вміст цілком.
   const logPanelHtml = (overlayId, closeBtnId, title, content) => `
   <div class="help-overlay" id="${overlayId}">
-    <div class="help-panel" style="max-width:900px;">
+    <div class="help-panel">
       <div class="help-panel-head">
         <h3>${title}</h3>
         <button class="btn-help-close" id="${closeBtnId}" data-tip="Закрити (Esc)">✕</button>
