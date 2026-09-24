@@ -396,20 +396,20 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
   const mismatchTotal = mismatchGroups.reduce((n, e) => n + e.mismatch_categories.length, 0);
   const mismatchMenuButtonHtml = mismatchTotal === 0 ? '' : `
-      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Категорії, де кількість зібраних товарів у наявності не збіглася з лічильником сайту.">⚠️ Розбіжності звірки ${mismatchTotal}</button>`;
+      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Категорії, де кількість зібраних товарів у наявності не збіглася з лічильником сайту.">⚠️ Розбіжності звірки</button>`;
   const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
   <div class="help-overlay" id="mismatch-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Розбіжності звірки з лічильником сайту (${mismatchTotal}):</h3>
+        <h3>Розбіжності звірки з лічильником сайту</h3>
         <button class="btn-help-close" id="btn-mismatch-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
         <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності N» для того ж вузла. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не зчиталось. Натисніть назву, щоб відкрити цей вузол на мапі.</p>
-        <p class="failed-note"><b>Числа підсумкові, по всій гілці.</b> Розбіжність підкатегорії вже входить у розбіжність її батька, тож складати сусідні рядки не треба — дивіться на відступ і на шлях перед назвою. Розбіжність у самої категорії при цілих підкатегоріях означає, що бракує її власних товарів.</p>
+        <p class="failed-note">Рядки зсунуті за рівнем вкладеності, а перед назвою стоїть шлях. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в кожного її батька — причину шукайте в найглибшому рядку. Якщо ж розбіжність є лише в самої категорії, а підкатегорії цілі, бракує саме її власних товарів.</p>
         <div class="orphan-group-list">${mismatchGroups.map(e => `
           <div class="orphan-group">
-            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.mismatch_categories.length})</span></a>
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)}</a>
             <div class="orphan-cat-list">${e.mismatch_categories.map(m => {
               const node = nodeById(e).get(String(m.categoryId));
               const level = node ? node.level : 1;
@@ -633,8 +633,8 @@ ${errorsPanelHtml}
           <div class="help-term-desc">Кнопка в шапці з'являється лише тоді, коли скрапер не зміг прочитати сторінку якихось товарів навіть після повторної спроби. Відкриває їхній список за категоріями. Таких товарів немає на мапі й у звірці.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">⚠️ Розбіжності звірки N</div>
-          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Числа підсумкові по всій гілці, тож розбіжність підкатегорії вже входить у розбіжність батька — рядки зсунуті за рівнем вкладеності. Назва відкриває саме цей вузол на мапі.</div>
+          <div class="help-term-label">⚠️ Розбіжності звірки</div>
+          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Назва відкриває саме цей вузол на мапі.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">🧭 Не збігається з крихтами N</div>
