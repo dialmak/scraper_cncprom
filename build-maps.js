@@ -107,17 +107,29 @@ function mismatchFigures(row) {
 // головного — огляду самої структури.
 //
 // Форма — дерево колонками: рівень 1 у стовпці A, рівень 2 в B і так далі; у рядку
-// заповнена рівно ОДНА клітинка. Порядок рядків — обхід дерева як є (nodes у
-// <id>_map.summary.json уже лежать у порядку обходу, так їх пише render-map.js):
-// пересортування розірвало б дерево, тому немає ні автофільтра, ні сортування.
+// заповнена рівно ОДНА клітинка.
+//
+// Порядок: розділи 1 рівня — за абеткою, тим самим localeCompare('uk'), що й список
+// на map.html (sorted), щоб таблиця й сторінка йшли однаково. ВСЕРЕДИНІ розділу
+// порядок не чіпаємо — nodes у <id>_map.summary.json лежать у порядку обходу
+// дерева (так їх пише render-map.js), і будь-яке пересортування відірвало б гілки
+// від їхніх батьків. Автофільтра немає з тієї ж причини: його сортування
+// розірвало б дерево.
+//
+// Гілки згортаються: кожен рядок має outlineLevel = level - 1, тож Excel малює
+// зліва групування з [+]/[−] на кожному рівні. ОБОВ'ЯЗКОВО summaryBelow: false —
+// типово Excel вважає підсумковим рядок ПІД групою, і тоді кнопка згортання
+// опиняється не на батькові, а на наступному розділі.
 //
 // Запис загорнутий у try/catch і НЕ валить прогін: xlsx — зручність, а не
 // результат, і нічний конвеєр не має падати через неї.
 function buildCatalogXlsx(entries) {
   const rows = [];
-  entries.filter(e => e.status === 'ok').forEach(e => {
-    (e.nodes || []).forEach(n => rows.push({ name: n.name, level: n.level || 1 }));
-  });
+  entries.filter(e => e.status === 'ok')
+    .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uk'))
+    .forEach(e => {
+      (e.nodes || []).forEach(n => rows.push({ name: n.name, level: n.level || 1 }));
+    });
   if (rows.length === 0) {
     console.warn('XLSX: нема жодного вузла — файл не створено.');
     return null;
@@ -129,6 +141,7 @@ function buildCatalogXlsx(entries) {
   wb.creator = 'build-maps.js';
   wb.created = new Date();
   const ws = wb.addWorksheet('Категорії');
+  ws.properties.outlineProperties = { summaryBelow: false, summaryRight: false };
   // Колонки звужуються з глибиною: назва глибшого рівня починається правіше,
   // тож місця до краю екрана є менше; остання колонка широка, бо за нею вже
   // нічого немає і текст може вільно виступати.
@@ -140,10 +153,12 @@ function buildCatalogXlsx(entries) {
     const cells = new Array(maxLevel).fill(null);
     cells[r.level - 1] = r.name;
     const row = ws.addRow(cells);
+    row.outlineLevel = r.level - 1;
     // Розділ 1 рівня — жирним: у списку на сотні рядків це єдине, що
     // дозволяє вхопити межу між розділами, прокручуючи аркуш.
     if (r.level === 1) row.font = { bold: true };
   });
+  ws.properties.outlineLevelRow = maxLevel - 1;
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: 'frozen', ySplit: 1 }];
   return { wb, count: rows.length };
