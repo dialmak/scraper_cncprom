@@ -121,9 +121,24 @@ function mismatchFigures(row) {
 // типово Excel вважає підсумковим рядок ПІД групою, і тоді кнопка згортання
 // опиняється не на батькові, а на наступному розділі.
 //
+// Аркуш захищений БЕЗ пароля — саме щоб заборонити сортування: будь-яке
+// переставляння рядків відриває гілки від їхніх батьків і робить файл
+// безглуздим. Без пароля — бо це захист від випадкового кліку, а не від
+// користувача: «Рецензування → Зняти захист аркуша» знімає його одним кліком.
+//
+// formatRows/formatColumns МАЮТЬ лишатись дозволеними (у XML це formatRows="0"):
+// згортання гілки — це приховування рядків, і на захищеному аркуші без цього
+// дозволу кнопки [+]/[−] перестають працювати. Створити чи зняти групування
+// все одно не вийде — але воно вже побудоване тут.
+//
+// Увага на семантику OOXML: атрибути sheetProtection — це ЗАБОРОНИ, а не
+// дозволи: formatRows="1" означає "форматувати рядки не можна". exceljs приймає
+// пряму логіку ({formatRows: true} = можна) і сам інвертує її при записі.
+// Все, що не передане явно, лишається забороненим — зокрема sort і autoFilter.
+//
 // Запис загорнутий у try/catch і НЕ валить прогін: xlsx — зручність, а не
 // результат, і нічний конвеєр не має падати через неї.
-function buildCatalogXlsx(entries) {
+async function buildCatalogXlsx(entries) {
   const rows = [];
   entries.filter(e => e.status === 'ok')
     .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uk'))
@@ -161,6 +176,10 @@ function buildCatalogXlsx(entries) {
   ws.properties.outlineLevelRow = maxLevel - 1;
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: 'frozen', ySplit: 1 }];
+  await ws.protect(undefined, {
+    selectLockedCells: true, selectUnlockedCells: true,
+    formatRows: true, formatColumns: true
+  });
   return { wb, count: rows.length };
 }
 
@@ -506,7 +525,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // Посилання на експорт — звичайний <a download>, а не панель: тут нема чого
   // показувати, є що завантажити. Не рендериться, якщо файл не записався.
   const xlsxButtonHtml = xlsxReady ? `
-      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій таблицею (XLSX): лише назви, деревом — рівень 1 у стовпці A, рівень 2 в B і так далі.">📊 Експорт XLSX</a>` : '';
+      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій таблицею (XLSX): лише назви, деревом — рівень 1 у стовпці A, рівень 2 в B і так далі.
+Аркуш захищений від сортування, щоб дерево не розсипалось; зняти — «Рецензування → Зняти захист аркуша», без пароля.">📊 Експорт XLSX</a>` : '';
 
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
@@ -836,7 +856,7 @@ function writeRedirect(file, target) {
   // справді записався — інакше вона вела б у 404.
   let xlsxReady = false;
   try {
-    const built = buildCatalogXlsx(entries);
+    const built = await buildCatalogXlsx(entries);
     if (built) {
       await built.wb.xlsx.writeFile(path.join(DIR, XLSX_FILE));
       console.log(`Експорт збережено: ${XLSX_FILE} (${built.count} категорій).`);
