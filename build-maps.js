@@ -101,53 +101,51 @@ function mismatchFigures(row) {
 }
 
 // ==================== ЕКСПОРТ МАПИ КАТЕГОРІЙ У XLSX ====================
-// Один аркуш на весь сайт: усі категорії всіх рівнів, БЕЗ товарів (так просив
-// користувач). Числа беруться з nodes у <id>_map.summary.json — того самого
-// плаского списку, який пише render-map.js із уже порахованого дерева. Рахувати
-// їх тут заново означало б другу реалізацію тієї ж арифметики.
+// Один аркуш на весь сайт: саме МАПА категорій і більше нічого — без товарів,
+// без ID, без лічильників і без звірки (так просив користувач 24.09.2026). До того
+// тут було 12 колонок із всією арифметикою; це дублювало сторінки і не давало
+// головного — огляду самої структури.
+//
+// Форма — дерево колонками: рівень 1 у стовпці A, рівень 2 в B і так далі; у рядку
+// заповнена рівно ОДНА клітинка. Порядок рядків — обхід дерева як є (nodes у
+// <id>_map.summary.json уже лежать у порядку обходу, так їх пише render-map.js):
+// пересортування розірвало б дерево, тому немає ні автофільтра, ні сортування.
 //
 // Запис загорнутий у try/catch і НЕ валить прогін: xlsx — зручність, а не
 // результат, і нічний конвеєр не має падати через неї.
 function buildCatalogXlsx(entries) {
   const rows = [];
   entries.filter(e => e.status === 'ok').forEach(e => {
-    (e.nodes || []).forEach(n => rows.push({ top: e.name, ...n }));
+    (e.nodes || []).forEach(n => rows.push({ name: n.name, level: n.level || 1 }));
   });
   if (rows.length === 0) {
     console.warn('XLSX: нема жодного вузла — файл не створено.');
     return null;
   }
+  const maxLevel = rows.reduce((m, r) => Math.max(m, r.level), 1);
 
   const ExcelJS = require('exceljs');
   const wb = new ExcelJS.Workbook();
   wb.creator = 'build-maps.js';
   wb.created = new Date();
   const ws = wb.addWorksheet('Категорії');
-  ws.columns = [
-    { header: 'Розділ 1 рівня', key: 'top', width: 34 },
-    { header: 'ID', key: 'id', width: 12 },
-    { header: 'Категорія', key: 'name', width: 46 },
-    { header: 'ID батька', key: 'parentId', width: 12 },
-    { header: 'Рівень', key: 'level', width: 8 },
-    { header: 'Товарів', key: 'products', width: 10 },
-    { header: 'Власних товарів', key: 'own', width: 16 },
-    { header: 'В наявності', key: 'yes', width: 12 },
-    { header: 'Немає в наявності', key: 'no', width: 18 },
-    { header: 'Лічильник сайту', key: 'counter', width: 16 },
-    { header: 'Різниця', key: 'diff', width: 10 },
-    { header: 'Посилання', key: 'url', width: 60 }
-  ];
-  rows.forEach(r => ws.addRow(r));
+  // Колонки звужуються з глибиною: назва глибшого рівня починається правіше,
+  // тож місця до краю екрана є менше; остання колонка широка, бо за нею вже
+  // нічого немає і текст може вільно виступати.
+  ws.columns = Array.from({ length: maxLevel }, (_, i) => ({
+    header: 'Рівень ' + (i + 1),
+    width: i === maxLevel - 1 ? 60 : Math.max(24, 44 - i * 6)
+  }));
+  rows.forEach(r => {
+    const cells = new Array(maxLevel).fill(null);
+    cells[r.level - 1] = r.name;
+    const row = ws.addRow(cells);
+    // Розділ 1 рівня — жирним: у списку на сотні рядків це єдине, що
+    // дозволяє вхопити межу між розділами, прокручуючи аркуш.
+    if (r.level === 1) row.font = { bold: true };
+  });
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: 'frozen', ySplit: 1 }];
-  ws.autoFilter = { from: 'A1', to: { row: 1, column: ws.columns.length } };
-  // Ненульова різниця — те, заради чого таблицю й відкривають; підсвічуємо її
-  // тим самим червоним, що й на сторінках.
-  ws.getColumn('diff').eachCell({ includeEmpty: false }, (cell, rowNumber) => {
-    if (rowNumber > 1 && typeof cell.value === 'number' && cell.value !== 0) {
-      cell.font = { color: { argb: 'FFB3261E' }, bold: true };
-    }
-  });
   return { wb, count: rows.length };
 }
 
@@ -432,7 +430,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
   const mismatchTotal = mismatchGroups.reduce((n, e) => n + e.mismatch_categories.length, 0);
   const mismatchMenuButtonHtml = mismatchTotal === 0 ? '' : `
-      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Категорії, де кількість зібраних товарів у наявності не збіглася з лічильником сайту.">⚠️ Розбіжності звірки</button>`;
+      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»">⚠️ Розбіжності звірки</button>`;
   const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
   <div class="help-overlay" id="mismatch-overlay">
     <div class="help-panel">
@@ -493,7 +491,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // Посилання на експорт — звичайний <a download>, а не панель: тут нема чого
   // показувати, є що завантажити. Не рендериться, якщо файл не записався.
   const xlsxButtonHtml = xlsxReady ? `
-      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій таблицею (XLSX, без товарів): ID, назва, рівень, кількість товарів, звірка з лічильником сайту.">📊 Експорт XLSX</a>` : '';
+      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій таблицею (XLSX): лише назви, деревом — рівень 1 у стовпці A, рівень 2 в B і так далі.">📊 Експорт XLSX</a>` : '';
 
   // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
   // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
