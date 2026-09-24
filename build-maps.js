@@ -34,6 +34,34 @@ function readCategoryList() {
   }
 }
 
+// ==================== ВКЛАДЕНІСТЬ ВУЗЛІВ У ПАНЕЛЯХ ====================
+// Панель розбіжностей показує вузли різних рівнів одним списком, і без
+// підказки це читається як помилка арифметики: у «Шпинделях» корінь −2, а під
+// ним −2 і −1. Насправді третій рядок вкладений у другий, тобто його −1 уже
+// враховано. Тому кожен рядок зсувається за рівнем і несе шлях від розділу.
+// Проміжні вузли зі збігом у список не потрапляють, тож самого відступу мало —
+// потрібен ще й шлях.
+const nodeMaps = new Map();
+function nodeById(entry) {
+  if (!nodeMaps.has(entry.id)) {
+    nodeMaps.set(entry.id, new Map((entry.nodes || []).map(n => [String(n.id), n])));
+  }
+  return nodeMaps.get(entry.id);
+}
+
+// Назви предків між розділом (він уже в заголовку групи) і самим вузлом.
+function ancestorsOf(entry, node) {
+  const byId = nodeById(entry);
+  const out = [];
+  let cur = byId.get(String(node.parentId));
+  let guard = 0;
+  while (cur && cur.level > 1 && guard++ < 20) {
+    out.unshift(cur.name);
+    cur = byId.get(String(cur.parentId));
+  }
+  return out;
+}
+
 // ==================== ЕКСПОРТ МАПИ КАТЕГОРІЙ У XLSX ====================
 // Один аркуш на весь сайт: усі категорії всіх рівнів, БЕЗ товарів (так просив
 // користувач). Числа беруться з nodes у <id>_map.summary.json — того самого
@@ -378,14 +406,18 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       </div>
       <div class="help-panel-body">
         <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності N» для того ж вузла. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не зчиталось. Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <p class="failed-note"><b>Числа підсумкові, по всій гілці.</b> Розбіжність підкатегорії вже входить у розбіжність її батька, тож складати сусідні рядки не треба — дивіться на відступ і на шлях перед назвою. Розбіжність у самої категорії при цілих підкатегоріях означає, що бракує її власних товарів.</p>
         <div class="orphan-group-list">${mismatchGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.mismatch_categories.length})</span></a>
-            <div class="orphan-cat-list">${e.mismatch_categories.map(m =>
-              '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(m.categoryId) + '" class="cat-found-badge">' +
+            <div class="orphan-cat-list">${e.mismatch_categories.map(m => {
+              const node = nodeById(e).get(String(m.categoryId));
+              const level = node ? node.level : 1;
+              return '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(m.categoryId) + '" class="cat-found-badge mismatch-item" style="margin-left:' + ((level - 1) * 18) + 'px;">' +
+              (node && ancestorsOf(e, node).length ? '<span class="node-path">' + escapeHtmlOuter(ancestorsOf(e, node).join(' › ')) + ' › </span>' : '') +
               escapeHtmlOuter(m.name) +
-              ' <span class="node-count">(зібрано ' + m.collected + ', сайт ' + m.siteCounter + ', різниця ' + (m.diff > 0 ? '+' : '') + m.diff + ')</span></a>'
-            ).join('')}</div>
+              ' <span class="node-count">(зібрано ' + m.collected + ', сайт ' + m.siteCounter + ', різниця ' + (m.diff > 0 ? '+' : '') + m.diff + ')</span></a>';
+            }).join('')}</div>
           </div>`).join('')}</div>
       </div>
     </div>
@@ -506,6 +538,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
      сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
      де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
+  .mismatch-item { align-items: baseline; }
+  .node-path { color: var(--text-muted); font-weight: 400; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
@@ -590,7 +624,7 @@ ${errorsPanelHtml}
         </div>
         <div class="help-term">
           <div class="help-term-label">⚠️ Розбіжності звірки N</div>
-          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Назва в списку відкриває саме цей вузол на мапі.</div>
+          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Числа підсумкові по всій гілці, тож розбіжність підкатегорії вже входить у розбіжність батька — рядки зсунуті за рівнем вкладеності. Назва відкриває саме цей вузол на мапі.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">🧭 Не збігається з крихтами N</div>
