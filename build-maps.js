@@ -36,11 +36,16 @@ function readCategoryList() {
 
 // ==================== ВКЛАДЕНІСТЬ ВУЗЛІВ У ПАНЕЛЯХ ====================
 // Панель розбіжностей показує вузли різних рівнів одним списком, і без
-// підказки це читається як помилка арифметики: у «Шпинделях» корінь −2, а під
-// ним −2 і −1. Насправді третій рядок вкладений у другий, тобто його −1 уже
-// враховано. Тому кожен рядок зсувається за рівнем і несе шлях від розділу.
-// Проміжні вузли зі збігом у список не потрапляють, тож самого відступу мало —
-// потрібен ще й шлях.
+// вкладеності числа читаються як помилка арифметики: у «Шпинделях» корінь −2,
+// а під ним −2 і −1, бо третій рядок лежить усередині другого.
+//
+// Вкладеність показує сам відступ. Щоб на нього можна було покладатись, дерево
+// не має мати розривів: якщо в дочірньої категорії розбіжність є, а в її
+// батька звірка зійшлась, батько все одно потрапляє в список — блідим рядком
+// зі своїми числами. Інакше відступ дитини виглядав би як загублений рівень.
+// (Раніше замість цього перед назвою друкувався шлях; він майже завжди просто
+// повторював рядок прямо над собою — у реальних даних розривів немає, бо
+// недобір дитини автоматично дає недобір у підсумку батька.)
 const nodeMaps = new Map();
 function nodeById(entry) {
   if (!nodeMaps.has(entry.id)) {
@@ -49,17 +54,35 @@ function nodeById(entry) {
   return nodeMaps.get(entry.id);
 }
 
-// Назви предків між розділом (він уже в заголовку групи) і самим вузлом.
-function ancestorsOf(entry, node) {
+// Рядки панелі для однієї категорії 1 рівня: усі вузли з розбіжністю плюс їхні
+// предки, у порядку обходу дерева. entry.nodes уже лежить у порядку обходу
+// (його так пише render-map.js), тож достатньо відфільтрувати.
+function mismatchRows(entry) {
+  const list = entry.mismatch_categories || [];
   const byId = nodeById(entry);
-  const out = [];
-  let cur = byId.get(String(node.parentId));
-  let guard = 0;
-  while (cur && cur.level > 1 && guard++ < 20) {
-    out.unshift(cur.name);
-    cur = byId.get(String(cur.parentId));
+  if (byId.size === 0) return list.map(m => ({ m, node: null })); // старий summary без nodes
+  const flagged = new Map(list.map(m => [String(m.categoryId), m]));
+  const keep = new Set();
+  flagged.forEach((m, id) => {
+    let cur = byId.get(id);
+    let guard = 0;
+    while (cur && guard++ < 20) { keep.add(String(cur.id)); cur = byId.get(String(cur.parentId)); }
+  });
+  return (entry.nodes || [])
+    .filter(n => keep.has(String(n.id)))
+    .map(n => ({ node: n, m: flagged.get(String(n.id)) || null }));
+}
+
+// Підпис із числами. Для вузла без розбіжності беремо його власні числа з
+// дерева — вони показують, що там усе зійшлось, і саме тому рядок блідий.
+function mismatchFigures(row) {
+  const collected = row.m ? row.m.collected : row.node.yes;
+  const counter = row.m ? row.m.siteCounter : row.node.counter;
+  const diff = row.m ? row.m.diff : row.node.diff;
+  if (counter === null || counter === undefined || diff === null || diff === undefined) {
+    return 'зібрано ' + collected + ', лічильник сайту не зчитано';
   }
-  return out;
+  return 'зібрано ' + collected + ', сайт ' + counter + ', різниця ' + (diff > 0 ? '+' : '') + diff;
 }
 
 // ==================== ЕКСПОРТ МАПИ КАТЕГОРІЙ У XLSX ====================
@@ -406,17 +429,17 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       </div>
       <div class="help-panel-body">
         <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності N» для того ж вузла. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не зчиталось. Натисніть назву, щоб відкрити цей вузол на мапі.</p>
-        <p class="failed-note">Рядки зсунуті за рівнем вкладеності, а перед назвою стоїть шлях. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в кожного її батька — причину шукайте в найглибшому рядку. Якщо ж розбіжність є лише в самої категорії, а підкатегорії цілі, бракує саме її власних товарів.</p>
+        <p class="failed-note">Рядки зсунуті за рівнем вкладеності. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в кожного її батька — причину шукайте в найглибшому рядку. Якщо ж розбіжність є лише в самої категорії, а підкатегорії цілі, бракує саме її власних товарів. Блідим показані проміжні категорії, де звірка зійшлась: вони тут лише для того, щоб дерево не мало розривів.</p>
         <div class="orphan-group-list">${mismatchGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)}</a>
-            <div class="orphan-cat-list">${e.mismatch_categories.map(m => {
-              const node = nodeById(e).get(String(m.categoryId));
-              const level = node ? node.level : 1;
-              return '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(m.categoryId) + '" class="cat-found-badge mismatch-item" style="margin-left:' + ((level - 1) * 18) + 'px;">' +
-              (node && ancestorsOf(e, node).length ? '<span class="node-path">' + escapeHtmlOuter(ancestorsOf(e, node).join(' › ')) + ' › </span>' : '') +
-              escapeHtmlOuter(m.name) +
-              ' <span class="node-count">(зібрано ' + m.collected + ', сайт ' + m.siteCounter + ', різниця ' + (m.diff > 0 ? '+' : '') + m.diff + ')</span></a>';
+            <div class="orphan-cat-list">${mismatchRows(e).map(row => {
+              const id = row.node ? row.node.id : row.m.categoryId;
+              const level = row.node ? row.node.level : 1;
+              const name = row.m ? row.m.name : row.node.name;
+              return '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(id) + '" class="cat-found-badge mismatch-item' + (row.m ? '' : ' node-ok') + '" style="margin-left:' + ((level - 1) * 18) + 'px;">' +
+              escapeHtmlOuter(name) +
+              ' <span class="node-count">(' + mismatchFigures(row) + ')</span></a>';
             }).join('')}</div>
           </div>`).join('')}</div>
       </div>
@@ -549,7 +572,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
   .mismatch-item { align-items: baseline; }
-  .node-path { color: var(--text-muted); font-weight: 400; }
+  /* Проміжна категорія без розбіжності: потрібна лише як ланка дерева, тож
+     приглушена — око має чіплятись за справжні розбіжності. */
+  .mismatch-item.node-ok { opacity: 0.55; font-weight: 400; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
@@ -634,7 +659,7 @@ ${errorsPanelHtml}
         </div>
         <div class="help-term">
           <div class="help-term-label">⚠️ Розбіжності звірки</div>
-          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Назва відкриває саме цей вузол на мапі.</div>
+          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Блідим ідуть проміжні категорії без розбіжності, щоб дерево не мало розривів. Назва відкриває саме цей вузол на мапі.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">🧭 Не збігається з крихтами N</div>
