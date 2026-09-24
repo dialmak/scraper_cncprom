@@ -491,7 +491,7 @@ table.search-table .col-avail { width: 16%; }
 .help-overlay.open { display: flex; }
 .help-panel {
   background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
-  /* 1000px, а не колишні 640 — на прохання користувача (24.09.2026): панелі зі
+  /* 800px, а не колишні 640 — на прохання користувача (24.09.2026): панелі зі
      списками (розбіжності звірки, товари поза категоріями, помилки прогону,
      логи) виглядали затісними на широкому екрані. На теперішніх даних вони і в
      640 вміщались без переносів — найширший рядок 525px, — але кожен рівень
@@ -499,7 +499,7 @@ table.search-table .col-avail { width: 16%; }
      Ширина обмежена лише max-width, тож на вузькому екрані панель як і раніше
      займає все, що лишають відступи .help-overlay. Логи мали власний
      inline-override на 900px — прибраний, тепер усі вікна однакові. */
-  max-width: 1000px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+  max-width: 800px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,0.3);
 }
 .help-panel-head {
   display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;
