@@ -538,6 +538,16 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
      сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
      де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
+  /* Шапка map.html має до восьми кнопок — помітно більше, ніж у мапи розділу,
+     звідки взято map-common.css. Там .app-header має фіксовану висоту 44px
+     (від неї рахується .workspace: calc(100vh - 44px)), а .header-left не
+     переноситься, тож на ~900-1000px ліва група вилазила за свою коробку і
+     накривала поле пошуку: кнопки «Розбіжності звірки» й «Експорт XLSX»
+     ставали неклікабельними, хоч і були видимі.
+     Тут висоту можна відпустити: map.html скролить увесь документ, жодна
+     інша величина від неї не рахується. */
+  .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
+  .header-left { flex-wrap: wrap; row-gap: 6px; }
   .mismatch-item { align-items: baseline; }
   .node-path { color: var(--text-muted); font-weight: 400; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
