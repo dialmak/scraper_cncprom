@@ -54,31 +54,46 @@ function nodeById(entry) {
   return nodeMaps.get(entry.id);
 }
 
-// Рядки панелі для однієї категорії 1 рівня: усі вузли з розбіжністю плюс їхні
+// Рядки панелі-дерева для однієї категорії 1 рівня: позначені вузли плюс їхні
 // предки, у порядку обходу дерева. entry.nodes уже лежить у порядку обходу
 // (його так пише render-map.js), тож достатньо відфільтрувати.
-function mismatchRows(entry) {
-  const list = entry.mismatch_categories || [];
+//
+// Використовують дві панелі — розбіжності звірки й товари поза категоріями.
+// getId дістає id вузла з елемента списку: у розбіжностей це categoryId, а в
+// орфанів — id клієнтського вузла з префіксом "node-".
+function treeRows(entry, items, getId) {
+  const list = items || [];
   const byId = nodeById(entry);
-  if (byId.size === 0) return list.map(m => ({ m, node: null })); // старий summary без nodes
-  const flagged = new Map(list.map(m => [String(m.categoryId), m]));
+  if (byId.size === 0) return list.map(it => ({ item: it, node: null })); // старий summary без nodes
+  const flagged = new Map(list.map(it => [String(getId(it)), it]));
   const keep = new Set();
-  flagged.forEach((m, id) => {
+  flagged.forEach((it, id) => {
     let cur = byId.get(id);
     let guard = 0;
     while (cur && guard++ < 20) { keep.add(String(cur.id)); cur = byId.get(String(cur.parentId)); }
   });
   return (entry.nodes || [])
     .filter(n => keep.has(String(n.id)))
-    .map(n => ({ node: n, m: flagged.get(String(n.id)) || null }));
+    .map(n => ({ node: n, item: flagged.get(String(n.id)) || null }));
 }
 
-// Підпис із числами. Для вузла без розбіжності беремо його власні числа з
-// дерева — вони показують, що там усе зійшлось, і саме тому рядок блідий.
+const rawNodeId = v => String(v).replace(/^node-/, '');
+
+// Спільна розмітка рядка дерева: відступ за рівнем, приглушення для
+// добудованої ланки, посилання на цей самий вузол мапи.
+function treeRowHtml(topId, id, level, inner, dim) {
+  return '<a href="' + escapeHtmlOuter(topId) + '_map.html#cat=' + escapeHtmlOuter(id) +
+    '" class="cat-found-badge tree-row' + (dim ? ' dim' : '') +
+    '" style="margin-left:' + ((level - 1) * 18) + 'px;">' + inner + '</a>';
+}
+
+// Підпис із числами для звірки. Для вузла без розбіжності беремо його власні
+// числа з дерева — вони показують, що там усе зійшлось, і саме тому рядок
+// блідий.
 function mismatchFigures(row) {
-  const collected = row.m ? row.m.collected : row.node.yes;
-  const counter = row.m ? row.m.siteCounter : row.node.counter;
-  const diff = row.m ? row.m.diff : row.node.diff;
+  const collected = row.item ? row.item.collected : row.node.yes;
+  const counter = row.item ? row.item.siteCounter : row.node.counter;
+  const diff = row.item ? row.item.diff : row.node.diff;
   if (counter === null || counter === undefined || diff === null || diff === undefined) {
     return 'зібрано ' + collected + ', лічильник сайту не зчитано';
   }
@@ -285,46 +300,34 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
 
   // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
   // кнопка/панель у кожній <id>_map.html (render-map.js), але зібраний по всіх
-  // категоріях 1 рівня одразу і згрупований по них (псевдо-tree: категорія 1
-  // рівня — заголовок групи, її орфан-підкатегорії — пункти під ним), а не
-  // пласким списком із назвою "Категорія › Підкатегорія" в кожному рядку —
-  // при 20-30+ записах на 23 категорії це самé повторення назви батька в
-  // кожному рядку й читалось як простирадло. Джерело — поле orphan_categories,
-  // яке кожен <id>_map.summary.json тепер несе поряд з рештою globalStats (щоб
-  // не перечитувати заново повне дерево кожної категорії тут). Є лише для 'ok'
-  // категорій (readSummary дає дані тільки їм) — те саме обмеження, що й у
-  // Товарів/В наявності/Оновлено вище для stale/not_scraped рядків.
-  // Групи ведуть на map.html ВЛАСНЕ ТІЄЇ категорії 1 рівня (не одразу на
-  // конкретний вкладений розділ — переходу до окремого вузла на чужій
-  // сторінці мапа поки не підтримує).
+  // категоріях 1 рівня одразу. Джерело — поле orphan_categories, яке кожен
+  // <id>_map.summary.json несе поряд з рештою globalStats (щоб не перечитувати
+  // тут заново повне дерево кожної категорії). Є лише для 'ok' категорій
+  // (readSummary дає дані тільки їм) — те саме обмеження, що й у колонок
+  // Товарів/В наявності/Оновлено вище.
+  //
+  // Вигляд — те саме дерево, що й у панелі розбіжностей звірки (спільні
+  // treeRows/treeRowHtml): категорія 1 рівня в заголовку групи, під нею вузли
+  // з відступом за рівнем, пропущені ланки добудовуються блідим. Тут вони
+  // справді потрібні: сироти розкидані по дереву, і на теперішніх даних п'ять
+  // записів мають батька, якого в списку немає.
+  //
+  // Плоского списку з назвою "Категорія › Підкатегорія" в кожному рядку тут
+  // свідомо немає: при 30+ записах на 23 категорії повторення назви батька
+  // читалось як простирадло.
   //
   // ВАЖЛИВО: сирота може бути й самою категорією 1 рівня (own_products > 0
   // прямо на кореневому вузлі — те саме, що orphanCategories в render-map.js
-  // рахує для будь-якого вузла дерева, корінь не виняток). Наївне групування
-  // "заголовок = назва топ-категорії, пункти під ним = назви орфан-вузлів"
-  // тоді дає пункт із тим самим текстом, що й заголовок групи (стаття
-  // "Категорія X" під заголовком "Категорія X"), що виглядає як помилка. Такий
-  // запис (oc.level === 1, тобто орфан-вузол — сама топ-категорія) підписується
-  // окремо — "Товари категорії, які не входять до підкатегорій" (та сама фраза,
-  // що й у власному/сирітському рядку зведення в render-map.js), а не назвою
-  // категорії вдруге.
-  const orphanGroups = [];
-  const orphanGroupById = new Map();
+  // рахує для будь-якого вузла дерева, корінь не виняток). Назву тоді не
+  // повторюємо (вона вже в заголовку групи), а пишемо "Товари категорії, які
+  // не входять до підкатегорій" — та сама фраза, що й у рядках зведення
+  // render-map.js. Добудована ланка 1 рівня (без власних товарів) не
+  // показується зовсім: заголовок групи її вже представляє.
   // Сума ТОВАРІВ (oc.own у кожному записі), а не кількість записів/категорій
   // у списку нижче — заголовок каже "Знайдені товари...", тож і число поруч
   // має бути кількістю товарів, а не кількістю орфан-категорій, які їх містять.
-  let orphanTotal = 0;
-  sorted.forEach(e => {
-    (e.orphan_categories || []).forEach(oc => {
-      orphanTotal += oc.own;
-      if (!orphanGroupById.has(e.id)) {
-        const group = { topId: e.id, topName: e.name, items: [] };
-        orphanGroupById.set(e.id, group);
-        orphanGroups.push(group);
-      }
-      orphanGroupById.get(e.id).items.push(oc);
-    });
-  });
+  const orphanGroups = sorted.filter(e => (e.orphan_categories || []).length > 0);
+  const orphanTotal = orphanGroups.reduce((n, e) => n + e.orphan_categories.reduce((k, oc) => k + oc.own, 0), 0);
   const orphanMenuButtonHtml = orphanTotal === 0 ? '' : `
       <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
   const orphanPanelHtml = orphanTotal === 0 ? '' : `
@@ -335,14 +338,24 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <div class="orphan-group-list">${orphanGroups.map(g => `
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <div class="orphan-group-list">${orphanGroups.map(e => `
           <div class="orphan-group">
-            <a href="${escapeHtmlOuter(g.topId)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(g.topName)}</a>
-            <div class="orphan-cat-list">${g.items.map(oc =>
-              '<a href="' + escapeHtmlOuter(g.topId) + '_map.html" class="cat-found-badge">' +
-              (oc.level === 1 ? 'Товари категорії, які не входять до підкатегорій' : escapeHtmlOuter(oc.name)) +
-              ' <span class="node-count">(' + oc.own + ')</span></a>'
-            ).join('')}</div>
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)}</a>
+            <div class="orphan-cat-list">${treeRows(e, e.orphan_categories, oc => rawNodeId(oc.id))
+              .filter(row => row.item || !row.node || row.node.level > 1)
+              .map(row => {
+                const id = row.node ? row.node.id : rawNodeId(row.item.id);
+                const level = row.node ? row.node.level : (row.item.level || 1);
+                const own = row.item ? row.item.own : (row.node.own || 0);
+                // Топ-категорія може бути сиротою сама для себе (товари лежать
+                // прямо в ній). Повторювати тут її назву не можна — вона вже в
+                // заголовку групи, і рядок виглядав би як помилка.
+                const name = row.item && level === 1
+                  ? 'Товари категорії, які не входять до підкатегорій'
+                  : escapeHtmlOuter(row.item ? row.item.name : row.node.name);
+                return treeRowHtml(e.id, id, level, name + ' <span class="node-count">(' + own + ')</span>', !row.item);
+              }).join('')}</div>
           </div>`).join('')}</div>
       </div>
     </div>
@@ -432,13 +445,13 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <div class="orphan-group-list">${mismatchGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)}</a>
-            <div class="orphan-cat-list">${mismatchRows(e).map(row => {
-              const id = row.node ? row.node.id : row.m.categoryId;
+            <div class="orphan-cat-list">${treeRows(e, e.mismatch_categories, m => m.categoryId).map(row => {
+              const id = row.node ? row.node.id : row.item.categoryId;
               const level = row.node ? row.node.level : 1;
-              const name = row.m ? row.m.name : row.node.name;
-              return '<a href="' + escapeHtmlOuter(e.id) + '_map.html#cat=' + escapeHtmlOuter(id) + '" class="cat-found-badge mismatch-item' + (row.m ? '' : ' node-ok') + '" style="margin-left:' + ((level - 1) * 18) + 'px;">' +
-              escapeHtmlOuter(name) +
-              ' <span class="node-count">(' + mismatchFigures(row) + ')</span></a>';
+              const name = row.item ? row.item.name : row.node.name;
+              return treeRowHtml(e.id, id, level,
+                escapeHtmlOuter(name) + ' <span class="node-count">(' + mismatchFigures(row) + ')</span>',
+                !row.item);
             }).join('')}</div>
           </div>`).join('')}</div>
       </div>
@@ -541,10 +554,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .index-wrap { padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
   .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
-  /* Псевдо-tree для "Товари поза категоріями": категорія 1 рівня — заголовок
-     групи (.orphan-group-head), її орфан-підкатегорії — індентований
-     .orphan-cat-list під ним (той самий спільний клас/вигляд пунктів, що й у
-     плоскому списку render-map.js — лише контейнер тепер один на групу). */
+  /* Групи панелей-дерев: категорія 1 рівня — заголовок (.orphan-group-head),
+     її вузли — .orphan-cat-list під ним (той самий вигляд пунктів, що й у
+     плоскому списку render-map.js, лише контейнер один на групу). Відступ за
+     рівнем вкладеності ставиться інлайном у treeRowHtml. */
   .orphan-group-list { display: flex; flex-direction: column; gap: 14px; }
   .orphan-group-head { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text-link); text-decoration: none; }
   .orphan-group-head:hover { text-decoration: underline; }
@@ -570,10 +583,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      інша величина від неї не рахується. */
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
-  .mismatch-item { align-items: baseline; }
-  /* Проміжна категорія без розбіжності: потрібна лише як ланка дерева, тож
-     приглушена — око має чіплятись за справжні розбіжності. */
-  .mismatch-item.node-ok { opacity: 0.55; font-weight: 400; }
+  /* Рядок панелі-дерева (розбіжності звірки, товари поза категоріями).
+     Приглушена ланка — вузол, доданий лише щоб дерево не мало розривів; око
+     має чіплятись за рядки, заради яких панель і відкривали. */
+  .tree-row { align-items: baseline; }
+  .tree-row.dim { opacity: 0.55; font-weight: 400; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
