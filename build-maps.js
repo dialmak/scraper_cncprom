@@ -368,7 +368,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
               <td style="text-align:center;">${e.total_no !== undefined && e.total_no !== null ? `<span class="count-no">${e.total_no}</span>` : '—'}</td>
               <td style="text-align:center;">${escapeHtmlOuter(e.scraped_at || '—')}</td>
               <td style="text-align:center;">${statusBadgeHtml(e)}${runErrorBadgeHtml(e)}</td>
-              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" class="link-site">↗</a>` : '—'}</td>
+              <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" class="link-site" target="_blank" rel="noopener">↗</a>` : '—'}</td>
             </tr>`).join('');
 
   // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
@@ -457,7 +457,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.failed_urls.length})</span></a>
             <div class="failed-url-list">${e.failed_urls.map(u =>
-              '<a href="' + escapeHtmlOuter(u) + '" class="failed-url">↗ ' + escapeHtmlOuter(failedLabel(u)) + '</a>'
+              '<a href="' + escapeHtmlOuter(u) + '" class="failed-url" target="_blank" rel="noopener">↗ ' + escapeHtmlOuter(failedLabel(u)) + '</a>'
             ).join('')}</div>
           </div>`).join('')}</div>
       </div>
@@ -554,7 +554,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.crumb_other.length})</span></a>
             <div class="run-error-list">${e.crumb_other.map(c =>
-              '<div class="run-error"><a href="' + escapeHtmlOuter(c.url) + '" class="failed-url">↗ ' + escapeHtmlOuter(c.name) + '</a>' +
+              '<div class="run-error"><a href="' + escapeHtmlOuter(c.url) + '" class="failed-url" target="_blank" rel="noopener">↗ ' + escapeHtmlOuter(c.name) + '</a>' +
               '<div class="crumb-lines"><span class="path-label">Скрапер:</span> ' + escapeHtmlOuter(c.assigned) + '</div>' +
               '<div class="crumb-lines"><span class="path-label">Крихти:</span> ' + escapeHtmlOuter(c.crumbs) + '</div></div>'
             ).join('')}</div>
@@ -676,7 +676,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="https://cncprom.ua/ua/" class="link-site">cncprom.ua ↗</a>
+      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/site/scrape.log`, scrapeLogContent)}

@@ -351,7 +351,7 @@ function initReportsPage() {
   // URL) — просто текст із тією ж підказкою.
   function catLink(id, name, path) {
     var u = catUrls[id];
-    return u ? '<a class="cat-site" href="' + esc(u) + '" data-tip="' + esc(path) + '">' + esc(name) + '</a>'
+    return u ? '<a class="cat-site" target="_blank" rel="noopener" href="' + esc(u) + '" data-tip="' + esc(path) + '">' + esc(name) + '</a>'
       : '<span data-tip="' + esc(path) + '">' + esc(name) + '</span>';
   }
   function detail(r) {
@@ -369,7 +369,7 @@ function initReportsPage() {
       '</tr></thead><tbody>' + shown.map(function (r) {
         return '<tr><td>' + badge(r.type) + '</td>' +
           '<td>' + (r.sku ? '<span class="code">' + esc(r.sku) + '</span>' : '<span class="subtle">—</span>') + '</td>' +
-          '<td>' + (r.url ? '<a class="pname" href="' + esc(r.url) + '">' + esc(r.name) + '</a>' : esc(r.name)) + '</td>' +
+          '<td>' + (r.url ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(r.url) + '">' + esc(r.name) + '</a>' : esc(r.name)) + '</td>' +
           '<td>' + (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
           (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + catLink(r.cat, r.catName, r.catPath) : '') + '</td>' +
           '<td>' + detail(r) + '</td></tr>';
@@ -650,7 +650,7 @@ const html = `<!DOCTYPE html>
       <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Що означають типи змін і як рахується період">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
-      <a href="https://cncprom.ua/ua/" class="link-site">cncprom.ua ↗</a>
+      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
 

@@ -769,7 +769,7 @@ function initSiteSearch() {
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + escapeAttr(p.url) + '">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -992,7 +992,7 @@ function initCatalogMap(CATALOG_DATA) {
         '<tr>' +
         '<td class="col-n">' + (p.index || i + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span></td>' +
-        '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
+        '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
@@ -1095,7 +1095,7 @@ function initCatalogMap(CATALOG_DATA) {
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="width:78px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +
-            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + escapeAttr(ch.url) + '" class="link-site">↗</a>' : ' ') + '</td>' +
+            '<td style="width:72px;text-align:center;">' + (ch.url ? '<a href="' + escapeAttr(ch.url) + '" class="link-site" target="_blank" rel="noopener">↗</a>' : ' ') + '</td>' +
             '</tr>'
           );
         }).join('') +
@@ -1208,7 +1208,7 @@ function initCatalogMap(CATALOG_DATA) {
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
         '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + escapeAttr(p.url) + '">' + highlightMatch(p.name, query) + '</a></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -1557,12 +1557,13 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
     <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
       <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="${escapeHtmlOuter(rootUrl)}" class="link-site">cncprom.ua ↗</a>
+      <a href="${escapeHtmlOuter(rootUrl)}" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
 
@@ -1632,7 +1633,7 @@ const html = `<!DOCTYPE html>
             <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">${CATALOG_DATA.tree.stats.total_products}</td>
             <td style="text-align:center;" id="cat-verdict-badge"></td>
             <td style="text-align:center;" id="cat-total-no"><span class="count-no">${CATALOG_DATA.tree.stats.total_no}</span></td>
-            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site">↗</a></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
           </tr></tbody></table>
         </div>
         <!-- Повністю окремий заголовок для режиму пошуку — НЕ переиспользує
