@@ -20,8 +20,9 @@ const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
 // Формат дати зібраний вручну, а не через toLocaleDateString: тут потрібна
 // гарантовано DD.MM.YYYY, а локаль на раннері й на машині розробника
 // може відрізнятись — а це вже ім'я файла, не підпис на сторінці.
-const XLSX_PREFIX = "mapa_cncprom";
-const XLSX_FILE = (d => `${XLSX_PREFIX}_${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}.xlsx`)(new Date());
+const XLSX_PREFIX = "map_cncprom";
+const BUILD_DATE = (d => `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`)(new Date());
+const XLSX_FILE = `${XLSX_PREFIX}_${BUILD_DATE}.xlsx`;
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
 // Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
@@ -182,10 +183,44 @@ async function buildCatalogXlsx(entries) {
   ws.properties.outlineLevelRow = maxLevel - 1;
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: 'frozen', ySplit: 1 }];
+  // Закріплений рядок 1 видно завжди, тож нотатка на A1 — єдине місце, де
+  // попередження не займає жодного рядка дерева і не з'їжджає з екрана.
+  ws.getCell('A1').note = 'Аркуш захищений від сортування: порядок рядків і є деревом категорій.\n' +
+    'Зняти: Рецензування → Зняти захист аркуша (пароля немає).\n' +
+    'Докладно — на аркуші «Про файл».';
   await ws.protect(undefined, {
     selectLockedCells: true, selectUnlockedCells: true,
     formatRows: true, formatColumns: true
   });
+
+  // Окремий аркуш замість рядків нагорі основного: там мають бути лише
+  // назви категорій, і будь-який текст перед шапкою зсунув би дерево
+  // й потрапив у групування. Цей аркуш НЕ захищений — його нічого
+  // ламати сортуванням.
+  const info = wb.addWorksheet('Про файл');
+  info.columns = [{ width: 108 }];
+  const infoLines = [
+    ['Мапа категорій cncprom.ua', true],
+    ['', false],
+    ['Аркуш «Категорії» захищений від сортування.', true],
+    ['Категорії розміщені деревом: рівень 1 у стовпці A, рівень 2 в B і так далі.', false],
+    ['Порядок рядків і є структурою: сортування відриває гілки від їхніх батьків,', false],
+    ['і файл стає беззмістовним.', false],
+    ['', false],
+    ['Як зняти захист: Рецензування → Зняти захист аркуша. Пароля немає.', true],
+    ['Це застереження від випадкового кліку, а не замок.', false],
+    ['', false],
+    ['Із захистом працює згортання гілок: кнопки [+] і [−] зліва від номерів рядків,', false],
+    ['а цифри над ними показують усе дерево до потрібного рівня.', false],
+    ['', false],
+    ['Файл згенеровано автоматично: ' + BUILD_DATE, false],
+    ['Актуальна версія й інтерактивна мапа: https://map.cncprom.pp.ua/', false]
+  ];
+  infoLines.forEach(([text, bold]) => {
+    const row = info.addRow([text]);
+    if (bold) row.font = { bold: true };
+  });
+
   return { wb, count: rows.length };
 }
 
@@ -869,7 +904,8 @@ function writeRedirect(file, target) {
       // на один з них. (У нічному прогоні тека й так чиста — це для
       // локальних перезапусків.)
       fs.readdirSync(DIR)
-        .filter(f => f === 'catalog.xlsx' || (f.startsWith(XLSX_PREFIX + '_') && f.endsWith('.xlsx')))
+        .filter(f => f === 'catalog.xlsx' ||
+          ((f.startsWith(XLSX_PREFIX + '_') || f.startsWith('mapa_cncprom_')) && f.endsWith('.xlsx')))
         .filter(f => f !== XLSX_FILE)
         .forEach(f => { try { fs.unlinkSync(path.join(DIR, f)); } catch (e) { /* не критично */ } });
       await built.wb.xlsx.writeFile(path.join(DIR, XLSX_FILE));
