@@ -341,7 +341,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
         <div class="orphan-group-list">${orphanGroups.map(e => `
           <div class="orphan-group">
-            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)}</a>
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.orphan_categories.reduce((k, oc) => k + oc.own, 0)})</span></a>
             <div class="orphan-cat-list">${treeRows(e, e.orphan_categories, oc => rawNodeId(oc.id))
               .filter(row => row.item || !row.node || row.node.level > 1)
               .map(row => {
@@ -554,15 +554,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .index-wrap { padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
   .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
-  /* Групи панелей-дерев: категорія 1 рівня — заголовок (.orphan-group-head),
-     її вузли — .orphan-cat-list під ним (той самий вигляд пунктів, що й у
-     плоскому списку render-map.js, лише контейнер один на групу). Відступ за
-     рівнем вкладеності ставиться інлайном у treeRowHtml. */
-  .orphan-group-list { display: flex; flex-direction: column; gap: 14px; }
-  .orphan-group-head { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text-link); text-decoration: none; }
-  .orphan-group-head:hover { text-decoration: underline; }
-  .orphan-group .orphan-cat-list { margin-top: 6px; padding-left: 20px; }
-  .failed-note { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px; }
+  /* Самі панелі-дерева (.orphan-group-*, .tree-row, .failed-note) описані в
+     map-common.css: така сама панель "Товари поза категоріями" є й у кожній
+     <id>_map.html, тож вигляд має бути один на дві сторінки, а не дві копії,
+     які розійдуться. Ця сторінка теж лінкує map-common.css (вище). */
   .failed-url-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding-left: 20px; }
   .failed-url { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
   .failed-url:hover { text-decoration: underline; }
@@ -583,11 +578,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      інша величина від неї не рахується. */
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
-  /* Рядок панелі-дерева (розбіжності звірки, товари поза категоріями).
-     Приглушена ланка — вузол, доданий лише щоб дерево не мало розривів; око
-     має чіплятись за рядки, заради яких панель і відкривали. */
-  .tree-row { align-items: baseline; }
-  .tree-row.dim { opacity: 0.55; font-weight: 400; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>

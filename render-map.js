@@ -467,6 +467,21 @@ table.search-table .col-avail { width: 16%; }
 
 .orphan-cat-list { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 
+/* Панель-дерево ("Товари поза категоріями" тут і вона ж плюс розбіжності
+   звірки на map.html): заголовок групи — категорія 1 рівня, під ним вузли з
+   відступом за рівнем (margin-left ставиться інлайном при генерації).
+   Приглушена ланка (.dim) — вузол без власних товарів, доданий лише щоб
+   дерево не мало розривів; око має чіплятись за рядки, заради яких панель
+   і відкривали. Ті самі класи використовує map.html (build-maps.js), яка лінкує
+   цей же файл, — вигляд обох панелей описаний один раз. */
+.orphan-group-list { display: flex; flex-direction: column; gap: 14px; }
+.orphan-group-head { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text-link); text-decoration: none; }
+.orphan-group-head:hover { text-decoration: underline; }
+.orphan-group .orphan-cat-list { margin-top: 6px; padding-left: 20px; }
+.tree-row { align-items: baseline; }
+.tree-row.dim { opacity: 0.55; font-weight: 400; }
+.failed-note { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px; }
+
 /* Гарні підказки замість нативного title (той не переноситься й губиться на довгому тексті).
    Позиціонується через JS (setupTooltips) в координатах в'юпорта — саме тому fixed, а не
    absolute, щоб не обрізáлось контейнерами з overflow (.table-wrap, .main-content). */
@@ -1442,6 +1457,56 @@ const infoBanner = HAS_PRODUCTS ? '' : `
 // кількість самих орфан-категорій у списку: заголовок каже "Знайдені
 // товари...", тож і число має рахувати товари, а не категорії, які їх містять.
 const orphanTotalProducts = orphanCategories.reduce((sum, c) => sum + c.own, 0);
+
+// Вигляд панелі — точно такий самий, як у зведеної "Товари поза
+// категоріями" на map.html (build-maps.js, treeRows/treeRowHtml): заголовок
+// групи = категорія 1 рівня із сумою товарів, під ним дерево вузлів з
+// відступом 18px на рівень. До 24.09.2026 тут був плоский список без
+// відступів, і дві однакові за змістом панелі виглядали по-різному.
+//
+// Добудовані ланки (предки, яких самих у списку немає) — не прикраса:
+// сироти розкидані по дереву, і без них відступ натякав би на рівень,
+// якого на екрані немає. Звертатись до build-maps.js тут ніяк: це окремий
+// процес, який запускає саме цей скрипт, — спі6льний тут лише CSS.
+const orphanRows = (() => {
+  const parentOf = new Map();
+  (function walk(n, parent) {
+    parentOf.set(String(n.id), parent);
+    n.children.forEach(c => walk(c, n));
+  })(appTree, null);
+  const flagged = new Map(orphanCategories.map(c => [String(c.id), c]));
+  const keep = new Set();
+  flagged.forEach((c, id) => {
+    let cur = id;
+    let guard = 0;
+    while (cur && guard++ < 20) {
+      keep.add(cur);
+      const p = parentOf.get(cur);
+      cur = p ? String(p.id) : null;
+    }
+  });
+  const rows = [];
+  (function walk(n) {
+    if (keep.has(String(n.id))) rows.push({ node: n, item: flagged.get(String(n.id)) || null });
+    n.children.forEach(walk);
+  })(appTree);
+  // Добудована ланка 1 рівня не показується: заголовок групи — це вона й є.
+  return rows.filter(r => r.item || r.node.level > 1);
+})();
+
+const orphanRowsHtml = orphanRows.map(r => {
+  // Категорія 1 рівня може бути сиротою сама для себе (товари лежать
+  // прямо в ній). Повторювати тут її назву не можна — вона вже в
+  // заголовку групи, і рядок виглядав би як помилка. Фраза та сама,
+  // що й у рядках зведення нижче в цьому ж файлі.
+  const name = r.item && r.node.level === 1
+    ? 'Товари категорії, які не входять до підкатегорій'
+    : escapeHtmlOuter(r.node.name);
+  return '<a href="#" class="cat-found-badge tree-row orphan-cat-link' + (r.item ? '' : ' dim') +
+    '" data-id="' + escapeHtmlOuter(r.node.id) +
+    '" style="margin-left:' + ((r.node.level - 1) * 18) + 'px;">' +
+    name + ' <span class="node-count">(' + r.node.stats.own_products + ')</span></a>';
+}).join('');
 const orphanMenuButtonHtml = orphanCategories.length === 0 ? '' : `
       <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
 
@@ -1453,9 +1518,13 @@ const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <div class="orphan-cat-list">${orphanCategories.map(c =>
-          '<a href="#" class="cat-found-badge orphan-cat-link" data-id="' + c.id + '">📁 ' + escapeHtmlOuter(c.name) + ' <span class="node-count">(' + c.own + ')</span></a>'
-        ).join('')}</div>
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="#" class="orphan-group-head orphan-cat-link" data-id="${escapeHtmlOuter(appTree.id)}">📁 ${escapeHtmlOuter(appTree.name)} <span class="node-count">(${orphanTotalProducts})</span></a>
+            <div class="orphan-cat-list">${orphanRowsHtml}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>`;
