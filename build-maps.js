@@ -15,7 +15,13 @@ const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
-const XLSX_FILE = "catalog.xlsx";
+// Ім'я файла експорту несе дату збірки: його зберігають до себе, і без
+// дати в назві вчорашня копія нічим не відрізняється від сьогоднішньої.
+// Формат дати зібраний вручну, а не через toLocaleDateString: тут потрібна
+// гарантовано DD.MM.YYYY, а локаль на раннері й на машині розробника
+// може відрізнятись — а це вже ім'я файла, не підпис на сторінці.
+const XLSX_PREFIX = "mapa_cncprom";
+const XLSX_FILE = (d => `${XLSX_PREFIX}_${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}.xlsx`)(new Date());
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
 // Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
@@ -858,6 +864,14 @@ function writeRedirect(file, target) {
   try {
     const built = await buildCatalogXlsx(entries);
     if (built) {
+      // Старі експорти прибираємо: ім'я змінне, тож інакше в output/site
+      // накопичувалась би купа файлів за різні дні, а кнопка веде лише
+      // на один з них. (У нічному прогоні тека й так чиста — це для
+      // локальних перезапусків.)
+      fs.readdirSync(DIR)
+        .filter(f => f === 'catalog.xlsx' || (f.startsWith(XLSX_PREFIX + '_') && f.endsWith('.xlsx')))
+        .filter(f => f !== XLSX_FILE)
+        .forEach(f => { try { fs.unlinkSync(path.join(DIR, f)); } catch (e) { /* не критично */ } });
       await built.wb.xlsx.writeFile(path.join(DIR, XLSX_FILE));
       console.log(`Експорт збережено: ${XLSX_FILE} (${built.count} категорій).`);
       xlsxReady = true;
