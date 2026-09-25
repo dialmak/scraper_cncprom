@@ -26,6 +26,7 @@ const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
+const { narrowGuardHtml } = require('./lib/notice');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -554,6 +555,31 @@ table.search-table .col-avail { width: 16%; }
   .sidebar-resize-handle { display: none; }
 }
 
+/* Заставка для завузького екрана (lib/notice.js). На широкому екрані цього
+   блока просто немає; нижче порога він накриває сторінку цілком: position: fixed
+   разом із непрозорим тлом і overflow: hidden на body — нічого приховувати
+   поелементно не треба. Чистий CSS свідомо: спрацьовує зразу, не чекаючи на JS,
+   і ніякого миготіння верстки перед нею. */
+.narrow-guard { display: none; }
+@media (max-width: 1299px) {
+  .narrow-guard {
+    display: flex; position: fixed; inset: 0; z-index: 9999;
+    align-items: center; justify-content: center; padding: 24px;
+    background: var(--bg-page);
+  }
+  .narrow-guard-box { max-width: 440px; text-align: center; color: var(--text-muted);
+    font-size: 0.88rem; line-height: 1.55; }
+  .narrow-guard-icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .narrow-guard-box h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+  .narrow-guard-box p { margin-bottom: 10px; }
+  .narrow-guard-box b { color: var(--text-main); font-weight: 600; }
+  .narrow-guard-now { font-family: var(--font-mono); font-size: 0.8rem; }
+  /* html body, а не просто body: і map.html, і сторінка змін перевизначають
+     «html, body { overflow: visible }» у своїх стилях після цього файла,
+     а за рівної специфічності виграє той, хто нижче. */
+  html body { overflow: hidden; }
+}
+
 /* Меню-дропдаун у шапці («Звіт скрапера», «Звірки», «Довідка»). Списку
    з трьох-чотирьох рядків модальне вікно із затемненням завелике — він висить під
    своєю кнопкою. Великі панелі зі списками (дерево розбіжностей, логи, сама
@@ -611,6 +637,18 @@ table.search-table .col-avail { width: 16%; }
 [data-theme="dark"] .credit-logo.invert { filter: invert(1); }
 `;
 
+
+
+// Поточна ширина вікна в заставці завузького екрана. Сама заставка показується
+// через @media і без цього скрипта; він лише підказує тому, хто має широкий
+// монітор, але вузьке вікно, наскільки саме його розширити.
+function initNarrowGuard() {
+  var el = document.getElementById('narrow-guard-width');
+  if (!el) return;
+  var show = function () { el.textContent = String(window.innerWidth); };
+  show();
+  window.addEventListener('resize', show);
+}
 
 // ==================== МЕНЮ В ШАПЦІ (спільне для трьох сторінок) ====================
 // Дропдауни шапки: відкритий завжди один, закриваються кліком поза межами
@@ -1554,7 +1592,7 @@ writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису: посилання має відповідати щойно записаному вмісту.
 const COMMON_CSS_V = assetVer(COMMON_CSS_FILE);
 const COMMON_JS_V = assetVer(COMMON_JS_FILE);
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initNarrowGuard, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
@@ -1717,6 +1755,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
       </div>
     </div>
   </div>
+${narrowGuardHtml()}
   ${orphanPanelHtml}
 ${aboutPanelHtml()}${creditsPanelHtml()}
 
@@ -1781,6 +1820,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
 <script>
 const CATALOG_DATA = ${JSON.stringify(CATALOG_DATA)};
 initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
 </script>
 </body>
 </html>`;

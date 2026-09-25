@@ -8,6 +8,7 @@ const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
+const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -787,6 +788,7 @@ ${crumbPanelHtml}
 ${crumbUnknownPanelHtml}
 ${failedPanelHtml}
 ${errorsPanelHtml}
+${narrowGuardHtml()}
 ${aboutPanelHtml()}${creditsPanelHtml()}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
@@ -912,6 +914,7 @@ setupModalOverlay('credits-overlay', null, 'btn-credits-close');
 // Дропдауни шапки й обробник [data-open] — спільні для трьох сторінок,
 // живуть у map-common.js (див. initHeaderMenus у render-map.js).
 initHeaderMenus();
+initNarrowGuard();
 // Значки помилок в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
 Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
   b.addEventListener('click', function () {

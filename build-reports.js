@@ -35,6 +35,7 @@ const path = require('path');
 const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
+const { narrowGuardHtml } = require('./lib/notice');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
@@ -447,6 +448,7 @@ function initReportsPage() {
   setupModalOverlay('about-overlay', null, 'btn-about-close');
   setupModalOverlay('credits-overlay', null, 'btn-credits-close');
   initHeaderMenus();
+  initNarrowGuard();
   setupTooltips();
   Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json'),
     getJson(DATA + 'categories.json').catch(function () { return {}; })]).then(function (r) {
@@ -612,6 +614,7 @@ ${helpMenuHtml('Що означають типи змін і як рахуєть
     </div>
   </header>
 
+${narrowGuardHtml()}
 ${aboutPanelHtml()}${creditsPanelHtml('../')}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
