@@ -604,6 +604,12 @@ table.search-table .col-avail { width: 16%; }
 .check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
   padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
 .check-row:last-child { border-bottom: 0; }
+/* Зелена версія синього значка (ℹ️). Шрифтовий color на emoji не діє —
+   це кольорова гліфа, а не літера, тож крутимо відтінок фільтром. Значок синій
+   на всіх основних платформах, тому скрізь вийде зелений.
+   Кут підібраний на оці: CSS hue-rotate — не чесний поворот відтінку, а матричне
+   наближення, і «математичні» +100° дають не зелений, а малиновий. */
+.ico-green { filter: hue-rotate(-80deg) saturate(1.15); }
 /* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
    довжині рядка: у grid комірка 1fr розтягнула б span до самого числа. */
 .check-row .nm { color: var(--text-main); justify-self: start; }
