@@ -7,6 +7,7 @@ const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
+const { fmtDate, fmtDateTime } = require('./lib/time');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -18,14 +19,16 @@ const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
-// Ім'я файла експорту несе дату збірки: його зберігають до себе, і без
-// дати в назві вчорашня копія нічим не відрізняється від сьогоднішньої.
-// Формат дати зібраний вручну, а не через toLocaleDateString: тут потрібна
-// гарантовано DD.MM.YYYY, а локаль на раннері й на машині розробника
-// може відрізнятись — а це вже ім'я файла, не підпис на сторінці.
+// Ім'я файла експорту несе дату ДАНИХ — найсвіжішого скрапінгу серед
+// категорій, тобто ту саму, що стоїть у шапці map.html. До 26.09.2026 це була
+// дата ЗБІРКИ за годинником машини, а в GitHub Actions це UTC: після опівночі
+// за Києвом і до опівночі за UTC файл на сайті був підписаний вчорашнім числом,
+// а ручна перебудова взагалі давала ім'я з датою, до якої дані не мають стосунку.
+// Формат зібраний вручну (lib/time.js): тут потрібна гарантовано DD.MM.YYYY,
+// бо це ім'я файла, а не підпис на сторінці.
 const XLSX_PREFIX = "map_cncprom";
-const BUILD_DATE = (d => `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`)(new Date());
-const XLSX_FILE = `${XLSX_PREFIX}_${BUILD_DATE}.xlsx`;
+let XLSX_DATE = fmtDate(new Date());   // запасний варіант: жодної скрапленої категорії
+let XLSX_FILE = `${XLSX_PREFIX}_${XLSX_DATE}.xlsx`;
 
 // ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
 // Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
@@ -216,7 +219,7 @@ async function buildCatalogXlsx(entries) {
     ['Із захистом працює згортання гілок: кнопки [+] і [−] зліва від номерів рядків,', false],
     ['а цифри над ними показують усе дерево до потрібного рівня.', false],
     ['', false],
-    ['Файл згенеровано автоматично: ' + BUILD_DATE, false],
+    ['Дані станом на ' + XLSX_DATE + ' (за київським часом). Файл згенеровано автоматично.', false],
     ['Актуальна версія й інтерактивна мапа: https://map.cncprom.pp.ua/', false]
   ];
   infoLines.forEach(([text, bold]) => {
@@ -357,6 +360,21 @@ function statusBadgeHtml(e) {
   if (e.status === 'ok') return '<span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">' + ICONS.ok + '</span>';
   if (e.status === 'not_scraped') return '<a href="' + e.id + '_map.html" class="stock-badge neutral" data-tip="Немає даних: скрапер ще жодного разу не обробляв цю категорію.">' + ICONS.nodata + '</a>';
   return '<a href="' + e.id + '_map.html" class="count-no" data-tip="Застаріло: мапа побудована на базі застарілих даних.">' + ICONS.stale + '</a>';
+}
+
+// Найсвіжіший скрапінг серед категорій — ним підписана шапка map.html і від
+// нього ж ім'я XLSX, щоб дата на сторінці й дата в назві файла не розходились.
+// scraped_at — готовий рядок "ДД.ММ.РРРР ГГ:ХХ" (його ж показує колонка
+// "Дата та час"), а лексикографічно такі рядки не сортуються, тож розбираємо.
+function newestScrapedAt(entries) {
+  let best = null, bestDate = null;
+  for (const e of entries) {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/.exec(e.scraped_at || '');
+    if (!m) continue;
+    const d = new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5]);
+    if (!bestDate || d > bestDate) { bestDate = d; best = e.scraped_at; }
+  }
+  return best;
 }
 
 function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
@@ -669,22 +687,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // Підпис у шапці — годинник і дата, без слів ("🕒 Мапа сайту · ..." до
-  // 25.09.2026): що це за дата, каже підказка "Дата та час скрапінгу".
-  // Це саме скрапінг — найсвіжіший scraped_at серед категорій, а не момент
-  // збірки сторінки, як було до 25.09.2026: після нічного прогону ці два часи
-  // розходяться на хвилини, але після ручної перебудови (rebuild_only) різниця
-  // — ціла доба, і підпис брехав би про свіжість даних. Формат scraped_at готовий
-  // рядок "ДД.ММ.РРРР ГГ:ХХ" (його ж показує колонка "Дата та час"), тож для
-  // порівняння його треба розібрати — лексикографічно такі рядки не сортуються.
-  const parseStamp = t => {
-    const m = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/.exec(t || '');
-    return m ? new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5]) : null;
-  };
-  const stamps = sorted.map(e => parseStamp(e.scraped_at)).filter(Boolean);
-  const latestDate = stamps.length ? new Date(Math.max(...stamps)) : new Date();
-  const generatedAt = latestDate.toLocaleDateString('uk-UA') + ' ' +
-    latestDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+  // Підпис у шапці — годинник і дата, без слів. Що це за дата — каже підказка
+  // "Дата та час скрапінгу". Це саме скрапінг: найсвіжіший scraped_at як є,
+  // без переформатування — рядок уже за київським часом (lib/time.js),
+  // і друге перетворення лише додало б шансів збити його назад у пояс машини.
+  const generatedAt = newestScrapedAt(sorted) || fmtDateTime(new Date());
 
   const html = `<!DOCTYPE html>
 <html lang="uk">
@@ -806,7 +813,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
         </div>
         <div class="help-term">
           <div class="help-term-label">Дата та час</div>
-          <div class="help-term-desc">Коли скрапер обійшов цю категорію. Годинник у шапці показує найсвіжіший із цих часів — категорії скрапляться чергою, тож між першою й останньою — кілька годин.</div>
+          <div class="help-term-desc">Коли скрапер обійшов цю категорію, за київським часом. Годинник у шапці показує найсвіжіший із цих часів — категорії скрапляться чергою, тож між першою й останньою — кілька годин.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.ok} Актуально</div>
@@ -1015,6 +1022,12 @@ function writeRedirect(file, target) {
   // конвеєр не має падати через неї. Кнопка з'являється лише коли файл
   // справді записався — інакше вона вела б у 404.
   let xlsxReady = false;
+  // Дата в імені файла — дата ДАНИХ, та сама, що в шапці map.html.
+  const dataStamp = newestScrapedAt(entries);
+  if (dataStamp) {
+    XLSX_DATE = dataStamp.slice(0, 10);
+    XLSX_FILE = `${XLSX_PREFIX}_${XLSX_DATE}.xlsx`;
+  }
   try {
     const built = await buildCatalogXlsx(entries);
     if (built) {

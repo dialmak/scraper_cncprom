@@ -25,6 +25,7 @@ const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
+const { fmtDateTime } = require('./lib/time');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -54,8 +55,9 @@ const tree = catalog.tree;
 // Час скрапінгу пишеться в самому файлі (`scrapedAt`), а не береться з mtime:
 // mtime міняється від копіювання файлу, а зафіксований момент прогону — ні.
 const scrapedAtDate = catalog.scrapedAt ? new Date(catalog.scrapedAt) : fs.statSync(catalogFile).mtime;
-const scrapedAt = scrapedAtDate.toLocaleDateString('uk-UA') + ' ' +
-  scrapedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+// Київський час, а не пояс машини: в GitHub Actions це UTC, і на сайті
+// стояв час на три години раніше за справжній, без будь-якої позначки про це.
+const scrapedAt = fmtDateTime(scrapedAtDate);
 
 // Товари групуються за categoryId — тим самим полем, яке scrape-complete.js
 // записує і у вузол дерева (канонічна, найглибша категорія товару), тож
