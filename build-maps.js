@@ -442,8 +442,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   const failedGroups = sorted.filter(e => (e.failed_urls || []).length > 0);
   const failedTotal = failedGroups.reduce((n, e) => n + e.failed_urls.length, 0);
   const failedLabel = u => { try { return decodeURIComponent(new URL(u).pathname); } catch (e) { return u; } };
-  const failedMenuButtonHtml = failedTotal === 0 ? '' : `
-      <button id="btn-failed-urls" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Товари, сторінку яких скрапер не зміг прочитати навіть із повторної спроби. Їх немає на мапі й у звірці.">⛔ Не оброблено ${failedTotal}</button>`;
   const failedPanelHtml = failedTotal === 0 ? '' : `
   <div class="help-overlay" id="failed-overlay">
     <div class="help-panel">
@@ -473,8 +471,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // актуальність даних — це різні речі).
   const errorGroups = sorted.filter(e => (e.run_errors || []).length > 0);
   const errorTotal = errorGroups.reduce((n, e) => n + e.run_errors.length, 0);
-  const errorsMenuButtonHtml = errorTotal === 0 ? '' : `
-      <button id="btn-run-errors" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Помилки останнього скрапінгу цих категорій. Ті самі рядки ПОМИЛКА, що й у scrape.log.">⚠️ Помилки прогону ${errorTotal}</button>`;
   const errorsPanelHtml = errorTotal === 0 ? '' : `
   <div class="help-overlay" id="errors-overlay">
     <div class="help-panel">
@@ -504,8 +500,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // окремої категорії, і то без списку конкретних вузлів.
   const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
   const mismatchTotal = mismatchGroups.reduce((n, e) => n + e.mismatch_categories.length, 0);
-  const mismatchMenuButtonHtml = mismatchTotal === 0 ? '' : `
-      <button id="btn-mismatch" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»">⚠️ Розбіжності звірки</button>`;
   const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
   <div class="help-overlay" id="mismatch-overlay">
     <div class="help-panel">
@@ -539,8 +533,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // збій 19.09.2026 з "Гальмівними резисторами".
   const crumbGroups = sorted.filter(e => (e.crumb_other || []).length > 0);
   const crumbTotal = crumbGroups.reduce((n, e) => n + e.crumb_other.length, 0);
-  const crumbMenuButtonHtml = crumbTotal === 0 ? '' : `
-      <button id="btn-crumbs" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Товари, у яких хлібні крихти сайту ведуть в іншу гілку, ніж та, де їх знайшов скрапер.">🧭 Не збігається з крихтами ${crumbTotal}</button>`;
   const crumbPanelHtml = crumbTotal === 0 ? '' : `
   <div class="help-overlay" id="crumbs-overlay">
     <div class="help-panel">
@@ -559,6 +551,99 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
               '<div class="crumb-lines"><span class="path-label">Крихти:</span> ' + escapeHtmlOuter(c.crumbs) + '</div></div>'
             ).join('')}</div>
           </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // "Крихти без категорії N" (25.09.2026) — товари з вердиктом 'unknown'.
+  // Це НЕ розбіжність: крихти на сторінці є й вони серверні, просто у їхньому
+  // ланцюгу немає жодного /ua/g<id>, лише «Товари та послуги» — підтвердити
+  // призначення скрапера нема чим. Доки цього рядка не було, такі товари
+  // не було видно ніде: панель крихт показує саме 'other'.
+  const crumbUnknownGroups = sorted.filter(e => (e.crumb_unknown || []).length > 0);
+  const crumbUnknownTotal = crumbUnknownGroups.reduce((n, e) => n + e.crumb_unknown.length, 0);
+  const crumbUnknownPanelHtml = crumbUnknownTotal === 0 ? '' : `
+  <div class="help-overlay" id="crumbs-unknown-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Товари, у крихтах яких немає категорії (${crumbUnknownTotal}):</h3>
+        <button class="btn-help-close" id="btn-crumbs-unknown-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Хлібні крихти на сторінці цих товарів не називають жодної категорії: у ланцюгу лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але підтвердити це з боку сайту нема чим. Це не помилка скрапера й не розбіжність: просто другої думки немає.</p>
+        <div class="orphan-group-list">${crumbUnknownGroups.map(e => `
+          <div class="orphan-group">
+            <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">📁 ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.crumb_unknown.length})</span></a>
+            <div class="run-error-list">${e.crumb_unknown.map(c =>
+              '<div class="run-error"><a href="' + escapeHtmlOuter(c.url) + '" class="failed-url" target="_blank" rel="noopener">↗ ' + escapeHtmlOuter(c.name) + '</a>' +
+              '<div class="crumb-lines"><span class="path-label">Скрапер:</span> ' + escapeHtmlOuter(c.assigned) + '</div></div>'
+            ).join('')}</div>
+          </div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // ---- Дві панелі-хаби замість шести кнопок у шапці (25.09.2026) ----
+  // До того кожна діагностика мала власну кнопку, яка з'являлась лише при
+  // ненульовому значенні: шапка росла до 14 елементів у погану ніч, а в тиху
+  // не можна було 0432ідрізнити "перевірили, все добре" від "не перевіряли".
+  // Тепер це два рядкових списки, де нуль — це результат ("0 · чисто"), а не
+  // порожнеча. Самі панелі зі списками лишились як були — рядок лише веде до них.
+  const plural = (n, one, few, many) => {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  };
+  // Одиниця виміру додається лише до ненульового числа: "0 вузлів" читається
+  // гірше, ніж просто "0" поруч зі словом "чисто".
+  const checkRow = (icon, name, tip, count, unit, overlayId) => `
+          <div class="check-row" data-tip="${escapeHtmlOuter(tip)}">
+            <span>${icon}</span><span class="nm">${escapeHtmlOuter(name)}</span>
+            <span class="val ${count > 0 ? 'bad' : 'ok'}">${count}${count > 0 && unit ? ' ' + unit : ''}</span>
+            ${count > 0
+              ? `<button class="act" data-open="${overlayId}">відкрити</button>`
+              : '<span class="act muted">чисто</span>'}
+          </div>`;
+  const logRow = (name, tip, overlayId) => `
+          <div class="check-row" data-tip="${escapeHtmlOuter(tip)}">
+            <span>📄</span><span class="nm">${escapeHtmlOuter(name)}</span>
+            <span class="val"></span>
+            <button class="act" data-open="${overlayId}">відкрити</button>
+          </div>`;
+
+  const reportMenuButtonHtml = `
+      <button id="btn-report" class="btn-theme-toggle" data-tip="Результати роботи скрапера, помилки та лог">📄 Звіт скрапера</button>`;
+  const reportPanelHtml = `
+  <div class="help-overlay" id="report-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Звіт про роботу скрапера:</h3>
+        <button class="btn-help-close" id="btn-report-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div>${checkRow('⚠️', 'Помилки', 'Помилки останнього скрапінгу цих категорій. Ті самі рядки ПОМИЛКА, що й у scrape.log.', errorTotal, '', 'errors-overlay')}${checkRow('⛔', 'Не оброблено', 'Товари, сторінку яких скрапер не зміг прочитати навіть із повторної спроби. Їх немає на мапі й у звірці.', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапера', 'Переглянути output/site/scrape.log', 'scrape-log-overlay')}${logRow('Лог збірки', 'Переглянути output/site/map.log', 'map-log-overlay')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Лічильник на кнопці — скільки ПЕРЕВІРОК із трьох щось знайшли, а не
+  // сума знайденого: сума змішувала б вузли з товарами. Коли все чисто,
+  // значка немає зовсім 0447ервоний "0" читався б як проблема.
+  const checksProblems = [mismatchTotal, crumbTotal, crumbUnknownTotal].filter(n => n > 0).length;
+  const checksMenuButtonHtml = `
+      <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що каже сайт.">🔬 Перевірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>`;
+  const checksPanelHtml = `
+  <div class="help-overlay" id="checks-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Звірка скрапера з даними сайту</h3>
+        <button class="btn-help-close" id="btn-checks-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div>${checkRow('⚠️', 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow('🧭', 'Не збігається з крихтами', 'Товари, у яких хлібні крихти сайту ведуть в іншу гілку, ніж та, де їх знайшов скрапер.', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow('🧭', 'Крихти без категорії', 'У крихтах товару немає жодної категорії, лише «Товари та послуги». Скрапер відніс товар за сторінкою категорії, але підтвердити це з боку сайту нема чим.', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+        </div>
       </div>
     </div>
   </div>`;
@@ -651,6 +736,25 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      інша величина від неї не рахується. */
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
+  /* Рядок панелі-хаба ("Звіт скрапера", "Перевірки"): значок, назва,
+     число, дія. Число стоїть окремою колонкою, а не в назві, як було в кнопках
+     до 25.09.2026, — так колонка чисел вирівнюється й їх можна порівнювати оком. */
+  .check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
+    padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+  .check-row:last-child { border-bottom: 0; }
+  .check-row .nm { color: var(--text-main); }
+  .check-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .check-row .val.bad { color: var(--status-no); }
+  .check-row .val.ok { color: var(--status-yes); }
+  .check-row .act { font: inherit; font-size: 0.76rem; color: var(--text-link); background: none;
+    border: 0; padding: 0; cursor: pointer; }
+  .check-row .act:hover { text-decoration: underline; }
+  .check-row .act.muted { color: var(--text-subtle); cursor: default; }
+  .check-row .act.muted:hover { text-decoration: none; }
+  /* Значок біля "Перевірки": скільки перевірок щось знайшли. */
+  .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
+    height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
+    font-weight: 700; background: var(--status-no); color: #fff; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
@@ -659,7 +763,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${orphanMenuButtonHtml}${mismatchMenuButtonHtml}${crumbMenuButtonHtml}${failedMenuButtonHtml}${errorsMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -670,8 +774,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
     <div class="header-right">
       <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>
-      <button id="btn-scrape-log" class="btn-theme-toggle" data-tip="Переглянути output/site/scrape.log">📄 scrape.log</button>
-      <button id="btn-map-log" class="btn-theme-toggle" data-tip="Переглянути output/site/map.log">📄 map.log</button>
+${reportMenuButtonHtml}
       <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
@@ -681,9 +784,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   </header>
 ${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/site/scrape.log`, scrapeLogContent)}
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/site/map.log`, mapLogContent)}
+${reportPanelHtml}
+${checksPanelHtml}
 ${orphanPanelHtml}
 ${mismatchPanelHtml}
 ${crumbPanelHtml}
+${crumbUnknownPanelHtml}
 ${failedPanelHtml}
 ${errorsPanelHtml}
   <div class="help-overlay" id="help-overlay">
@@ -726,12 +832,12 @@ ${errorsPanelHtml}
           <div class="help-term-desc">Скрапер ще жодного разу не обробляв цю категорію.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">⚠️ Помилки прогону N</div>
-          <div class="help-term-desc">Кнопка в шапці й значок ⚠️ у рядку категорії з'являються, коли під час останнього скрапінгу цієї категорії сталася помилка (наприклад, сторінка не завантажилась). Показують ті самі рядки, що й scrape.log. Дані могли зібратись частково — звіряйте з колонкою «В наявності».</div>
+          <div class="help-term-label">📄 Звіт скрапера</div>
+          <div class="help-term-desc">Як відпрацював останній прогін: помилки, товари, які не вдалося обробити, і повні логи скрапінгу й збірки мап. Нуль поруч із рядком не порожнеча, а результат: перевірка відпрацювала й нічого не знайшла. Категорія з помилками має ще й значок ⚠️ у своєму рядку таблиці.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">⛔ Не оброблено N</div>
-          <div class="help-term-desc">Кнопка в шапці з'являється лише тоді, коли скрапер не зміг прочитати сторінку якихось товарів навіть після повторної спроби. Відкриває їхній список за категоріями. Таких товарів немає на мапі й у звірці.</div>
+          <div class="help-term-label">🔬 Перевірки</div>
+          <div class="help-term-desc">Звірка того, що зібрав скрапер, із тим, що каже сайт: розбіжності з лічильником «В наявності» і два випадки з хлібними крихтами. Значок на кнопці каже, скільки перевірок із трьох щось знайшли, а не скільки всього знайдено.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">⚠️ Розбіжності звірки</div>
@@ -740,6 +846,10 @@ ${errorsPanelHtml}
         <div class="help-term">
           <div class="help-term-label">🧭 Не збігається з крихтами N</div>
           <div class="help-term-desc">Товари, у яких хлібні крихти на сторінці сайту ведуть в іншу гілку дерева, ніж та, де товар знайшов обхід. Якщо крихти вказують на батьківську чи дочірню категорію тієї самої гілки — це нормально (товар може стояти в кількох категоріях) і сюди не потрапляє.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🧭 Крихти без категорії N</div>
+          <div class="help-term-desc">Товари, у крихтах яких сайт не називає жодної категорії: у ланцюгу лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але підтвердити це з боку сайту нема чим. Це не помилка й не розбіжність: просто другої думки немає.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">📊 Експорт</div>
@@ -777,14 +887,30 @@ ${errorsPanelHtml}
   </div>
 <script>
 initThemeToggle();
-setupModalOverlay('scrape-log-overlay', 'btn-scrape-log', 'btn-scrape-log-close');
-setupModalOverlay('map-log-overlay', 'btn-map-log', 'btn-map-log-close');
 setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
-setupModalOverlay('mismatch-overlay', 'btn-mismatch', 'btn-mismatch-close');
-setupModalOverlay('crumbs-overlay', 'btn-crumbs', 'btn-crumbs-close');
-setupModalOverlay('failed-overlay', 'btn-failed-urls', 'btn-failed-close');
-setupModalOverlay('errors-overlay', 'btn-run-errors', 'btn-errors-close');
+setupModalOverlay('report-overlay', 'btn-report', 'btn-report-close');
+setupModalOverlay('checks-overlay', 'btn-checks', 'btn-checks-close');
+// У цих панелей більше немає власної кнопки в шапці — їх відкриває рядок
+// хаба (обробник нижче). setupModalOverlay все одно потрібен: він вішає хрестик,
+// Esc і клік поза панеллю, а відсутню кнопку-відкривач терпить (if (openBtn)).
+setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
+setupModalOverlay('map-log-overlay', null, 'btn-map-log-close');
+setupModalOverlay('mismatch-overlay', null, 'btn-mismatch-close');
+setupModalOverlay('crumbs-overlay', null, 'btn-crumbs-close');
+setupModalOverlay('crumbs-unknown-overlay', null, 'btn-crumbs-unknown-close');
+setupModalOverlay('failed-overlay', null, 'btn-failed-close');
+setupModalOverlay('errors-overlay', null, 'btn-errors-close');
+// Рядок хаба відкриває свою панель і закриває сам хаб: два модальних вікна
+// одночасно виглядали б як помилка, а Esc закривав би обидва одразу.
+Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) {
+  b.addEventListener('click', function () {
+    var hub = b.closest('.help-overlay');
+    if (hub) hub.classList.remove('open');
+    var o = document.getElementById(b.getAttribute('data-open'));
+    if (o) o.classList.add('open');
+  });
+});
 // Значки ⚠️ в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
 Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
   b.addEventListener('click', function () {

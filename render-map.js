@@ -184,6 +184,12 @@ const globalStats = {
   crumb_other: (catalog.products || [])
     .filter(p => p.crumbVerdict === 'other')
     .map(p => ({ id: p.productId, name: p.productName, url: p.finalUrl, assigned: p.categoryName, crumbs: (p.crumbNames || []).join(' › ') })),
+  // 'unknown' окремо від 'other' (25.09.2026): це не розбіжність, а відсутність
+  // другої думки — у крихтах товару немає жодної категорії, лише «Товари та
+  // послуги». Поля crumbs тут немає свідомо: показувати порожній ланцюг ніяк.
+  crumb_unknown: (catalog.products || [])
+    .filter(p => p.crumbVerdict === 'unknown')
+    .map(p => ({ id: p.productId, name: p.productName, url: p.finalUrl, assigned: p.categoryName })),
   // Дублюється в summary.json (а не лише в самій сторінці нижче) так само, як
   // усе інше в globalStats, — щоб build-maps.js міг зібрати "Товари поза
   // категоріями" для ВСЬОГО сайту з самих summary.json, не перечитуючи заново
