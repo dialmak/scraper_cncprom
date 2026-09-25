@@ -22,6 +22,7 @@
 const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
+const { ICONS } = require('./lib/icons');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -1514,7 +1515,7 @@ const orphanRowsHtml = orphanRows.map(r => {
     name + ' <span class="node-count">(' + r.node.stats.own_products + ')</span></a>';
 }).join('');
 const orphanMenuButtonHtml = orphanCategories.length === 0 ? '' : `
-      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>`;
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">${ICONS.orphans} Товари поза категоріями</button>`;
 
 const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
   <div class="help-overlay" id="orphan-overlay">
@@ -1527,7 +1528,7 @@ const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
         <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
         <div class="orphan-group-list">
           <div class="orphan-group">
-            <a href="#" class="orphan-group-head orphan-cat-link" data-id="${escapeHtmlOuter(appTree.id)}">📁 ${escapeHtmlOuter(appTree.name)} <span class="node-count">(${orphanTotalProducts})</span></a>
+            <a href="#" class="orphan-group-head orphan-cat-link" data-id="${escapeHtmlOuter(appTree.id)}">${ICONS.folder} ${escapeHtmlOuter(appTree.name)} <span class="node-count">(${orphanTotalProducts})</span></a>
             <div class="orphan-cat-list">${orphanRowsHtml}</div>
           </div>
         </div>
@@ -1563,9 +1564,9 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
     <div class="header-right">
-      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
-      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📄 Diff-звіт</a>
-      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">❓ Довідка</button>
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
+      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">${ICONS.help} Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>

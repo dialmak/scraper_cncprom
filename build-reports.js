@@ -32,6 +32,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { ICONS } = require('./lib/icons');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
@@ -572,7 +573,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Зміни каталогу</title>
+<title>Історія змін каталогу</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../map-common.css">
@@ -582,12 +583,12 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <span class="btn-theme-toggle catalog-subtitle-btn" style="cursor:default">📊 Зміни каталогу · останній знімок <span id="generated">…</span></span>
+      <span class="btn-theme-toggle catalog-subtitle-btn" style="cursor:default">${ICONS.history} Історія змін каталогу · останній знімок <span id="generated">…</span></span>
     </div>
     <div class="header-center"></div>
     <div class="header-right">
-      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
-      <button id="btn-help" class="btn-theme-toggle" data-tip="Що означають типи змін і як рахується період">❓ Довідка</button>
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
+      <button id="btn-help" class="btn-theme-toggle" data-tip="Що означають типи змін і як рахується період">${ICONS.help} Довідка</button>
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
       <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
@@ -620,7 +621,7 @@ const html = `<!DOCTYPE html>
 
   <main class="rep-wrap">
     <div class="top-row">
-      <h1>Зміни каталогу<span class="muted" id="period-label"></span></h1>
+      <h1>Історія змін каталогу<span class="muted" id="period-label"></span></h1>
       <div class="range-bar" id="range">
         <label for="rf">Порівняти</label><select id="rf"></select><span class="range-arrow" aria-hidden="true">→</span>
         <select id="rt" aria-label="по дату"></select>
@@ -661,8 +662,8 @@ const html = `<!DOCTYPE html>
 // лишаємо його переадресацією, щоб закладки не ламались.
 const latestRedirect = `<!DOCTYPE html>
 <html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=index.html">
-<title>Зміни каталогу</title></head>
-<body><p>Сторінка переїхала: <a href="index.html">зміни каталогу</a>.</p></body></html>
+<title>Історія змін каталогу</title></head>
+<body><p>Сторінка переїхала: <a href="index.html">історія змін каталогу</a>.</p></body></html>
 `;
 
 // ==================== ЗБІРКА ====================
