@@ -23,6 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
+const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -549,7 +550,107 @@ table.search-table .col-avail { width: 16%; }
   .sidebar { max-height: 300px; border-right: none; border-bottom: 1px solid var(--border-color); }
   .sidebar-resize-handle { display: none; }
 }
+
+/* Меню-дропдаун у шапці («Звіт скрапера», «Звірки», «Довідка»). Списку
+   з трьох-чотирьох рядків модальне вікно із затемненням завелике — він висить під
+   своєю кнопкою. Великі панелі зі списками (дерево розбіжностей, логи, сама
+   Довідка) лишаються модальними: туди веде рядок дропдауна. Опис лежить тут,
+   а не в build-maps.js, бо таке меню є на всіх трьох сторінках.
+   position: absolute від обгортки працює, бо в .app-header немає overflow: hidden;
+   z-index вищий за саму шапку (10), щоб список лягав поверх таблиці. */
+.hdr-menu { position: relative; display: inline-flex; flex-shrink: 0; }
+.hdr-dropdown {
+  display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 120;
+  min-width: 380px; max-width: min(460px, calc(100vw - 32px));
+  background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.28); padding: 2px 14px 8px;
+}
+/* Для кнопки в правій групі — вирівнювання по правому краю, інакше
+   список виліз би за межі екрана. */
+.hdr-dropdown.right { left: auto; right: 0; }
+.hdr-dropdown.open { display: block; }
+.hdr-dropdown h3 { font-size: 0.82rem; font-weight: 700; color: var(--text-main); padding: 10px 2px 2px; }
+
+/* Рядок меню: значок, назва, число, дія. Число стоїть окремою колонкою,
+   а не в назві, як було в кнопках до 25.09.2026. */
+.check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
+  padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+.check-row:last-child { border-bottom: 0; }
+/* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
+   довжині рядка: у grid комірка 1fr розтягнула б span до самого числа. */
+.check-row .nm { color: var(--text-main); justify-self: start; }
+/* Без font-weight: число не має бути товще за сусідні слова в тому ж рядку. */
+.check-row .val { font-variant-numeric: tabular-nums; }
+.check-row .val.bad { color: var(--status-no); }
+.check-row .val.ok { color: var(--status-yes); }
+/* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
+.check-row .act { font: inherit; color: var(--text-link); background: none;
+  border: 0; padding: 0; cursor: pointer; }
+.check-row .act:hover { text-decoration: underline; }
+/* "немає" — стан, а не дія: без кольору посилання, без підкреслення й руки. */
+.check-row .act.none { color: var(--text-subtle); cursor: default; }
+.check-row .act.none:hover { text-decoration: none; }
+/* Значок біля "Звірки": скільки звірок щось знайшли. */
+.badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
+  height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
+  font-weight: 600; background: var(--status-no); color: #fff; }
+
+/* Подяки: картка-посилання з логотипом. Логотипи — окремі файли в logos/,
+   а не вбудовані SVG: панель однакова на двох десятках сторінок. */
+.credit-list { display: grid; gap: 8px; margin: 10px 0 14px; }
+.credit { display: flex; align-items: center; gap: 12px; padding: 9px 12px; text-decoration: none;
+  border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-subtle); }
+.credit:hover { border-color: var(--text-link); }
+.credit-logo { flex-shrink: 0; width: 30px; height: 30px; object-fit: contain; }
+.credit-text { display: flex; flex-direction: column; gap: 2px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+.credit-text b { font-size: 0.86rem; font-weight: 600; color: var(--text-link); }
+/* Логотип GitHub чорний — у темній темі його просто не видно. */
+[data-theme="dark"] .credit-logo.invert { filter: invert(1); }
 `;
+
+
+// ==================== МЕНЮ В ШАПЦІ (спільне для трьох сторінок) ====================
+// Дропдауни шапки: відкритий завжди один, закриваються кліком поза межами
+// й Esc. Свідомо не через setupModalOverlay: той робить модальне вікно із
+// затемненням на весь екран, а тут потрібен список під своєю кнопкою.
+function initHeaderMenus() {
+  var drops = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.hdr-menu'), function (m) {
+    var btn = m.querySelector('.hdr-menu-btn'), drop = m.querySelector('.hdr-dropdown');
+    if (!btn || !drop) return;
+    drops.push(drop);
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      // Підказка самої кнопки висить рівно там, куди розгортається список, і накриває
+      // його заголовок: курсор після кліку лишається на кнопці, тож mouseleave не
+      // сталось. Гасимо її вручну — вона з'явиться знову при наступному наведенні.
+      var tip = document.getElementById('custom-tooltip');
+      if (tip) tip.classList.remove('visible');
+      var wasOpen = drop.classList.contains('open');
+      drops.forEach(function (d) { d.classList.remove('open'); });
+      if (!wasOpen) drop.classList.add('open');
+    });
+    // Клік усередині списку не має його закривати — крім кліку по [data-open],
+    // який закриває його сам і відкриває потрібну панель (обробник нижче).
+    drop.addEventListener('click', function (e) { e.stopPropagation(); });
+  });
+  document.addEventListener('click', function () {
+    drops.forEach(function (d) { d.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') drops.forEach(function (d) { d.classList.remove('open'); });
+  });
+  // Рядок меню відкриває свою панель і закриває саме меню: два відкритих
+  // вікна одночасно виглядали б як помилка, а Esc закривав би обидва одразу.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) {
+    b.addEventListener('click', function () {
+      var hub = b.closest('.help-overlay, .hdr-dropdown');
+      if (hub) hub.classList.remove('open');
+      var o = document.getElementById(b.getAttribute('data-open'));
+      if (o) o.classList.add('open');
+    });
+  });
+}
 
 // ==================== ПЕРЕМИКАЧ ТЕМИ (спільний для map_<id>.html і map.html) ====================
 // Винесено з initCatalogMap top-level, теж пишеться як звичайна функція і теж
@@ -1338,7 +1439,12 @@ function initCatalogMap(CATALOG_DATA) {
       });
     });
 
-    setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
+    // Відкривача-кнопки в панелей більше немає — їх відкриває рядок меню «Довідка»
+    // (initHeaderMenus), тож setupModalOverlay потрібен лише заради закриття.
+    setupModalOverlay('help-overlay', null, 'btn-help-close');
+    setupModalOverlay('about-overlay', null, 'btn-about-close');
+    setupModalOverlay('credits-overlay', null, 'btn-credits-close');
+    initHeaderMenus();
     setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 
     var searchInput = document.getElementById('search-input');
@@ -1441,7 +1547,8 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
+writeLogos(OUTPUT_DIR);
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 
 // ==================== ЗБІРКА HTML ====================
@@ -1566,7 +1673,7 @@ const html = `<!DOCTYPE html>
     <div class="header-right">
       <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
       <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
-      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">${ICONS.help} Довідка</button>
+${helpMenuHtml('Пояснення до цифр і позначок на цій сторінці')}
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
@@ -1605,6 +1712,7 @@ const html = `<!DOCTYPE html>
     </div>
   </div>
   ${orphanPanelHtml}
+${aboutPanelHtml()}${creditsPanelHtml()}
 
   <div class="workspace">
     <aside class="sidebar">

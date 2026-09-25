@@ -33,6 +33,7 @@
 const fs = require('fs');
 const path = require('path');
 const { ICONS } = require('./lib/icons');
+const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
@@ -219,6 +220,9 @@ function initReportsPage() {
   function niceMax(v) { if (v <= 5) return 5; var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
   function dayTotal(d) { var t = d.t; return t ? t.in + t.out + t.added + t.removed + t.moved + t.cats : null; }
   function drawChart() {
+    // У згорнутому блоці svg.clientWidth — 0, і графік малювався б по запасній
+    // ширині 800 і лишився б таким після розгортання. setChartOpen перемалює.
+    if ($('chart-body').hidden) return;
     var svg = $('chart'), W = svg.clientWidth || 800, H = 190, pl = 40, pr = 8, pt = 18, pb = 24;
     var days = idx.daily, n = days.length, band = (W - pl - pr) / n, bw = Math.min(24, band * 0.55);
     var max = Math.max.apply(null, days.map(function (d) { return dayTotal(d) || 0; })), top = niceMax(max);
@@ -274,12 +278,21 @@ function initReportsPage() {
     tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8) + 'px';
     tip.style.top = (e.clientY + 14) + 'px';
   }
-  function drawChartTable() {
-    $('chart-table').innerHTML = '<table><tr><th>День</th><th>Разом</th>' +
-      TYPES.map(function (k) { return '<th data-tip="' + esc(TYPE[k].label) + '">' + TYPE[k].icon + '</th>'; }).join('') + '<th data-tip="Структура категорій">✎</th></tr>' +
-      idx.daily.filter(function (d) { return d.t; }).map(function (d) {
-        return '<tr><td>' + fmtLong(d.date) + '</td><td>' + dayTotal(d) + '</td>' + TYPES.map(function (k) { return '<td>' + d.t[k] + '</td>'; }).join('') + '<td>' + d.t.cats + '</td></tr>';
-      }).join('') + '</table>';
+  // Графік згорнутий за замовчуванням: сторінка про те, що змінилось, а графік
+  // відповідає на інше питання — коли саме щось відбувалось. Вибір запам'ятовується
+  // в localStorage; коли сховище недоступне (приватне вікно), лишається згорнутим.
+  var CHART_KEY = 'cncprom.chartOpen';
+  function chartStored() {
+    try { return localStorage.getItem(CHART_KEY) === '1'; } catch (e) { return false; }
+  }
+  function setChartOpen(on) {
+    $('chart-body').hidden = !on;
+    $('chart-hint').style.display = on ? '' : 'none';
+    var btn = $('chart-toggle');
+    btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+    btn.querySelector('.caret').textContent = on ? '▾' : '▸';
+    try { localStorage.setItem(CHART_KEY, on ? '1' : '0'); } catch (e) { /* не біда */ }
+    if (on) drawChart();
   }
 
   // ---------- Картки ----------
@@ -396,6 +409,7 @@ function initReportsPage() {
 
   // ---------- Події ----------
   function bindEvents() {
+    $('chart-toggle').addEventListener('click', function () { setChartOpen($('chart-body').hidden); });
     $('rf').addEventListener('change', function (e) { setRange(e.target.value, range.to); });
     $('rt').addEventListener('change', function (e) { setRange(range.from, e.target.value); });
     $('quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) { var r = quickRange(b.getAttribute('data-q')); setRange(r.from, r.to); } });
@@ -428,7 +442,10 @@ function initReportsPage() {
   }
 
   initThemeToggle();
-  setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
+  setupModalOverlay('help-overlay', null, 'btn-help-close');
+  setupModalOverlay('about-overlay', null, 'btn-about-close');
+  setupModalOverlay('credits-overlay', null, 'btn-credits-close');
+  initHeaderMenus();
   setupTooltips();
   Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json'),
     getJson(DATA + 'categories.json').catch(function () { return {}; })]).then(function (r) {
@@ -439,7 +456,7 @@ function initReportsPage() {
       $('chart-card').style.display = 'none'; $('tiles').style.display = 'none'; $('range').style.display = 'none';
       return;
     }
-    readRange(); drawChartTable(); bindEvents(); update();
+    readRange(); setChartOpen(chartStored()); bindEvents(); update();
   }).catch(fail);
 }
 
@@ -503,11 +520,11 @@ html, body { height: auto; overflow: visible; }
 .chart-tip .row { display: flex; justify-content: space-between; gap: 16px; color: var(--text-muted); }
 .chart-tip .row span:last-child { font-family: var(--font-mono); color: var(--text-main); }
 .chart-tip .foot { margin-top: 6px; color: var(--text-subtle); }
-details.data-table { margin-top: 6px; font-size: .78rem; color: var(--text-muted); }
-details.data-table summary { cursor: pointer; }
-details.data-table table { border-collapse: collapse; margin-top: 6px; }
-details.data-table td, details.data-table th { padding: 2px 10px; border-bottom: 1px solid var(--border-color); text-align: right; font-family: var(--font-mono); }
-details.data-table th:first-child, details.data-table td:first-child { text-align: left; }
+/* Заголовок графіка — кнопка згортання, але виглядає як заголовок. */
+.chart-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0;
+  font: inherit; color: inherit; cursor: pointer; }
+.chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
+.chart-toggle:hover .caret { color: var(--text-link); }
 
 .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -588,12 +605,13 @@ const html = `<!DOCTYPE html>
     <div class="header-center"></div>
     <div class="header-right">
       <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
-      <button id="btn-help" class="btn-theme-toggle" data-tip="Що означають типи змін і як рахується період">${ICONS.help} Довідка</button>
+${helpMenuHtml('Що означають типи змін і як рахується період')}
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
       <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
 
+${aboutPanelHtml()}${creditsPanelHtml('../')}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
@@ -604,7 +622,7 @@ const html = `<!DOCTYPE html>
         <div class="help-term"><div class="help-term-label">Період</div>
           <div class="help-term-desc">Порівнюються два знімки каталогу: на початок і на кінець періоду. Скрапер знімає каталог щоночі. Зміни <b>всередині</b> періоду не видно: товар, що зник і повернувся між двома датами, не потрапить у список. Побачити, в які дні щось відбувалося, можна на графіку.</div></div>
         <div class="help-term"><div class="help-term-label">Графік «Змін за день»</div>
-          <div class="help-term-desc">Кожен стовпчик — скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня.</div></div>
+          <div class="help-term-desc">Кожен стовпчик — скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня. Графік згорнутий за замовчуванням — розгортається кліком по назві, і браузер запам'ятовує вибір.</div></div>
         <div class="help-term"><div class="help-term-label">▼ Зникли з наявності · ▲ Знову в наявності</div>
           <div class="help-term-desc">Статус товару змінився між «Готово до відправки» та будь-яким іншим (зазвичай «Немає в наявності»).</div></div>
         <div class="help-term"><div class="help-term-label">+ Нові · − Видалені товари</div>
@@ -633,11 +651,12 @@ const html = `<!DOCTYPE html>
 
     <section class="card chart-card" id="chart-card" aria-labelledby="chart-title">
       <div class="chart-head">
-        <h2 id="chart-title">Змін за день</h2>
-        <span class="hint">Синім — дні, що входять у порівняння. Клік по стовпчику — почати період із цього дня.</span>
+        <h2 id="chart-title"><button type="button" class="chart-toggle" id="chart-toggle" aria-expanded="false" aria-controls="chart-body"><span class="caret" aria-hidden="true">▸</span>Змін за день</button></h2>
+        <span class="hint" id="chart-hint">Синім — дні, що входять у порівняння. Клік по стовпчику — почати період із цього дня.</span>
       </div>
-      <svg id="chart" role="img" aria-label="Кількість змін каталогу за кожен день"></svg>
-      <details class="data-table"><summary>Дані графіка таблицею</summary><div id="chart-table"></div></details>
+      <div id="chart-body" hidden>
+        <svg id="chart" role="img" aria-label="Кількість змін каталогу за кожен день"></svg>
+      </div>
     </section>
 
     <div class="tiles" id="tiles"></div>
@@ -680,6 +699,9 @@ if (require.main === module) {
   }
 
   fs.mkdirSync(OUT_DATA, { recursive: true });
+  // Логотипи панелі «Подяки» — один набір у output/site/logos/; ця сторінка
+  // бере їх через ../, але збиратись може й окремо від build-maps.js.
+  writeLogos(SITE_DIR);
   // Прибрати компактні знімки дат, яких більше немає в гілці data.
   const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json']));
   fs.readdirSync(OUT_DATA).filter(f => !keep.has(f)).forEach(f => fs.unlinkSync(path.join(OUT_DATA, f)));

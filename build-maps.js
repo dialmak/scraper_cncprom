@@ -5,6 +5,7 @@ const { spawnSync } = require('child_process');
 const { logLine: appendLog } = require('./lib/log');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
+const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -358,6 +359,9 @@ function statusBadgeHtml(e) {
 }
 
 function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
+  // Логотипи для панелі «Подяки»: зазвичай їх кладе render-map.js разом із
+  // map-common.*, але коли жодна категорія ще не скраплена, він не запускається жодного разу.
+  writeLogos(DIR);
   const sorted = [...entries].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uk'));
   const rows = sorted.map((e, i) => `
             <tr>
@@ -613,12 +617,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
               ? `<button class="act" data-open="${overlayId}">відкрити</button>`
               : '<span class="act none">немає</span>'}
           </div>`;
-  const logRow = (name, tip, overlayId) => `
-          <div class="check-row">
-            <span>${ICONS.log}</span><span class="nm"${tip ? ` data-tip="${escapeHtmlOuter(tip)}"` : ''}>${escapeHtmlOuter(name)}</span>
-            <span class="val"></span>
-            <button class="act" data-open="${overlayId}">відкрити</button>
-          </div>`;
+  // Розмітка рядка без числа — спільна з меню «Довідка» (lib/help.js).
+  const logRow = (name, tip, overlayId) => menuRow(ICONS.log, name, overlayId, tip);
 
   const reportMenuButtonHtml = `
       <div class="hdr-menu">
@@ -741,50 +741,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      інша величина від неї не рахується. */
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
-  /* Меню-дропдаун у шапці («Звіт скрапера», «Звірки»). Списку з трьох-
-     чотирьох рядків модальне вікно із затемненням завелике — він висить під
-     своєю кнопкою. Великі панелі зі списками (дерево розбіжностей, логи)
-     лишаються модальними: туди веде рядок дропдауна.
-     position: absolute від обгортки працює, бо в .app-header немає overflow: hidden;
-     z-index вищий за саму шапку (10), щоб список лягав поверх таблиці. */
-  .hdr-menu { position: relative; display: inline-flex; flex-shrink: 0; }
-  .hdr-dropdown {
-    display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 120;
-    min-width: 380px; max-width: min(460px, calc(100vw - 32px));
-    background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.28); padding: 2px 14px 8px;
-  }
-  /* Для кнопки в правій групі — вирівнювання по правому краю, інакше
-     список виліз би за межі екрана. */
-  .hdr-dropdown.right { left: auto; right: 0; }
-  .hdr-dropdown.open { display: block; }
-  .hdr-dropdown h3 { font-size: 0.82rem; font-weight: 700; color: var(--text-main); padding: 10px 2px 2px; }
-
-  /* Рядок панелі-хаба ("Звіт скрапера", "Звірки"): значок, назва,
-     число, дія. Число стоїть окремою колонкою, а не в назві, як було в кнопках
-     до 25.09.2026, — так колонка чисел вирівнюється й їх можна порівнювати оком. */
-  .check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
-    padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
-  .check-row:last-child { border-bottom: 0; }
-  /* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
-     довжині рядка: у grid комірка 1fr розтягнула б span до самого числа, і
-     підказка спливала б від порожнього місця між назвою й числом. */
-  .check-row .nm { color: var(--text-main); justify-self: start; }
-  /* Без font-weight: число не має бути товще за сусідні слова в тому ж рядку. */
-  .check-row .val { font-variant-numeric: tabular-nums; }
-  .check-row .val.bad { color: var(--status-no); }
-  .check-row .val.ok { color: var(--status-yes); }
-  /* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
-  .check-row .act { font: inherit; color: var(--text-link); background: none;
-    border: 0; padding: 0; cursor: pointer; }
-  .check-row .act:hover { text-decoration: underline; }
-  /* "немає" — стан, а не дія: без кольору посилання, без підкреслення й руки. */
-  .check-row .act.none { color: var(--text-subtle); cursor: default; }
-  .check-row .act.none:hover { text-decoration: none; }
-  /* Значок біля "Звірки": скільки звірок щось знайшли. */
-  .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
-    height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
-    font-weight: 600; background: var(--status-no); color: #fff; }
+  /* Стилі меню-дропдаунів (.hdr-menu, .hdr-dropdown, .check-row, .badge-count)
+     лежать у map-common.css: таке саме меню є й на мапі розділу, і на
+     сторінці історії змін, тож вигляд має бути один на три сторінки. */
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
@@ -805,7 +764,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     <div class="header-right">
       <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
 ${reportMenuButtonHtml}
-      <button id="btn-help" class="btn-theme-toggle" data-tip="Пояснення до цифр і позначок на цій сторінці">${ICONS.help} Довідка</button>
+${helpMenuHtml('Пояснення до цифр і позначок на цій сторінці')}
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
       </button>
@@ -820,6 +779,7 @@ ${crumbPanelHtml}
 ${crumbUnknownPanelHtml}
 ${failedPanelHtml}
 ${errorsPanelHtml}
+${aboutPanelHtml()}${creditsPanelHtml()}
   <div class="help-overlay" id="help-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
@@ -927,7 +887,6 @@ ${errorsPanelHtml}
   </div>
 <script>
 initThemeToggle();
-setupModalOverlay('help-overlay', 'btn-help', 'btn-help-close');
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 // У цих панелей більше немає власної кнопки в шапці — їх відкриває рядок
 // хаба (обробник нижче). setupModalOverlay все одно потрібен: він вішає хрестик,
@@ -939,47 +898,12 @@ setupModalOverlay('crumbs-overlay', null, 'btn-crumbs-close');
 setupModalOverlay('crumbs-unknown-overlay', null, 'btn-crumbs-unknown-close');
 setupModalOverlay('failed-overlay', null, 'btn-failed-close');
 setupModalOverlay('errors-overlay', null, 'btn-errors-close');
-// Дропдауни шапки: відкритий завжди один, закриваються кліком поза межами
-// й Esc. Свідомо не через setupModalOverlay: той робить модальне вікно із
-// затемненням на весь екран, а тут потрібен список під своєю кнопкою.
-(function () {
-  var drops = [];
-  Array.prototype.forEach.call(document.querySelectorAll('.hdr-menu'), function (m) {
-    var btn = m.querySelector('.hdr-menu-btn'), drop = m.querySelector('.hdr-dropdown');
-    if (!btn || !drop) return;
-    drops.push(drop);
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      // Підказка самої кнопки вісить рівно там, куди розгортається список, і накриває
-      // його заголовок: курсор після кліку лишається на кнопці, тож mouseleave не
-      // сталось. Гасимо її вручну — вона з'явиться знову при наступному наведенні.
-      var tip = document.getElementById('custom-tooltip');
-      if (tip) tip.classList.remove('visible');
-      var wasOpen = drop.classList.contains('open');
-      drops.forEach(function (d) { d.classList.remove('open'); });
-      if (!wasOpen) drop.classList.add('open');
-    });
-    // Клік усередині списку не має його закривати — крім кліку по [data-open],
-    // який закриває його сам і відкриває потрібну панель (обробник нижче).
-    drop.addEventListener('click', function (e) { e.stopPropagation(); });
-  });
-  document.addEventListener('click', function () {
-    drops.forEach(function (d) { d.classList.remove('open'); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') drops.forEach(function (d) { d.classList.remove('open'); });
-  });
-})();
-// Рядок хаба відкриває свою панель і закриває сам хаб: два модальних вікна
-// одночасно виглядали б як помилка, а Esc закривав би обидва одразу.
-Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) {
-  b.addEventListener('click', function () {
-    var hub = b.closest('.help-overlay, .hdr-dropdown');
-    if (hub) hub.classList.remove('open');
-    var o = document.getElementById(b.getAttribute('data-open'));
-    if (o) o.classList.add('open');
-  });
-});
+setupModalOverlay('help-overlay', null, 'btn-help-close');
+setupModalOverlay('about-overlay', null, 'btn-about-close');
+setupModalOverlay('credits-overlay', null, 'btn-credits-close');
+// Дропдауни шапки й обробник [data-open] — спільні для трьох сторінок,
+// живуть у map-common.js (див. initHeaderMenus у render-map.js).
+initHeaderMenus();
 // Значки помилок в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
 Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
   b.addEventListener('click', function () {
