@@ -1554,7 +1554,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">

@@ -669,12 +669,21 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   </div>`;
 
   // Підпис у шапці — годинник і дата, без слів ("🕒 Мапа сайту · ..." до
-  // 25.09.2026): що це за дата, каже підказка. Для map.html немає єдиного
-  // каталогу, чий scrapedAt можна було б узяти (як робить <id>_map.html), тож
-  // тут це момент генерації самого map.html.
-  const generatedAtDate = new Date();
-  const generatedAt = generatedAtDate.toLocaleDateString('uk-UA') + ' ' +
-    generatedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+  // 25.09.2026): що це за дата, каже підказка "Дата та час скрапінгу".
+  // Це саме скрапінг — найсвіжіший scraped_at серед категорій, а не момент
+  // збірки сторінки, як було до 25.09.2026: після нічного прогону ці два часи
+  // розходяться на хвилини, але після ручної перебудови (rebuild_only) різниця
+  // — ціла доба, і підпис брехав би про свіжість даних. Формат scraped_at готовий
+  // рядок "ДД.ММ.РРРР ГГ:ХХ" (його ж показує колонка "Дата та час"), тож для
+  // порівняння його треба розібрати — лексикографічно такі рядки не сортуються.
+  const parseStamp = t => {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/.exec(t || '');
+    return m ? new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5]) : null;
+  };
+  const stamps = sorted.map(e => parseStamp(e.scraped_at)).filter(Boolean);
+  const latestDate = stamps.length ? new Date(Math.max(...stamps)) : new Date();
+  const generatedAt = latestDate.toLocaleDateString('uk-UA') + ' ' +
+    latestDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
 
   const html = `<!DOCTYPE html>
 <html lang="uk">
@@ -784,7 +793,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -835,8 +844,8 @@ ${errorsPanelHtml}
           <div class="help-term-desc">Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.</div>
         </div>
         <div class="help-term">
-          <div class="help-term-label">Час оновлення</div>
-          <div class="help-term-desc">Дата та час скрапінгу.</div>
+          <div class="help-term-label">Дата та час</div>
+          <div class="help-term-desc">Коли скрапер обійшов цю категорію. Годинник у шапці показує найсвіжіший із цих часів — категорії скрапляться чергою, тож між першою й останньою — кілька годин.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.ok} Актуально</div>
@@ -903,7 +912,7 @@ ${errorsPanelHtml}
                 <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
                 <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
                 <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
-                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Час оновлення</th>
+                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Дата та час</th>
                 <th style="text-align:center;" data-tip="${ICONS.ok} Актуально\n${ICONS.stale} Застаріло\n${ICONS.nodata} Немає даних">Статус</th>
                 <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
               </tr>
