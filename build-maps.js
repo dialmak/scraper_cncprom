@@ -596,17 +596,22 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
     return many;
   };
-  // У чистого рядка в колонці дії немає нічого: одного нуля достатньо,
-  // слово "чисто" поруч лише повторювало його словами.
+  // Коли перевірка нічого не знайшла, рядок каже "немає" у колонці дії,
+  // а колонка числа лишається порожньою: нуль поруч із "немає" сказав би те саме
+  // двічі (так само до 25.09.2026 було зі словом "чисто").
   // tip може бути порожнім: для логів підказка лише повторювала б назву
   // рядка, а шляхи до файлів тепер у Довідці.
-  // Одиниця виміру додається лише до ненульового числа: "0 вузлів" читається
-  // гірше, ніж просто "0" поруч зі словом "чисто".
+  // unit: '' — число без одиниці, null — числа не показувати взагалі. Так
+  // зроблено для розбіжностей звірки: там це кількість ВУЗЛІВ, а не розмір
+  // розбіжності, і читається не тим, чим є — саме тому ці числа вже
+  // прибирали з самої панелі 24.09.2026.
   const checkRow = (icon, name, tip, count, unit, overlayId) => `
           <div class="check-row">
             <span>${icon}</span><span class="nm"${tip ? ` data-tip="${escapeHtmlOuter(tip)}"` : ''}>${escapeHtmlOuter(name)}</span>
-            <span class="val ${count > 0 ? 'bad' : 'ok'}">${count}${count > 0 && unit ? ' ' + unit : ''}</span>
-            ${count > 0 ? `<button class="act" data-open="${overlayId}">відкрити</button>` : ''}
+            <span class="val ${count > 0 ? 'bad' : 'ok'}">${count > 0 && unit !== null ? count + (unit ? ' ' + unit : '') : ''}</span>
+            ${count > 0
+              ? `<button class="act" data-open="${overlayId}">відкрити</button>`
+              : '<span class="act none">немає</span>'}
           </div>`;
   const logRow = (name, tip, overlayId) => `
           <div class="check-row">
@@ -634,7 +639,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">${ICONS.checks} Звірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
           <h3>Звірка скрапера з даними сайту:</h3>
-          <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+          <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, null, 'mismatch-overlay')}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
           </div>
         </div>
       </div>`;
@@ -764,6 +769,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .check-row .act { font: inherit; color: var(--text-link); background: none;
     border: 0; padding: 0; cursor: pointer; }
   .check-row .act:hover { text-decoration: underline; }
+  /* "немає" — стан, а не дія: без кольору посилання, без підкреслення й руки. */
+  .check-row .act.none { color: var(--text-subtle); cursor: default; }
+  .check-row .act.none:hover { text-decoration: none; }
   /* Значок біля "Звірки": скільки звірок щось знайшли. */
   .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
     height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
