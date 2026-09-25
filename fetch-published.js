@@ -7,7 +7,7 @@
 // Завантажує categories.json і для кожної категорії <id>_catalog.json
 // (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
 // <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
-// лишились чужі. scrape.log / map.log не чіпає.
+// лишились чужі. scrape.log / map.log — лише якщо локально їх немає.
 //
 // node fetch-published.js [pagesUrl]   (за замовчуванням — PAGES_URL нижче)
 
@@ -92,6 +92,23 @@ async function getCategoryList() {
     ok++;
     console.log(`  ${id}: скрапінг ${summary.scraped_at} UTC${extras.length ? ', є ' + extras.join(', ') : ''}`);
   }
+  // Логи — append-only історія за всі прогони, а не результат одного. У rebuild_only
+  // чекаут свіжий, output/ порожній — і без цього кроку збірка публікувала
+  // сайт із порожнім scrape.log і map.log з одного рядка, стираючи історію
+  // нічного прогону (знайдено 25.09.2026 — користувач побачив порожній лог).
+  // Тільки коли файла немає: локальну історію перезаписувати чужою не можна.
+  for (const name of ['scrape.log', 'map.log']) {
+    const lp = path.join(DIR, name);
+    if (fs.existsSync(lp)) { console.log(`  ${name}: лишаємо локальний`); continue; }
+    try {
+      const buf = await get(name);
+      fs.writeFileSync(lp, buf);
+      console.log(`  ${name}: завантажено (${buf.length} байт)`);
+    } catch (e) {
+      console.warn(`  ${name}: немає на сайті (${e.message})`);
+    }
+  }
+
   console.log(`Завантажено категорій: ${ok} з ${ids.length}`);
   if (ok === 0) process.exit(1);
 })().catch(e => { console.error(e.message || e); process.exit(1); });

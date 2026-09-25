@@ -597,16 +597,16 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   };
   // Одиниця виміру додається лише до ненульового числа: "0 вузлів" читається
   // гірше, ніж просто "0" поруч зі словом "чисто".
-  const checkRow = (icon, name, tip, count, unit, overlayId) => `
-          <div class="check-row" data-tip="${escapeHtmlOuter(tip)}">
+  const checkRow = (icon, name, count, unit, overlayId) => `
+          <div class="check-row">
             <span>${icon}</span><span class="nm">${escapeHtmlOuter(name)}</span>
             <span class="val ${count > 0 ? 'bad' : 'ok'}">${count}${count > 0 && unit ? ' ' + unit : ''}</span>
             ${count > 0
               ? `<button class="act" data-open="${overlayId}">відкрити</button>`
               : '<span class="act muted">чисто</span>'}
           </div>`;
-  const logRow = (name, tip, overlayId) => `
-          <div class="check-row" data-tip="${escapeHtmlOuter(tip)}">
+  const logRow = (name, overlayId) => `
+          <div class="check-row">
             <span>📄</span><span class="nm">${escapeHtmlOuter(name)}</span>
             <span class="val"></span>
             <button class="act" data-open="${overlayId}">відкрити</button>
@@ -617,7 +617,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-report" class="btn-theme-toggle hdr-menu-btn" data-tip="Результати роботи скрапера, помилки та лог">📄 Звіт скрапера</button>
         <div class="hdr-dropdown right" id="report-dropdown">
           <h3>Звіт про роботу скрапера:</h3>
-          <div>${checkRow('⚠️', 'Помилки', 'Помилки останнього скрапінгу цих категорій. Ті самі рядки ПОМИЛКА, що й у scrape.log.', errorTotal, '', 'errors-overlay')}${checkRow('⛔', 'Не оброблено', 'Товари, сторінку яких скрапер не зміг прочитати навіть із повторної спроби. Їх немає на мапі й у звірці.', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапера', 'Переглянути output/site/scrape.log', 'scrape-log-overlay')}${logRow('Лог збірки', 'Переглянути output/site/map.log', 'map-log-overlay')}
+          <div>${checkRow('⚠️', 'Помилки', errorTotal, '', 'errors-overlay')}${checkRow('⛔', 'Не оброблено', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапера', 'scrape-log-overlay')}${logRow('Лог збірки', 'map-log-overlay')}
           </div>
         </div>
       </div>`;
@@ -631,7 +631,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що каже сайт.">🔬 Перевірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
           <h3>Звірка скрапера з даними сайту</h3>
-          <div>${checkRow('⚠️', 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow('🧭', 'Не збігається з крихтами', 'Товари, у яких хлібні крихти сайту ведуть в іншу гілку, ніж та, де їх знайшов скрапер.', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow('🧭', 'Крихти без категорії', 'У крихтах товару немає жодної категорії, лише «Товари та послуги». Скрапер відніс товар за сторінкою категорії, але підтвердити це з боку сайту нема чим.', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+          <div>${checkRow('⚠️', 'Розбіжності звірки', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow('🧭', 'Не збігається з крихтами', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow('🧭', 'Крихти без категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
           </div>
         </div>
       </div>`;
@@ -839,6 +839,18 @@ ${errorsPanelHtml}
         <div class="help-term">
           <div class="help-term-label">📄 Звіт скрапера</div>
           <div class="help-term-desc">Як відпрацював останній прогін: помилки, товари, які не вдалося обробити, і повні логи скрапінгу й збірки мап. Нуль поруч із рядком не порожнеча, а результат: перевірка відпрацювала й нічого не знайшла. Категорія з помилками має ще й значок ⚠️ у своєму рядку таблиці.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⚠️ Помилки</div>
+          <div class="help-term-desc">Рядок у «Звіті скрапера»: скільки разів під час останнього скрапінгу щось пішло не так (наприклад, сторінка не завантажилась). Ті самі рядки ПОМИЛКА, що й у лозі скрапера. Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності». Така категорія має ще й значок ⚠️ у своєму рядку таблиці.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⛔ Не оброблено</div>
+          <div class="help-term-desc">Рядок у «Звіті скрапера»: товари, сторінку яких скрапер не зміг прочитати навіть після повторної спроби. Їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту — наступний нічний прогін їх підхопить.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">📄 Лог скрапера · 📄 Лог збірки</div>
+          <div class="help-term-desc">Два рядки в кінці «Звіту скрапера»: повний вміст файлів scrape.log і map.log як є. Перший пише скрапер під час обходу сайту, другий — збірка самих цих сторінок.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">🔬 Перевірки</div>
