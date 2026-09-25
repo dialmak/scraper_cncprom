@@ -24,6 +24,7 @@ const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { assetVer } = require('./lib/assets');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -1548,6 +1549,9 @@ const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
+// Версію рахуємо ПІСЛЯ запису: посилання має відповідати щойно записаному вмісту.
+const COMMON_CSS_V = assetVer(COMMON_CSS_FILE);
+const COMMON_JS_V = assetVer(COMMON_JS_FILE);
 fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 
@@ -1655,7 +1659,7 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="map-common.css">
+<link rel="stylesheet" href="map-common.css${COMMON_CSS_V}">
 </head>
 <body>
   <header class="app-header">
@@ -1771,7 +1775,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
     </main>
   </div>
 
-<script src="map-common.js"></script>
+<script src="map-common.js${COMMON_JS_V}"></script>
 <script>
 const CATALOG_DATA = ${JSON.stringify(CATALOG_DATA)};
 initCatalogMap(CATALOG_DATA);

@@ -6,6 +6,7 @@ const { logLine: appendLog } = require('./lib/log');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { assetVer } = require('./lib/assets');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -694,8 +695,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="map-common.css">
-<script src="map-common.js"></script>
+<link rel="stylesheet" href="map-common.css${assetVer(path.join(DIR, 'map-common.css'))}">
+<script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
 <style>
   /* map-common.css розрахований на .workspace з фіксованою висотою вікна
      (сайдбар + скрол свого контенту) — індексна сторінка цього не має, тож

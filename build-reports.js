@@ -34,6 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { assetVer } = require('./lib/assets');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
@@ -593,7 +594,7 @@ const html = `<!DOCTYPE html>
 <title>Історія змін каталогу</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../map-common.css">
+<link rel="stylesheet" href="../map-common.css${assetVer(path.join(SITE_DIR, 'map-common.css'))}">
 <link rel="stylesheet" href="reports.css">
 </head>
 <body>
@@ -670,7 +671,7 @@ ${aboutPanelHtml()}${creditsPanelHtml('../')}
   </main>
   <div class="chart-tip" id="chart-tip" role="tooltip"></div>
 
-  <script src="../map-common.js"></script>
+  <script src="../map-common.js${assetVer(path.join(SITE_DIR, 'map-common.js'))}"></script>
   <script src="reports.js"></script>
   <script>initReportsPage();</script>
 </body>
