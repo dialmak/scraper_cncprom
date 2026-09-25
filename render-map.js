@@ -600,6 +600,19 @@ table.search-table .col-avail { width: 16%; }
    список виліз би за межі екрана. */
 .hdr-dropdown.right { left: auto; right: 0; }
 .hdr-dropdown.open { display: block; }
+/* Шторка під відкритим меню — як у модальних панелей, але легша (0.28 проти 0.4):
+   меню не блокує роботу, воно закривається будь-яким кліком. z-index 9, а не
+   поверх усього: .app-header (10) — власний контекст накладання, тож сам список
+   із z-index 120 лежить усередині шапки і шторка його не накриє: шапка лишається
+   світлою, меню від неї й росте.
+   Окремий елемент (його створює initHeaderMenus), а не body::before — щоб його можна
+   було знайти з JS і перевірити смоук-тестом: у псевдоелемента немає ні вузла, ні
+   геометрії. opacity, а не display — затемнення наростає плавно, а не стрибком. */
+.menu-scrim {
+  position: fixed; inset: 0; z-index: 9; background: rgba(0,0,0,0.28);
+  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+}
+.menu-scrim.open { opacity: 1; pointer-events: auto; }
 .hdr-dropdown h3 { font-size: 0.82rem; font-weight: 700; color: var(--text-main); padding: 10px 2px 2px; }
 
 /* Рядок меню: значок, назва, число, дія. Число стоїть окремою колонкою,
@@ -664,6 +677,17 @@ function initNarrowGuard() {
 // затемненням на весь екран, а тут потрібен список під своєю кнопкою.
 function initHeaderMenus() {
   var drops = [];
+  // Клас на body вмикає шторку (CSS вище). Одна функція на всі шляхи
+  // закриття (кнопка, клік поза списком, Esc, рядок із [data-open]), щоб
+  // шторка ніде не лишилась вісіти після закритого меню.
+  var scrim = document.createElement('div');
+  scrim.className = 'menu-scrim';
+  document.body.appendChild(scrim);
+  var syncScrim = function () {
+    var any = false;
+    drops.forEach(function (d) { if (d.classList.contains('open')) any = true; });
+    scrim.classList.toggle('open', any);
+  };
   Array.prototype.forEach.call(document.querySelectorAll('.hdr-menu'), function (m) {
     var btn = m.querySelector('.hdr-menu-btn'), drop = m.querySelector('.hdr-dropdown');
     if (!btn || !drop) return;
@@ -678,6 +702,7 @@ function initHeaderMenus() {
       var wasOpen = drop.classList.contains('open');
       drops.forEach(function (d) { d.classList.remove('open'); });
       if (!wasOpen) drop.classList.add('open');
+      syncScrim();
     });
     // Клік усередині списку не має його закривати — крім кліку по [data-open],
     // який закриває його сам і відкриває потрібну панель (обробник нижче).
@@ -685,9 +710,10 @@ function initHeaderMenus() {
   });
   document.addEventListener('click', function () {
     drops.forEach(function (d) { d.classList.remove('open'); });
+    syncScrim();
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') drops.forEach(function (d) { d.classList.remove('open'); });
+    if (e.key === 'Escape') { drops.forEach(function (d) { d.classList.remove('open'); }); syncScrim(); }
   });
   // Рядок меню відкриває свою панель і закриває саме меню: два відкритих
   // вікна одночасно виглядали б як помилка, а Esc закривав би обидва одразу.
@@ -695,6 +721,7 @@ function initHeaderMenus() {
     b.addEventListener('click', function () {
       var hub = b.closest('.help-overlay, .hdr-dropdown');
       if (hub) hub.classList.remove('open');
+      syncScrim();
       var o = document.getElementById(b.getAttribute('data-open'));
       if (o) o.classList.add('open');
     });
