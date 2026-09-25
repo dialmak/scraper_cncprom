@@ -568,10 +568,13 @@ table.search-table .col-avail { width: 16%; }
     background: var(--bg-page);
   }
   .narrow-guard-box { max-width: 440px; text-align: center; color: var(--text-muted);
-    font-size: 0.88rem; line-height: 1.55; }
+    font-size: 0.88rem; line-height: 1.75; }
   .narrow-guard-icon { font-size: 2.4rem; margin-bottom: 10px; }
   .narrow-guard-box h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
-  .narrow-guard-box p { margin-bottom: 10px; }
+  /* Без власного відступу: інакше між абзацами було б рядок плюс margin, а всередині
+     останнього абзацу (там ручний перенос) — саме рядок. Чотири рядки
+     читаються як один блок, тож крок задає лише line-height. */
+  .narrow-guard-box p { margin-bottom: 0; }
   .narrow-guard-box b { color: var(--text-main); font-weight: 600; font-family: var(--font-mono); }
   /* html body, а не просто body: і map.html, і сторінка змін перевизначають
      «html, body { overflow: visible }» у своїх стилях після цього файла,
