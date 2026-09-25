@@ -597,17 +597,17 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   };
   // Одиниця виміру додається лише до ненульового числа: "0 вузлів" читається
   // гірше, ніж просто "0" поруч зі словом "чисто".
-  const checkRow = (icon, name, count, unit, overlayId) => `
+  const checkRow = (icon, name, tip, count, unit, overlayId) => `
           <div class="check-row">
-            <span>${icon}</span><span class="nm">${escapeHtmlOuter(name)}</span>
+            <span>${icon}</span><span class="nm" data-tip="${escapeHtmlOuter(tip)}">${escapeHtmlOuter(name)}</span>
             <span class="val ${count > 0 ? 'bad' : 'ok'}">${count}${count > 0 && unit ? ' ' + unit : ''}</span>
             ${count > 0
               ? `<button class="act" data-open="${overlayId}">відкрити</button>`
               : '<span class="act muted">чисто</span>'}
           </div>`;
-  const logRow = (name, overlayId) => `
+  const logRow = (name, tip, overlayId) => `
           <div class="check-row">
-            <span>📄</span><span class="nm">${escapeHtmlOuter(name)}</span>
+            <span>📄</span><span class="nm" data-tip="${escapeHtmlOuter(tip)}">${escapeHtmlOuter(name)}</span>
             <span class="val"></span>
             <button class="act" data-open="${overlayId}">відкрити</button>
           </div>`;
@@ -617,7 +617,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-report" class="btn-theme-toggle hdr-menu-btn" data-tip="Результати роботи скрапера, помилки та лог">📄 Звіт скрапера</button>
         <div class="hdr-dropdown right" id="report-dropdown">
           <h3>Звіт про роботу скрапера:</h3>
-          <div>${checkRow('⚠️', 'Помилки', errorTotal, '', 'errors-overlay')}${checkRow('⛔', 'Не оброблено', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапера', 'scrape-log-overlay')}${logRow('Лог збірки', 'map-log-overlay')}
+          <div>${checkRow('⚠️', 'Помилки', 'Помилки останнього скрапінгу цих категорій. Ті самі рядки ПОМИЛКА, що й у scrape.log.', errorTotal, '', 'errors-overlay')}${checkRow('⛔', 'Не оброблено', 'Товари, сторінку яких скрапер не зміг прочитати навіть із повторної спроби. Їх немає на мапі й у звірці.', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапера', 'Переглянути output/site/scrape.log', 'scrape-log-overlay')}${logRow('Лог збірки', 'Переглянути output/site/map.log', 'map-log-overlay')}
           </div>
         </div>
       </div>`;
@@ -631,7 +631,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що каже сайт.">🔬 Перевірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
           <h3>Звірка скрапера з даними сайту</h3>
-          <div>${checkRow('⚠️', 'Розбіжності звірки', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow('🧭', 'Не збігається з крихтами', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow('🧭', 'Крихти без категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+          <div>${checkRow('⚠️', 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, plural(mismatchTotal, 'вузол', 'вузли', 'вузлів'), 'mismatch-overlay')}${checkRow('🧭', 'Не збігається з крихтами', 'Товари, у яких хлібні крихти сайту ведуть в іншу гілку, ніж та, де їх знайшов скрапер.', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow('🧭', 'Крихти без категорії', 'У крихтах товару немає жодної категорії, лише «Товари та послуги». Скрапер відніс товар за сторінкою категорії, але підтвердити це з боку сайту нема чим.', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
           </div>
         </div>
       </div>`;
@@ -733,7 +733,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .hdr-menu { position: relative; display: inline-flex; flex-shrink: 0; }
   .hdr-dropdown {
     display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 120;
-    min-width: 400px; max-width: min(560px, calc(100vw - 32px));
+    min-width: 300px; max-width: min(460px, calc(100vw - 32px));
     background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
     box-shadow: 0 12px 32px rgba(0,0,0,0.28); padding: 2px 14px 8px;
   }
@@ -749,7 +749,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
     padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
   .check-row:last-child { border-bottom: 0; }
-  .check-row .nm { color: var(--text-main); }
+  /* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
+     довжині рядка: у grid комірка 1fr розтягнула б span до самого числа, і
+     підказка спливала б від порожнього місця між назвою й числом. */
+  .check-row .nm { color: var(--text-main); justify-self: start; }
   .check-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
   .check-row .val.bad { color: var(--status-no); }
   .check-row .val.ok { color: var(--status-yes); }
