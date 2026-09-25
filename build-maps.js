@@ -571,7 +571,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-crumbs-unknown-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">Хлібні крихти на сторінці цих товарів не називають жодної категорії: у ланцюгу лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але підтвердити це з боку сайту нема чим. Це не помилка скрапера й не розбіжність: просто другої думки немає.</p>
+        <p class="failed-note">Хлібні крихти на сторінці цих товарів не мають жодної категорії. Лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але з боку сайту хлібних крихт немає.</p>
         <div class="orphan-group-list">${crumbUnknownGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">${ICONS.folder} ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.crumb_unknown.length})</span></a>
@@ -663,7 +663,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // Підпис у шапці — лише дата й час, без слів ("🕒 Мапа сайту · ..." до
+  // Підпис у шапці — годинник і дата, без слів ("🕒 Мапа сайту · ..." до
   // 25.09.2026): що це за дата, каже підказка. Для map.html немає єдиного
   // каталогу, чий scrapedAt можна було б узяти (як робить <id>_map.html), тож
   // тут це момент генерації самого map.html.
@@ -756,7 +756,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      довжині рядка: у grid комірка 1fr розтягнула б span до самого числа, і
      підказка спливала б від порожнього місця між назвою й числом. */
   .check-row .nm { color: var(--text-main); justify-self: start; }
-  .check-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
+  /* Без font-weight: число не має бути товще за сусідні слова в тому ж рядку. */
+  .check-row .val { font-variant-numeric: tabular-nums; }
   .check-row .val.bad { color: var(--status-no); }
   .check-row .val.ok { color: var(--status-yes); }
   /* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
@@ -766,7 +767,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   /* Значок біля "Звірки": скільки звірок щось знайшли. */
   .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
     height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
-    font-weight: 700; background: var(--status-no); color: #fff; }
+    font-weight: 600; background: var(--status-no); color: #fff; }
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 </style>
@@ -775,7 +776,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">

@@ -447,7 +447,7 @@ table.search-table .col-avail { width: 16%; }
 .stock-badge.neutral { background: var(--bg-tag); color: var(--text-subtle); border: 1px solid var(--border-color); }
 
 .diff-zero { color: var(--status-yes); font-weight: 600; }
-.diff-nonzero { color: var(--status-no); font-weight: 700; }
+.diff-nonzero { color: var(--status-no); font-weight: 600; }
 
 /* Один стиль для ВСІХ числових значень у таблицях (Товарів / В наявності / Немає в
    наявності скрізь — і в заголовку категорії, і в підкатегоріях, і в підсумкових
@@ -1554,7 +1554,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
