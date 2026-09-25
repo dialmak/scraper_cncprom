@@ -1454,7 +1454,7 @@ const infoBanner = HAS_PRODUCTS ? '' : `
       запустіть <code>node render-map.js ${categoryId}</code> ще раз, коли скрапер допише ${categoryId}_catalog.json (ЕТАП 2 scrape-complete.js).</span>
     </div>`;
 
-// Кнопка в шапці (поряд з "Мапа розділу") + модальна панель зі списком —
+// Кнопка в шапці (поряд з датою оновлення) + модальна панель зі списком —
 // замість банера прямо над змістом (той засмічував основну мапу постійно
 // видимим блоком). Панель — не окрема сутність, а другий екземпляр того
 // самого overlay/panel вигляду, що й Довідка (див. setupModalOverlay).
@@ -1554,7 +1554,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа розділу · ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">

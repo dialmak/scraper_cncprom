@@ -663,10 +663,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // "Мапа сайту · <дата й час>" поряд з назвою — той самий підпис-годинник,
-  // що й "Мапа розділу · <scrapedAt>" в кожній <id>_map.html, але для map.html
-  // немає єдиного category_map.json, чиє mtime можна було б узяти (як робить
-  // scrapedAt там) — тут це просто момент генерації самого map.html.
+  // Підпис у шапці — лише дата й час, без слів ("🕒 Мапа сайту · ..." до
+  // 25.09.2026): що це за дата, каже підказка. Для map.html немає єдиного
+  // каталогу, чий scrapedAt можна було б узяти (як робить <id>_map.html), тож
+  // тут це момент генерації самого map.html.
   const generatedAtDate = new Date();
   const generatedAt = generatedAtDate.toLocaleDateString('uk-UA') + ' ' +
     generatedAtDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
@@ -775,7 +775,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn">🕒 Мапа сайту · ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата оновлення">${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
