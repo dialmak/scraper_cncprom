@@ -573,7 +573,7 @@ table.search-table .col-avail { width: 16%; }
   .narrow-guard-box h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
   .narrow-guard-box p { margin-bottom: 10px; }
   .narrow-guard-box b { color: var(--text-main); font-weight: 600; }
-  .narrow-guard-now { font-family: var(--font-mono); font-size: 0.8rem; }
+  .narrow-guard-now b { font-family: var(--font-mono); }
   /* html body, а не просто body: і map.html, і сторінка змін перевизначають
      «html, body { overflow: visible }» у своїх стилях після цього файла,
      а за рівної специфічності виграє той, хто нижче. */
