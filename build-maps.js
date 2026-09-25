@@ -413,7 +413,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="orphan-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotal}):</h3>
+        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotal})</h3>
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -452,7 +452,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="failed-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Товари, які не вдалося обробити (${failedTotal}):</h3>
+        <h3>Товари, які не вдалося обробити (${failedTotal})</h3>
         <button class="btn-help-close" id="btn-failed-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -481,7 +481,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="errors-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Помилки останнього прогону (${errorTotal}):</h3>
+        <h3>Помилки останнього прогону (${errorTotal})</h3>
         <button class="btn-help-close" id="btn-errors-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -543,7 +543,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="crumbs-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Товари, де крихти сайту ведуть в іншу гілку (${crumbTotal}):</h3>
+        <h3>Товари, де крихти сайту ведуть в іншу гілку (${crumbTotal})</h3>
         <button class="btn-help-close" id="btn-crumbs-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -572,7 +572,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="crumbs-unknown-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Товари, у крихтах яких немає категорії (${crumbUnknownTotal}):</h3>
+        <h3>Товари, у крихтах яких немає категорії (${crumbUnknownTotal})</h3>
         <button class="btn-help-close" id="btn-crumbs-unknown-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -625,7 +625,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       <div class="hdr-menu">
         <button id="btn-report" class="btn-theme-toggle hdr-menu-btn" data-tip="Результат роботи скрапера">${ICONS.report} Звіт скрапера</button>
         <div class="hdr-dropdown right" id="report-dropdown">
-          <h3>Звіт про роботу скрапера:</h3>
+          <h3>Звіт про роботу скрапера</h3>
           <div>${checkRow(ICONS.errors, 'Помилки', 'Помилки скрапінгу', errorTotal, '', 'errors-overlay')}${checkRow(ICONS.failed, 'Не оброблено', 'Товари, сторінку яких скрапер не зміг прочитати', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапінгу', '', 'scrape-log-overlay')}${logRow('Лог збірки', '', 'map-log-overlay')}
           </div>
         </div>
@@ -639,7 +639,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       <div class="hdr-menu">
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">${ICONS.checks} Звірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
-          <h3>Звірка скрапера з даними сайту:</h3>
+          <h3>Звірка скрапера з даними сайту</h3>
           <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, null, 'mismatch-overlay')}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
           </div>
         </div>

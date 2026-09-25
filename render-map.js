@@ -1632,7 +1632,7 @@ const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
   <div class="help-overlay" id="orphan-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotalProducts}):</h3>
+        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotalProducts})</h3>
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
