@@ -596,6 +596,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
     return many;
   };
+  // У чистого рядка в колонці дії немає нічого: одного нуля достатньо,
+  // слово "чисто" поруч лише повторювало його словами.
   // tip може бути порожнім: для логів підказка лише повторювала б назву
   // рядка, а шляхи до файлів тепер у Довідці.
   // Одиниця виміру додається лише до ненульового числа: "0 вузлів" читається
@@ -604,9 +606,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
           <div class="check-row">
             <span>${icon}</span><span class="nm"${tip ? ` data-tip="${escapeHtmlOuter(tip)}"` : ''}>${escapeHtmlOuter(name)}</span>
             <span class="val ${count > 0 ? 'bad' : 'ok'}">${count}${count > 0 && unit ? ' ' + unit : ''}</span>
-            ${count > 0
-              ? `<button class="act" data-open="${overlayId}">відкрити</button>`
-              : '<span class="act muted">чисто</span>'}
+            ${count > 0 ? `<button class="act" data-open="${overlayId}">відкрити</button>` : ''}
           </div>`;
   const logRow = (name, tip, overlayId) => `
           <div class="check-row">
@@ -736,7 +736,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .hdr-menu { position: relative; display: inline-flex; flex-shrink: 0; }
   .hdr-dropdown {
     display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 120;
-    min-width: 300px; max-width: min(460px, calc(100vw - 32px));
+    min-width: 380px; max-width: min(460px, calc(100vw - 32px));
     background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
     box-shadow: 0 12px 32px rgba(0,0,0,0.28); padding: 2px 14px 8px;
   }
@@ -759,11 +759,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .check-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
   .check-row .val.bad { color: var(--status-no); }
   .check-row .val.ok { color: var(--status-yes); }
-  .check-row .act { font: inherit; font-size: 0.76rem; color: var(--text-link); background: none;
+  /* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
+  .check-row .act { font: inherit; color: var(--text-link); background: none;
     border: 0; padding: 0; cursor: pointer; }
   .check-row .act:hover { text-decoration: underline; }
-  .check-row .act.muted { color: var(--text-subtle); cursor: default; }
-  .check-row .act.muted:hover { text-decoration: none; }
   /* Значок біля "Звірки": скільки звірок щось знайшли. */
   .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
     height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
