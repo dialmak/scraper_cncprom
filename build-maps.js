@@ -11,7 +11,7 @@ const { runLogHtml, buildLogHtml } = require('./lib/runlog');
 const { plural } = require('./lib/plural');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -828,7 +828,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
     <div class="header-center">
       <div class="search-wrap">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">${ICONS.search}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
         <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
@@ -927,7 +927,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
         <div class="help-term">
           <div class="help-term-label">${ICONS.export} Експорт</div>
           <div class="help-term-desc">Уся мапа категорій таблицею XLSX — лише назви, без товарів. Дерево зібране стовпцями: рівень 1 у A, рівень 2 в B і так далі; гілки згортаються кнопками [+]/[−] зліва. Аркуш захищений від сортування та редагування — перестановка рядків розірвала б дерево; як зняти, написано на аркуші «Про файл» у самому файлі.</div>
-        </div>
+        </div>${searchHelpHtml()}
       </div>
     </div>
   </div>

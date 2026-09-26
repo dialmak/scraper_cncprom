@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -433,6 +433,14 @@ table.search-table .col-n { width: 4%; }
 table.search-table .col-code { width: 8%; }
 table.search-table .col-cat { width: 32%; }
 table.search-table .col-avail { width: 16%; }
+/* Заголовок «Наявність» у результатах пошуку сортує (sortByAvailability).
+   cursor: pointer перебиває [data-tip] { cursor: help } — це кнопка. */
+.simple-table th.th-sort { cursor: pointer; user-select: none; }
+.simple-table th.th-sort:hover { color: var(--text-main); }
+.sort-arrow { margin-left: 5px; opacity: 0.55; }
+th.th-sort.active .sort-arrow { opacity: 1; color: var(--text-link); }
+/* Пошук не дослівно тим, що набрано (інша розкладка, схожі слова). */
+.search-note { margin: 0 0 10px; padding: 7px 12px; font-size: 0.8rem; color: var(--text-muted); background: var(--bg-subtle); border-left: 3px solid var(--border-active); border-radius: 3px; }
 
 .stock-badge { display: inline-block; padding: 1px 6px; font-size: 0.72rem; font-weight: 500; border-radius: 3px; white-space: nowrap; }
 .stock-badge.yes { background: var(--status-yes-bg); color: var(--status-yes); border: 1px solid var(--status-yes-border); }
@@ -813,37 +821,381 @@ function setupTooltips() {
 }
 
 // ==================== ПОШУК (спільний алгоритм для <id>_map.html і map.html) ====================
-// Один алгоритм збігу й підсвітки для обох пошуків: filterProducts не знає ні
-// про категорії, ні про вузли — лише масив записів і список полів. Мапа розділу
+// Один алгоритм збігу й підсвітки для обох пошуків: функції нижче не знають ні
+// про категорії, ні про вузли — лише масиви записів і списки полів. Мапа розділу
 // шукає по name/code/nodeName (allProductsList), map.html — по
 // name/code/categoryName (search-index.json). Різниться лише те, що робить клік
 // по категорії, і це свідомо лишається окремим на кожній сторінці. Top-level,
 // бо map.html не викликає initCatalogMap.
-function filterProducts(products, query, fields) {
-  var q = (query || '').toLowerCase();
-  if (!q) return [];
-  return products.filter(function (p) {
-    return fields.some(function (f) { return String(p[f] || '').toLowerCase().indexOf(q) !== -1; });
-  });
+//
+// Що вміє (HISTORY.md, п. 29):
+//   - слова запиту — у будь-якому порядку, кожне має знайтись хоч в одному полі;
+//   - "*" — будь-які символи, зокрема пробіли (шків*19), "?" — рівно один;
+//   - нормалізація: регістр, кирилиця-двійник латиниці (М8, СО2, 120х120), ×;
+//   - коди й розміри без розділювачів: 05116 → 05-116, hgr 25 → HGR25H;
+//   - коли точних збігів немає — той самий запит в іншій розкладці клавіатури,
+//     далі схожі слова (1 помилка, для слів від 8 літер — 2);
+//   - порядок — від кращого збігу (точний код, ціле слово, початок слова…).
+
+// Текст → { t: нормалізований, тієї ж довжини, що вихідний (тому позиції
+// підсвітки збігаються); c: лише літери й цифри; pos: позиція кожного символу
+// c у вихідному тексті }. Кирилиця, схожа на латиницю, зводиться до латиниці
+// СКРІЗЬ, і в запиті, і в тексті: на сайті «М8» набрано то кириличною М
+// (190 назв), то латинською (421), «СО2» — кирилицею, розміри — через х/x/×.
+// Кеш за самим рядком: назви категорій повторюються тисячами.
+function searchPrep(text) {
+  var cache = searchPrep.cache || (searchPrep.cache = new Map());
+  var s = String(text == null ? '' : text);
+  var hit = cache.get(s);
+  if (hit) return hit;
+  var FOLD = { 'а': 'a', 'в': 'b', 'е': 'e', 'к': 'k', 'м': 'm', 'н': 'h', 'о': 'o', 'р': 'p', 'с': 'c',
+    'т': 't', 'х': 'x', 'у': 'y', 'і': 'i', '×': 'x', '’': "'", 'ʼ': "'", '`': "'" };
+  var t = '', c = '', pos = [];
+  for (var i = 0; i < s.length; i++) {
+    var ch = s.charAt(i), lo = ch.toLowerCase();
+    if (lo.length !== 1) lo = ch;
+    if (FOLD[lo]) lo = FOLD[lo];
+    t += lo;
+    if (/[0-9a-zа-яіїєґ]/.test(lo)) { c += lo; pos.push(i); }
+  }
+  hit = { t: t, c: c, pos: pos, s: s };
+  cache.set(s, hit);
+  return hit;
 }
+
+// Слова тексту для пошуку схожих: [нормалізоване, як написано на сайті].
+// Рахується раз на текст і кешується поруч із searchPrep.
+function searchWords(text) {
+  var P = searchPrep(text);
+  if (P.words) return P.words;
+  var words = [], re = /[0-9a-zа-яіїєґ']+/g, m;
+  while ((m = re.exec(P.t))) {
+    if (m[0].length >= 3) words.push([m[0], P.s.substr(m.index, m[0].length).toLowerCase()]);
+  }
+  P.words = words;
+  return words;
+}
+
+// Рядок запиту → { raw, terms }. Уже скомпільований запит повертається як є,
+// тож усі функції нижче приймають і рядок, і результат compileSearch.
+function compileSearch(query) {
+  if (query && query.terms) return query;
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  var raw = String(query || '').trim();
+  var terms = [];
+  raw.split(/\s+/).forEach(function (w) {
+    if (!w) return;
+    var p = searchPrep(w);
+    if (!/[*?]/.test(p.t)) { terms.push({ n: p.t, c: p.c, raw: w.toLowerCase() }); return; }
+    // Кожен шматок — окрема група, щоб підсвітити лише літерали, а не все між ними.
+    var parts = p.t.split(/([*?])/).filter(Boolean);
+    var lits = parts.filter(function (x) { return x !== '*' && x !== '?'; });
+    if (!lits.length) return; // запит з одних масок нічого не звужує
+    var src = '', srcC = '';
+    parts.forEach(function (x) {
+      if (x === '*') { src += '([\\s\\S]*?)'; srcC += '([\\s\\S]*?)'; }
+      else if (x === '?') { src += '([\\s\\S])'; srcC += '([\\s\\S])'; }
+      else { src += '(' + esc(x) + ')'; srcC += '(' + esc(searchPrep(x).c) + ')'; }
+    });
+    terms.push({ wild: true, parts: parts, re: new RegExp(src, 'g'), reC: new RegExp(srcC, 'g') });
+  });
+  return { raw: raw, terms: terms };
+}
+
+// Оцінка збігу одного слова запиту з одним полем; 0 — не знайдено.
+// kind: 'code' — код товару, 'name' — назва, інше — назва категорії.
+function searchTermScore(term, P, kind) {
+  var word = searchTermScore.word || (searchTermScore.word = /[0-9a-zа-яіїєґ']/);
+  var w = kind === 'name' ? 1 : kind === 'code' ? 1 : 0.3;
+  if (term.wild) {
+    term.re.lastIndex = 0; term.reC.lastIndex = 0;
+    if (term.re.test(P.t) || term.reC.test(P.c)) return (kind === 'code' ? 50 : 10) * w;
+    return 0;
+  }
+  var i = P.t.indexOf(term.n);
+  if (i !== -1) {
+    if (kind === 'code') return P.t === term.n ? 100 : i === 0 ? 60 : 40;
+    var best = 10;
+    for (; i !== -1 && best < 30; i = P.t.indexOf(term.n, i + 1)) {
+      var start = i === 0 || !word.test(P.t.charAt(i - 1));
+      var end = i + term.n.length >= P.t.length || !word.test(P.t.charAt(i + term.n.length));
+      best = Math.max(best, start && end ? 30 : start ? 20 : 10);
+    }
+    return best * w;
+  }
+  if (term.c && P.c.indexOf(term.c) !== -1) return kind === 'code' ? (P.c === term.c ? 100 : 50) : 8 * w;
+  if (term.fz) {
+    for (var k = 0; k < term.fz.length; k++) if (P.t.indexOf(term.fz[k]) !== -1) return 2 * w;
+  }
+  return 0;
+}
+
+// Товари, де КОЖНЕ слово запиту знайшлось хоч в одному з полів, від кращого
+// збігу до гіршого; за рівних балів — у вихідному порядку.
+function filterProducts(products, query, fields) {
+  var q = compileSearch(query);
+  if (!q.terms.length) return [];
+  var kinds = fields.map(function (f) { return f === 'code' || f === 'name' ? f : 'cat'; });
+  var preps = searchPreps(products, fields);
+  var scored = [];
+  for (var idx = 0; idx < products.length; idx++) {
+    var row = preps[idx], total = 0, i;
+    for (i = 0; i < q.terms.length; i++) {
+      var best = 0;
+      for (var f = 0; f < fields.length; f++) {
+        var s = searchTermScore(q.terms[i], row[f], kinds[f]);
+        if (s > best) best = s;
+      }
+      if (!best) break;
+      total += best;
+    }
+    if (i === q.terms.length) scored.push({ p: products[idx], s: total, i: idx });
+  }
+  scored.sort(function (a, b) { return b.s - a.s || a.i - b.i; });
+  return scored.map(function (x) { return x.p; });
+}
+
+// Підготовлені поля кожного товару — раз на масив товарів і набір полів, а не
+// на кожен символ запиту. Масив має бути той самий об'єкт між пошуками, щоб
+// кеш спрацьовував (мапа розділу тому тримає відфільтрований індекс сайту).
+function searchPreps(products, fields) {
+  var wm = searchPreps.cache || (searchPreps.cache = new WeakMap());
+  var byFields = wm.get(products);
+  if (!byFields) { byFields = {}; wm.set(products, byFields); }
+  var key = fields.join('|');
+  if (!byFields[key]) {
+    byFields[key] = products.map(function (p) { return fields.map(function (f) { return searchPrep(p[f]); }); });
+  }
+  return byFields[key];
+}
+
+// Словник для пошуку схожих: нормалізоване слово → як написане на сайті.
+// Кешується так само, як searchPreps.
+function searchVocab(products, fields) {
+  var wm = searchVocab.cache || (searchVocab.cache = new WeakMap());
+  var byFields = wm.get(products);
+  if (!byFields) { byFields = {}; wm.set(products, byFields); }
+  var key = fields.join('|');
+  if (!byFields[key]) {
+    var vocab = new Map();
+    products.forEach(function (p) {
+      fields.forEach(function (f) {
+        searchWords(p[f]).forEach(function (w) { if (!vocab.has(w[0])) vocab.set(w[0], w[1]); });
+      });
+    });
+    byFields[key] = vocab;
+  }
+  return byFields[key];
+}
+
+// Той самий запит, набраний в іншій розкладці: ytrjlth → енкодер, рпк25 → hgr25.
+// null, якщо міняти нічого або запит змішаний. Розділові знаки ([ ] ; ' , .)
+// перекладаються в літери лише в запиті без цифр — інакше 0.75 став би 0ю75.
+function searchLayoutSwap(raw) {
+  var EN = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`";
+  var UA = "йцукенгшщзхїфівапролджєячсмитьбю'";
+  var s = String(raw || '').toLowerCase();
+  var hasLat = /[a-z]/.test(s), hasCyr = /[а-яіїєґ]/.test(s), hasDigit = /\d/.test(s);
+  var out = '', i, ch, k;
+  if (hasLat && !hasCyr) {
+    for (i = 0; i < s.length; i++) {
+      ch = s.charAt(i); k = EN.indexOf(ch);
+      out += k !== -1 && (/[a-z]/.test(ch) || !hasDigit) ? UA.charAt(k) : ch;
+    }
+  } else if (hasCyr && !hasLat) {
+    for (i = 0; i < s.length; i++) {
+      ch = s.charAt(i); k = UA.indexOf(ch);
+      out += k !== -1 && /[a-z]/.test(EN.charAt(k)) ? EN.charAt(k) : ch;
+    }
+  } else return null;
+  return out === s ? null : out;
+}
+
+// Схожі слова для опечаток: слово запиту лише з літер (без цифр, масок і
+// розділових знаків), від 5 літер,
+// порівнюється з кожним словом каталогу (і з його початком — «спирал» має
+// знайти «спіральна»). Допуск — 1 помилка, від 8 літер — 2. Коди й числа
+// свідомо не розмиваються: помилка в 12-365 дала б чужий товар.
+// vocabs — масив словників (searchVocab); відстань — Дамерау-Левенштейн
+// (перестановка сусідніх літер — одна помилка), з виходом, щойно рядок
+// перевищив допуск. Три рядки матриці виділяються один раз на виклик.
+function searchFuzzyWords(term, vocabs) {
+  if (term.wild || /[^a-zа-яіїєґ']/.test(term.n) || term.n.length < 5) return null;
+  var a = term.n, m = a.length, k = m >= 8 ? 2 : 1, W = m + k + 1, i, j;
+  var ac = new Int32Array(m);
+  for (i = 0; i < m; i++) ac[i] = a.charCodeAt(i);
+  var r0 = new Int32Array(W), r1 = new Int32Array(W), r2 = new Int32Array(W);
+  var seen = new Set(), found = [];
+  vocabs.forEach(function (vocab) {
+    vocab.forEach(function (shown, b) {
+      if (b === a || b.length < m - k || seen.has(b)) return;
+      seen.add(b);
+      var n = Math.min(b.length, m + k), pp = r2, p = r0, c = r1, t;
+      for (j = 0; j <= n; j++) p[j] = j;
+      for (i = 1; i <= m; i++) {
+        var ai = ac[i - 1], rowMin = i;
+        c[0] = i;
+        for (j = 1; j <= n; j++) {
+          var bj = b.charCodeAt(j - 1);
+          var v = p[j - 1] + (ai === bj ? 0 : 1);
+          if (p[j] + 1 < v) v = p[j] + 1;
+          if (c[j - 1] + 1 < v) v = c[j - 1] + 1;
+          if (i > 1 && j > 1 && ai === b.charCodeAt(j - 2) && ac[i - 2] === bj && pp[j - 2] + 1 < v) v = pp[j - 2] + 1;
+          c[j] = v;
+          if (v < rowMin) rowMin = v;
+        }
+        if (rowMin > k) return;
+        t = pp; pp = p; p = c; c = t;
+      }
+      // Мінімум по довжинах префікса: «спирал» проти «спіральна» — це «спірал».
+      var d = k + 1;
+      for (j = Math.max(0, m - k); j <= n; j++) if (p[j] < d) d = p[j];
+      if (d <= k) found.push({ w: b, d: d });
+    });
+  });
+  found.sort(function (x, y) { return x.d - y.d; });
+  return found.slice(0, 40).map(function (x) { return x.w; });
+}
+
+// Пошук по кількох наборах одразу (мапа розділу: свій розділ + решта сайту) —
+// щоб запасні ходи вирішувались за сумою, а не для кожного набору окремо.
+// sets: [{ products, fields }]. Повертає { q, lists, note }: q — запит, яким
+// справді шукали (його ж передавати в highlightMatch), lists — збіги по наборах,
+// note — null, { kind: 'layout', text } або { kind: 'fuzzy', pairs: [[слово, схоже]] }.
+function searchProducts(sets, query) {
+  function run(q) { return sets.map(function (s) { return filterProducts(s.products, q, s.fields); }); }
+  function total(lists) { return lists.reduce(function (n, l) { return n + l.length; }, 0); }
+  var q = compileSearch(query);
+  var lists = run(q);
+  if (!q.terms.length || total(lists)) return { q: q, lists: lists, note: null };
+
+  var alt = searchLayoutSwap(q.raw);
+  if (alt) {
+    var qa = compileSearch(alt), la = run(qa);
+    if (total(la)) return { q: qa, lists: la, note: { kind: 'layout', text: alt } };
+  }
+
+  var vocabs = sets.map(function (s) { return searchVocab(s.products, s.fields); });
+  function shown(w) {
+    for (var i = 0; i < vocabs.length; i++) if (vocabs[i].has(w)) return vocabs[i].get(w);
+    return w;
+  }
+  function fuzzy(qq) {
+    var pairs = [];
+    var terms = qq.terms.map(function (t) {
+      // Слово, яке саме по собі є в каталозі (частиною якогось слова), не
+      // розмивається: запит не знайшовся через ІНШЕ слово, а «двигун → двигуна,
+      // двигуни» в підказці — шум. Слова з опечатками розділових знаків не мають
+      // (searchFuzzyWords бере лише їх), тож перевірки по словнику досить.
+      if (t.wild) return t;
+      var exists = vocabs.some(function (v) {
+        for (var it = v.keys(), w = it.next(); !w.done; w = it.next()) if (w.value.indexOf(t.n) !== -1) return true;
+        return false;
+      });
+      if (exists) return t;
+      var fz = searchFuzzyWords(t, vocabs);
+      if (!fz || !fz.length) return t;
+      fz.slice(0, 3).forEach(function (w) { pairs.push([t.raw, shown(w)]); });
+      return Object.assign({}, t, { fz: fz });
+    });
+    if (!pairs.length) return null;
+    var qf = { raw: qq.raw, terms: terms }, lf = run(qf);
+    return total(lf) ? { q: qf, lists: lf, note: { kind: 'fuzzy', pairs: pairs } } : null;
+  }
+  // Опечатки — спершу в набраному, потім у переведеному з іншої розкладки.
+  return fuzzy(q) || (alt && fuzzy(compileSearch(alt))) || { q: q, lists: lists, note: null };
+}
+
+// Рядок над результатами, коли шукали не дослівно тим, що набрано; '' — якщо дослівно.
+function searchNoteHtml(note) {
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  if (!note) return '';
+  var text = note.kind === 'layout'
+    ? 'Схоже, запит набрано в іншій розкладці клавіатури. Показано результати для «' + esc(note.text) + '».'
+    : 'Точних збігів немає. Показано схожі за написанням: ' +
+      note.pairs.map(function (p) { return esc(p[0]) + ' → ' + esc(p[1]); }).join(', ') + '.';
+  return '<div class="search-note">' + text + '</div>';
+}
+
 // Приймає СИРИЙ текст і екранує сам — ПІСЛЯ розбиття на збіг/не-збіг. Якщо
 // екранувати до виклику, запит "amp" знаходився б усередині "&amp;" і розрізав
-// би сутність: "&<mark>amp</mark>;" замість символу "&".
+// би сутність: "&<mark>amp</mark>;" замість символу "&". Шукає по
+// нормалізованому тексту (та сама довжина, що в оригіналу) і по «стиснутому»
+// через pos, тож підсвічується саме те місце, що знайшлось.
 function highlightMatch(text, query) {
   function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  var str = String(text || '');
-  if (!query) return esc(str);
-  var escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  var regex = new RegExp('(' + escapedQuery + ')', 'gi');
-  var out = '';
-  var lastIndex = 0;
-  var m;
-  while ((m = regex.exec(str))) {
-    out += esc(str.slice(lastIndex, m.index)) + '<mark class="search-highlight">' + esc(m[0]) + '</mark>';
-    lastIndex = m.index + m[0].length;
+  var str = String(text == null ? '' : text);
+  var q = compileSearch(query);
+  if (!q.terms.length || !str) return esc(str);
+  var P = searchPrep(str), marks = [];
+  function addAll(needle) {
+    if (!needle) return false;
+    var any = false;
+    for (var i = P.t.indexOf(needle); i !== -1; i = P.t.indexOf(needle, i + needle.length)) {
+      marks.push([i, i + needle.length]); any = true;
+    }
+    return any;
   }
-  out += esc(str.slice(lastIndex));
-  return out;
+  // Групи регулярки йдуть одна за одною без проміжків, тож початок кожної —
+  // сума довжин попередніх; підсвічуються лише групи-літерали, не маски.
+  function addGroups(re, parts, hay, map) {
+    re.lastIndex = 0;
+    var m, any = false;
+    while ((m = re.exec(hay))) {
+      var at = m.index;
+      for (var g = 1; g < m.length; g++) {
+        var len = m[g].length, lit = parts[g - 1] !== '*' && parts[g - 1] !== '?';
+        if (lit && len) marks.push(map ? [map[at], map[at + len - 1] + 1] : [at, at + len]);
+        at += len;
+      }
+      any = true;
+      if (m[0].length === 0) re.lastIndex++;
+    }
+    return any;
+  }
+  q.terms.forEach(function (t) {
+    if (t.wild) {
+      if (!addGroups(t.re, t.parts, P.t, null)) addGroups(t.reC, t.parts, P.c, P.pos);
+      return;
+    }
+    if (addAll(t.n)) return;
+    if (t.c) {
+      for (var i = P.c.indexOf(t.c); i !== -1; i = P.c.indexOf(t.c, i + t.c.length)) {
+        marks.push([P.pos[i], P.pos[i + t.c.length - 1] + 1]);
+      }
+    }
+    (t.fz || []).forEach(addAll);
+  });
+  if (!marks.length) return esc(str);
+  marks.sort(function (a, b) { return a[0] - b[0] || b[1] - a[1]; });
+  var out = '', last = 0;
+  marks.forEach(function (r) {
+    var s = Math.max(r[0], last);
+    if (r[1] <= s) return;
+    out += esc(str.slice(last, s)) + '<mark class="search-highlight">' + esc(str.slice(s, r[1])) + '</mark>';
+    last = r[1];
+  });
+  return out + esc(str.slice(last));
+}
+
+// Сортування результатів за стовпцем «Наявність»: клік перемикає по колу
+// 0 → 1 → 2 → 0. 0 — як знайдено (від кращого збігу), 1 — спершу «Готово до
+// відправки», 2 — спершу відсутні. Усередині групи порядок збігу зберігається.
+function sortByAvailability(list, mode) {
+  if (!mode) return list;
+  var yes = [], no = [];
+  list.forEach(function (p) { (/готово/i.test(p.availability || '') ? yes : no).push(p); });
+  return mode === 1 ? yes.concat(no) : no.concat(yes);
+}
+function availSortTh(mode) {
+  var tips = [
+    'Порядок: від кращого збігу із запитом. Клік: спершу «Готово до відправки».',
+    'Порядок: спершу «Готово до відправки». Клік: спершу «Немає в наявності».',
+    'Порядок: спершу «Немає в наявності». Клік: від кращого збігу із запитом.'
+  ];
+  var arrows = ['⇅', '▼', '▲'];
+  return '<th class="col-avail th-sort' + (mode ? ' active' : '') + '" data-sort-avail data-tip="' + tips[mode] + '">' +
+    'Наявність<span class="sort-arrow">' + arrows[mode] + '</span></th>';
 }
 
 // ==================== САЙТОВИЙ ПОШУК (лише map.html) ====================
@@ -888,9 +1240,23 @@ function initSiteSearch() {
     return indexPromise;
   }
 
+  var sortMode = 0; // стовпець «Наявність», див. sortByAvailability
+  var lastQuery = '';
+  // Слухач один на контейнер: таблиця перемальовується на кожен символ.
+  resultsEl.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-sort-avail]')) return;
+    sortMode = (sortMode + 1) % 3;
+    var tip = document.getElementById('custom-tooltip');
+    if (tip) tip.classList.remove('visible');
+    renderResults(lastQuery);
+  });
+
   function renderResults(query) {
     function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
-    var matches = filterProducts(indexData || [], query, ['name', 'code', 'categoryName']);
+    lastQuery = query;
+    var found = searchProducts([{ products: indexData || [], fields: ['name', 'code', 'categoryName'] }], query);
+    var hq = found.q;
+    var matches = sortByAvailability(found.lists[0], sortMode);
     if (indexFailed) {
       resultsEl.innerHTML =
         '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
@@ -913,18 +1279,18 @@ function initSiteSearch() {
       var isYes = /готово/i.test(p.availability || '');
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
-        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, query) + '</a></td>' +
-        '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', hq) + '</span></td>' +
+        '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, hq) + '</a></td>' +
+        '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, hq) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
       );
     }).join('');
-    resultsEl.innerHTML =
+    resultsEl.innerHTML = searchNoteHtml(found.note) +
       '<div class="section-block"><div class="section-head"><div style="display:flex;align-items:center;gap:8px;"><span>Знайдені товари</span>' +
       '<span style="font-size:0.72rem;color:var(--text-muted);">(' + matches.length + ' позицій)</span></div></div>' +
       '<div class="table-wrap"><table class="simple-table search-table"><thead><tr>' +
-      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th><th class="col-avail">Наявність</th>' +
+      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th>' + availSortTh(sortMode) +
       '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div></div>';
   }
 
@@ -957,7 +1323,8 @@ function initCatalogMap(CATALOG_DATA) {
     selectedNodeId: CATALOG_DATA.tree.id,
     sidebarCollapsed: new Set(),
     nodeOverrides: new Map(),
-    searchQuery: ''
+    searchQuery: '',
+    searchSort: 0 // стовпець «Наявність» у результатах пошуку, див. sortByAvailability
   };
 
   var nodeMap = new Map();
@@ -1314,6 +1681,7 @@ function initCatalogMap(CATALOG_DATA) {
   // сторінка перемальовується (renderContent()) — але лише якщо запит з того
   // часу не змінився (інакше застаріла відповідь просто відкидається).
   var siteIndexData = null;
+  var siteIndexOthers = null; // siteIndexData без товарів цього розділу
   var siteIndexFailed = false; // окремо від siteIndexData=[] — див. те саме
   // розрізнення в initSiteSearch/loadIndex вище: без цього прапорця збій
   // fetch() виглядав би як "решту сайту перевірили, там нуль", хоча
@@ -1361,9 +1729,18 @@ function initCatalogMap(CATALOG_DATA) {
     }).join('');
     tableWrap.innerHTML =
       '<table class="simple-table search-table"><thead><tr>' +
-      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th><th class="col-avail">Наявність</th>' +
+      '<th class="col-n">№</th><th class="col-code">Код</th><th>Назва товару</th><th class="col-cat">Категорія</th>' + availSortTh(state.searchSort) +
       '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
     section.appendChild(tableWrap);
+
+    // Один стан на обидва блоки (цей розділ / інші): клік по будь-якому
+    // заголовку перемикає порядок в обох.
+    tableWrap.querySelector('[data-sort-avail]').addEventListener('click', function () {
+      state.searchSort = (state.searchSort + 1) % 3;
+      var tip = document.getElementById('custom-tooltip');
+      if (tip) tip.classList.remove('visible');
+      renderContent();
+    });
 
     if (isLocal) {
       Array.prototype.forEach.call(section.querySelectorAll('.cat-found-badge'), function (el) {
@@ -1387,13 +1764,24 @@ function initCatalogMap(CATALOG_DATA) {
   }
 
   function renderSearchResultsView(body, query) {
-    var localMatches = filterProducts(allProductsList, query, ['name', 'code', 'nodeName']);
     var currentTopId = CATALOG_DATA.tree.id.replace(/^node-/, '');
+    var localSet = { products: allProductsList, fields: ['name', 'code', 'nodeName'] };
+    // Поки індекс сайту не підвантажено, шукаємо лише тут і без запасних ходів
+    // (розкладка, опечатки): вирішувати, що точних збігів немає, можна лише
+    // за обома наборами разом, а другий ще в дорозі.
+    // Відфільтрований індекс — один масив на сторінку, а не новий на кожен
+    // символ: на ньому тримаються кеші searchPreps/searchVocab.
+    if (siteIndexData && !siteIndexOthers) {
+      siteIndexOthers = siteIndexData.filter(function (e) { return e.topId !== currentTopId; });
+    }
+    var found = siteIndexData
+      ? searchProducts([localSet, { products: siteIndexOthers, fields: ['name', 'code', 'categoryName'] }], query)
+      : { q: compileSearch(query), lists: [filterProducts(localSet.products, query, localSet.fields)], note: null };
+    var hq = found.q;
+    var localMatches = sortByAvailability(found.lists[0], state.searchSort);
     // null = ще не підвантажено (запит іде нижче) — відрізняється від "уже
     // перевірили, там нуль", щоб не показати "нічого не знайдено" завчасно.
-    var remoteMatches = siteIndexData
-      ? filterProducts(siteIndexData.filter(function (e) { return e.topId !== currentTopId; }), query, ['name', 'code', 'categoryName'])
-      : null;
+    var remoteMatches = siteIndexData ? sortByAvailability(found.lists[1], state.searchSort) : null;
 
     var bc = document.getElementById('breadcrumbs');
     document.getElementById('node-header-row').style.display = 'none';
@@ -1437,11 +1825,12 @@ function initCatalogMap(CATALOG_DATA) {
         renderContent();
       });
 
+      if (found.note) body.insertAdjacentHTML('beforeend', searchNoteHtml(found.note));
       if (localMatches.length > 0) {
-        body.appendChild(buildResultsSection('Знайдені товари (у цій категорії)', localMatches, query, true));
+        body.appendChild(buildResultsSection('Знайдені товари (у цій категорії)', localMatches, hq, true));
       }
       if (remoteMatches && remoteMatches.length > 0) {
-        body.appendChild(buildResultsSection('Знайдені в інших категоріях', remoteMatches, query, false));
+        body.appendChild(buildResultsSection('Знайдені в інших категоріях', remoteMatches, hq, false));
       }
     }
 
@@ -1582,7 +1971,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initNarrowGuard, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
@@ -1704,7 +2093,7 @@ const html = `<!DOCTYPE html>
     </div>
     <div class="header-center">
       <div class="search-wrap">
-        <span class="search-icon">\u{1F50D}</span>
+        <span class="search-icon">${ICONS.search}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
         <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
       </div>
@@ -1746,7 +2135,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
         <div class="help-term">
           <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
           <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
-        </div>
+        </div>${searchHelpHtml(' Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту.')}
       </div>
     </div>
   </div>
