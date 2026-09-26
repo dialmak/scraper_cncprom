@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const { nowStr, logLine: appendLog } = require('./lib/log');
+const { nowStr, logEvent } = require('./lib/log');
 const { sleep } = require('./lib/browser');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -55,23 +55,30 @@ const BLOCKED_PATTERNS = [
 ];
 const BLOCKED_RESOURCE_TYPES = ['image', 'font', 'media', 'stylesheet'];
 
-// ==================== ЛОГ (scrape.log — доповнюється, ніколи не перезаписується) ====================
-// Один файл на весь проєкт (не per-категорія, як CSV/JSON/report), бо це історія
+// ==================== ЛОГ (scrape.jsonl — доповнюється, ніколи не перезаписується) ====================
+// Один файл на весь проєкт (не per-категорія, як JSON-каталоги), бо це історія
 // запусків скрапера в часі, а не результат конкретного прогону. Лежить в output/
 // разом з рештою згенерованого, а не в корені проєкту.
-const LOG_FILE = path.join(OUTPUT_DIR, "scrape.log");
-// nowStr/logLine спільні з build-maps.js (lib/log.js): scrape.log і map.log —
-// одна родина логів прогонів, їхній формат не має розходитись.
-const logLine = text => appendLog(LOG_FILE, text);
+//
+// JSONL, а не текст (26.09.2026): сторінка будує з нього таблицю прогону, і
+// тоді розбирати формулювання не треба — зміна слова в рядку нічого не ламає.
+// Старий текстовий scrape.log лишається поряд недоторканим: у ньому історія
+// до переходу, і його ніхто не перезаписує й не видаляє.
+const LOG_FILE = path.join(OUTPUT_DIR, "scrape.jsonl");
+// Ідентифікатор прогону: scrape-site.js запускає кожну категорію окремим
+// процесом, тож без спільного id 23 категорії однієї ночі виглядали б як 23
+// різні прогони. Передається через середовище; поодинокий запуск робить свій.
+const RUN_ID = process.env.SCRAPE_RUN_ID || new Date().toISOString();
+const logEvt = (ev, fields) => logEvent(LOG_FILE, ev, Object.assign({ run: RUN_ID }, fields));
 const runErrors = [];
 function logError(text) {
   runErrors.push({ time: nowStr(), text });
-  logLine(`ПОМИЛКА: ${text}`);
+  logEvt('error', { id: START_CATEGORY_ID, msg: text });
 }
 
 // Попередження — у лог, але НЕ в помилки прогону: стан незвичний, але пояснюваний.
 function logWarn(text) {
-  logLine(`УВАГА: ${text}`);
+  logEvt('warn', { id: START_CATEGORY_ID, msg: text });
 }
 
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
@@ -274,7 +281,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
   if (!name) {
     name = await page.$eval('h1', el => el.textContent.trim()).catch(() => `Категорія ${extractCategoryIdFromUrl(url)}`);
     console.log(`Стартова категорія: ${name}`);
-    logLine(`Категорія: "${name}" (id ${extractCategoryIdFromUrl(url)})`);
+    logEvt('category', { id: extractCategoryIdFromUrl(url), name });
   }
   const fullPath = [...path, name];
 
@@ -487,7 +494,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
 // ==================== ГОЛОВНА ЛОГІКА ====================
 (async () => {
   const startTime = Date.now();
-  logLine(`СТАРТ: ${START_URL} (категорія ${START_CATEGORY_ID})`);
+  logEvt('start', { id: START_CATEGORY_ID, url: START_URL });
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
@@ -519,7 +526,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
 
     const orphanCount = [...productAssignments.values()].filter(a => !a.isLeafCategory).length;
     console.log(`З них товарів-сиріт (прив'язані до проміжної категорії): ${orphanCount}`);
-    logLine(`ЕТАП 1 завершено: унікальних товарів ${productAssignments.size}, сиріт ${orphanCount}.`);
+    logEvt('stage1', { id: START_CATEGORY_ID, products: productAssignments.size, orphans: orphanCount });
 
     console.log(`\n=== ЕТАП 2: збір повних даних по кожному унікальному товару ===`);
     const failedUrls = [];
@@ -540,7 +547,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
     // стає лише те, що не вдалось і вдруге.
     if (retryLater.length > 0) {
       console.log(`\n  Не вдалось з першого разу: ${retryLater.length} — повторний прохід через ${RETRY_PASS_DELAY_MS / 1000} с`);
-      logLine(`ЕТАП 2: ${retryLater.length} товарів не вдалось з першого разу — повторний прохід.`);
+      logEvt('retry', { id: START_CATEGORY_ID, msg: `${retryLater.length} товарів не вдалось з першого разу — повторний прохід.`, pending: retryLater.length });
       await sleep(RETRY_PASS_DELAY_MS);
       let recovered = 0;
       for (const assignment of retryLater) {
@@ -548,7 +555,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
         if (row) { allRows.push(row); recovered++; } else failedUrls.push(assignment.url);
       }
       console.log(`  Повторний прохід: відновлено ${recovered} з ${retryLater.length}`);
-      logLine(`ЕТАП 2: повторний прохід відновив ${recovered} з ${retryLater.length}.`);
+      logEvt('retry', { id: START_CATEGORY_ID, msg: `повторний прохід відновив ${recovered} з ${retryLater.length}.`, recovered });
     }
 
     console.log(`\nВсього товарів зібрано: ${allRows.length}`);
@@ -564,7 +571,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
       // і виглядав би як поточні збої.
       fs.unlinkSync(OUTPUT_FAILED);
     }
-    logLine(`ЕТАП 2 завершено: зібрано ${allRows.length}, "Готово до відправки" ${availableCount}, не вдалось обробити ${failedUrls.length}.`);
+    logEvt('stage2', { id: START_CATEGORY_ID, got: allRows.length, ready: availableCount, failed: failedUrls.length });
 
     // ==================== ЕТАП 3: ЗВІРКА І ЗАПИС КАТАЛОГУ ====================
     const chains = buildChainMap(tree);
@@ -607,17 +614,29 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
 
     const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
     console.log(`\nГотово за ${elapsedMin} хв! Файл: ${OUTPUT_CATALOG}`);
-    const recon = !root || root.diff === null ? 'звірка н/д'
-      : root.diff === 0 ? `звірка ✅ ${root.ourAvailable}/${root.siteCounter}`
-      : `звірка ⚠️ ${root.ourAvailable}/${root.siteCounter}, вузлів з розбіжністю ${mismatchNodes.length}`;
-    logLine(`ФІНІШ: успішно за ${elapsedMin} хв. Товарів: ${allRows.length} (в наявності: ${availableCount}). ` +
-      `${recon}. крихти: match ${crumbSummary.match}, ancestor ${crumbSummary.ancestor}, ` +
-      `descendant ${crumbSummary.descendant}, other ${crumbSummary.other}, unknown ${crumbSummary.unknown}. ` +
-      (runErrors.length > 0 ? `Помилок за запуск: ${runErrors.length} (див. вище в цьому лозі).` : `Без помилок.`));
+    // Усе, що треба таблиці прогону, стоїть в одному записі: рядок береться
+    // з нього цілком, без збирання по попередніх подіях.
+    logEvt('finish', {
+      id: START_CATEGORY_ID,
+      name: tree.categoryName || null,
+      min: +elapsedMin,
+      total: allRows.length,
+      ready: availableCount,
+      failed: failedUrls.length,
+      orphans: orphanCount,
+      rec: {
+        yes: root ? root.ourAvailable : null,
+        site: root ? root.siteCounter : null,
+        diff: root ? root.diff : null,
+        nodes: mismatchNodes.length
+      },
+      crumbs: crumbSummary,
+      errors: runErrors.length
+    });
   } catch (fatalErr) {
     const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
     logError(`ФАТАЛЬНА: ${fatalErr && fatalErr.message ? fatalErr.message : fatalErr}`);
-    logLine(`ФІНІШ: ПЕРЕРВАНО через помилку після ${elapsedMin} хв. Помилок за запуск: ${runErrors.length}.`);
+    logEvt('finish', { id: START_CATEGORY_ID, aborted: true, min: +elapsedMin, errors: runErrors.length });
     console.error('Скрапінг перервано помилкою:', fatalErr);
     process.exitCode = 1;
   } finally {

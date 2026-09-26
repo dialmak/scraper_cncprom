@@ -2,7 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { logLine: appendLog } = require('./lib/log');
+const { logLine: appendLog, readEvents } = require('./lib/log');
+const { runLogHtml } = require('./lib/runlog');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
@@ -19,7 +20,9 @@ const { readCategories, filePath: categoriesFile } = require('./lib/categories')
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 const LOG_FILE = path.join(DIR, "map.log");
-const SCRAPE_LOG_FILE = path.join(DIR, "scrape.log");
+// Старий текстовий scrape.log лишається на місці недоторканим (історія
+// до 26.09.2026); панель будується з scrape.jsonl.
+const SCRAPE_LOG_FILE = path.join(DIR, "scrape.jsonl");
 // Ім'я файла експорту несе дату ДАНИХ — найсвіжішого скрапінгу серед
 // категорій, тобто ту саму, що стоїть у шапці map.html. До 26.09.2026 це була
 // дата ЗБІРКИ за годинником машини, а в GitHub Actions це UTC: після опівночі
@@ -688,6 +691,21 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // і ростуть необмежено з кожним прогоном; поки що це не проблема (кілька
   // КБ), але якщо колись виростуть до сотень КБ — варто буде показувати лише
   // хвіст, а не вміст цілком.
+  // Панель лога скрапінгу — таблиця прогонів (lib/runlog.js), а не текст:
+  // колонки повторюють меню «Звірка скрапера з даними сайту», свіжий прогін зверху
+  // й розгорнутий, старі — згорнуті <details>.
+  const tablePanelHtml = (overlayId, closeBtnId, title, inner) => `
+  <div class="help-overlay" id="${overlayId}">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>${title}</h3>
+        <button class="btn-help-close" id="${closeBtnId}" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">${inner}
+      </div>
+    </div>
+  </div>`;
+
   const logPanelHtml = (overlayId, closeBtnId, title, content) => `
   <div class="help-overlay" id="${overlayId}">
     <div class="help-panel">
@@ -768,6 +786,39 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      сторінці історії змін, тож вигляд має бути один на три сторінки. */
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
+
+  /* Таблиця прогонів у панелі «Лог скрапінгу» (lib/runlog.js). Стилі тут, а не
+     в map-common.css: ця панель є лише на map.html. */
+  .rl-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .rl-run { border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-subtle); }
+  .rl-run > summary { cursor: pointer; padding: 8px 12px; font-size: 0.78rem; color: var(--text-main);
+    font-family: var(--font-mono); list-style: none; }
+  .rl-run > summary::-webkit-details-marker { display: none; }
+  /* Стрілка малюється сама, бо рідний маркер <details> виглядає по-різному
+     в різних браузерах, а тут рядок моноширинний і зсув помітний. */
+  /* Стрілка в sans: рядок summary моноширинний, а в JetBrains Mono цього знака
+     немає — замість неї малювався порожній прямокутник. */
+  .rl-run > summary::before { content: '▸'; display: inline-block; width: 14px;
+    color: var(--text-subtle); font-family: var(--font-sans); }
+  .rl-run[open] > summary::before { content: '▾'; }
+  .rl-run[open] > summary { border-bottom: 1px solid var(--border-color); }
+  .rl-tab { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+  .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
+    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); white-space: nowrap; vertical-align: bottom; }
+  .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+  .rl-tab th.rl-n, .rl-tab td.rl-n { text-align: right; font-variant-numeric: tabular-nums; width: 1%; }
+  .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
+  .rl-tab td.rl-name { width: 100%; }
+  .rl-tab td.rl-zero { color: var(--text-subtle); }
+  .rl-tab td.rl-n.rl-bad { color: var(--status-no); font-weight: 600; }
+  .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
+  .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
+    color: var(--text-muted); font-size: 0.72rem; }
+  .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
+    color: var(--text-muted); padding-top: 6px; }
+  .rl-br { font-family: var(--font-mono); color: var(--text-subtle); }
+  .rl-loose { padding: 6px 8px; color: var(--text-muted); font-size: 0.72rem; }
+  .rl-raw { font-size: 0.74rem; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -793,7 +844,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
       <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
-${logPanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `output/site/scrape.log`, scrapeLogContent)}
+${tablePanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `Лог скрапінгу`, scrapeLogContent)}
 ${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/site/map.log`, mapLogContent)}
 ${orphanPanelHtml}
 ${mismatchPanelHtml}
@@ -1080,7 +1131,7 @@ function writeRedirect(file, target) {
   logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
     (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
 
-  const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
+  const scrapeLogContent = runLogHtml(readEvents(SCRAPE_LOG_FILE), 'scrape.jsonl');
   const mapLogContent = readLogSafe(LOG_FILE);
   try {
     buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);

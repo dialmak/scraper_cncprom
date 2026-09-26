@@ -202,6 +202,10 @@ function scrapeAll(queue) {
   // раз: паралельні скрапінги того самого сайту небажані (навантаження, і
   // спільний scrape.log має лишатись послідовною історією). Помилка однієї
   // категорії не зупиняє чергу — scrape-complete.js сам логує причину.
+  // Один id на всю чергу: кожна категорія — окремий процес, і без цього 23
+  // категорії однієї ночі виглядали б у лозі як 23 різні прогони. Передається
+  // через середовище; поодинокий запуск scrape-complete.js робить собі свій.
+  const runId = process.env.SCRAPE_RUN_ID || new Date().toISOString();
   let ok = 0;
   let failed = 0;
   const failures = [];
@@ -221,6 +225,7 @@ function scrapeAll(queue) {
 
     const res = spawnSync('node', ['scrape-complete.js', r.categoryUrl], {
       cwd: ROOT_DIR, stdio: 'inherit', timeout: CATEGORY_TIMEOUT_MS,
+      env: Object.assign({}, process.env, { SCRAPE_RUN_ID: runId }),
     });
 
     // res.error — це "процес не вдалось запустити взагалі" (немає node в PATH)

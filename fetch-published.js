@@ -7,16 +7,24 @@
 // Завантажує categories.json і для кожної категорії <id>_catalog.json
 // (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
 // <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
-// лишились чужі. scrape.log / map.log — лише якщо локально їх немає.
+// лишились чужі. Логи (scrape.jsonl, scrape.log, map.log) — лише якщо локально їх немає.
 //
-// node fetch-published.js [pagesUrl]   (за замовчуванням — PAGES_URL нижче)
+// node fetch-published.js [pagesUrl]               (за замовчуванням — PAGES_URL нижче)
+// node fetch-published.js --logs-only [pagesUrl]   лише логи — для нічного прогону
+//
+// --logs-only з'явився 26.09.2026 разом із scrape.jsonl: нічний прогін у CI бере
+// чистий чекаут із порожнім output/, і без цього кроку лог щоночі починався
+// з нуля — історія прогонів була лише на локальній машині. Недоступний сайт тут
+// НЕ помилка: історія — бажана, але скрапінг через неї зупинятись не має.
 
 const fs = require('fs');
 const path = require('path');
 
 // Власний домен з 22.09.2026 (Settings → Pages → Custom domain); стара адреса
 // dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
-const PAGES_URL = (process.argv[2] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
+const LOGS_ONLY = process.argv.includes('--logs-only');
+const ARGS = process.argv.slice(2).filter(a => a !== '--logs-only');
+const PAGES_URL = (ARGS[0] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
 // Сайт публікує output/site/ у корені (з 22.09.2026); до того все лежало під
 // site/. База визначається на старті: корінь, а якщо там нема списку
 // категорій — стара розкладка site/.
@@ -62,7 +70,34 @@ async function getCategoryList() {
   throw new Error(`Не знайдено списку категорій ні в ${PAGES_URL}, ні в ${PAGES_URL}site/`);
 }
 
+// Логи — append-only історія за всі прогони, а не результат одного. У rebuild_only
+// чекаут свіжий, output/ порожній — і без цього кроку збірка публікувала
+// сайт із порожнім логом і map.log з одного рядка, стираючи історію
+// нічного прогону (знайдено 25.09.2026 — користувач побачив порожній лог).
+// Тільки коли файла немає: локальну історію перезаписувати чужою не можна.
+// scrape.log — старий текстовий лог (архів до 26.09.2026): його теж несемо далі,
+// інакше перша ж нічна публікація його б загубила.
+async function fetchLogs() {
+  for (const name of ['scrape.jsonl', 'scrape.log', 'map.log']) {
+    const lp = path.join(DIR, name);
+    if (fs.existsSync(lp)) { console.log(`  ${name}: лишаємо локальний`); continue; }
+    try {
+      const buf = await get(name);
+      fs.writeFileSync(lp, buf);
+      console.log(`  ${name}: завантажено (${buf.length} байт)`);
+    } catch (e) {
+      console.warn(`  ${name}: немає на сайті (${e.message})`);
+    }
+  }
+}
+
 (async () => {
+  if (LOGS_ONLY) {
+    if (!fs.existsSync(DIR)) fs.mkdirSync(DIR, { recursive: true });
+    console.log(`Логи з ${BASE}:`);
+    await fetchLogs();
+    return;
+  }
   fs.mkdirSync(DIR, { recursive: true });
   const ids = await getCategoryList();
   console.log(`${BASE}: категорій ${ids.length}`);
@@ -92,22 +127,7 @@ async function getCategoryList() {
     ok++;
     console.log(`  ${id}: скрапінг ${summary.scraped_at} UTC${extras.length ? ', є ' + extras.join(', ') : ''}`);
   }
-  // Логи — append-only історія за всі прогони, а не результат одного. У rebuild_only
-  // чекаут свіжий, output/ порожній — і без цього кроку збірка публікувала
-  // сайт із порожнім scrape.log і map.log з одного рядка, стираючи історію
-  // нічного прогону (знайдено 25.09.2026 — користувач побачив порожній лог).
-  // Тільки коли файла немає: локальну історію перезаписувати чужою не можна.
-  for (const name of ['scrape.log', 'map.log']) {
-    const lp = path.join(DIR, name);
-    if (fs.existsSync(lp)) { console.log(`  ${name}: лишаємо локальний`); continue; }
-    try {
-      const buf = await get(name);
-      fs.writeFileSync(lp, buf);
-      console.log(`  ${name}: завантажено (${buf.length} байт)`);
-    } catch (e) {
-      console.warn(`  ${name}: немає на сайті (${e.message})`);
-    }
-  }
+  await fetchLogs();
 
   console.log(`Завантажено категорій: ${ok} з ${ids.length}`);
   if (ok === 0) process.exit(1);

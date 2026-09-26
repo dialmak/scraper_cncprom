@@ -67,7 +67,6 @@ jobs:
 
       - name: Адреса GitHub Pages
         id: pages-url
-        if: ${{ inputs.rebuild_only }}
         run: echo "url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
 
       - name: Дата знімка
@@ -85,6 +84,13 @@ jobs:
           if [ "$(date -u +%H)" -ge 12 ]; then d=$(date -u -d '+1 day' +%F); else d=$(date -u +%F); fi
           echo "SNAPSHOT_DATE=$d" >> "$GITHUB_ENV"
           echo "Знімок цього прогону буде датовано $d"
+
+      - name: "Історія логів з опублікованого сайту"
+        if: ${{ !inputs.rebuild_only }}
+        # Чекаут свіжий, output/ порожній — без цього кроку scrape.jsonl щоночі
+        # починався б з нуля, і таблиця прогонів на сайті мала б одну ніч. Сайт
+        # недоступний — не помилка: скрипт лише попередить, скрапінг піде далі.
+        run: node fetch-published.js --logs-only "${{ steps.pages-url.outputs.url }}"
 
       - name: Етап 1 — розвідка категорій + скрапінг усіх за чергою
         if: ${{ !inputs.rebuild_only }}
