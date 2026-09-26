@@ -790,7 +790,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   /* Таблиця прогонів у панелі «Лог скрапінгу» (lib/runlog.js). Стилі тут, а не
      в map-common.css: ця панель є лише на map.html. */
   .rl-wrap { display: flex; flex-direction: column; gap: 10px; }
-  .rl-run { border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-subtle); }
+  .rl-run { border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-white); overflow: hidden; }
+  .rl-run > summary { background: var(--bg-subtle); }
   .rl-run > summary { cursor: pointer; padding: 8px 12px; font-size: 0.78rem; color: var(--text-main);
     font-family: var(--font-mono); list-style: none; }
   .rl-run > summary::-webkit-details-marker { display: none; }
@@ -841,6 +842,14 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      разом із примітками під ним. outline, а не border: у border-collapse рамка рядка
      ділиться з сусіднім, і таблиця стрибала б на піксель. */
   .rl-grp:hover { outline: 1px solid var(--border-active); outline-offset: -1px; }
+  /* Зебра — по категоріях (<tbody>), а не по рядках: примітка має бути того ж кольору,
+     що й її рядок. --bg-tag, а не --bg-row-alt, як у .simple-table: там у світлій темі
+     #fcfdfe на білому — смуг майже не видно, а тут зебру попросили саме щоб бачити. */
+  .rl-grp:nth-of-type(even) > tr > td { background: var(--bg-tag); }
+  /* Назва категорії — посилання на її мапу, але в спокої виглядає звичайним текстом:
+     таблиця з 23 синіх назв читалась би як список посилань, а не як журнал. */
+  .rl-cat { color: inherit; text-decoration: none; }
+  .rl-cat:hover { color: var(--text-link); text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -1153,7 +1162,7 @@ function writeRedirect(file, target) {
   logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
     (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
 
-  const scrapeLogContent = runLogHtml(readEvents(SCRAPE_LOG_FILE), 'scrape.jsonl');
+  const scrapeLogContent = runLogHtml(readEvents(SCRAPE_LOG_FILE), { mapIds: new Set(entries.map(e => String(e.id))) });
   const mapLogContent = readLogSafe(LOG_FILE);
   try {
     buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
