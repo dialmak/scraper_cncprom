@@ -1,13 +1,11 @@
-# Усе згенероване (scrape-complete.js / render-map.js / build-maps.js) лежить
-# в output/ — CSV/JSON/report/map_*.html/summary.json per-run, плюс спільні
-# map-common.css/.js, map.html (індекс), scrape.log і map.log. Один запис
-# замість переліку масок файлів — усе туди й пишеться, у репозиторії не
-# потрібне жодним чином.
+# Усе згенероване (scrape-complete.js / render-map.js / build-maps.js /
+# build-reports.js) лежить в output/site/ — каталоги, мапи, логи, сторінка змін.
+# Один запис замість переліку масок: у репозиторії воно не потрібне жодним чином.
 output/
 
-# Робоча копія гілки `data` (Фаза 3) — git worktree, який готує сама
-# deploy-pages.yml перед generate-snapshot.js/diff-map.js; це і є дефолтний
-# outDir цих двох скриптів, якщо запустити їх локально без аргумента.
+# Робоча копія гілки `data` — git worktree, який готує сама deploy-pages.yml
+# перед generate-snapshot.js; це і є дефолтний dataDir generate-snapshot.js і
+# build-reports.js, якщо запустити їх локально без аргумента.
 data-branch/
 
 # Залежності npm — відтворюються командою `npm install` за package-lock.json,
@@ -19,10 +17,5 @@ CLAUDE.md
 CLAUDE_uk.md
 README.md
 docs/
-phase.md
 run.txt
 SESSION-GUIDE.md
-baseline-*/
-
-# Локальна копія гілки data до перезапису 23.09.2026 (історія — у гілці archive).
-data-archive/

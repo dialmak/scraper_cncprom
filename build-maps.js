@@ -24,11 +24,10 @@ const { readCategories, filePath: categoriesFile } = require('./lib/categories')
 // ROOT_DIR, а всі шляхи до даних будуються від DIR.
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
-// Лог збірки — map.jsonl (26.09.2026), як і лог скрапінгу: панель будує з нього
-// таблицю. Старий текстовий map.log лишається недоторканим архівом.
+// Лог збірки — map.jsonl, лог скрапінгу — scrape.jsonl (з 26.09.2026, до того —
+// текстові map.log і scrape.log): панелі «Лог збірки» й «Лог скрапінгу» будують
+// з них таблиці.
 const LOG_FILE = path.join(DIR, "map.jsonl");
-// Старий текстовий scrape.log лишається на місці недоторканим (історія
-// до 26.09.2026); панель будується з scrape.jsonl.
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.jsonl");
 // Ім'я файла експорту несе дату ДАНИХ — найсвіжішого скрапінгу серед
 // категорій, тобто ту саму, що стоїть у шапці map.html. До 26.09.2026 це була
