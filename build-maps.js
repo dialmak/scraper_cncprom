@@ -810,10 +810,17 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab { width: 100%; border-collapse: collapse; font-size: 0.76rem; table-layout: fixed; }
   .rl-tab th:nth-child(1) { width: 50px; }
   .rl-tab th:nth-child(2) { width: 180px; }
+  /* white-space: nowrap — рядки шапки задано вручну через <br> (формулювання користувача),
+     і жоден з них не має розпадатись усередині. Найдовший — «Не збігається»; те, що він
+     вміщається у свою колонку, стереже смоук-тест. */
   .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
-    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; }
+    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; white-space: nowrap; }
   .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
   .rl-tab th.rl-n, .rl-tab td.rl-n { text-align: right; font-variant-numeric: tabular-nums; }
+  /* Заголовки числових колонок вирівняні праворуч, тож лівий відступ там порожній —
+     забираємо його під текст: «Не збігається» в Inter (найширший із шрифтів стека)
+     займає 69px, і з відступом 8px запасу лишалось 2px. */
+  .rl-tab th.rl-n { padding-left: 2px; }
   .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
   .rl-tab td.rl-name { overflow-wrap: anywhere; }
   .rl-tab td.rl-zero { color: var(--text-subtle); }
