@@ -25,10 +25,8 @@ const ARGS = process.argv.slice(2).filter(a => a !== '--logs-only');
 // Власний домен з 22.09.2026 (Settings → Pages → Custom domain); стара адреса
 // dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
 const PAGES_URL = (ARGS[0] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
-// Сайт публікує output/site/ у корені (з 22.09.2026); до того все лежало під
-// site/. База визначається на старті: корінь, а якщо там нема списку
-// категорій — стара розкладка site/.
-let BASE = PAGES_URL;
+// Сайт публікує output/site/ у корені, тож усе береться звідти.
+const BASE = PAGES_URL;
 const DIR = path.join(__dirname, 'output', 'site');
 
 async function get(name) {
@@ -37,37 +35,16 @@ async function get(name) {
   return Buffer.from(await r.arrayBuffer());
 }
 
-// Список категорій: categories.json (з 23.09.2026), із запасним варіантом на
-// categories-site.csv — на сайті ще може лежати прогін у старому форматі, і
-// саме таким прогоном цей скрипт і підхоплює новий код.
+// Список категорій — categories.json у корені сайту. Його й зберігаємо локально:
+// build-maps.js будує сторінки саме за ним.
 async function getCategoryList() {
-  for (const base of [PAGES_URL, PAGES_URL + 'site/']) {
-    BASE = base;
-    try {
-      const buf = await get('categories.json');
-      const data = JSON.parse(buf.toString('utf8'));
-      const list = Array.isArray(data) ? data : (data.categories || []);
-      const ids = list.map(c => String(c.categoryId)).filter(x => /^\d+$/.test(x));
-      if (ids.length) { fs.writeFileSync(path.join(DIR, 'categories.json'), buf); return ids; }
-    } catch (e) { /* пробуємо CSV нижче */ }
-    try {
-      const csv = await get('categories-site.csv');
-      const ids = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1)
-        .map(l => l.split(';')[1]).filter(x => /^\d+$/.test(x || ''));
-      if (ids.length) {
-        // Перекладаємо на теперішній формат одразу — build-maps.js CSV уже не читає.
-        const rows = csv.toString('utf8').replace(/^﻿/, '').split(/\r?\n/).slice(1).filter(Boolean)
-          .map(l => l.split(';'))
-          .map((c, i) => ({ number: i + 1, categoryId: c[1], categoryName: (c[2] || '').replace(/^"|"$/g, ''), categoryUrl: c[3], scrapingTime: c[4] ? +c[4] : null }))
-          .filter(r => /^\d+$/.test(r.categoryId || ''));
-        fs.writeFileSync(path.join(DIR, 'categories.json'),
-          JSON.stringify({ discoveredAt: new Date().toISOString(), categories: rows }, null, 2), 'utf-8');
-        console.log('  (на сайті ще старий categories-site.csv — перекладено в categories.json)');
-        return ids;
-      }
-    } catch (e) { /* спробуємо наступну базу */ }
-  }
-  throw new Error(`Не знайдено списку категорій ні в ${PAGES_URL}, ні в ${PAGES_URL}site/`);
+  const buf = await get('categories.json');
+  const data = JSON.parse(buf.toString('utf8'));
+  const list = Array.isArray(data) ? data : (data.categories || []);
+  const ids = list.map(c => String(c.categoryId)).filter(x => /^\d+$/.test(x));
+  if (!ids.length) throw new Error(`${BASE}categories.json: жодної категорії`);
+  fs.writeFileSync(path.join(DIR, 'categories.json'), buf);
+  return ids;
 }
 
 // Логи — append-only історія за всі прогони, а не результат одного. У CI чекаут

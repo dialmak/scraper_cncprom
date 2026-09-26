@@ -686,13 +686,6 @@ ${aboutPanelHtml()}${creditsPanelHtml('../')}
 </html>
 `;
 
-// Старі посилання вели на reports/latest.html (окремий HTML на кожен день) —
-// лишаємо його переадресацією, щоб закладки не ламались.
-const latestRedirect = `<!DOCTYPE html>
-<html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=index.html">
-<title>Історія змін каталогу</title></head>
-<body><p>Сторінка переїхала: <a href="index.html">історія змін каталогу</a>.</p></body></html>
-`;
 
 // ==================== ЗБІРКА ====================
 if (require.main === module) {
@@ -769,7 +762,7 @@ if (require.main === module) {
   fs.writeFileSync(path.join(OUT_DIR, 'reports.css'), REPORTS_CSS, 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'reports.js'), REPORTS_JS, 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'index.html'), html, 'utf-8');
-  fs.writeFileSync(path.join(OUT_DIR, 'latest.html'), latestRedirect, 'utf-8');
+
 
   const last = daily[daily.length - 1];
   console.log(`Сторінку змін збудовано: ${path.join(OUT_DIR, 'index.html')}`);

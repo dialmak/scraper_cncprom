@@ -4,8 +4,7 @@ name: Скрапінг + деплой мапи на GitHub Pages
 # знімок дня в гілку data → build-reports.
 # Готовий output/site/ пушиться одним orphan-комітом у гілку `site`, з якої
 # GitHub Pages публікує сайт (Settings → Pages → Deploy from a branch, site /).
-# Вміст гілки — корінь сайту, тож адреси без /site/: /map.html, /<id>_map.html,
-# /reports/index.html; старі /site/… — заглушки-переадресації від build-maps.js.
+# Вміст гілки — корінь сайту: /map.html, /<id>_map.html, /reports/index.html.
 # У `main` output/ не потрапляє.
 #
 # Гілка `site` існує ще й для того, щоб згенеровані сторінки можна було
@@ -134,8 +133,6 @@ jobs:
         # Будує output/site/reports/ з УСІХ знімків гілки data: дашборд зі шкалою
         # змін по днях і порівнянням будь-яких двох дат (diff рахується в
         # браузері з компактних знімків — див. build-reports.js).
-        # reports/latest.html лишається переадресацією на index.html для
-        # старих посилань.
         run: node build-reports.js data-branch
 
       - name: "Опублікувати сайт у гілку site"

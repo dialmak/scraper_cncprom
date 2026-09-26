@@ -994,21 +994,15 @@ initSiteSearch();
 `;
   fs.writeFileSync(path.join(DIR, "map.html"), html, "utf-8");
 
-  // На GitHub Pages публікується САМА тека output/site/ (з 22.09.2026, раніше —
-  // уся output/, і адреси мали зайве /site/). Тому:
-  //   - index.html поруч із map.html: корінь https://map.cncprom.pp.ua/ веде на
-  //     мапу, а не дає 404;
-  //   - site/… — заглушки на місці старих адрес (…/site/map.html,
-  //     …/site/<id>_map.html, …/site/reports/…), щоб збережені посилання не
-  //     ламались. JS переносить ?from=&to= і #cat=<id> (meta-refresh їх губить),
-  //     meta лишається запасним варіантом без JS.
+  // На GitHub Pages публікується сама тека output/site/, тож index.html поруч із
+  // map.html потрібен, щоб корінь https://map.cncprom.pp.ua/ вів на мапу, а не
+  // давав 404. Переадресації зі старих адрес з /site/ (до 22.09.2026) прибрано
+  // 26.09.2026 на прохання користувача.
   writeRedirect(path.join(DIR, 'index.html'), 'map.html');
-  writeRedirect(path.join(DIR, 'site', 'map.html'), '../map.html');
-  entries.forEach(e => writeRedirect(path.join(DIR, 'site', `${e.id}_map.html`), `../${e.id}_map.html`));
-  writeRedirect(path.join(DIR, 'site', 'reports', 'index.html'), '../../reports/index.html');
-  writeRedirect(path.join(DIR, 'site', 'reports', 'latest.html'), '../../reports/index.html');
 }
 
+// JS переносить ?query і #hash (meta-refresh їх губить), meta лишається запасним
+// варіантом без JS.
 function writeRedirect(file, target) {
   const t = escapeHtmlOuter(target);
   fs.mkdirSync(path.dirname(file), { recursive: true });
