@@ -1065,27 +1065,34 @@ function writeRedirect(file, target) {
     logLine(`ПОМИЛКА: експорт XLSX пропущено — ${err.message}`);
   }
 
-  // map.log читається до фінального logLine нижче — тож знімок, вбудований у
-  // цей map.html, не міститиме власного рядка "ФІНІШ" цього ж прогону
-  // (з'явиться лише в наступному запуску build-maps.js). Це неминучий
-  // порядок дій, а не недогляд: побудувати сторінку з рядком про завершення
-  // до фактичного завершення неможливо.
   entries.forEach(e => { e.run_errors = readRunErrors(e.id); });
 
-  const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
-  const mapLogContent = readLogSafe(LOG_FILE);
-  buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
-
   const notOk = entries.filter(e => e.status !== 'ok').length;
-  console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);
   if (renderFailures > 0) {
     console.error(`УВАГА: категорій із помилкою рендеру: ${renderFailures} — у map.html вони позначені ⚠️.`);
   }
-  console.log("Готово. Деталі рішень — у map.log.");
+  // ФІНІШ пишеться ДО того, як map.log читається у сторінку: інакше панель
+  // «Лог збірки» завжди показувала б лог без рядка про завершення саме цього
+  // прогону — він з'являвся аж після наступної збірки (користувач це помітив
+  // 26.09.2026). Усе, про що звітує цей рядок, на цей момент уже відоме;
+  // лишається тільки запис самої сторінки, а якщо він впаде — нижче
+  // дописується рядок ПОМИЛКА, тож лог не бреше.
+  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
+    (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
+
+  const scrapeLogContent = readLogSafe(SCRAPE_LOG_FILE);
+  const mapLogContent = readLogSafe(LOG_FILE);
+  try {
+    buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
+  } catch (err) {
+    console.error(`ПОМИЛКА: map.html не збережено — ${err.message}`);
+    logLine(`ПОМИЛКА: map.html не збережено — ${err.message}`);
+    throw err;
+  }
+  console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);
   // Свідомо БЕЗ ненульового коду виходу: часткова невдача не має валити крок
   // "Етап 3" у deploy-pages.yml, бо разом з ним зник би весь нічний результат
   // (знімок, diff, деплой) через одну категорію з 23. Сигналом лишається ⚠️
   // в самому індексі + рядок ПОМИЛКА в map.log, які видно там, де дивляться.
-  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
-    (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
+  console.log("Готово. Деталі рішень — у map.log.");
 })();
