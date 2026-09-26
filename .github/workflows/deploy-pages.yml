@@ -101,6 +101,9 @@ jobs:
         run: node fetch-published.js "${{ steps.pages-url.outputs.url }}"
 
       - name: Етап 2 — згенерувати мапи + індекс
+        # Звідки збірка — для колонки «Збірка» у «Лозі збірки» (map.jsonl).
+        env:
+          BUILD_KIND: ${{ inputs.rebuild_only && 'rebuild' || (github.event_name == 'schedule' && 'nightly' || 'manual') }}
         run: node build-maps.js
 
       - name: "Підготувати робочу копію гілки data"

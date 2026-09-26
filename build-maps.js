@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { logLine: appendLog, readEvents } = require('./lib/log');
-const { runLogHtml } = require('./lib/runlog');
+const { logEvent, readEvents } = require('./lib/log');
+const { runLogHtml, buildLogHtml } = require('./lib/runlog');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
@@ -19,7 +19,9 @@ const { readCategories, filePath: categoriesFile } = require('./lib/categories')
 // ROOT_DIR, тепер лише в output/site/.
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
-const LOG_FILE = path.join(DIR, "map.log");
+// Лог збірки — map.jsonl (26.09.2026), як і лог скрапінгу: панель будує з нього
+// таблицю. Старий текстовий map.log лишається недоторканим архівом.
+const LOG_FILE = path.join(DIR, "map.jsonl");
 // Старий текстовий scrape.log лишається на місці недоторканим (історія
 // до 26.09.2026); панель будується з scrape.jsonl.
 const SCRAPE_LOG_FILE = path.join(DIR, "scrape.jsonl");
@@ -34,10 +36,15 @@ const XLSX_PREFIX = "map_cncprom";
 let XLSX_DATE = fmtDate(new Date());   // запасний варіант: жодної скрапленої категорії
 let XLSX_FILE = `${XLSX_PREFIX}_${XLSX_DATE}.xlsx`;
 
-// ==================== ЛОГ (map.log — доповнюється, як scrape.log) ====================
-// Формат і поведінка — спільні зі scrape.log (lib/log.js): це одна родина
-// логів прогонів, їм не можна розходитись.
-const logLine = text => appendLog(LOG_FILE, text);
+// ==================== ЛОГ (map.jsonl — доповнюється, як scrape.jsonl) ====================
+// Одна збірка = build-start, за потреби error, build-finish; усі з одним build.
+// BUILD_KIND ставить workflow (nightly / rebuild / manual); локально його немає.
+const BUILD_ID = new Date().toISOString();
+const BUILD_KIND = process.env.BUILD_KIND || 'local';
+const BUILD_T0 = Date.now();
+const logEvt = (ev, fields) => logEvent(LOG_FILE, ev, Object.assign({ build: BUILD_ID, kind: BUILD_KIND }, fields));
+let buildErrors = 0;
+const logError = msg => { buildErrors++; logEvt('error', { msg }); };
 
 // ==================== СПИСОК КАТЕГОРІЙ 1 РІВНЯ ====================
 // output/site/categories.json — джерело істини щодо ПОВНОГО списку категорій
@@ -843,11 +850,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      ділиться з сусіднім, і таблиця стрибала б на піксель. */
   .rl-grp:hover { outline: 1px solid var(--border-active); outline-offset: -1px; }
   /* Зебра — по категоріях (<tbody>), а не по рядках: примітка має бути того ж кольору,
-     що й її рядок. --bg-tag, а не --bg-row-alt, як у .simple-table: там у світлій темі
-     #fcfdfe на білому — смуг майже не видно, а тут зебру попросили саме щоб бачити. */
-  .rl-grp:nth-of-type(even) > tr > td { background: var(--bg-tag); }
+     що й її рядок. Колір — як у таблицях сайту (--bg-row-alt, .simple-table): --bg-tag
+     користувач назвав занадто яскравим (26.09.2026). */
+  .rl-grp:nth-of-type(even) > tr > td { background: var(--bg-row-alt); }
   /* Назва категорії — посилання на її мапу, але в спокої виглядає звичайним текстом:
      таблиця з 23 синіх назв читалась би як список посилань, а не як журнал. */
+  .rl-tab th.rl-st, .rl-tab td.rl-st { text-align: center; }
   .rl-cat { color: inherit; text-decoration: none; }
   .rl-cat:hover { color: var(--text-link); text-decoration: underline; }
 </style>
@@ -876,7 +884,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
     </div>
   </header>
 ${tablePanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `Лог скрапінгу`, scrapeLogContent)}
-${logPanelHtml('map-log-overlay', 'btn-map-log-close', `output/site/map.log`, mapLogContent)}
+${tablePanelHtml('map-log-overlay', 'btn-map-log-close', `Лог збірки`, mapLogContent)}
 ${orphanPanelHtml}
 ${mismatchPanelHtml}
 ${crumbPanelHtml}
@@ -1064,7 +1072,7 @@ function writeRedirect(file, target) {
   }
 
   console.log(`Категорій 1 рівня в ${path.basename(categoriesFile(DIR))}: ${categories.length}`);
-  logLine(`СТАРТ build-maps: категорій ${categories.length}.`);
+  logEvt('build-start', { total: categories.length });
 
   const entries = [];
   const searchEntries = [];
@@ -1085,7 +1093,7 @@ function writeRedirect(file, target) {
     renderFailures++;
     const reason = `render-map.js завершився з помилкою для категорії ${id} — мапу не згенеровано.`;
     console.error(`[${id}] ${name} — ПОМИЛКА РЕНДЕРУ. Заглушка замість мапи.`);
-    logLine(`ПОМИЛКА: категорія ${id} (${name}) — render-map.js завершився з ненульовим кодом, заглушка замість мапи.`);
+    logError(`Мапу «${name}» не збудовано — замість неї заглушка`);
     writeStub(id, name, reason);
     entries.push({ id, name, url, status: 'stale', reason });
   }
@@ -1144,7 +1152,7 @@ function writeRedirect(file, target) {
     }
   } catch (err) {
     console.error(`УВАГА: експорт XLSX пропущено — ${err.message}`);
-    logLine(`ПОМИЛКА: експорт XLSX пропущено — ${err.message}`);
+    logError(`Експорт XLSX не записано — ${err.message}`);
   }
 
   entries.forEach(e => { e.run_errors = readRunErrors(e.id); });
@@ -1159,16 +1167,21 @@ function writeRedirect(file, target) {
   // 26.09.2026). Усе, про що звітує цей рядок, на цей момент уже відоме;
   // лишається тільки запис самої сторінки, а якщо він впаде — нижче
   // дописується рядок ПОМИЛКА, тож лог не бреше.
-  logLine(`ФІНІШ build-maps: оброблено категорій ${categories.length}, без актуальної мапи ${notOk}` +
-    (renderFailures > 0 ? `, з них помилок рендеру ${renderFailures}.` : `.`));
+  logEvt('build-finish', {
+    total: categories.length, ok: categories.length - notOk, errors: buildErrors,
+    // Склад недобудованих — для колонки «Статус», ті самі три стани, що в таблиці map.html.
+    stale: entries.filter(e => e.status === 'stale').length,
+    noData: entries.filter(e => e.status === 'not_scraped').length,
+    sec: Math.max(1, Math.round((Date.now() - BUILD_T0) / 1000))
+  });
 
   const scrapeLogContent = runLogHtml(readEvents(SCRAPE_LOG_FILE), { mapIds: new Set(entries.map(e => String(e.id))) });
-  const mapLogContent = readLogSafe(LOG_FILE);
+  const mapLogContent = buildLogHtml(readEvents(LOG_FILE));
   try {
     buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
   } catch (err) {
     console.error(`ПОМИЛКА: map.html не збережено — ${err.message}`);
-    logLine(`ПОМИЛКА: map.html не збережено — ${err.message}`);
+    logError(`map.html не збережено — ${err.message}`);
     throw err;
   }
   console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);

@@ -7,7 +7,7 @@
 // Завантажує categories.json і для кожної категорії <id>_catalog.json
 // (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
 // <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
-// лишились чужі. Логи (scrape.jsonl, scrape.log, map.log) — лише якщо локально їх немає.
+// лишились чужі. Логи (scrape.jsonl, map.jsonl, scrape.log, map.log) — лише якщо локально їх немає.
 //
 // node fetch-published.js [pagesUrl]               (за замовчуванням — PAGES_URL нижче)
 // node fetch-published.js --logs-only [pagesUrl]   лише логи — для нічного прогону
@@ -78,7 +78,7 @@ async function getCategoryList() {
 // scrape.log — старий текстовий лог (архів до 26.09.2026): його теж несемо далі,
 // інакше перша ж нічна публікація його б загубила.
 async function fetchLogs() {
-  for (const name of ['scrape.jsonl', 'scrape.log', 'map.log']) {
+  for (const name of ['scrape.jsonl', 'map.jsonl', 'scrape.log', 'map.log']) {
     const lp = path.join(DIR, name);
     if (fs.existsSync(lp)) { console.log(`  ${name}: лишаємо локальний`); continue; }
     try {
