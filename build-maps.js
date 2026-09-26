@@ -1,4 +1,8 @@
 
+// build-maps.js — сайт із того, що зібрав скрапер: мапа кожної категорії
+// (render-map.js), індекс map.html зі звірками й логами, search-index.json для
+// пошуку по сайту, XLSX з мапою категорій і переадресації зі старих адрес.
+// Список категорій — output/site/categories.json; хід збірки — map.jsonl.
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -15,8 +19,8 @@ const { readCategories, filePath: categoriesFile } = require('./lib/categories')
 // ==================== НАЛАШТУВАННЯ ====================
 // ROOT_DIR — де лежать самі скрипти (render-map.js викликається звідси);
 // DIR — де лежать усі згенеровані файли, включно з тими, що пише цей скрипт
-// (map.html, map.log). Розділені навмисно: колись усе писалось прямо в
-// ROOT_DIR, тепер лише в output/site/.
+// (map.html, map.jsonl). Розділені навмисно: render-map.js запускається з
+// ROOT_DIR, а всі шляхи до даних будуються від DIR.
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
 // Лог збірки — map.jsonl (26.09.2026), як і лог скрапінгу: панель будує з нього
@@ -242,10 +246,6 @@ async function buildCatalogXlsx(entries) {
 }
 
 // ==================== ІНШІ ДОПОМІЖНІ ФУНКЦІЇ ====================
-function readLogSafe(filePath) {
-  try { return fs.readFileSync(filePath, "utf-8"); } catch (e) { return "(файл відсутній або порожній)"; }
-}
-
 function writeStub(id, name, reason) {
   const htmlPath = path.join(DIR, `${id}_map.html`);
   const html = `<!DOCTYPE html>
@@ -325,27 +325,27 @@ function readSearchEntries(id) {
 
 // <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
 // проходу етапу 2 лишились товари без даних (і видаляє, коли таких нема), тож
-// файл завжди відповідає поточному CSV. Читаємо лише для 'ok' — як readSummary.
+// файл завжди відповідає поточному каталогу. Читаємо лише для 'ok' — як readSummary.
 function readFailedUrls(id) {
   const p = path.join(DIR, `${id}_failed_urls.json`);
   try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
 }
 
-// <id>_errors.json пише scrape-complete.js (ті самі рядки ПОМИЛКА, що й у
-// scrape.log, але по категорії; порожній прогін файл видаляє). Читається для
-// БУДЬ-ЯКОГО статусу, не лише 'ok': категорія, яка впала, найчастіше і є
-// stale — саме там помилки найпотрібніші.
+// <id>_errors.json пише scrape-complete.js (ті самі помилки, що й записи error у
+// scrape.jsonl, але по категорії й повним текстом; чистий прогін файл видаляє).
+// Читається для БУДЬ-ЯКОГО статусу, не лише 'ok': помилки потрібні й там, де
+// мапу не збудовано.
 function readRunErrors(id) {
   const p = path.join(DIR, `${id}_errors.json`);
   try { const list = JSON.parse(fs.readFileSync(p, "utf-8")); return Array.isArray(list) ? list : []; } catch (e) { return []; }
 }
 
 // ==================== ІНДЕКС УСІХ КАТЕГОРІЙ (map.html) ====================
-// Той самий "діловий" вигляд, що й в окремих map_<id>.html (map-common.css
+// Той самий "діловий" вигляд, що й в окремих <id>_map.html (map-common.css
 // підключено так само), але без сайдбару/дерева — просто таблиця-список з
 // посиланнями. Немає власного JS-додатку (initCatalogMap чекає CATALOG_DATA з
-// повним деревом, якого тут нема) — лише initThemeToggle, setupModalOverlay й
-// setupTooltips з map-common.js, того самого спільного файлу.
+// повним деревом, якого тут нема) — лише top-level функції з того самого
+// map-common.js: тема, панелі, підказки, меню, заставка й пошук по сайту.
 function diffBadgeHtml(e) {
   if (e.status !== 'ok' || e.diff === null || e.diff === undefined) {
     return '<span class="stock-badge neutral">н/д</span>';
@@ -406,34 +406,23 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
               <td style="text-align:center;vertical-align:middle;">${e.url ? `<a href="${escapeHtmlOuter(e.url)}" class="link-site" target="_blank" rel="noopener">↗</a>` : '—'}</td>
             </tr>`).join('');
 
-  // "Товари поза категоріями" для ВСЬОГО сайту — той самий орфан-список, що й
-  // кнопка/панель у кожній <id>_map.html (render-map.js), але зібраний по всіх
-  // категоріях 1 рівня одразу. Джерело — поле orphan_categories, яке кожен
-  // <id>_map.summary.json несе поряд з рештою globalStats (щоб не перечитувати
-  // тут заново повне дерево кожної категорії). Є лише для 'ok' категорій
-  // (readSummary дає дані тільки їм) — те саме обмеження, що й у колонок
-  // Товарів/В наявності/Оновлено вище.
+  // "Товари поза категоріями" для ВСЬОГО сайту — той самий список, що й панель
+  // на кожній <id>_map.html (render-map.js), зібраний по всіх категоріях 1 рівня
+  // з поля orphan_categories у <id>_map.summary.json (є лише для 'ok' категорій).
   //
   // Вигляд — те саме дерево, що й у панелі розбіжностей звірки (спільні
-  // treeRows/treeRowHtml): категорія 1 рівня в заголовку групи, під нею вузли
-  // з відступом за рівнем, пропущені ланки добудовуються блідим. Тут вони
-  // справді потрібні: сироти розкидані по дереву, і на теперішніх даних п'ять
-  // записів мають батька, якого в списку немає.
+  // treeRows/treeRowHtml): категорія 1 рівня в заголовку групи, під нею вузли з
+  // відступом за рівнем, пропущені ланки добудовуються блідим — сироти розкидані
+  // по дереву, і без них відступ натякав би на рівень, якого на екрані немає.
+  // Плоский список «Категорія › Підкатегорія» свідомо відкинуто: повторення
+  // назви батька в 30+ рядках читалось як простирадло.
   //
-  // Плоского списку з назвою "Категорія › Підкатегорія" в кожному рядку тут
-  // свідомо немає: при 30+ записах на 23 категорії повторення назви батька
-  // читалось як простирадло.
-  //
-  // ВАЖЛИВО: сирота може бути й самою категорією 1 рівня (own_products > 0
-  // прямо на кореневому вузлі — те саме, що orphanCategories в render-map.js
-  // рахує для будь-якого вузла дерева, корінь не виняток). Назву тоді не
-  // повторюємо (вона вже в заголовку групи), а пишемо "Товари категорії, які
-  // не входять до підкатегорій" — та сама фраза, що й у рядках зведення
-  // render-map.js. Добудована ланка 1 рівня (без власних товарів) не
-  // показується зовсім: заголовок групи її вже представляє.
-  // Сума ТОВАРІВ (oc.own у кожному записі), а не кількість записів/категорій
-  // у списку нижче — заголовок каже "Знайдені товари...", тож і число поруч
-  // має бути кількістю товарів, а не кількістю орфан-категорій, які їх містять.
+  // Сиротою може бути й сама категорія 1 рівня (own_products > 0 на корені).
+  // Назву тоді не повторюємо (вона вже в заголовку групи), а пишемо "Товари
+  // категорії, які не входять до підкатегорій" — та сама фраза, що в render-map.js.
+  // Добудована ланка 1 рівня не показується зовсім: заголовок групи її вже
+  // представляє. Число в заголовку — сума ТОВАРІВ (oc.own), а не кількість
+  // категорій: заголовок каже "Знайдені товари...".
   const orphanGroups = sorted.filter(e => (e.orphan_categories || []).length > 0);
   const orphanTotal = orphanGroups.reduce((n, e) => n + e.orphan_categories.reduce((k, oc) => k + oc.own, 0), 0);
   const orphanMenuButtonHtml = orphanTotal === 0 ? '' : `
@@ -469,11 +458,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // "Не оброблено N" — товари, сторінку яких скрапер не зміг прочитати навіть
-  // після повторного проходу (<id>_failed_urls.json). Такий товар відсутній у
-  // CSV, тож на мапі й у звірці його просто не видно — ця кнопка єдине місце,
-  // де він помітний. Та сама схема, що й "Товари поза категоріями": кнопка й
-  // панель не рендеряться зовсім, коли невдач нема (звичайний стан).
+  // "Не оброблено" — товари, сторінку яких скрапер не зміг прочитати навіть
+  // після повторного проходу (<id>_failed_urls.json). Такого товару немає в
+  // каталозі, тож на мапі й у звірці його не видно — ця панель єдине місце, де
+  // він помітний. Коли невдач нема (звичайний стан), панелі в розмітці немає,
+  // а рядок меню каже «немає».
   const failedGroups = sorted.filter(e => (e.failed_urls || []).length > 0);
   const failedTotal = failedGroups.reduce((n, e) => n + e.failed_urls.length, 0);
   const failedLabel = u => { try { return decodeURIComponent(new URL(u).pathname); } catch (e) { return u; } };
@@ -497,13 +486,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // "Помилки прогону N" — рядки ПОМИЛКА останнього скрапінгу кожної категорії
-  // (<id>_errors.json). До 23.09.2026 їх не було видно ніде, крім scrape.log:
-  // нічний прогін мовчки завершувався "успішно", а збій (порожня сітка в
-  // категорії "Зубчасті шківи і натягувачі") помітив лише користувач, читаючи
-  // лог вручну. Тому, крім кнопки, категорія з помилками має ще й значок ⚠️
-  // поруч зі статусом у своєму рядку таблиці (statusBadgeHtml лишається про
-  // актуальність даних — це різні речі).
+  // "Помилки" — помилки останнього скрапінгу кожної категорії (<id>_errors.json).
+  // До 23.09.2026 їх не було видно ніде, крім лога: нічний прогін мовчки
+  // завершувався "успішно", а збій помітив лише користувач, читаючи лог вручну.
+  // Тому, крім рядка меню, категорія з помилками має ще й значок ICONS.errors
+  // поруч зі статусом у своєму рядку таблиці (statusBadgeHtml — про актуальність
+  // даних, це різні речі).
   const errorGroups = sorted.filter(e => (e.run_errors || []).length > 0);
   const errorTotal = errorGroups.reduce((n, e) => n + e.run_errors.length, 0);
   const errorsPanelHtml = errorTotal === 0 ? '' : `
@@ -514,7 +502,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-errors-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">Що саме пішло не так під час останнього скрапінгу кожної категорії. Ті самі рядки, що й у scrape.log, але зібрані разом. Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності».</p>
+        <p class="failed-note">Що саме пішло не так під час останнього скрапінгу кожної категорії. Ті самі помилки, що й у «Лозі скрапінгу», але зібрані разом. Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності».</p>
         <div class="orphan-group-list">${errorGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">${ICONS.folder} ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.run_errors.length})</span></a>
@@ -527,10 +515,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // "Розбіжності звірки N" — вузли, де зібране скрапером не збіглося з
+  // "Розбіжності звірки" — вузли, де зібране скрапером не збіглося з
   // лічильником сайту "В наявності N" (reconciliation.mismatchNodes). Рівно
-  // нуль або нічого: толерантності немає свідомо (прогін нічний, руху
-  // замовлень нема — будь-яка різниця це справжня розбіжність, див. README).
+  // нуль або нічого: толерантності немає свідомо (прогін нічний, руху замовлень
+  // нема — будь-яка різниця це справжня розбіжність, див. buildCategoryStats у
+  // scrape-complete.js).
   // До 23.09.2026 таку розбіжність було видно лише в колонці "В наявності"
   // окремої категорії, і то без списку конкретних вузлів.
   const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
@@ -627,12 +616,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // ---- Дві панелі-хаби замість шести кнопок у шапці (25.09.2026) ----
+  // ---- Два меню-дропдауни замість шести кнопок у шапці (25.09.2026) ----
   // До того кожна діагностика мала власну кнопку, яка з'являлась лише при
   // ненульовому значенні: шапка росла до 14 елементів у погану ніч, а в тиху
-  // не можна було 0432ідрізнити "перевірили, все добре" від "не перевіряли".
-  // Тепер це два рядкових списки, де нуль — це результат ("0 · чисто"), а не
-  // порожнеча. Самі панелі зі списками лишились як були — рядок лише веде до них.
+  // не можна було відрізнити "перевірили, все добре" від "не перевіряли".
+  // Тепер у меню рядок на кожну перевірку, і чистий результат теж видно
+  // («немає»). Самі панелі зі списками лишились як були — рядок лише веде до них.
   const plural = (n, one, few, many) => {
     const m10 = n % 10, m100 = n % 100;
     if (m10 === 1 && m100 !== 11) return one;
@@ -692,15 +681,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   const xlsxButtonHtml = xlsxReady ? `
       <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій у форматі XLSX">${ICONS.export} Експорт</a>` : '';
 
-  // Повний вміст логів вбудовується прямо в сторінку (як CATALOG_DATA в
-  // map_<id>.html) — map.html статична, живого сервера, з якого можна було б
-  // підвантажити файл за запитом, тут нема. scrape.log/map.log — append-only
-  // і ростуть необмежено з кожним прогоном; поки що це не проблема (кілька
-  // КБ), але якщо колись виростуть до сотень КБ — варто буде показувати лише
-  // хвіст, а не вміст цілком.
-  // Панель лога скрапінгу — таблиця прогонів (lib/runlog.js), а не текст:
-  // колонки повторюють меню «Звірка скрапера з даними сайту», свіжий прогін зверху
-  // й розгорнутий, старі — згорнуті <details>.
+  // Логи вбудовуються в сторінку готовими таблицями (lib/runlog.js): map.html
+  // статична, підвантажити файл за запитом нема звідки. Свіжий прогін зверху й
+  // розгорнутий, старі — згорнуті <details>. scrape.jsonl і map.jsonl ростуть з
+  // кожним прогоном; поки це десятки КБ, але якщо дійдуть до сотень — варто
+  // показувати лише останні прогони.
   const tablePanelHtml = (overlayId, closeBtnId, title, inner) => `
   <div class="help-overlay" id="${overlayId}">
     <div class="help-panel">
@@ -713,18 +698,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  const logPanelHtml = (overlayId, closeBtnId, title, content) => `
-  <div class="help-overlay" id="${overlayId}">
-    <div class="help-panel">
-      <div class="help-panel-head">
-        <h3>${title}</h3>
-        <button class="btn-help-close" id="${closeBtnId}" data-tip="Закрити (Esc)">✕</button>
-      </div>
-      <div class="help-panel-body">
-        <pre style="white-space:pre-wrap;word-break:break-word;font-family:var(--font-mono);font-size:0.76rem;line-height:1.5;max-height:65vh;overflow-y:auto;margin:0;">${escapeHtmlOuter(content)}</pre>
-      </div>
-    </div>
-  </div>`;
 
   // Підпис у шапці — годинник і дата, без слів. Що це за дата — каже підказка
   // "Дата та час скрапінгу". Це саме скрапінг: найсвіжіший scraped_at як є,
@@ -745,21 +718,13 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
 <script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
 <style>
   /* map-common.css розрахований на .workspace з фіксованою висотою вікна
-     (сайдбар + скрол свого контенту) — індексна сторінка цього не має, тож
-     повертаємо звичайний скрол сторінки. Без max-width/margin:auto — свідомо
-     (2026-09-15): раніше .index-wrap затискав ВЕСЬ вміст (і таблицю категорій,
-     і результати пошуку) у центральну колонку 1100px, хоча <id>_map.html
-     розтягуються на всю ширину вікна без такого обмеження. Тепер уніфіковано
-     з ними. На дуже широких моніторах таблиця категорій (мало колонок) може
-     виглядати розрідженою — прийнятний компроміс, обраний свідомо.
-
-     overflow: visible, НЕ auto — навмисно (2026-09-15). .app-header тепер
-     position: sticky (щоб не їхав разом з довгою таблицею), а sticky working
-     тільки якщо body фактично не є ВЛАСНИМ скрол-контейнером. auto на html
-     І body одночасно змушує body стати окремим (хоч і не переповненим —
-     висота:auto якраз під контент) скрол-боксом, і sticky прив'язується до
-     НЬОГО замість справжнього скролу сторінки — заголовок тоді все одно їде.
-     Перевірено Playwright-скріншотом до і після виправлення. */
+     (сайдбар + скрол свого вмісту); індексна сторінка його не має, тож
+     повертаємо звичайний скрол документа. Без max-width — як і мапи розділів,
+     сторінка тягнеться на всю ширину вікна.
+     overflow: visible, НЕ auto: .app-header — position: sticky, а sticky
+     прив'язується до найближчого скрол-контейнера. auto на html і body разом
+     робить body окремим скрол-боксом, і шапка їхала б разом зі сторінкою
+     (перевірено скріншотом). */
   html, body { height: auto; overflow: visible; }
   .index-wrap { padding: 20px; }
   .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
@@ -775,22 +740,20 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .run-error { font-size: 0.78rem; line-height: 1.45; color: var(--text-main); overflow-wrap: anywhere; }
   .run-error-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
   .run-error-badge { background: none; border: none; padding: 0; margin-left: 4px; font: inherit; line-height: 1; cursor: pointer; }
-  /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
-     сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
-     де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
-  /* Шапка map.html має до восьми кнопок — помітно більше, ніж у мапи розділу,
-     звідки взято map-common.css. Там .app-header має фіксовану висоту 44px
-     (від неї рахується .workspace: calc(100vh - 44px)), а .header-left не
-     переноситься, тож на ~900-1000px ліва група вилазила за свою коробку і
-     накривала поле пошуку: кнопки «Розбіжності звірки» й «Експорт»
-     ставали неклікабельними, хоч і були видимі.
-     Тут висоту можна відпустити: map.html скролить увесь документ, жодна
-     інша величина від неї не рахується. */
+  /* Шапка map.html має помітно більше кнопок, ніж у мапи розділу, звідки взято
+     map-common.css. Там .app-header має фіксовану висоту 44px (від неї рахується
+     .workspace: calc(100vh - 44px)), а .header-left не переноситься, тож на
+     вужчому вікні ліва група вилазила за свою коробку й накривала поле пошуку,
+     а її кнопки ставали неклікабельними, хоч і були видимі. Тут висоту можна
+     відпустити: map.html скролить увесь документ, і від неї нічого не рахується. */
   .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
   .header-left { flex-wrap: wrap; row-gap: 6px; }
   /* Стилі меню-дропдаунів (.hdr-menu, .hdr-dropdown, .check-row, .badge-count)
      лежать у map-common.css: таке саме меню є й на мапі розділу, і на
      сторінці історії змін, тож вигляд має бути один на три сторінки. */
+  /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
+     сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
+     де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
   .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
   .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
 
@@ -798,14 +761,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      в map-common.css: ця панель є лише на map.html. */
   .rl-wrap { display: flex; flex-direction: column; gap: 10px; }
   .rl-run { border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-white); overflow: hidden; }
-  .rl-run > summary { background: var(--bg-subtle); }
   .rl-run > summary { cursor: pointer; padding: 8px 12px; font-size: 0.78rem; color: var(--text-main);
-    font-family: var(--font-mono); list-style: none; }
+    background: var(--bg-subtle); font-family: var(--font-mono); list-style: none; }
   .rl-run > summary::-webkit-details-marker { display: none; }
-  /* Стрілка малюється сама, бо рідний маркер <details> виглядає по-різному
-     в різних браузерах, а тут рядок моноширинний і зсув помітний. */
-  /* Стрілка в sans: рядок summary моноширинний, а в JetBrains Mono цього знака
-     немає — замість неї малювався порожній прямокутник. */
+  /* Стрілка малюється сама: рідний маркер <details> у різних браузерах різний,
+     а рядок моноширинний, і зсув помітний. Шрифт стрілки — sans: у JetBrains Mono
+     цього знака немає, і замість нього малювався порожній прямокутник. */
   .rl-run > summary::before { content: '▸'; display: inline-block; width: 14px;
     color: var(--text-subtle); font-family: var(--font-sans); }
   .rl-run[open] > summary::before { content: '▾'; }
@@ -939,11 +900,11 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.report} Звіт скрапера</div>
-          <div class="help-term-desc">Як відпрацював останній прогін: помилки, товари, які не вдалося обробити, і повні логи скрапінгу й збірки мап. Нуль поруч із рядком не порожнеча, а результат: перевірка відпрацювала й нічого не знайшла. Категорія з помилками має ще й значок ${ICONS.errors} у своєму рядку таблиці.</div>
+          <div class="help-term-desc">Як відпрацював останній прогін: помилки, товари, які не вдалося обробити, і логи скрапінгу й збірки сторінок. «немає» в рядку — теж результат: перевірка відпрацювала й нічого не знайшла. Категорія з помилками має ще й значок ${ICONS.errors} у своєму рядку таблиці.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.errors} Помилки</div>
-          <div class="help-term-desc">Рядок у «Звіті скрапера»: скільки разів під час останнього скрапінгу щось пішло не так (наприклад, сторінка не завантажилась). Ті самі рядки ПОМИЛКА, що й у лозі скрапінгу. Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності». Така категорія має ще й значок ${ICONS.errors} у своєму рядку таблиці.</div>
+          <div class="help-term-desc">Рядок у «Звіті скрапера»: скільки разів під час останнього скрапінгу щось пішло не так (наприклад, сторінка не завантажилась). Ті самі помилки, що й у «Лозі скрапінгу». Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності». Така категорія має ще й значок ${ICONS.errors} у своєму рядку таблиці.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.failed} Не оброблено</div>
@@ -951,7 +912,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.log} Лог скрапінгу · ${ICONS.log} Лог збірки</div>
-          <div class="help-term-desc">Два рядки в кінці «Звіту скрапера»: повний вміст файлів output/site/scrape.log і output/site/map.log як є. Перший пише скрапер під час обходу сайту, другий — збірка самих цих сторінок.</div>
+          <div class="help-term-desc">Два рядки в кінці «Звіту скрапера»: таблиці з файлів scrape.jsonl і map.jsonl. Перший пише скрапер під час обходу сайту — рядок на кожну категорію прогону; другий — збірка самих цих сторінок, рядок на кожну збірку. Найсвіжіший прогін зверху й розгорнутий.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.checks} Звірки</div>
@@ -1006,8 +967,8 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
 <script>
 initThemeToggle();
 setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
-// У цих панелей більше немає власної кнопки в шапці — їх відкриває рядок
-// хаба (обробник нижче). setupModalOverlay все одно потрібен: він вішає хрестик,
+// У цих панелей немає власної кнопки в шапці — їх відкриває рядок меню
+// (initHeaderMenus). setupModalOverlay все одно потрібен: він вішає хрестик,
 // Esc і клік поза панеллю, а відсутню кнопку-відкривач терпить (if (openBtn)).
 setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
 setupModalOverlay('map-log-overlay', null, 'btn-map-log-close');
@@ -1023,7 +984,8 @@ setupModalOverlay('credits-overlay', null, 'btn-credits-close');
 // живуть у map-common.js (див. initHeaderMenus у render-map.js).
 initHeaderMenus();
 initNarrowGuard();
-// Значки помилок в рядках таблиці відкривають ту саму панель, що й кнопка в шапці.
+// Значки помилок у рядках таблиці відкривають ту саму панель, що й рядок
+// «Помилки» у «Звіті скрапера».
 Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
   b.addEventListener('click', function () {
     var o = document.getElementById('errors-overlay');
@@ -1083,12 +1045,10 @@ function writeRedirect(file, target) {
   const searchEntries = [];
   let renderFailures = 0;
 
-  // Раніше результат buildRealMap() відкидався у всіх трьох місцях виклику:
-  // якщо render-map.js падав, категорія все одно потрапляла в індекс як 'ok'
-  // із зеленою ✅, а readSummary() підтягував цифри з ПОПЕРЕДНЬОГО прогону й
-  // показував їх як свіжі. Тепер невдалий рендер дає ту саму заглушку й той
-  // самий ⚠️, що й застарілі дані: стан, якого не видно, гірший за стан,
-  // який видно.
+  // Результат buildRealMap() перевіряється: інакше впалий render-map.js давав
+  // категорію 'ok' із зеленою ✅, а readSummary() підтягував цифри з
+  // ПОПЕРЕДНЬОГО прогону як свіжі. Невдалий рендер — заглушка й ⚠️: стан,
+  // якого не видно, гірший за стан, який видно.
   function pushBuilt(id, name, url) {
     if (buildRealMap(id)) {
       entries.push({ id, name, url, status: 'ok', ...readSummary(id), failed_urls: readFailedUrls(id) });
@@ -1103,12 +1063,9 @@ function writeRedirect(file, target) {
     entries.push({ id, name, url, status: 'stale', reason });
   }
 
-  // Раніше тут була ціла система перевірки застарілості: дерево писалось у
-  // кінці етапу 1, товари — у кінці етапу 2, і мапу можна було зібрати з
-  // дерева одного прогону й товарів іншого. Звідси бралися еталонна категорія,
-  // поріг у годинах і статус "застаріло". Тепер scrape-complete.js пише один
-  // <id>_catalog.json одним записом у кінці прогону, тож лишилось два стани:
-  // файл є (будуємо) або немає (заглушка).
+  // scrape-complete.js пише <id>_catalog.json одним записом у кінці прогону,
+  // тож станів два: файл є (будуємо мапу) або немає (заглушка з командою для
+  // скрапінгу).
   categories.forEach(cat => {
     const { id, name, url } = cat;
 
@@ -1125,7 +1082,7 @@ function writeRedirect(file, target) {
   });
 
   // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
-  // людям його не читати; орієнтовний розмір — див. phase.md.
+  // людям його не читати; ~1.8 МБ на весь сайт.
   fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
 
   // Експорт мапи категорій (без товарів) — кнопка "Експорт" на map.html.
@@ -1166,12 +1123,11 @@ function writeRedirect(file, target) {
   if (renderFailures > 0) {
     console.error(`УВАГА: категорій із помилкою рендеру: ${renderFailures} — у map.html вони позначені ⚠️.`);
   }
-  // ФІНІШ пишеться ДО того, як map.log читається у сторінку: інакше панель
-  // «Лог збірки» завжди показувала б лог без рядка про завершення саме цього
-  // прогону — він з'являвся аж після наступної збірки (користувач це помітив
-  // 26.09.2026). Усе, про що звітує цей рядок, на цей момент уже відоме;
-  // лишається тільки запис самої сторінки, а якщо він впаде — нижче
-  // дописується рядок ПОМИЛКА, тож лог не бреше.
+  // build-finish пишеться ДО того, як map.jsonl читається у сторінку: інакше
+  // «Лог збірки» показував би цю збірку незавершеною — завершення з'являлось аж
+  // після наступної (користувач це помітив 26.09.2026). Усе, про що звітує запис,
+  // на цей момент уже відоме; лишається тільки запис самої сторінки, а якщо він
+  // впаде — нижче дописується запис error, тож лог не бреше.
   logEvt('build-finish', {
     total: categories.length, ok: categories.length - notOk, errors: buildErrors,
     // Склад недобудованих — для колонки «Статус», ті самі три стани, що в таблиці map.html.
@@ -1191,8 +1147,9 @@ function writeRedirect(file, target) {
   }
   console.log(`\nІндекс збережено: map.html (${entries.length} категорій).`);
   // Свідомо БЕЗ ненульового коду виходу: часткова невдача не має валити крок
-  // "Етап 3" у deploy-pages.yml, бо разом з ним зник би весь нічний результат
-  // (знімок, diff, деплой) через одну категорію з 23. Сигналом лишається ⚠️
-  // в самому індексі + рядок ПОМИЛКА в map.log, які видно там, де дивляться.
-  console.log("Готово. Деталі рішень — у map.log.");
+  // «Етап 2 — згенерувати мапи + індекс» у deploy-pages.yml, бо разом з ним
+  // зник би весь нічний результат (знімок, сторінка змін, деплой) через одну
+  // категорію з 23. Сигналом лишається ⚠️ в самому індексі й помилка в «Лозі
+  // збірки», які видно там, де дивляться.
+  console.log("Готово. Деталі — у «Лозі збірки» (map.jsonl).");
 })();

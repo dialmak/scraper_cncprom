@@ -1,8 +1,16 @@
+// scrape-complete.js — скрапер однієї категорії 1 рівня; URL — єдиний аргумент.
+//
+// Три етапи: обхід дерева категорій зі збором товарів на КОЖНОМУ вузлі (і
+// проміжному теж — так знаходяться товари поза підкатегоріями); сторінка кожного
+// унікального товару (назва, код, наявність, хлібні крихти); звірка з лічильником
+// сайту «В наявності» і з крихтами. Результат — один output/site/<id>_catalog.json,
+// записаний одним разом у кінці; хід прогону — події в scrape.jsonl.
+// Черга по всіх категоріях — scrape-site.js.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
-const { sleep } = require('./lib/browser');
+const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -21,13 +29,8 @@ const RETRY_PASS_DELAY_MS = 60000;
 const GRID_WAIT_MS = 10000;
 const MAX_PAGES_SAFETY = 200;
 
-// Усі згенеровані файли (per-run і спільні) лежать поруч зі скриптом у
-// output/site/, не в корені проєкту — прив'язано до __dirname, а не
-// process.cwd(), тому поводиться однаково незалежно від того, звідки саме
-// викликано `node`. Підпапка "site" (а не просто output/) — бо цей скрипт
-// завжди виробляє дані РЕАЛЬНОГО сайту; поряд із часом з'явиться output/new/
-// з кураторською таксономією (не звідси, з окремого скрипта, що читає вже
-// зібрані дані сайту й перекладає в ту саму форму файлів).
+// Усі згенеровані файли лежать в output/site/, не в корені проєкту. Шлях від
+// __dirname, а не process.cwd(), тож неважливо, звідки викликано `node`.
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
@@ -42,18 +45,18 @@ const START_CATEGORY_ID = (START_URL.match(/\/g(\d+)-/) || [, "unknown"])[1];
 // годинах, заглушки "застаріло"). З одним файлом такої ситуації не буває.
 const OUTPUT_CATALOG = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_catalog.json`);
 const OUTPUT_FAILED = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_failed_urls.json`);
-// Помилки цього прогону — те саме, що рядки ПОМИЛКА в scrape.log, але окремо по
-// категорії, щоб build-maps.js міг показати їх на map.html. Інакше збій видно
-// лише тому, хто здогадається відкрити лог і знайти там потрібний прогін.
+// Помилки цього прогону — ті самі, що записи error у scrape.jsonl, але окремо по
+// категорії й повним текстом з адресою: з них build-maps.js складає панель
+// «Помилки» на map.html.
 const OUTPUT_ERRORS = path.join(OUTPUT_DIR, `${START_CATEGORY_ID}_errors.json`);
 
+// Трекери й аналітика — ріжуться на додачу до типів ресурсів з lib/browser.js.
 const BLOCKED_PATTERNS = [
   'google-analytics.com', 'googletagmanager.com', 'doubleclick.net',
   'facebook.net', 'facebook.com/tr', 'connect.facebook.net',
   'ringostat.com', 'hotjar.com', 'criteo.com',
   '/ptrack', '/gatrack', 'advtracking'
 ];
-const BLOCKED_RESOURCE_TYPES = ['image', 'font', 'media', 'stylesheet'];
 
 // ==================== ЛОГ (scrape.jsonl — доповнюється, ніколи не перезаписується) ====================
 // Один файл на весь проєкт (не per-категорія, як JSON-каталоги), бо це історія
@@ -162,16 +165,16 @@ async function getPagerMaxPage(page) {
   ).catch(() => 1);
 }
 
+// Назва товару з картки сітки — id → назва. Потрібна лише для лога: якщо
+// сторінка товару потім не відкрилась, назви з неї вже не буде, а в таблиці
+// прогону помилка без назви не каже, про який товар ідеться.
+// На збір товарів не впливає: ті самі посилання, той самий фільтр.
+const gridNames = new Map();
+
 // Тільки справжня сітка товарів категорії — виключає карусельні блоки
 // ("Подібні товари компанії" / "Ви переглядали" / "Ми рекомендуємо").
 // Повертає кількість знайдених НА СТОРІНЦІ позицій, а не приріст мапи: саме
 // вона відрізняє "сторінка порожня" від "усі ці товари вже були в мапі".
-// Назва товару з картки сітки — id → назва. Потрібна лише для лога: якщо
-// сторінка товару потім не відкрилась, назви з неї вже не буде, а в таблиці
-// прогону помилка без назви не каже, про який товар ідеться (26.09.2026).
-// На збір товарів не впливає: ті самі посилання, той самий фільтр.
-const gridNames = new Map();
-
 async function collectProductsFromCurrentPage(page, mapOut) {
   const items = await page.$$eval(
     'ul.cs-product-gallery > li.cs-product-gallery__item a[href]',
@@ -206,7 +209,7 @@ async function waitForProductGrid(page) {
 }
 
 // Запобіжник на випадок СИСТЕМНОГО збою (сайт змінив розмітку сітки): без
-// нього 403 вузли × (GRID_WAIT_MS + RETRY_DELAY_MS) додали б до нічного
+// нього ~400 вузлів × (GRID_WAIT_MS + RETRY_DELAY_MS) додали б до нічного
 // прогону кілька годин і вибили б timeout-minutes: 300 у deploy-pages.yml.
 // Після такої кількості порожніх сторінок ретраї вимикаються — помилки все
 // одно вже в лозі, і прогін має впасти швидко, а не через 6 годин.
@@ -220,7 +223,7 @@ let emptyGridFailures = 0;
 // (g104993823), єдина така з 407 вузлів, перевірено на живій сторінці. Тому:
 //   - кінцева категорія (без підкатегорій) з 0 товарів — ПОМИЛКА, як і було;
 //     саме цей випадок 19.09.2026 перекинув 14 "Гальмівних резисторів" у
-//     батьківську категорію (README, історія, п. 12);
+//     батьківську категорію (docs/history.md, п. 12);
 //   - категорія з підкатегоріями — лише УВАГА в лозі, без помилки прогону.
 // Повторну спробу робимо в обох випадках: наперед їх не відрізнити.
 async function loadListingPage(page, url, mapOut, hasSubcategories) {
@@ -287,7 +290,8 @@ async function getSiteAvailableCounter(page) {
 }
 
 // ==================== ЕТАП 1: ОБХІД ДЕРЕВА + КАНОНІЧНЕ ПРИЗНАЧЕННЯ КАТЕГОРІЇ ====================
-// productAssignments: Map<productId, {url, categoryId, categoryName, level, path}>
+// productAssignments: Map<productId, {url, categoryId, categoryName, level, path,
+// isLeafCategory}>, path — рядок «Категорія / Підкатегорія / …».
 // Перезаписується без умов — оскільки обхід іде вглиб, останній запис = найглибша
 // (найточніша) категорія. Якщо товар ніде глибше не "приземлився" — лишається
 // запис з проміжної категорії, що само по собі і є ознакою товару-сироти.
@@ -394,8 +398,8 @@ function readProductPage(page) {
 // усі вже в DOM на domcontentloaded), тож гонки рендеру тут немає — на відміну
 // від сітки товарів на етапі 1. Сторінка без назви означає, що прочитано НЕ
 // сторінку товару (заглушку/помилку сайту, яку не впіймала перевірка статусу),
-// і такий рядок не можна писати в CSV: порожній статус diff сприйме як "зник з
-// наявності". Тому — ще одна спроба, а якщо знову без назви — null (товар
+// і такий рядок не можна писати в каталог: порожній статус сторінка змін сприйме
+// як "зник з наявності". Тому — ще одна спроба, а якщо знову без назви — null (товар
 // піде в повторний прохід наприкінці ЕТАПУ 2).
 // silent: true — перший прохід, невдача ще не рахується помилкою прогону.
 async function extractProductData(page, url, assignment, silent = false) {
@@ -465,11 +469,11 @@ function buildChainMap(node, parents = [], out = new Map()) {
   return out;
 }
 
-// ==================== ЕТАП 3: MD-ЗВІТ ЗІ ЗВІРКОЮ ====================
-// Звіряє наші зібрані дані з лічильником сайту "В наявності N" на кожному
-// вузлі дерева. Для вузла зіставляється не лише його власні прямі товари, а
-// увесь піддерево (лічильник сайту на проміжній категорії враховує і
-// підкатегорії), тому для звірки збираються categoryId усіх нащадків.
+// ==================== ЗВІРКА З ЛІЧИЛЬНИКОМ САЙТУ «В НАЯВНОСТІ» ====================
+// Для кожного вузла дерева зібране порівнюється з лічильником сайту "В наявності N".
+// Порівнюються не лише власні прямі товари вузла, а все піддерево (лічильник сайту
+// на проміжній категорії враховує і підкатегорії), тому для звірки збираються
+// categoryId усіх нащадків.
 function collectSubtreeCategoryIds(node, acc = new Set()) {
   if (!node || !node.categoryId) return acc;
   acc.add(node.categoryId);
@@ -501,12 +505,8 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
   const siteCounter = node.siteAvailableCounter;
   const hasCounter = siteCounter !== null && siteCounter !== undefined;
   const diff = hasCounter ? ourAvailable - siteCounter : null;
-  let verdict;
-  if (!hasCounter) verdict = "— (лічильник не знайдено)";
-  else if (diff === 0) verdict = "✅ збігається";
-  else verdict = "⚠️ РОЗБІЖНІСТЬ";
 
-  out.push({ depth, name: node.categoryName, categoryId: node.categoryId, ourTotal, ourAvailable, siteCounter, diff, verdict });
+  out.push({ depth, name: node.categoryName, categoryId: node.categoryId, ourTotal, ourAvailable, siteCounter, diff });
   (node.children || []).forEach(c => buildCategoryStats(c, allRows, depth + 1, out));
   return out;
 }
@@ -588,8 +588,8 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
       console.warn(`Не вдалось обробити ${failedUrls.length} товарів:`, failedUrls);
       fs.writeFileSync(OUTPUT_FAILED, JSON.stringify(failedUrls, null, 2));
     } else if (fs.existsSync(OUTPUT_FAILED)) {
-      // Список від попереднього прогону інакше лишився б поруч зі свіжим CSV
-      // і виглядав би як поточні збої.
+      // Список від попереднього прогону інакше лишився б поруч зі свіжим
+      // каталогом і виглядав би як поточні збої.
       fs.unlinkSync(OUTPUT_FAILED);
     }
     logEvt('stage2', { id: START_CATEGORY_ID, got: allRows.length, ready: availableCount, failed: failedUrls.length });

@@ -69,8 +69,8 @@ const productsByCategory = new Map();
   if (!productsByCategory.has(key)) productsByCategory.set(key, []);
   productsByCategory.get(key).push(r);
 });
-// Категорію без товарів малюємо як і раніше — лише структуру (так буває, якщо
-// етап 2 не встиг відпрацювати або категорія справді порожня).
+// Каталог без жодного товару (етап 2 не прочитав жодної сторінки товару)
+// малюється лише структурою — з лічильниками сайту, без звірки.
 const HAS_PRODUCTS = (catalog.products || []).length > 0;
 
 // "наявн" навмисно не використовується — воно є підрядком і в "Немає в наявності"
@@ -142,12 +142,13 @@ let maxLevel = 1;
 let categoriesCount = 0;
 // Категорії, у яких є і підкатегорії, і власні товари, що не входять до жодної
 // з них ("сироти" на рівні відображення) — та ж умова, що для бейджа (N) в
-// сайдбарі; список іде в попередження над змістом, бо в дереві ці товари не
-// видно, поки категорію не розгорнути.
+// сайдбарі. З цього списку — кнопка «Товари поза категоріями» в шапці й панель
+// за нею: у дереві ці товари не видно, поки категорію не розгорнути.
 const orphanCategories = [];
-// Плаский список вузлів з тими самими числами, що показує мапа — з нього
-// build-maps.js збирає catalog.xlsx. Рахувати їх там заново означало б другу
-// реалізацію тієї ж арифметики, яка колись розійдеться з першою.
+// Плаский список вузлів у порядку обходу, з тими самими числами, що показує мапа.
+// build-maps.js бере з нього дерево для XLSX і добудовані ланки панелей-дерев
+// (там потрібні числа вузла). Рахувати їх там заново означало б другу реалізацію
+// тієї ж арифметики, яка колись розійдеться з першою.
 const flatNodes = [];
 (function walk(n, parentId) {
   categoriesCount++;
@@ -206,7 +207,7 @@ const globalStats = {
 const CATALOG_DATA = { global_stats: globalStats, tree: appTree };
 // flatNodes іде лише в summary.json, не в CATALOG_DATA: сторінці мапи цей
 // список не потрібен (вона має саме дерево), а дублювання роздуло б кожен
-// HTML. build-maps.js бере його звідти для catalog.xlsx.
+// HTML. build-maps.js бере його звідти для XLSX і панелей-дерев.
 const SUMMARY_DATA = { ...globalStats, nodes: flatNodes };
 
 // ==================== СТИЛІ (діловий "desktop"-вигляд, світла/темна тема) ====================
@@ -282,7 +283,7 @@ a:hover { text-decoration: underline; }
   display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10;
   /* sticky, не static — на <id>_map.html не помітно різниці (там сторінка сама
      не скролиться, лише .main-content всередині), але на map.html build-maps.js
-     навмисно вмикає звичайний скрол усього документа (html,body{overflow:auto}),
+     навмисно вмикає звичайний скрол усього документа (html, body { overflow: visible }),
      тож без sticky цей хедер їхав би разом з довгою таблицею категорій. */
   position: sticky; top: 0;
 }
@@ -311,14 +312,12 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 [data-theme="dark"] mark.search-highlight { background: rgba(56, 189, 248, 0.28); color: #7dd3fc; }
 
 .cat-found-badge {
-  /* display: inline, NOT inline-flex — this badge's text can be long enough to wrap
-     across lines (search-result category names) and can contain a <mark> in the
-     middle of it. With inline-flex, the text before/after the <mark> and the <mark>
-     itself become separate flex items that each wrap independently instead of
-     flowing as one continuous line of text — the highlighted word visibly detaches
-     onto its own line. Plain inline reflows exactly like the rest of the page's
-     text, mark included. The icon-to-text gap comes from the literal space already
-     in the markup ("📁 " + text), not from a flex gap property. */
+  /* display: inline, НЕ inline-flex: текст бейджа (назва категорії в результатах
+     пошуку) буває довгим і переноситься, а всередині може стояти <mark>. В
+     inline-flex текст до <mark>, сам <mark> і текст після стають окремими
+     flex-елементами й переносяться кожен сам по собі — підсвічене слово
+     відривається на свій рядок. Відступ між іконкою й текстом — звичайний
+     пробіл у розмітці ("📁 " + текст), а не gap. */
   display: inline; padding: 2px 8px; font-size: 0.74rem; font-weight: 500;
   border-radius: 4px; background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-link);
   cursor: pointer; text-decoration: none; transition: all 0.12s ease;
@@ -406,15 +405,9 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .table-wrap { width: 100%; overflow-x: auto; }
 .simple-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
 .simple-table th { background: var(--bg-subtle); color: var(--text-muted); font-weight: 600; padding: 6px 10px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-/* top, не middle — свідомо ГЛОБАЛЬНО для всіх .simple-table, не лише
-   .search-table нижче (той коментар про "лише .search-table" стосується
-   тільки ширин колонок біля нього, не цього рядка). Раніше middle
-   центрувало короткі однорядкові комірки (№, бейджи) відносно висоти
-   БАГАТОРЯДКОВОГО сусіда в тому самому рядку (довга назва категорії/
-   підкатегорії, що переноситься) — виглядало як збите вирівнювання. top
-   узгоджено й для звичайних таблиць (список підкатегорій у renderSingleView
-   тощо), не лише для результатів пошуку — той самий принцип "один стиль
-   скрізь", що й для .count-yes/.count-no. */
+/* top, а не middle — для всіх .simple-table: middle центрував короткі комірки
+   (№, бейджі) по висоті сусідньої назви, що переноситься на кілька рядків, і
+   рядок виглядав збитим. */
 .simple-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
 .simple-table tbody tr:nth-child(even) { background: var(--bg-row-alt); }
 .simple-table tbody tr:hover { background: var(--bg-hover); }
@@ -429,17 +422,12 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .col-name a:hover { color: var(--text-link); text-decoration: underline; }
 .col-avail { width: 150px; text-align: center; }
 
-/* Результати пошуку (initSiteSearch на map.html, buildResultsSection в кожній
-   <id>_map.html) — окремий, ширший стовпчик категорії, тому % замість px:
-   table-layout: fixed тримає пропорції при будь-якій ширині вікна (сторінка
-   тепер розтягується на всю ширину, .index-wrap без max-width). Раніше
-   Категорія була фіксовані 220px — довгі назви з бейджами наявності постійно
-   переносились на купу рядків; тепер їй свідомо більше місця, ніж Коду/№/
-   Наявності, які завжди короткі за змістом. Назва товару лишається без
-   явного % — забирає все, що лишилось (100% - решта = ~40%). Ці правила
-   зачіпають ЛИШЕ таблиці з класом .search-table, не звичайний
-   renderTableHtml (список товарів вузла) — у нього немає стовпця Категорія
-   і фіксовані px тут не заважають. */
+/* Результати пошуку (initSiteSearch на map.html, buildResultsSection на мапі
+   розділу): ширини у %, щоб пропорції трималися за будь-якої ширини вікна.
+   Категорії — найбільше місця (довгі назви з бейджами інакше розтягувались на
+   кілька рядків), № / Код / Наявність — вузькі, назва товару бере решту (~40%).
+   Лише для .search-table: у звичайній таблиці товарів вузла (renderTableHtml)
+   колонки «Категорія» немає. */
 table.search-table { table-layout: fixed; }
 table.search-table .col-n { width: 4%; }
 table.search-table .col-code { width: 8%; }
@@ -518,14 +506,10 @@ table.search-table .col-avail { width: 16%; }
 .help-overlay.open { display: flex; }
 .help-panel {
   background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
-  /* 800px, а не колишні 640 — на прохання користувача (24.09.2026): панелі зі
-     списками (розбіжності звірки, товари поза категоріями, помилки прогону,
-     логи) виглядали затісними на широкому екрані. На теперішніх даних вони і в
-     640 вміщались без переносів — найширший рядок 525px, — але кожен рівень
-     вкладеності з'їдає 18px відступу, тож запас тут не зайвий.
-     Ширина обмежена лише max-width, тож на вузькому екрані панель як і раніше
-     займає все, що лишають відступи .help-overlay. Логи мали власний
-     inline-override на 900px — прибраний, тепер усі вікна однакові. */
+  /* 800px (24.09.2026, на прохання користувача): у 640 панелі зі списками
+     виглядали затісними, а кожен рівень вкладеності з'їдає ще 18px відступу.
+     Лише max-width — на вузькому екрані панель займає все, що лишають
+     відступи .help-overlay. Ширина однакова для всіх панелей, логів теж. */
   max-width: 800px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,0.3);
 }
 .help-panel-head {
@@ -623,7 +607,7 @@ table.search-table .col-avail { width: 16%; }
 /* Зелена версія синього значка (ℹ️). Шрифтовий color на emoji не діє —
    це кольорова гліфа, а не літера, тож крутимо відтінок фільтром. Значок синій
    на всіх основних платформах, тому скрізь вийде зелений.
-   Кут підібраний на оці: CSS hue-rotate — не чесний поворот відтінку, а матричне
+   Кут підібраний вимірюванням кольору: CSS hue-rotate — не чесний поворот відтінку, а матричне
    наближення, і «математичні» +100° дають не зелений, а малиновий. */
 .ico-green { filter: hue-rotate(-80deg) saturate(1.15); }
 /* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
@@ -677,9 +661,10 @@ function initNarrowGuard() {
 // затемненням на весь екран, а тут потрібен список під своєю кнопкою.
 function initHeaderMenus() {
   var drops = [];
-  // Клас на body вмикає шторку (CSS вище). Одна функція на всі шляхи
-  // закриття (кнопка, клік поза списком, Esc, рядок із [data-open]), щоб
-  // шторка ніде не лишилась вісіти після закритого меню.
+  // Шторка — окремий елемент .menu-scrim (CSS вище), клас open на ньому вмикає
+  // затемнення. syncScrim — одна функція на всі шляхи закриття (кнопка, клік
+  // поза списком, Esc, рядок із [data-open]), щоб шторка ніде не лишилась
+  // висіти після закритого меню.
   var scrim = document.createElement('div');
   scrim.className = 'menu-scrim';
   document.body.appendChild(scrim);
@@ -728,13 +713,11 @@ function initHeaderMenus() {
   });
 }
 
-// ==================== ПЕРЕМИКАЧ ТЕМИ (спільний для map_<id>.html і map.html) ====================
-// Винесено з initCatalogMap top-level, теж пишеться як звичайна функція і теж
-// іде в map-common.js через .toString() — на відміну від решти клієнтського
-// додатку, це потрібне і на індексній map.html (build-maps.js), яка не має
-// дерева категорій CATALOG_DATA, тож не може викликати initCatalogMap.
-// Самодостатня: шукає #btn-theme-toggle сама, застосовує збережену/системну
-// тему одразу при виклику й одразу ж навішує обробник кліку.
+// ==================== ПЕРЕМИКАЧ ТЕМИ (спільний для <id>_map.html і map.html) ====================
+// Top-level, а не всередині initCatalogMap: потрібна й на map.html та сторінці
+// змін, які не мають CATALOG_DATA і initCatalogMap не викликають. Самодостатня:
+// шукає #btn-theme-toggle сама, застосовує збережену/системну тему одразу при
+// виклику й навішує обробник кліку.
 function initThemeToggle() {
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
@@ -755,13 +738,12 @@ function initThemeToggle() {
   });
 }
 
-// ==================== МОДАЛЬНА ПАНЕЛЬ (спільна для map_<id>.html і map.html) ====================
-// Відкриття/закриття кнопкою, кліком поза панеллю, Esc — той самий генеричний
-// overlay/panel вигляд для Довідки й "Товари поза категоріями" в map_<id>.html,
-// і для перегляду scrape.log/map.log в індексній map.html (build-maps.js).
-// Винесено top-level так само, як initThemeToggle, — з тієї самої причини:
-// індексна сторінка не має CATALOG_DATA і не викликає initCatalogMap, тож не
-// може дістатись до нього, якби він лишався вкладеним у setupEvents().
+// ==================== МОДАЛЬНА ПАНЕЛЬ (спільна для <id>_map.html і map.html) ====================
+// Відкриття/закриття кнопкою, кліком поза панеллю, Esc — для всіх модальних
+// панелей: Довідка, «Товари поза категоріями», логи й панелі звірок на map.html.
+// Кнопка-відкривач необов'язкова (null): панелі, які відкриває рядок меню
+// (initHeaderMenus), реєструються лише заради закриття. Top-level з тієї ж
+// причини, що й initThemeToggle.
 function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
   var overlay = document.getElementById(overlayId);
   if (!overlay) return;
@@ -775,19 +757,15 @@ function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
 }
 
-// ==================== ПІДКАЗКИ (спільні для map_<id>.html і map.html) ====================
-// Гарні підказки замість нативного title (той не переноситься й губиться на довгому
-// тексті). Один спільний елемент на всю сторінку, позиційований за координатами
-// наведеного елемента — навмисно position:fixed + JS, а не CSS-::after, бо
-// position:absolute всередині .table-wrap/.main-content (обидва з overflow-y:auto)
-// обрізав би підказку, що виходить за межі таблиці чи в'юпорта скролу. Делеговані
-// слухачі на document — підказки працюють і для елементів, доданих пізніше через
-// innerHTML (перерендер дерева/таблиць), і для розмітки, яка взагалі не змінюється
-// (map.html). Винесено top-level так само й з тієї самої причини, що й
-// initThemeToggle/setupModalOverlay: індексна map.html має власні <th data-tip="...">,
-// але не викликає initCatalogMap (нема CATALOG_DATA), тож не могла дістатись до цієї
-// функції, поки вона була вкладена туди, — сам `cursor: help` з CSS спрацьовував, а
-// показ підказки по наведенню — ні.
+// ==================== ПІДКАЗКИ (спільні для <id>_map.html і map.html) ====================
+// Гарні підказки замість нативного title (той не переноситься й губиться на
+// довгому тексті). Один спільний елемент на сторінку, position: fixed за
+// координатами наведеного елемента, а не CSS ::after: absolute всередині
+// .table-wrap/.main-content (overflow-y: auto) обрізало б підказку. Слухачі
+// делеговані на document — працюють і для розмітки, доданої пізніше через
+// innerHTML. Top-level, бо map.html має власні data-tip, але не викликає
+// initCatalogMap: поки функція жила там, на map.html працював лише
+// cursor: help, а самої підказки не було.
 function setupTooltips() {
   var tipEl = document.createElement('div');
   tipEl.id = 'custom-tooltip';
@@ -834,19 +812,13 @@ function setupTooltips() {
   document.addEventListener('scroll', hide, true);
 }
 
-// ==================== ПОШУК (спільний алгоритм для map_<id>.html і map.html) ====================
-// Винесено top-level так само й з тієї самої причини, що й initThemeToggle/
-// setupModalOverlay/setupTooltips: пошук на індексній map.html (build-maps.js)
-// не має дерева CATALOG_DATA і не викликає initCatalogMap. filterProducts не
-// знає нічого про "категорію" чи "вузол" — приймає довільний масив записів і
-// список полів для збігу, тож і per-category пошук (allProductsList нижче,
-// поля name/code/nodeName), і сайтовий (search-index.json, поля
-// name/code/categoryName) використовують ОДНУ реалізацію збігу/підсвітки, не
-// дві — лише поля різні, бо на кожній сторінці свій запис товару. Єдина
-// реальна відмінність між сторінками — що робить клік по категорії (jump по
-// дереву тут-таки vs відкриття чужого <id>_map.html) — це
-// свідомо лишається окремим для кожної сторінки, а не третьою спільною
-// функцією заради самої лише "спільності".
+// ==================== ПОШУК (спільний алгоритм для <id>_map.html і map.html) ====================
+// Один алгоритм збігу й підсвітки для обох пошуків: filterProducts не знає ні
+// про категорії, ні про вузли — лише масив записів і список полів. Мапа розділу
+// шукає по name/code/nodeName (allProductsList), map.html — по
+// name/code/categoryName (search-index.json). Різниться лише те, що робить клік
+// по категорії, і це свідомо лишається окремим на кожній сторінці. Top-level,
+// бо map.html не викликає initCatalogMap.
 function filterProducts(products, query, fields) {
   var q = (query || '').toLowerCase();
   if (!q) return [];
@@ -854,16 +826,9 @@ function filterProducts(products, query, fields) {
     return fields.some(function (f) { return String(p[f] || '').toLowerCase().indexOf(q) !== -1; });
   });
 }
-// Приймає СИРИЙ (неекранований) текст і сам відповідає за екранування — не
-// escapeHtml(text) до виклику. Причина: старий контракт (escapeHtml спершу,
-// потім обгортання <mark>) ламав багатосимвольні HTML-сутності, коли запит
-// збігався всередині них — напр. пошук "amp" проти назви з "&" всередині:
-// escapeHtml перетворює "&" на "&amp;", а regex-заміна далі знаходить "amp"
-// і всередині цієї сутності теж, вставляючи туди <mark> й розбиваючи саму
-// сутність навпіл ("&<mark>amp</mark>;" замість "&amp;" — рендериться як
-// зайвий видимий текст "amp" замість символу "&"). Екранування тепер
-// відбувається ПІСЛЯ розбиття на збіг/не-збіг, тому нема способу випадково
-// розрізати сутність, яка сама виникає лише під час екранування.
+// Приймає СИРИЙ текст і екранує сам — ПІСЛЯ розбиття на збіг/не-збіг. Якщо
+// екранувати до виклику, запит "amp" знаходився б усередині "&amp;" і розрізав
+// би сутність: "&<mark>amp</mark>;" замість символу "&".
 function highlightMatch(text, query) {
   function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var str = String(text || '');
@@ -881,15 +846,7 @@ function highlightMatch(text, query) {
   return out;
 }
 
-// ==================== САЙТОВИЙ ПОШУК (лише map.html, build-maps.js) ====================
-// Самодостатня, як і три функції вище: шукає свої власні #search-input/
-// #btn-clear-search/#index-content/#search-results сама. search-index.json
-// (зібраний build-maps.js з усіх <id>_search.json) підвантажується через
-// fetch лише при першому реальному пошуку (не інлайном у сторінку, як
-// CATALOG_DATA в map_<id>.html) — щоб початкове завантаження самого
-// індексу лишалось легким. Обсяг пошуку — лише товари (Variant A, узгоджено
-// заздалегідь): назва/код/категорія-як-текст, без окремого типу результату
-// "перейти на категорію 1 рівня за назвою".
+// ==================== САЙТОВИЙ ПОШУК (лише map.html) ====================
 // Екранування значення, що йде в АТРИБУТ (href). Окрема функція, а не
 // escapeHtml: у initSiteSearch власний escapeHtml зроблений через
 // textContent → innerHTML, а він НЕ екранує подвійні лапки, тобто для href
@@ -902,6 +859,10 @@ function escapeAttr(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Самодостатня: сама шукає #search-input/#btn-clear-search/#index-content/
+// #search-results. search-index.json (пише build-maps.js) підвантажується
+// fetch-ем лише при першому реальному пошуку, а не вбудовується в сторінку, щоб
+// map.html лишалась легкою. Шукаються лише товари: назва, код, категорія як текст.
 function initSiteSearch() {
   var input = document.getElementById('search-input');
   var btnClear = document.getElementById('btn-clear-search');
@@ -1040,12 +1001,12 @@ function initCatalogMap(CATALOG_DATA) {
   }
 
   function diffBadge(stats) {
-    // stats.diff вже коректно враховує обидві причини неможливості звірки: сайт
-    // не показав лічильник (hasCounter=false) АБО скрипт запущено без CSV
+    // stats.diff вже враховує обидві причини, чому звірка неможлива: сайт не
+    // показав лічильник (hasCounter=false) АБО в каталозі немає товарів
     // (HAS_PRODUCTS=false, тоді total_yes завжди 0 — порівнювати з ним не можна,
     // інакше майже кожна категорія хибно підсвітилась би червоним).
     if (stats.diff === null || stats.diff === undefined) {
-      return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені (запущено без CSV) — звірка неможлива.">н/д</span>';
+      return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені — звірка неможлива.">н/д</span>';
     }
     var cls = stats.diff === 0 ? 'diff-zero' : 'diff-nonzero';
     // Без data-tip на кожному значенні — пояснення формату "X/Y" дає сам <th> колонки.
@@ -1191,7 +1152,7 @@ function initCatalogMap(CATALOG_DATA) {
   function productsSectionHtml(node, hasChildren, prods) {
     if (prods.length === 0) {
       if (!CATALOG_DATA.global_stats.has_products) {
-        return '<div class="empty-note">Товари не завантажено — запустіть render-map.js з CSV-файлом другим аргументом.</div>';
+        return '<div class="empty-note">Товари не завантажено — запустіть скрапер для цієї категорії ще раз.</div>';
       }
       return hasChildren ? '' : '<div class="empty-note">У цій категорії немає товарів.</div>';
     }
@@ -1613,22 +1574,21 @@ function initCatalogMap(CATALOG_DATA) {
 }
 
 // ==================== СПІЛЬНІ ФАЙЛИ (map-common.css / map-common.js) ====================
-// css та initCatalogMap побайтово однакові для будь-якої категорії — раніше
-// вбудовувались у кожен map_<id>.html окремо (роздуваючи однакову копію в
-// кожному файлі), тепер пишуться один раз як спільні файли поруч з мапами.
-// Перезаписуються при кожному запуску render-map.js (і, відповідно, кожному
-// виклику з build-maps.js) — завжди відповідають поточній версії генератора.
-// Плата за це: map_<id>.html більше не самодостатній один файл, потребує
-// map-common.css/.js поруч (обидва — в тій самій, згенерованій, теці).
+// Стилі й клієнтський код однакові для будь-якої категорії, тож пишуться один
+// раз спільними файлами поруч із мапами, а не вбудовуються в кожну
+// <id>_map.html. Перезаписуються при кожному запуску render-map.js — завжди
+// відповідають поточному коду. Плата: <id>_map.html не самодостатня, їй
+// потрібні map-common.css/.js у тій самій теці.
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-writeLogos(OUTPUT_DIR);
-// Версію рахуємо ПІСЛЯ запису: посилання має відповідати щойно записаному вмісту.
-const COMMON_CSS_V = assetVer(COMMON_CSS_FILE);
-const COMMON_JS_V = assetVer(COMMON_JS_FILE);
 fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initNarrowGuard, filterProducts, highlightMatch, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
+writeLogos(OUTPUT_DIR);
+// Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
+// записаному вмісту, а не тому, що лишився від попереднього запуску.
+const COMMON_CSS_V = assetVer(COMMON_CSS_FILE);
+const COMMON_JS_V = assetVer(COMMON_JS_FILE);
 
 // ==================== ЗБІРКА HTML ====================
 const maxLevelSafe = CATALOG_DATA.global_stats.levels;
@@ -1636,8 +1596,8 @@ const maxLevelSafe = CATALOG_DATA.global_stats.levels;
 const infoBanner = HAS_PRODUCTS ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
       <span>⚠️</span>
-      <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту. Це станеться само:
-      запустіть <code>node render-map.js ${categoryId}</code> ще раз, коли скрапер допише ${categoryId}_catalog.json (ЕТАП 2 scrape-complete.js).</span>
+      <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту.
+      Щоб їх зібрати, запустіть скрапер для цієї категорії ще раз: <code>node scrape-complete.js "${escapeHtmlOuter(catalog.url || '')}"</code></span>
     </div>`;
 
 // Кнопка в шапці (поряд з датою оновлення) + модальна панель зі списком —
@@ -1660,7 +1620,7 @@ const orphanTotalProducts = orphanCategories.reduce((sum, c) => sum + c.own, 0);
 // Добудовані ланки (предки, яких самих у списку немає) — не прикраса:
 // сироти розкидані по дереву, і без них відступ натякав би на рівень,
 // якого на екрані немає. Звертатись до build-maps.js тут ніяк: це окремий
-// процес, який запускає саме цей скрипт, — спі6льний тут лише CSS.
+// процес, який запускає саме цей скрипт, — спільний тут лише CSS.
 const orphanRows = (() => {
   const parentOf = new Map();
   (function walk(n, parent) {
@@ -1831,16 +1791,13 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
             <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
           </tr></tbody></table>
         </div>
-        <!-- Повністю окремий заголовок для режиму пошуку — НЕ переиспользує
-             таблицю/колонки/data-tip вище (Рівень/Товарів/В наявності/…), які
-             мають сенс лише для вибраного вузла дерева. Раніше renderSearchResultsView
-             напряму писала в #cat-heading/#cat-level-badge тощо — через це
-             бейдж кількості знахідок успадковував чужий data-tip колонки
-             "Рівень" ("Глибина вкладеності..."), а сама таблиця показувала
-             неактуальні заголовки колонок під час пошуку. #node-header-row/
-             #search-header-row перемикаються видимістю в updateHeader()/
-             renderSearchResultsView() — той самий патерн, що вже є для
-             #index-content/#search-results на map.html. -->
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
         <div class="search-header-row" id="search-header-row" style="display:none;">
           <span id="search-heading" class="fw-cat-link"></span>
           <span id="search-found-badge" class="level-tag"></span>

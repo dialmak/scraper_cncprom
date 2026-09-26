@@ -20,10 +20,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// Власний домен з 22.09.2026 (Settings → Pages → Custom domain); стара адреса
-// dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
 const LOGS_ONLY = process.argv.includes('--logs-only');
 const ARGS = process.argv.slice(2).filter(a => a !== '--logs-only');
+// Власний домен з 22.09.2026 (Settings → Pages → Custom domain); стара адреса
+// dialmak.github.io/scraper_cncprom/ перенаправляє сюди.
 const PAGES_URL = (ARGS[0] || 'https://map.cncprom.pp.ua/').replace(/\/?$/, '/');
 // Сайт публікує output/site/ у корені (з 22.09.2026); до того все лежало під
 // site/. База визначається на старті: корінь, а якщо там нема списку
@@ -70,13 +70,12 @@ async function getCategoryList() {
   throw new Error(`Не знайдено списку категорій ні в ${PAGES_URL}, ні в ${PAGES_URL}site/`);
 }
 
-// Логи — append-only історія за всі прогони, а не результат одного. У rebuild_only
-// чекаут свіжий, output/ порожній — і без цього кроку збірка публікувала
-// сайт із порожнім логом і map.log з одного рядка, стираючи історію
-// нічного прогону (знайдено 25.09.2026 — користувач побачив порожній лог).
-// Тільки коли файла немає: локальну історію перезаписувати чужою не можна.
-// scrape.log — старий текстовий лог (архів до 26.09.2026): його теж несемо далі,
-// інакше перша ж нічна публікація його б загубила.
+// Логи — append-only історія за всі прогони, а не результат одного. У CI чекаут
+// свіжий, output/ порожній — і без цього кроку збірка публікувала сайт із
+// порожнім логом, стираючи історію (знайдено 25.09.2026 — користувач побачив
+// порожній лог). Тільки коли файла немає: локальну історію перезаписувати
+// чужою не можна. Старі текстові scrape.log і map.log — архіви до 26.09.2026:
+// їх теж несемо далі, інакше перша ж публікація їх би загубила.
 async function fetchLogs() {
   for (const name of ['scrape.jsonl', 'map.jsonl', 'scrape.log', 'map.log']) {
     const lp = path.join(DIR, name);
@@ -125,7 +124,7 @@ async function fetchLogs() {
       else if (fs.existsSync(p)) fs.unlinkSync(p);
     }
     ok++;
-    console.log(`  ${id}: скрапінг ${summary.scraped_at} UTC${extras.length ? ', є ' + extras.join(', ') : ''}`);
+    console.log(`  ${id}: скрапінг ${summary.scraped_at}${extras.length ? ', є ' + extras.join(', ') : ''}`);
   }
   await fetchLogs();
 

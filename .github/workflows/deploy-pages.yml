@@ -1,6 +1,7 @@
 name: Скрапінг + деплой мапи на GitHub Pages
 
-# Нічний прогін повного пайплайну (scrape-site → build-maps) на ubuntu-latest.
+# Нічний прогін повного конвеєра на ubuntu-latest: scrape-site → build-maps →
+# знімок дня в гілку data → build-reports.
 # Готовий output/site/ пушиться одним orphan-комітом у гілку `site`, з якої
 # GitHub Pages публікує сайт (Settings → Pages → Deploy from a branch, site /).
 # Вміст гілки — корінь сайту, тож адреси без /site/: /map.html, /<id>_map.html,
@@ -24,7 +25,7 @@ on:
     inputs:
       rebuild_only:
         # Лише перебудувати мапи й сторінку змін НОВИМ кодом з даних останнього
-        # опублікованого прогону (fetch-published.js) — ~2 хв замість ~3 год.
+        # опублікованого прогону (fetch-published.js) — кілька хвилин замість ~3 год.
         # Без скрапінгу, без нового знімка й без коміту в гілку data.
         description: 'Без скрапінгу: перебудувати сайт з уже опублікованих даних'
         type: boolean
@@ -44,7 +45,7 @@ concurrency:
 jobs:
   scrape-and-build:
     runs-on: ubuntu-latest
-    # Реальний нічний прогін усіх 23 категорій зараз ~3 год (scrape.log) — лишаємо
+    # Реальний нічний прогін усіх 23 категорій зараз ~3 год — лишаємо
     # запас, але нижче платформного ліміту в 360 хв, щоб зависання падало явно,
     # а не мовчки з'їдало весь ліміт.
     timeout-minutes: 300
