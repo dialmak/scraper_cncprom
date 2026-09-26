@@ -525,11 +525,18 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // окремої категорії, і то без списку конкретних вузлів.
   const mismatchGroups = sorted.filter(e => (e.mismatch_categories || []).length > 0);
   const mismatchTotal = mismatchGroups.reduce((n, e) => n + e.mismatch_categories.length, 0);
+  // Число в дужках — це вже НЕ вузли, а сама розбіжність у товарах: на скільки
+  // зібране «Готово до відправки» розійшлося з лічильником сайту «В наявності». Саме через
+  // таку плутанину звідси свого часу зняли кількість вузлів (24.09.2026): вона читалась як
+  // розмір розбіжності. Беремо |diff| по кожній категорії 1 рівня, а не суму зі знаком:
+  // мінус в одній категорії не має «погашати» плюс в іншій. Вузли не сумуємо взагалі:
+  // лічильник сайту рахує всю гілку, тож розбіжність у підкатегорії повторюється в усіх її батьків.
+  const mismatchDiff = sorted.reduce((n, e) => n + (Number.isFinite(e.diff) ? Math.abs(e.diff) : 0), 0);
   const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
   <div class="help-overlay" id="mismatch-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»</h3>
+        <h3>Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності» (${mismatchDiff})</h3>
         <button class="btn-help-close" id="btn-mismatch-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -659,7 +666,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">${ICONS.checks} Звірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
           <h3>Звірка скрапера з даними сайту</h3>
-          <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, null, 'mismatch-overlay')}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+          <div>${checkRow(ICONS.mismatch, `Розбіжності звірки (${mismatchDiff})`, `В дужках — різниця між зібраними «Готово до відправки» і лічильником сайту «В наявності»: ${mismatchDiff} ${plural(mismatchDiff, 'товар', 'товари', 'товарів')}`, mismatchTotal, null, 'mismatch-overlay')}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
           </div>
         </div>
       </div>`;
@@ -851,7 +858,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.mismatch} Розбіжності звірки</div>
-          <div class="help-term-desc">Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Блідим ідуть проміжні категорії без розбіжності, щоб дерево не мало розривів. Назва відкриває саме цей вузол на мапі.</div>
+          <div class="help-term-desc">Число в дужках — сама розбіжність у товарах, а не кількість вузлів: на стільки зібране «Готово до відправки» розійшлося з лічильником сайту «В наявності» по всіх категоріях разом. Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Блідим ідуть проміжні категорії без розбіжності, щоб дерево не мало розривів. Назва відкриває саме цей вузол на мапі.</div>
         </div>
         <div class="help-term">
           <div class="help-term-label">${ICONS.crumbs} Не збігається з крихтами</div>
