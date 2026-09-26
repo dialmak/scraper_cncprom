@@ -802,13 +802,20 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     color: var(--text-subtle); font-family: var(--font-sans); }
   .rl-run[open] > summary::before { content: '▾'; }
   .rl-run[open] > summary { border-bottom: 1px solid var(--border-color); }
-  .rl-tab { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+  /* table-layout: fixed — ширини беруться з шапки, а не з вмісту. «Категорію» звужено
+     вдвічі (було 325px, 26.09.2026, на прохання користувача) з умовою «не більше двох
+     рядків»: заміряно, до 172px «Пульти ручного управління…» і «Датчики, кнопки…»
+     лягають у три, з 176px усе вміщається у два; 180 — з запасом на інший шрифт.
+     Шість числових колонок ділять решту порівну, замість тиснутись біля правого краю. */
+  .rl-tab { width: 100%; border-collapse: collapse; font-size: 0.76rem; table-layout: fixed; }
+  .rl-tab th:nth-child(1) { width: 50px; }
+  .rl-tab th:nth-child(2) { width: 180px; }
   .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
-    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); white-space: nowrap; vertical-align: bottom; }
-  .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
-  .rl-tab th.rl-n, .rl-tab td.rl-n { text-align: right; font-variant-numeric: tabular-nums; width: 1%; }
+    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; }
+  .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
+  .rl-tab th.rl-n, .rl-tab td.rl-n { text-align: right; font-variant-numeric: tabular-nums; }
   .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
-  .rl-tab td.rl-name { width: 100%; }
+  .rl-tab td.rl-name { overflow-wrap: anywhere; }
   .rl-tab td.rl-zero { color: var(--text-subtle); }
   .rl-tab td.rl-n.rl-bad { color: var(--status-no); font-weight: 600; }
   .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
@@ -817,6 +824,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
     color: var(--text-muted); padding-top: 6px; }
   .rl-br { font-family: var(--font-mono); color: var(--text-subtle); }
+  .rl-note + .rl-note { margin-top: 3px; }
+  /* Товари під приміткою — на рівні її тексту, після «└─». */
+  .rl-item { padding-left: 22px; }
+  .rl-item a { color: var(--text-link); }
   .rl-loose { padding: 6px 8px; color: var(--text-muted); font-size: 0.72rem; }
   .rl-raw { font-size: 0.74rem; color: var(--text-muted); }
 </style>

@@ -71,14 +71,17 @@ const LOG_FILE = path.join(OUTPUT_DIR, "scrape.jsonl");
 const RUN_ID = process.env.SCRAPE_RUN_ID || new Date().toISOString();
 const logEvt = (ev, fields) => logEvent(LOG_FILE, ev, Object.assign({ run: RUN_ID }, fields));
 const runErrors = [];
-function logError(text) {
+// text — повний рядок для <id>_errors.json (панель «Помилки» на map.html, там адреса
+// корисна). extra — те, що йде в scrape.jsonl замість тексту: msg без адреси й items
+// [{name, url}] — з них таблиця прогону робить посилання з назвою товару.
+function logError(text, extra) {
   runErrors.push({ time: nowStr(), text });
-  logEvt('error', { id: START_CATEGORY_ID, msg: text });
+  logEvt('error', Object.assign({ id: START_CATEGORY_ID, msg: text }, extra));
 }
 
 // Попередження — у лог, але НЕ в помилки прогону: стан незвичний, але пояснюваний.
-function logWarn(text) {
-  logEvt('warn', { id: START_CATEGORY_ID, msg: text });
+function logWarn(text, extra) {
+  logEvt('warn', Object.assign({ id: START_CATEGORY_ID, msg: text }, extra));
 }
 
 // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
@@ -105,7 +108,14 @@ async function gotoWithRetry(page, url, opts = {}) {
     }
   }
   console.error(`  ПРОПУЩЕНО після ${MAX_RETRIES} спроб: ${url}`);
-  if (!opts.silent) logError(`Не вдалось завантажити після ${MAX_RETRIES} спроб: ${url}`);
+  if (!opts.silent) {
+    const isProduct = /\/p\d+-/.test(url);
+    logError(`Не вдалось завантажити після ${MAX_RETRIES} спроб: ${url}`, {
+      msg: isProduct ? `Не вдалось завантажити товар після ${MAX_RETRIES} спроб`
+        : `Не вдалось завантажити сторінку категорії після ${MAX_RETRIES} спроб`,
+      items: [{ name: isProduct ? gridNameOf(url) : null, url }]
+    });
+  }
   return false;
 }
 
@@ -156,21 +166,31 @@ async function getPagerMaxPage(page) {
 // ("Подібні товари компанії" / "Ви переглядали" / "Ми рекомендуємо").
 // Повертає кількість знайдених НА СТОРІНЦІ позицій, а не приріст мапи: саме
 // вона відрізняє "сторінка порожня" від "усі ці товари вже були в мапі".
+// Назва товару з картки сітки — id → назва. Потрібна лише для лога: якщо
+// сторінка товару потім не відкрилась, назви з неї вже не буде, а в таблиці
+// прогону помилка без назви не каже, про який товар ідеться (26.09.2026).
+// На збір товарів не впливає: ті самі посилання, той самий фільтр.
+const gridNames = new Map();
+
 async function collectProductsFromCurrentPage(page, mapOut) {
   const items = await page.$$eval(
     'ul.cs-product-gallery > li.cs-product-gallery__item a[href]',
     (as, base) => as
-      .map(a => a.getAttribute("href"))
-      .filter(href => /\/ua\/p\d+-[^/]*\.html$/i.test(href))
-      .map(href => new URL(href, base).href),
+      .map(a => ({ href: a.getAttribute("href"), text: (a.getAttribute("title") || a.textContent || "").trim() }))
+      .filter(x => /\/ua\/p\d+-[^/]*\.html$/i.test(x.href))
+      .map(x => ({ url: new URL(x.href, base).href, text: x.text })),
     BASE
   ).catch(() => []);
-  items.forEach(url => {
+  items.forEach(({ url, text }) => {
     const m = url.match(/\/p(\d+)-/);
-    if (m) mapOut.set(m[1], url);
+    if (!m) return;
+    mapOut.set(m[1], url);
+    // У картці кілька посилань (фото, назва) — беремо найдовший текст.
+    if (text && text.length > (gridNames.get(m[1]) || '').length) gridNames.set(m[1], text.replace(/\s+/g, ' '));
   });
   return items.length;
 }
+const gridNameOf = url => { const m = String(url).match(/\/p(\d+)-/); return m ? gridNames.get(m[1]) || null : null; };
 
 // Сітку товарів малює React уже ПІСЛЯ domcontentloaded, тому чекаємо саме її
 // появу, а не фіксовану паузу. Це ключове місце: page.$$eval на нуль збігів
@@ -393,7 +413,8 @@ async function extractProductData(page, url, assignment, silent = false) {
   }
   if (!data.productName) {
     const msg = `Сторінка товару без даних (немає назви) після 2 спроб: ${url}`;
-    if (silent) console.warn(`  ${msg}`); else logError(msg);
+    if (silent) console.warn(`  ${msg}`);
+    else logError(msg, { msg: 'Сторінка товару відкрилась без даних після 2 спроб', items: [{ name: gridNameOf(url), url }] });
     return null;
   }
 
@@ -585,7 +606,9 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
     const crumbOther = allRows.filter(r => r.crumbVerdict === 'other');
     if (crumbOther.length > 0) {
       console.warn(`  Крихти сайту вказують на іншу гілку для ${crumbOther.length} товарів`);
-      logWarn(`Крихти вказують на іншу гілку для ${crumbOther.length} товарів (перший: ${crumbOther[0].finalUrl}).`);
+      logWarn(`Крихти вказують на іншу гілку для ${crumbOther.length} товарів.`, {
+        items: crumbOther.map(r => ({ name: r.productName || null, url: r.finalUrl }))
+      });
     }
 
     const stats = buildCategoryStats(tree, allRows);
