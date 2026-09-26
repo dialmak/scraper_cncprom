@@ -34,7 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { ICONS } = require('./lib/icons');
 const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
-const { assetVer } = require('./lib/assets');
+const { assetVer, contentVer } = require('./lib/assets');
 const { narrowGuardHtml } = require('./lib/notice');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
@@ -586,6 +586,12 @@ html, body { height: auto; overflow: visible; }
 }
 `;
 
+// Вміст reports.css/reports.js готується до сторінки: версія в посиланні
+// рахується від того самого рядка, який потім записується у файл, — інакше
+// браузер із новим HTML міг би лишитись на закешованих старих стилях чи коді.
+const REPORTS_CSS = css.trim() + '\n';
+const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
+
 // ==================== СТОРІНКА ====================
 const html = `<!DOCTYPE html>
 <html lang="uk">
@@ -596,7 +602,7 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../map-common.css${assetVer(path.join(SITE_DIR, 'map-common.css'))}">
-<link rel="stylesheet" href="reports.css">
+<link rel="stylesheet" href="reports.css${contentVer(REPORTS_CSS)}">
 </head>
 <body>
   <header class="app-header">
@@ -674,7 +680,7 @@ ${aboutPanelHtml()}${creditsPanelHtml('../')}
   <div class="chart-tip" id="chart-tip" role="tooltip"></div>
 
   <script src="../map-common.js${assetVer(path.join(SITE_DIR, 'map-common.js'))}"></script>
-  <script src="reports.js"></script>
+  <script src="reports.js${contentVer(REPORTS_JS)}"></script>
   <script>initReportsPage();</script>
 </body>
 </html>
@@ -760,9 +766,8 @@ if (require.main === module) {
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
 
-  fs.writeFileSync(path.join(OUT_DIR, 'reports.css'), css.trim() + '\n', 'utf-8');
-  fs.writeFileSync(path.join(OUT_DIR, 'reports.js'),
-    [reportIsYes, reportExpand, reportDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
+  fs.writeFileSync(path.join(OUT_DIR, 'reports.css'), REPORTS_CSS, 'utf-8');
+  fs.writeFileSync(path.join(OUT_DIR, 'reports.js'), REPORTS_JS, 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'index.html'), html, 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'latest.html'), latestRedirect, 'utf-8');
 

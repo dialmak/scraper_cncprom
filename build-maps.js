@@ -8,6 +8,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { logEvent, readEvents } = require('./lib/log');
 const { runLogHtml, buildLogHtml } = require('./lib/runlog');
+const { plural } = require('./lib/plural');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
@@ -622,12 +623,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // не можна було відрізнити "перевірили, все добре" від "не перевіряли".
   // Тепер у меню рядок на кожну перевірку, і чистий результат теж видно
   // («немає»). Самі панелі зі списками лишились як були — рядок лише веде до них.
-  const plural = (n, one, few, many) => {
-    const m10 = n % 10, m100 = n % 100;
-    if (m10 === 1 && m100 !== 11) return one;
-    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-    return many;
-  };
   // Коли перевірка нічого не знайшла, рядок каже "немає" у колонці дії,
   // а колонка числа лишається порожньою: нуль поруч із "немає" сказав би те саме
   // двічі (так само до 25.09.2026 було зі словом "чисто").
