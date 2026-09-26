@@ -836,7 +836,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-item { padding-left: 22px; }
   .rl-item a { color: var(--text-link); }
   .rl-loose { padding: 6px 8px; color: var(--text-muted); font-size: 0.72rem; }
-  .rl-raw { font-size: 0.74rem; color: var(--text-muted); }
+  /* Підсвітка категорії під курсором — рамкою, а не фоном (як в інших таблицях),
+     за словами користувача 26.09.2026. Рамка обхоплює весь <tbody> категорії — рядок
+     разом із примітками під ним. outline, а не border: у border-collapse рамка рядка
+     ділиться з сусіднім, і таблиця стрибала б на піксель. */
+  .rl-grp:hover { outline: 1px solid var(--border-active); outline-offset: -1px; }
 </style>
 </head>
 <body>
