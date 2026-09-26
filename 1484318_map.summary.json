@@ -1,0 +1,39 @@
+{
+  "id": "1484318",
+  "levels": 1,
+  "categories_count": 1,
+  "has_products": true,
+  "total_products": 36,
+  "total_yes": 21,
+  "total_no": 15,
+  "site_counter": 21,
+  "diff": 0,
+  "scraped_at": "26.09.2026 02:24",
+  "source": "1484318_catalog.json",
+  "mismatch_categories": [],
+  "crumb_summary": {
+    "match": 36,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "1484318",
+      "name": "Перетворювачі частоти (інвертори)",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g1484318-preobrazovateli-chastoty-invertory",
+      "own": 36,
+      "products": 36,
+      "yes": 21,
+      "no": 15,
+      "counter": 21,
+      "diff": 0
+    }
+  ]
+}

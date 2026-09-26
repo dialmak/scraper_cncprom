@@ -1,0 +1,39 @@
+{
+  "id": "1372753",
+  "levels": 1,
+  "categories_count": 1,
+  "has_products": true,
+  "total_products": 32,
+  "total_yes": 26,
+  "total_no": 6,
+  "site_counter": 26,
+  "diff": 0,
+  "scraped_at": "26.09.2026 02:25",
+  "source": "1372753_catalog.json",
+  "mismatch_categories": [],
+  "crumb_summary": {
+    "match": 32,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "1372753",
+      "name": "Гнучкий кабель-канал (кабелеукладач)",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal",
+      "own": 32,
+      "products": 32,
+      "yes": 26,
+      "no": 6,
+      "counter": 26,
+      "diff": 0
+    }
+  ]
+}

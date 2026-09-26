@@ -1,0 +1,106 @@
+{
+  "id": "152464274",
+  "levels": 2,
+  "categories_count": 5,
+  "has_products": true,
+  "total_products": 87,
+  "total_yes": 69,
+  "total_no": 18,
+  "site_counter": 70,
+  "diff": -1,
+  "scraped_at": "26.09.2026 02:55",
+  "source": "152464274_catalog.json",
+  "mismatch_categories": [
+    {
+      "categoryId": "152464274",
+      "name": "Лінійні приводи",
+      "collected": 69,
+      "siteCounter": 70,
+      "diff": -1
+    },
+    {
+      "categoryId": "152464280",
+      "name": "Електричні лінійні приводи",
+      "collected": 19,
+      "siteCounter": 20,
+      "diff": -1
+    }
+  ],
+  "crumb_summary": {
+    "match": 87,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "152464274",
+      "name": "Лінійні приводи",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g152464274-linejnye-privody",
+      "own": 0,
+      "products": 87,
+      "yes": 69,
+      "no": 18,
+      "counter": 70,
+      "diff": -1
+    },
+    {
+      "id": "152464280",
+      "name": "Електричні лінійні приводи",
+      "parentId": "152464274",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g152464280-elektricheskie-linejnye-privody",
+      "own": 25,
+      "products": 25,
+      "yes": 19,
+      "no": 6,
+      "counter": 20,
+      "diff": -1
+    },
+    {
+      "id": "153793456",
+      "name": "Прецизійні модулі кулькового гвинта",
+      "parentId": "152464274",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g153793456-pretsizionnye-moduli-sharikovogo",
+      "own": 9,
+      "products": 9,
+      "yes": 9,
+      "no": 0,
+      "counter": 9,
+      "diff": 0
+    },
+    {
+      "id": "154721209",
+      "name": "Електричні крокові лінійні приводи",
+      "parentId": "152464274",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g154721209-elektricheskie-shagovye-linejnye",
+      "own": 8,
+      "products": 8,
+      "yes": 8,
+      "no": 0,
+      "counter": 8,
+      "diff": 0
+    },
+    {
+      "id": "83180132",
+      "name": "Модулі лінійного переміщення і аксесуари до них",
+      "parentId": "152464274",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g83180132-moduli-linejnogo-peremescheniya",
+      "own": 45,
+      "products": 45,
+      "yes": 33,
+      "no": 12,
+      "counter": 33,
+      "diff": 0
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Оснащення для верстатів (1–3 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Оснащення для верстатів</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 03:08</button>
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій (2)</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="#" class="orphan-group-head orphan-cat-link" data-id="node-92857157">📁 Оснащення для верстатів <span class="node-count">(2)</span></a>
+            <div class="orphan-cat-list"><a href="#" class="cat-found-badge tree-row orphan-cat-link" data-id="node-92857157" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(2)</span></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Оснащення для верстатів</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">110</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">31</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":3,"categories_count":14,"has_products":true,"total_products":110,"total_yes":79,"total_no":31,"site_counter":79,"diff":0,"scraped_at":"26.09.2026 03:08","source":"92857157_catalog.json","mismatch_categories":[],"crumb_summary":{"match":108,"ancestor":0,"descendant":0,"other":0,"unknown":2},"crumb_other":[],"crumb_unknown":[{"id":"1694903212","name":"Різцетримач швидкозмінний картриджного типу MULTIFIX розміру Аа для токарного верстата, касетна різцетримка","url":"https://cncprom.ua/ua/p1694903212-reztsederzhatel-bystrosmennyj-kartridzhnogo.html","assigned":"Оснащення для верстатів"},{"id":"855198326","name":"Безлюфтовий гармонійний редуктор SHF-32-80","url":"https://cncprom.ua/ua/p855198326-bezlyuftovyj-garmonicheskij-reduktor.html","assigned":"Оснащення для верстатів"}],"orphan_categories":[{"id":"node-92857157","name":"Оснащення для верстатів","level":1,"own":2}]},"tree":{"id":"node-92857157","level":1,"name":"Оснащення для верстатів","url":"https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov","own_products":[{"index":1,"code":"10-411","name":"Різцетримач швидкозмінний картриджного типу MULTIFIX розміру Аа для токарного верстата, касетна різцетримка","url":"https://cncprom.ua/ua/p1694903212-reztsederzhatel-bystrosmennyj-kartridzhnogo.html","availability":"Готово до відправки"},{"index":2,"code":"07-014","name":"Безлюфтовий гармонійний редуктор SHF-32-80","url":"https://cncprom.ua/ua/p855198326-bezlyuftovyj-garmonicheskij-reduktor.html","availability":"Немає в наявності"}],"children":[{"id":"node-92822386","level":2,"name":"Столи координатні","url":"https://cncprom.ua/ua/g92822386-stoly-koordinatnye","own_products":[{"index":1,"code":"10-713","name":"Стіл 2-х координатний неповоротний CT-455х170 (NR), 2 штурвала","url":"https://cncprom.ua/ua/p1311989469-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":2,"code":"10-714","name":"Стіл 2-х координатний неповоротний CT-555х195 (NR), 2 штурвала","url":"https://cncprom.ua/ua/p1311991789-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":3,"code":"10-715","name":"Стіл 2-х координатний неповоротний CT-355х140-R (NR), 2 штурвала + лінійка","url":"https://cncprom.ua/ua/p1311919991-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":4,"code":"10-716","name":"Стіл 2-х координатний неповоротний CT-455х170-R (NR), 2 штурвала + лінійка","url":"https://cncprom.ua/ua/p1311932705-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":5,"code":"10-717","name":"Стіл 2-х координатний неповоротний CT-555х195-R (NR), 2 штурвала + лінійка","url":"https://cncprom.ua/ua/p1311942457-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":6,"code":"10-718","name":"Стіл 2-х координатний неповоротний CT-355х140-2W (NR), 3 штурвала","url":"https://cncprom.ua/ua/p1311867737-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":7,"code":"10-719","name":"Стіл 2-х координатний неповоротний CT-455х170-2W (NR), 3 штурвала","url":"https://cncprom.ua/ua/p1311871379-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":8,"code":"10-720","name":"Стіл 2-х координатний неповоротний CT-555х195-2W (NR), 3 штурвала","url":"https://cncprom.ua/ua/p1311875877-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":9,"code":"10-721","name":"Стіл 2-х координатний неповоротний CT-355х140-2W-R (NR), 3 штурвала + лінійка","url":"https://cncprom.ua/ua/p1310442925-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":10,"code":"10-722","name":"Стіл 2-х координатний неповоротний CT-455х170-2W-R (NR), 3 штурвала + лінійка","url":"https://cncprom.ua/ua/p1311403003-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":11,"code":"10-723","name":"Стіл 2-х координатний неповоротний CT-555х195-2W-R (NR), 3 штурвала + лінійка","url":"https://cncprom.ua/ua/p1311417275-stol-koordinatnyj-nepovorotnyj.html","availability":"Готово до відправки"},{"index":12,"code":"10-712","name":"Стіл 2-х координатний неповоротний CT-355х140 (NR), 2 штурвала","url":"https://cncprom.ua/ua/p1311972216-stol-koordinatnyj-nepovorotnyj.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":12,"own_yes":11,"own_no":1,"total_products":12,"total_yes":11,"total_no":1,"subcategories_count":0,"site_counter":11,"diff":0}},{"id":"node-91073255","level":2,"name":"Лещата верстатні","url":"https://cncprom.ua/ua/g91073255-tiski-stanochnye","own_products":[],"children":[{"id":"node-91455622","level":3,"name":"Лещата верстатні прецизійні жорстко-фіксуючі серії QM (тип 3418)","url":"https://cncprom.ua/ua/g91455622-tiski-stanochnye-pretsizionnye","own_products":[{"index":1,"code":"10-701","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16100 (NR) тип 3418","url":"https://cncprom.ua/ua/p1273695899-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":2,"code":"10-702","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16125 (NR) тип 3418","url":"https://cncprom.ua/ua/p1275735329-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":3,"code":"10-704","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16200 (NR) тип 3418","url":"https://cncprom.ua/ua/p1275777750-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":4,"code":"10-705","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16200L (NR) тип 3418","url":"https://cncprom.ua/ua/p1276252877-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":5,"code":"10-711","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16160 (NR-З) тип 3418","url":"https://cncprom.ua/ua/p1278017893-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":6,"code":"10-707","name":"Лещата верстатні прецизійні жорстко-фіксуючі поворотні QM16125 (YR) тип 3418","url":"https://cncprom.ua/ua/p1278672228-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":7,"code":"10-708","name":"Лещата верстатні прецизійні жорстко-фіксуючі поворотні QM16160 (YR) тип 3418","url":"https://cncprom.ua/ua/p1278787856-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":8,"code":"10-709","name":"Лещата верстатні прецизійні жорстко-фіксуючі поворотні QM16200 (YR) тип 3418","url":"https://cncprom.ua/ua/p1278812892-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":9,"code":"10-710","name":"Лещата верстатні прецизійні жорстко-фіксуючі поворотні QM16200L (YR) тип 3418","url":"https://cncprom.ua/ua/p1279224369-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":10,"code":"10-706","name":"Лещата верстатні прецизійні жорстко-фіксуючі поворотні QM16100 (YR) тип 3418","url":"https://cncprom.ua/ua/p1274342914-tiski-stanochnye-pretsizionnye.html","availability":"Немає в наявності"},{"index":11,"code":"10-703","name":"Лещата верстатні прецизійні жорстко-фіксуючі неповоротні QM16160 (NR) тип 3418","url":"https://cncprom.ua/ua/p1275755931-tiski-stanochnye-pretsizionnye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":11,"own_yes":9,"own_no":2,"total_products":11,"total_yes":9,"total_no":2,"subcategories_count":0,"site_counter":9,"diff":0}},{"id":"node-91674538","level":3,"name":"Лещата верстатні прецизійні серій QH і QB (тип 3420)","url":"https://cncprom.ua/ua/g91674538-tiski-stanochnye-pretsizionnye","own_products":[{"index":1,"code":"10-772","name":"Лещата верстатні прецизійні поворотні QH80 (YR-C) тип 3420","url":"https://cncprom.ua/ua/p1286578311-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":2,"code":"10-773","name":"Лещата верстатні прецизійні поворотні QH100 (YR-C) тип 3420","url":"https://cncprom.ua/ua/p1286615542-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":3,"code":"10-774","name":"Лещата верстатні прецизійні поворотні QH125 (YR-C) тип 3420","url":"https://cncprom.ua/ua/p1285145518-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":4,"code":"10-775","name":"Лещата верстатні прецизійні поворотні QH160 (YR-C) тип 3420","url":"https://cncprom.ua/ua/p1286726196-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":4,"own_yes":4,"own_no":0,"total_products":4,"total_yes":4,"total_no":0,"subcategories_count":0,"site_counter":4,"diff":0}},{"id":"node-91952637","level":3,"name":"Лещата верстатні прецизійні двоповоротні серій QHK і QBK (тип 3422)","url":"https://cncprom.ua/ua/g91952637-tiski-stanochnye-pretsizionnye","own_products":[{"index":1,"code":"10-777","name":"Лещата верстатні прецизійні двооборотні QHK125 (YR-YT-C) тип 3422","url":"https://cncprom.ua/ua/p1292473043-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":2,"code":"10-779","name":"Лещата верстатні прецизійні двооборотні QHK160 (YR-YT-C) тип 3422","url":"https://cncprom.ua/ua/p1292484707-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":3,"code":"10-778","name":"Лещата верстатні прецизійні двохповоротні QBK125L (YR-YT) тип 3422","url":"https://cncprom.ua/ua/p1292672070-tiski-stanochnye-pretsizionnye.html","availability":"Готово до відправки"},{"index":4,"code":"10-776","name":"Лещата верстатні прецизійні двохповоротні QHK100 (YR-YT-C) тип 3422","url":"https://cncprom.ua/ua/p1291925401-tiski-stanochnye-pretsizionnye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":4,"own_yes":3,"own_no":1,"total_products":4,"total_yes":3,"total_no":1,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-92016102","level":3,"name":"Лещата верстатні свердлильні похилі серії QKD (тип 3460)","url":"https://cncprom.ua/ua/g92016102-tiski-stanochnye-sverlilnye","own_products":[{"index":1,"code":"10-765","name":"Лещата верстатні свердлильні неповоротні похилі QKD75 (NR-YT) тип 3460","url":"https://cncprom.ua/ua/p1293809698-tiski-stanochnye-sverlilnye.html","availability":"Немає в наявності"},{"index":2,"code":"10-766","name":"Лещата верстатні свердлильні неповоротні похилі QKD100 (NR-YT) тип 3460","url":"https://cncprom.ua/ua/p1293361110-tiski-stanochnye-sverlilnye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":2,"own_yes":0,"own_no":2,"total_products":2,"total_yes":0,"total_no":2,"subcategories_count":0,"site_counter":0,"diff":0}},{"id":"node-91455736","level":3,"name":"Лещата верстатні свердлильні серії Q19 (тип 3424)","url":"https://cncprom.ua/ua/g91455736-tiski-stanochnye-sverlilnye","own_products":[{"index":1,"code":"10-762","name":"Лещата верстатні свердлильні неповоротні швидкозатискні Q19K75 (NR) тип 3424","url":"https://cncprom.ua/ua/p1296794599-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":2,"code":"10-763","name":"Лещата верстатні свердлильні неповоротні швидкозатискні Q19K100 (NR) тип 3424","url":"https://cncprom.ua/ua/p1297115167-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":3,"code":"10-764","name":"Лещата верстатні свердлильні неповоротні швидкозажимні Q19K160 (NR) тип 3424","url":"https://cncprom.ua/ua/p1297546757-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":4,"code":"10-780","name":"Лещата верстатні свердлильні неповоротні швидкозатискні Q19K200 (NR) тип 3424","url":"https://cncprom.ua/ua/p1519895472-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":5,"code":"10-729","name":"Лещата верстатні свердлильні неповоротні Q19D100 (NR) тип 3424","url":"https://cncprom.ua/ua/p1280217978-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":6,"code":"10-730","name":"Лещата верстатні свердлильні неповоротні Q19D150 (NR) тип 3424","url":"https://cncprom.ua/ua/p1280242788-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":7,"code":"10-731","name":"Лещата верстатні свердлильні неповоротні Q19D200 (NR) тип 3424","url":"https://cncprom.ua/ua/p1280265638-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":8,"code":"10-737","name":"Лещата верстатні свердлильні неповоротні Q19A80 (NR) тип 3424","url":"https://cncprom.ua/ua/p1282227775-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":9,"code":"10-738","name":"Лещата верстатні свердлильні неповоротні Q19A100 (NR) тип 3424","url":"https://cncprom.ua/ua/p1282318924-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":10,"code":"10-740","name":"Лещата верстатні свердлильні неповоротні Q19A150 (NR) тип 3424","url":"https://cncprom.ua/ua/p1282398178-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":11,"code":"10-741","name":"Лещата верстатні свердлильні неповоротні Q19A175 (NR) тип 3424","url":"https://cncprom.ua/ua/p1282808579-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":12,"code":"10-733","name":"Лещата верстатні свердлильні неповоротні Q19/80 (NR) тип 3424","url":"https://cncprom.ua/ua/p1283776529-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":13,"code":"10-734","name":"Лещата верстатні свердлильні неповоротні Q19/100 (NR) тип 3424","url":"https://cncprom.ua/ua/p1283786339-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":14,"code":"10-735","name":"Лещата верстатні свердлильні неповоротні Q19/125 (NR) тип 3424","url":"https://cncprom.ua/ua/p1284166460-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":15,"code":"10-736","name":"Лещата верстатні свердлильні неповоротні Q19/150 (NR) тип 3424","url":"https://cncprom.ua/ua/p1284170639-tiski-stanochnye-sverlilnye.html","availability":"Готово до відправки"},{"index":16,"code":"10-728","name":"Лещата верстатні свердлильні неповоротні Q19D80 (NR) тип 3424","url":"https://cncprom.ua/ua/p1279963377-tiski-stanochnye-sverlilnye.html","availability":"Немає в наявності"},{"index":17,"code":"10-739","name":"Лещата верстатні свердлильні неповоротні Q19A125 (NR) тип 3424","url":"https://cncprom.ua/ua/p1282363499-tiski-stanochnye-sverlilnye.html","availability":"Немає в наявності"},{"index":18,"code":"10-732","name":"Лещата верстатні свердлильні неповоротні Q19/65 (NR) тип 3424","url":"https://cncprom.ua/ua/p1283436302-tiski-stanochnye-sverlilnye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":18,"own_yes":15,"own_no":3,"total_products":18,"total_yes":15,"total_no":3,"subcategories_count":0,"site_counter":15,"diff":0}},{"id":"node-91793024","level":3,"name":"Лещата верстатні кутові зварювальні","url":"https://cncprom.ua/ua/g91793024-tiski-stanochnye-uglovye","own_products":[{"index":1,"code":"10-724","name":"Лещата верстатні кутові неповоротні для зварювання WRV100/60 (NR)","url":"https://cncprom.ua/ua/p1288132293-tiski-stanochnye-uglovye.html","availability":"Готово до відправки"},{"index":2,"code":"10-726","name":"Лещата верстатні кутові неповоротні для зварювання WRV130/100 (NR)","url":"https://cncprom.ua/ua/p1288183457-tiski-stanochnye-uglovye.html","availability":"Готово до відправки"},{"index":3,"code":"10-727","name":"Лещата верстатні кутові неповоротні для зварювання WRV130/100 (NR-CS) обміднений гвинт","url":"https://cncprom.ua/ua/p1288198107-tiski-stanochnye-uglovye.html","availability":"Готово до відправки"},{"index":4,"code":"10-725","name":"Лещата верстатні кутові неповоротні для зварювання WRV100/60 (NR-CS) обміднений гвинт","url":"https://cncprom.ua/ua/p1287466355-tiski-stanochnye-uglovye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":4,"own_yes":3,"own_no":1,"total_products":4,"total_yes":3,"total_no":1,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-92227483","level":3,"name":"Лещата верстатні прецизійні лекальні серії QGG (тип 3320)","url":"https://cncprom.ua/ua/g92227483-tiski-stanochnye-pretsizionnye","own_products":[{"index":1,"code":"10-750","name":"Лещата верстатні лекальні QGG63 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602980-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":2,"code":"10-751","name":"Лещата верстатні лекальні QGG73 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602981-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":3,"code":"10-754","name":"Лещата верстатні лекальні QGG125 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602984-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":4,"code":"10-755","name":"Лещата верстатні лекальні QGG150 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602985-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":5,"code":"10-744","name":"Лещата верстатні лекальні QGG73 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300095975-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":6,"code":"10-745","name":"Лещата верстатні лекальні QGG88 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300095976-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":7,"code":"10-746","name":"Лещата верстатні лекальні QGG100 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300095977-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":8,"code":"10-748","name":"Лещата верстатні лекальні QGG150 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300095979-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":9,"code":"10-757","name":"Лещата верстатні лекальні VSD25 (AS) тип 3320, легована сталь","url":"https://cncprom.ua/ua/p1300917723-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":10,"code":"10-756","name":"Лещата верстатні лекальні VSD20 (AS) тип 3320, легована сталь","url":"https://cncprom.ua/ua/p1300902079-tiski-stanochnye-lekalnye.html","availability":"Готово до відправки"},{"index":11,"code":"10-742","name":"Лещата верстатні лекальні QGG50 (TS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p2185281479-leschata-verstatni-lekalni.html","availability":"Готово до відправки"},{"index":12,"code":"10-752","name":"Лещата верстатні лекальні QGG88 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602982-tiski-stanochnye-lekalnye.html","availability":"Немає в наявності"},{"index":13,"code":"10-753","name":"Лещата верстатні лекальні QGG100 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298602983-tiski-stanochnye-lekalnye.html","availability":"Немає в наявності"},{"index":14,"code":"10-747","name":"Лещата верстатні лекальні QGG125 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300095978-tiski-stanochnye-lekalnye.html","availability":"Немає в наявності"},{"index":15,"code":"10-749","name":"Лещата верстатні лекальні QGG50 (TS) тип 3320, інструментальна сталь","url":"https://cncprom.ua/ua/p1298333035-tiski-stanochnye-lekalnye.html","availability":"Немає в наявності"},{"index":16,"code":"10-743","name":"Лещата верстатні лекальні QGG63 (FS) тип 3320, кована сталь","url":"https://cncprom.ua/ua/p1300036666-tiski-stanochnye-lekalnye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":16,"own_yes":11,"own_no":5,"total_products":16,"total_yes":11,"total_no":5,"subcategories_count":0,"site_counter":11,"diff":0}},{"id":"node-92610671","level":3,"name":"Лещата верстатні хрестові серій Q97 та CV (тип 3458)","url":"https://cncprom.ua/ua/g92610671-tiski-stanochnye-krestovye","own_products":[{"index":1,"code":"10-767","name":"Лещата верстатні хрестові неповоротні Q9775 (NR) тип 3458","url":"https://cncprom.ua/ua/p1306330033-tiski-stanochnye-krestovye.html","availability":"Готово до відправки"},{"index":2,"code":"10-769","name":"Лещата верстатні хрестові неповоротні Q97125 (NR) тип 3458","url":"https://cncprom.ua/ua/p1307035315-tiski-stanochnye-krestovye.html","availability":"Готово до відправки"},{"index":3,"code":"10-770","name":"Лещата верстатні хрестові неповоротні Q97150 (NR) тип 3458","url":"https://cncprom.ua/ua/p1307045919-tiski-stanochnye-krestovye.html","availability":"Готово до відправки"},{"index":4,"code":"10-771","name":"Лещата верстатні хрестові неповоротні Q97200 (NR) тип 3458","url":"https://cncprom.ua/ua/p1307064065-tiski-stanochnye-krestovye.html","availability":"Готово до відправки"},{"index":5,"code":"10-768","name":"Лещата верстатні хрестові неповоротні Q97100 (NR) тип 3458","url":"https://cncprom.ua/ua/p1307017177-tiski-stanochnye-krestovye.html","availability":"Немає в наявності"},{"index":6,"code":"10-758","name":"Лещата верстатні хрестові неповоротні CV-75 (NR) тип 3458","url":"https://cncprom.ua/ua/p1308097452-tiski-stanochnye-krestovye.html","availability":"Немає в наявності"},{"index":7,"code":"10-759","name":"Лещата верстатні хрестові неповоротні CV-100 (NR) тип 3458","url":"https://cncprom.ua/ua/p1307803962-tiski-stanochnye-krestovye.html","availability":"Немає в наявності"},{"index":8,"code":"10-760","name":"Лещата верстатні хрестові неповоротні CV-125 (NR) тип 3458","url":"https://cncprom.ua/ua/p1308104164-tiski-stanochnye-krestovye.html","availability":"Немає в наявності"},{"index":9,"code":"10-761","name":"Лещата верстатні хрестові неповоротні CV-150 (NR) тип 3458","url":"https://cncprom.ua/ua/p1308110501-tiski-stanochnye-krestovye.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":9,"own_yes":4,"own_no":5,"total_products":9,"total_yes":4,"total_no":5,"subcategories_count":0,"site_counter":4,"diff":0}}],"stats":{"own_products":0,"own_yes":0,"own_no":0,"total_products":68,"total_yes":49,"total_no":19,"subcategories_count":8,"site_counter":49,"diff":0}},{"id":"node-1481716","level":2,"name":"Поворотні осі і задні бабки","url":"https://cncprom.ua/ua/g1481716-povorotnye-osi-zadnie","own_products":[],"children":[{"id":"node-98007869","level":3,"name":"Поворотні осі","url":"https://cncprom.ua/ua/g98007869-povorotnye-osi","own_products":[{"index":1,"code":"07-031","name":"Поворотна вісь D69 для лазерного верстата, роторний патрон","url":"https://cncprom.ua/ua/p3096480135-povorotnaya-d69-dlya.html","availability":"Готово до відправки"},{"index":2,"code":"07-030","name":"Поворотна (четверта) вісь для верстата ЧПК (ЧПУ) RA60-3M-4-K11-80 4:1 з трикулачковим патроном на ремінному редукторі","url":"https://cncprom.ua/ua/p1425635656-povorotnaya-chetvertaya-dlya.html","availability":"Готово до відправки"},{"index":3,"code":"07-010","name":"Поворотна вісь 80мм 6:1 К12 Nema23 4-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p706772963-povorotnaya-80mm-k12.html","availability":"Готово до відправки"},{"index":4,"code":"07-015","name":"4-та поворотна вісь ПБ100-65 100:1, K12-100 на японському безлюфтовому гармонічному (хвиляному) редукторі","url":"https://cncprom.ua/ua/p885601985-taya-povorotnaya-pb100.html","availability":"Готово до відправки"},{"index":5,"code":"07-020","name":"Поворотна вісь для лазерного верстата RALM-148R","url":"https://cncprom.ua/ua/p1226270118-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":6,"code":"07-022","name":"Поворотна вісь для лазерного верстата QW-SF001-80","url":"https://cncprom.ua/ua/p1216140975-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":7,"code":"07-021","name":"Поворотна вісь для лазерного верстата RALM-350R","url":"https://cncprom.ua/ua/p1227653093-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":8,"code":"07-001","name":"4-та поворотна вісь ПБ80-65 50:1, К11-80 на японському безлюфтовому гармонічному (хвильовому) редукторі","url":"https://cncprom.ua/ua/p791418033-taya-povorotnaya-pb80.html","availability":"Готово до відправки"},{"index":9,"code":"07-016","name":"4-та поворотна вісь ПБ100-65 100:1, K11-100 на японському безлюфтовому гармонічному (хвиляному) редукторі","url":"https://cncprom.ua/ua/p942521139-taya-povorotnaya-pb100.html","availability":"Готово до відправки"},{"index":10,"code":"07-023","name":"Поворотна вісь для лазерного верстата RALM-SC3-D100","url":"https://cncprom.ua/ua/p1217511692-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":11,"code":"07-006","name":"Поворотна вісь 100мм 4:1 К12 Nema23 4-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p554666491-povorotnaya-100mm-k12.html","availability":"Готово до відправки"},{"index":12,"code":"07-008","name":"Поворотна вісь 80мм 6:1 К11 Nema23 3-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p557028157-povorotnaya-80mm-k11.html","availability":"Готово до відправки"},{"index":13,"code":"07-024","name":"Поворотна вісь для лазерного верстата RALM-SC3-D125","url":"https://cncprom.ua/ua/p1224902334-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":14,"code":"07-007","name":"Поворотна вісь 100мм 4:1 К11 Nema34 3-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p554669717-povorotnaya-100mm-k11.html","availability":"Готово до відправки"},{"index":15,"code":"07-025","name":"Поворотна вісь для лазерного верстата RALM-SC3-D50","url":"https://cncprom.ua/ua/p1214751623-povorotnaya-dlya-lazernogo.html","availability":"Готово до відправки"},{"index":16,"code":"07-026","name":"Поворотна вісь для лазерного верстата RALM-SCS3-D69","url":"https://cncprom.ua/ua/p1223373168-povorotnaya-dlya-lazernogo.html","availability":"Немає в наявності"},{"index":17,"code":"07-009","name":"Поворотна вісь 100мм 6:1 К11 Nema23 3-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p557028828-povorotnaya-100mm-k11.html","availability":"Немає в наявності"},{"index":18,"code":"07-019","name":"4-та поворотна вісь ПБ100-65 50:1, K12-100 на японському безлюфтовому гармонічному (хвильовому) редукторі","url":"https://cncprom.ua/ua/p1149135804-taya-povorotnaya-pb100.html","availability":"Немає в наявності"},{"index":19,"code":"07-005","name":"Поворотна вісь для верстата з ЧПУ на ремінному редукторі , патрон К11 100мм, редукція 4 - тая 8:1, 5-та 6:1","url":"https://cncprom.ua/ua/p554657255-povorotnaya-dlya-stanka.html","availability":"Немає в наявності"},{"index":20,"code":"07-027","name":"Поворотна вісь для верстата  ЧПК (ЧПУ) 17-100-100 (100:1) з трикулачковим патроном K11-100, четверта вісь верстата","url":"https://cncprom.ua/ua/p1417851871-povorotnaya-dlya-stanka.html","availability":"Немає в наявності"},{"index":21,"code":"07-004","name":"Поворотна вісь для верстата з ЧПУ на ремінному редукторі , без патрона, редукція 4 - тая 8:1, 5-та 6:1","url":"https://cncprom.ua/ua/p554652737-povorotnaya-dlya-stanka.html","availability":"Немає в наявності"},{"index":22,"code":"07-013","name":"4-та поворотна вісь ПБ80-65 100:1, K11-80 на японському безлюфтовому гармонічному (хвильовому) редукторі","url":"https://cncprom.ua/ua/p26552858-taya-povorotnaya-pb80.html","availability":"Немає в наявності"},{"index":23,"code":"07-011","name":"Поворотна вісь 100мм 4:1 К12 Nema34 4-кулачковий патрон, на ремені","url":"https://cncprom.ua/ua/p706769406-povorotnaya-100mm-k12.html","availability":"Немає в наявності"},{"index":24,"code":"07-028","name":"Поворотна вісь для верстата ЧПК (ЧПУ)17-100-100 (100:1) з чотирьохкулачковим патроном K12-100, четверта вісь верстата","url":"https://cncprom.ua/ua/p1419204391-povorotnaya-dlya-stanka.html","availability":"Немає в наявності"},{"index":25,"code":"07-003","name":"4-та поворотна вісь ПБ100-65 50:1, K11-100 на японському безлюфтовому гармонічному (хвильовому) редукторі","url":"https://cncprom.ua/ua/p884945676-taya-povorotnaya-pb100.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":25,"own_yes":15,"own_no":10,"total_products":25,"total_yes":15,"total_no":10,"subcategories_count":0,"site_counter":15,"diff":0}},{"id":"node-98007649","level":3,"name":"Задні бабки","url":"https://cncprom.ua/ua/g98007649-zadnie-babki","own_products":[{"index":1,"code":"07-029","name":"Задня бабка ручна TM60-CC з висотою центру 60 мм","url":"https://cncprom.ua/ua/p1426339147-zadnyaya-babka-ruchnaya.html","availability":"Готово до відправки"},{"index":2,"code":"07-002","name":"Задня бабка, висота 65 мм, конус","url":"https://cncprom.ua/ua/p555558384-zadnyaya-babka-vysota.html","availability":"Готово до відправки"},{"index":3,"code":"07-018","name":"Задня бабка з пневматичним притиском WD-65, висота 65 мм, конус","url":"https://cncprom.ua/ua/p1148938384-zadnyaya-babka-pnevmaticheskim.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":3,"own_yes":3,"own_no":0,"total_products":3,"total_yes":3,"total_no":0,"subcategories_count":0,"site_counter":3,"diff":0}}],"stats":{"own_products":0,"own_yes":0,"own_no":0,"total_products":28,"total_yes":18,"total_no":10,"subcategories_count":2,"site_counter":18,"diff":0}}],"stats":{"own_products":2,"own_yes":1,"own_no":1,"total_products":110,"total_yes":79,"total_no":31,"subcategories_count":3,"site_counter":79,"diff":0}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

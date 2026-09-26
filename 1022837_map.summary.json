@@ -1,0 +1,91 @@
+{
+  "id": "1022837",
+  "levels": 2,
+  "categories_count": 5,
+  "has_products": true,
+  "total_products": 36,
+  "total_yes": 20,
+  "total_no": 16,
+  "site_counter": 20,
+  "diff": 0,
+  "scraped_at": "26.09.2026 02:27",
+  "source": "1022837_catalog.json",
+  "mismatch_categories": [],
+  "crumb_summary": {
+    "match": 36,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "1022837",
+      "name": "Драйвери крокового двигуна",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya",
+      "own": 0,
+      "products": 36,
+      "yes": 20,
+      "no": 16,
+      "counter": 20,
+      "diff": 0
+    },
+    {
+      "id": "96752491",
+      "name": "Цифрові драйвери Leadshine (Оригінал)",
+      "parentId": "1022837",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g96752491-tsifrovye-drajvera-leadshine",
+      "own": 10,
+      "products": 10,
+      "yes": 4,
+      "no": 6,
+      "counter": 4,
+      "diff": 0
+    },
+    {
+      "id": "31385623",
+      "name": "Цифрові драйвери Leadshine",
+      "parentId": "1022837",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g31385623-tsifrovye-drajvera-leadshine",
+      "own": 8,
+      "products": 8,
+      "yes": 3,
+      "no": 5,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "155997774",
+      "name": "Цифрові драйвери",
+      "parentId": "1022837",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g155997774-tsifrovye-drajvery",
+      "own": 8,
+      "products": 8,
+      "yes": 5,
+      "no": 3,
+      "counter": 5,
+      "diff": 0
+    },
+    {
+      "id": "155998387",
+      "name": "Драйвери крокового двигуна",
+      "parentId": "1022837",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g155998387-drajvery-shagovogo-dvigatelya",
+      "own": 10,
+      "products": 10,
+      "yes": 8,
+      "no": 2,
+      "counter": 8,
+      "diff": 0
+    }
+  ]
+}

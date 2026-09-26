@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Системи охолодження і вентиляції (1–2 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Системи охолодження і вентиляції</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:44</button>
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій (5)</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="#" class="orphan-group-head orphan-cat-link" data-id="node-96572435">📁 Системи охолодження і вентиляції <span class="node-count">(5)</span></a>
+            <div class="orphan-cat-list"><a href="#" class="cat-found-badge tree-row orphan-cat-link" data-id="node-96572435" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(5)</span></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Системи охолодження і вентиляції</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">72</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">45</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":2,"categories_count":9,"has_products":true,"total_products":72,"total_yes":27,"total_no":45,"site_counter":28,"diff":-1,"scraped_at":"26.09.2026 02:44","source":"96572435_catalog.json","mismatch_categories":[{"categoryId":"96572435","name":"Системи охолодження і вентиляції","collected":27,"siteCounter":28,"diff":-1},{"categoryId":"131029382","name":"Компресори","collected":12,"siteCounter":13,"diff":-1}],"crumb_summary":{"match":68,"ancestor":0,"descendant":0,"other":0,"unknown":4},"crumb_other":[],"crumb_unknown":[{"id":"850446083","name":"Радіатор зі штуцерами під вентилятор 120х120","url":"https://cncprom.ua/ua/p850446083-radiator-shtutserami-pod.html","assigned":"Системи охолодження і вентиляції"},{"id":"850565427","name":"Радіатор 275х120 (під вентилятори 120х120)","url":"https://cncprom.ua/ua/p850565427-radiator-275h120-pod.html","assigned":"Системи охолодження і вентиляції"},{"id":"975193475","name":"Радіатор 395х120 (під вентилятори 120х120)","url":"https://cncprom.ua/ua/p975193475-radiator-395h120-pod.html","assigned":"Системи охолодження і вентиляції"},{"id":"1725304734","name":"Радіатор HE120-NF під вентилятор 120х120","url":"https://cncprom.ua/ua/p1725304734-radiator-he120-pod.html","assigned":"Системи охолодження і вентиляції"}],"orphan_categories":[{"id":"node-96572435","name":"Системи охолодження і вентиляції","level":1,"own":5}]},"tree":{"id":"node-96572435","level":1,"name":"Системи охолодження і вентиляції","url":"https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii","own_products":[{"index":1,"code":"19-202","name":"WDXS-T4 індикатор температури водяного охолодження з дисплеєм","url":"https://cncprom.ua/ua/p2739603408-wdxs-indikator-temperatury.html","availability":"Немає в наявності"},{"index":2,"code":"19-101","name":"Радіатор зі штуцерами під вентилятор 120х120","url":"https://cncprom.ua/ua/p850446083-radiator-shtutserami-pod.html","availability":"Немає в наявності"},{"index":3,"code":"19-102","name":"Радіатор 275х120 (під вентилятори 120х120)","url":"https://cncprom.ua/ua/p850565427-radiator-275h120-pod.html","availability":"Немає в наявності"},{"index":4,"code":"19-122","name":"Радіатор 395х120 (під вентилятори 120х120)","url":"https://cncprom.ua/ua/p975193475-radiator-395h120-pod.html","availability":"Немає в наявності"},{"index":5,"code":"19-136","name":"Радіатор HE120-NF під вентилятор 120х120","url":"https://cncprom.ua/ua/p1725304734-radiator-he120-pod.html","availability":"Немає в наявності"}],"children":[{"id":"node-67235371","level":2,"name":"Фільтровентиляційні установки","url":"https://cncprom.ua/ua/g67235371-filtroventilyatsionnye-ustanovki","own_products":[{"index":1,"code":"10-203","name":"Фільтр повітряний попередній PF-7C для димоуловлювача, бавовняний фільтр очищення повітря для витяжки","url":"https://cncprom.ua/ua/p1643389130-filtr-vozdushnyj-predvaritelnyj.html","availability":"Готово до відправки"},{"index":2,"code":"10-201","name":"Димоуловлювач (витяжка) XY-201","url":"https://cncprom.ua/ua/p983537398-dymoulovitel-vytyazhka-201.html","availability":"Немає в наявності"},{"index":3,"code":"10-202","name":"Димовловлювач (витяжка) XY-202","url":"https://cncprom.ua/ua/p1115938806-dymoulovitel-vytyazhka-202.html","availability":"Немає в наявності"},{"index":4,"code":"10-206","name":"Фільтр повітряний комбінований основний HEPA/GAS CF-250HC для димовловлювача, вугільний фільтр очищення повітря","url":"https://cncprom.ua/ua/p1643386954-filtr-vozdushnyj-kombinirovannyj.html","availability":"Немає в наявності"},{"index":5,"code":"10-204","name":"Фільтр повітряний попередній PF-18P для димоуловлювача, поролоновий фільтр очищення повітря для витяжки","url":"https://cncprom.ua/ua/p1643387407-filtr-vozdushnyj-predvaritelnyj.html","availability":"Немає в наявності"},{"index":6,"code":"10-205","name":"Фільтр HEPA повітряний проміжний IF-55H для димоуловлювача, промисловий фільтр очищення повітря для витяжки","url":"https://cncprom.ua/ua/p1643389131-filtr-hepa-vozdushnyj.html","availability":"Немає в наявності"},{"index":7,"code":"10-207","name":"Димоуловлювач для паяння (витяжка) XY-02 на 2 робочі місця","url":"https://cncprom.ua/ua/p1881320471-dymoulovitel-dlya-pajki.html","availability":"Немає в наявності"},{"index":8,"code":"10-208","name":"Димоприймач для димоуловлювача на 2 робочі місця","url":"https://cncprom.ua/ua/p1905268263-dymopriemnik-dlya-dymoulovitelya.html","availability":"Немає в наявності"},{"index":9,"code":"10-209","name":"Димовловлювач (витяжка) XY-01","url":"https://cncprom.ua/ua/p2364220540-dymoulovitel-vytyazhka.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":9,"own_yes":1,"own_no":8,"total_products":9,"total_yes":1,"total_no":8,"subcategories_count":0,"site_counter":1,"diff":0}},{"id":"node-66817074","level":2,"name":"Чилери","url":"https://cncprom.ua/ua/g66817074-chillery","own_products":[{"index":1,"code":"10-101","name":"Чилер для охолодження рідини S&A CW-3000TG, система охолодження води для лазерного верстата CO2 та шпинделя","url":"https://cncprom.ua/ua/p978166277-chiller-dlya-ohlazhdeniya.html","availability":"Готово до відправки"},{"index":2,"code":"10-107","name":"Промисловий чилер S&A CW-5000TG, система охолодження води для лазерного верстата CO2 і шпинделя","url":"https://cncprom.ua/ua/p2518268883-promyshlennyj-chiller-and.html","availability":"Готово до відправки"},{"index":3,"code":"10-108","name":"Промисловий чилер S&A CW-5200TI для охолодження та підігріву рідини, система водяного охолодження для CO2 лазера та шпинделя","url":"https://cncprom.ua/ua/p3101110731-promyshlennyj-chiper-and.html","availability":"Готово до відправки"},{"index":4,"code":"10-102","name":"Промисловий чилер S&A CW-5000AG","url":"https://cncprom.ua/ua/p978880748-promyshlennyj-chiller-and.html","availability":"Немає в наявності"},{"index":5,"code":"10-103","name":"Чилер для охолодження рідини S&A CW-5202TH, система охолодження води для лазерного верстата CO2 та шпинделя","url":"https://cncprom.ua/ua/p979682085-chiller-dlya-ohlazhdeniya.html","availability":"Немає в наявності"},{"index":6,"code":"10-104","name":"Чилер для охолодження рідини Mingpin CW-3000, система охолодження води для лазерного верстата CO2 і шпинделя","url":"https://cncprom.ua/ua/p1768378842-chiller-dlya-ohlazhdeniya.html","availability":"Немає в наявності"},{"index":7,"code":"10-106","name":"Чилер для охолодження рідини S&A CW-5200TG, система охолодження води для лазерного верстата CO2 та шпинделя","url":"https://cncprom.ua/ua/p1848666164-chiller-dlya-ohlazhdeniya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":7,"own_yes":3,"own_no":4,"total_products":7,"total_yes":3,"total_no":4,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-3124168","level":2,"name":"Водяні насоси (помпи)","url":"https://cncprom.ua/ua/g3124168-vodyanye-nasosy-pompy","own_products":[{"index":1,"code":"18-002","name":"Мембранний водяний насос 35W 24V DC 2.9 L/min для охолодження шпинделя","url":"https://cncprom.ua/ua/p26553722-membrannyj-vodyanoj-nasos.html","availability":"Готово до відправки"},{"index":2,"code":"18-003","name":"Мембранний водяний насос 45W 12V DC 4L/min для охолодження шпинделя","url":"https://cncprom.ua/ua/p26553688-membrannyj-vodyanoj-nasos.html","availability":"Готово до відправки"},{"index":3,"code":"18-005","name":"Помпа водяна занурювальна FK-5m 150 Вт","url":"https://cncprom.ua/ua/p1288994410-pompa-vodyanaya-pogruzhnaya.html","availability":"Готово до відправки"},{"index":4,"code":"18-006","name":"Фільтр-мішок насоса, бар'єрний мішок для насоса, сітчатий мішок для помпи на шнурку 44х28 см","url":"https://cncprom.ua/ua/p1908518499-filtr-meshok-nasosa.html","availability":"Готово до відправки"},{"index":5,"code":"18-001","name":"Помпа водяна занурювальна FK-3.5 m 80Вт","url":"https://cncprom.ua/ua/p26553415-pompa-vodyanaya-pogruzhnaya.html","availability":"Немає в наявності"},{"index":6,"code":"18-004","name":"Водяний насос занурювальний DK-5000, 105W 220AC для охолодження шпинделя","url":"https://cncprom.ua/ua/p816090577-pogruzhnoj-vodyanoj-nasos.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":6,"own_yes":4,"own_no":2,"total_products":6,"total_yes":4,"total_no":2,"subcategories_count":0,"site_counter":4,"diff":0}},{"id":"node-87830857","level":2,"name":"Вентилятори","url":"https://cncprom.ua/ua/g87830857-ventilyatory","own_products":[{"index":1,"code":"19-104","name":"Вентилятор (кулер) Re Fine 80х80, 12V, 0.18 A (3 pin)","url":"https://cncprom.ua/ua/p858973989-ventilyator-kuler-fine.html","availability":"Готово до відправки"},{"index":2,"code":"19-113","name":"Вентилятор (кулер) 120х120, 12V, 0.3 A (2 pin)","url":"https://cncprom.ua/ua/p851163130-ventilyator-kuler-120h120.html","availability":"Готово до відправки"},{"index":3,"code":"19-110","name":"Вентилятор (кулер) AFB1212VH 120х120, 12V, 0.60 A (2 pin)","url":"https://cncprom.ua/ua/p862820453-ventilyator-kuler-afb1212vh.html","availability":"Готово до відправки"},{"index":4,"code":"19-123","name":"Вентилятор (кулер) YW04010012BH 40х40, 12V, 0.09 A (2 pin)","url":"https://cncprom.ua/ua/p1006639116-ventilyator-kuler-yw04010012bh.html","availability":"Немає в наявності"},{"index":5,"code":"19-134","name":"Вентилятор охолоджуючий ZP5S4010H 40х40 (5 В, 0.2 A, 2 pin XH2.54-2P), вентилятор постійного струму для корпусу","url":"https://cncprom.ua/ua/p1703379994-ventilyator-ohlazhdayuschij-zp5s4010h.html","availability":"Немає в наявності"},{"index":6,"code":"19-135","name":"Вентилятор охолоджуючий CJY 50х50 (5 В, 0.2 A, 2 pin XH2.54-2P), вентилятор постійного струму для корпусу","url":"https://cncprom.ua/ua/p1703379995-ventilyator-ohlazhdayuschij-cjy.html","availability":"Немає в наявності"},{"index":7,"code":"19-106","name":"Вентилятор (кулер) GDA9225 92х92, 5V, 0.25 A (USB)","url":"https://cncprom.ua/ua/p862063283-ventilyator-kuler-gda9225.html","availability":"Немає в наявності"},{"index":8,"code":"19-112","name":"Вентилятор (кулер) F121225BM 120х120, 12V, 0.25 A (2 pin)","url":"https://cncprom.ua/ua/p862335188-ventilyator-kuler-f121225bm.html","availability":"Немає в наявності"},{"index":9,"code":"19-111","name":"Вентилятор GDА1225 120х120, 5V, 0.2A (USB)","url":"https://cncprom.ua/ua/p862396956-ventilyator-gda1225-120h120.html","availability":"Немає в наявності"},{"index":10,"code":"19-125","name":"Вентилятор (кулер) FFB1212EH 120х120, 12V, 1.74 A (4 pin)","url":"https://cncprom.ua/ua/p1065066060-ventilyator-kuler-ffb1212eh.html","availability":"Немає в наявності"},{"index":11,"code":"19-130","name":"Вентилятор GT1212MB-25 120х120, 12V, 0.33A (2 pin)","url":"https://cncprom.ua/ua/p1175191582-ventilyator-gt1212mb-120h120.html","availability":"Немає в наявності"},{"index":12,"code":"19-127","name":"Вентилятор DFS1202512H 120х120, 12V, 0.2 A (2 pin)","url":"https://cncprom.ua/ua/p1175354425-ventilyator-dfs1202512h-120h120.html","availability":"Немає в наявності"},{"index":13,"code":"19-131","name":"Охолоджуючий Вентилятор 50х50 GDA5015 (12 В, 0.1 A, 2 pin (XH2.54)), квадратний кулер обдування постійного струму","url":"https://cncprom.ua/ua/p1469050307-ventilyator-ohlazhdayuschij-50h50.html","availability":"Немає в наявності"},{"index":14,"code":"19-133","name":"Охолоджуючий Вентилятор 80х80 C8025S12M (12 В, 0.25 A, 4 pin), квадратний кулер постійного струму для обдування","url":"https://cncprom.ua/ua/p1477432263-ventilyator-ohlazhdayuschij-80h80.html","availability":"Немає в наявності"},{"index":15,"code":"19-138","name":"Вентилятор (кулер) DS04020B12H 40х40, 12 V, 0.20 A (3 pin)","url":"https://cncprom.ua/ua/p2111516257-ventilyator-kuler-ds04020b12h.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":15,"own_yes":3,"own_no":12,"total_products":15,"total_yes":3,"total_no":12,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-96574966","level":2,"name":"Захисні решітки для вентиляторів","url":"https://cncprom.ua/ua/g96574966-zaschitnye-reshetki-dlya","own_products":[{"index":1,"code":"19-116","name":"Металева решітка FG-09 для вентилятора 90х90мм","url":"https://cncprom.ua/ua/p828847301-metallicheskaya-reshetka-dlya.html","availability":"Готово до відправки"},{"index":2,"code":"03-023","name":"Решітка з фільтром STFL90 для вентилятора 90х90мм","url":"https://cncprom.ua/ua/p829024224-reshetka-filtrom-stfl90.html","availability":"Готово до відправки"},{"index":3,"code":"03-024","name":"Решітка з фільтром STFL120 для вентилятора 120х120мм","url":"https://cncprom.ua/ua/p828970831-reshetka-filtrom-stfl120.html","availability":"Немає в наявності"},{"index":4,"code":"19-114","name":"Металева решітка FG-12 для вентилятора 120x120 мм","url":"https://cncprom.ua/ua/p858601712-metallicheskaya-reshetka-dlya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":4,"own_yes":2,"own_no":2,"total_products":4,"total_yes":2,"total_no":2,"subcategories_count":0,"site_counter":2,"diff":0}},{"id":"node-96574974","level":2,"name":"Трубки для охолоджуючої рідини","url":"https://cncprom.ua/ua/g96574974-trubki-dlya-ohlazhdayuschej","own_products":[{"index":1,"code":"19-200","name":"Трубка для охолоджуючої рідини 5.5х8","url":"https://cncprom.ua/ua/p994309789-trubka-dlya-ohlazhdayuschej.html","availability":"Готово до відправки"},{"index":2,"code":"19-201","name":"Трубка для очищення води РЕ2, 6.25 мм","url":"https://cncprom.ua/ua/p2733781877-trubka-dlya-ochistki.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":2,"own_yes":2,"own_no":0,"total_products":2,"total_yes":2,"total_no":0,"subcategories_count":0,"site_counter":2,"diff":0}},{"id":"node-96574779","level":2,"name":"Трубки для подачі ЗОР","url":"https://cncprom.ua/ua/g96574779-trubki-dlya-podachi","own_products":[{"index":1,"code":"19-117","name":"Подвійна шарнірна трубка з краном для подачі ЗОР","url":"https://cncprom.ua/ua/p937079167-dvojnaya-sharnirnaya-trubka.html","availability":"Немає в наявності"},{"index":2,"code":"19-119","name":"Одинарна шарнірна трубка з краном для подавання ЗОР","url":"https://cncprom.ua/ua/p994230011-odinarnaya-sharnirnaya-trubka.html","availability":"Немає в наявності"},{"index":3,"code":"19-120","name":"Одинарна шарнірна трубка без крана для подачі ЗОР","url":"https://cncprom.ua/ua/p994317846-odinarnaya-sharnirnaya-trubka.html","availability":"Немає в наявності"},{"index":4,"code":"19-121","name":"Подвійна шарнірна трубка без крана для подачі ЗОР","url":"https://cncprom.ua/ua/p994396054-dvojnaya-sharnirnaya-trubka.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":4,"own_yes":0,"own_no":4,"total_products":4,"total_yes":0,"total_no":4,"subcategories_count":0,"site_counter":0,"diff":0}},{"id":"node-131029382","level":2,"name":"Компресори","url":"https://cncprom.ua/ua/g131029382-kompressory","own_products":[{"index":1,"code":"10-110","name":"Вихровий вакуумний компресор HG-180, 220V, 180W, компресор для аерації","url":"https://cncprom.ua/ua/p2223382194-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":2,"code":"10-112","name":"Вихровий вакуумний компресор HG-250, 220V, 250W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940220-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":3,"code":"10-118","name":"Вихровий вакуумний компресор HG-2200, 220V, 2.2kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940226-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":4,"code":"10-113","name":"Вихровий вакуумний компресор HG-370, 220V, 370W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940228-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":5,"code":"10-119","name":"Вихровий вакуумний компресор HG-370С, 380V, 370W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940229-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":6,"code":"10-114","name":"Вихровий вакуумний компресор HG-550, 220V, 550W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940230-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":7,"code":"10-120","name":"Вихровий вакуумний компресор HG-550С, 380V, 550W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940231-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":8,"code":"10-121","name":"Вихровий вакуумний компресор HG-750С, 380V, 750W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940233-vihrevoj-vakuumnyj-kompressor.html","availability":"Готово до відправки"},{"index":9,"code":"18-104","name":"Електромагнітний повітряний компресор для СО2 верстата АСО-008 220V 135W","url":"https://cncprom.ua/ua/p2040211161-elektromagnitnyj-vozdushnyj-kompressor.html","availability":"Готово до відправки"},{"index":10,"code":"18-102","name":"Електромагнітний повітряний компресор для СО2 верстата АСО-004 220V 58W","url":"https://cncprom.ua/ua/p2040211159-elektromagnitnyj-vozdushnyj-kompressor.html","availability":"Готово до відправки"},{"index":11,"code":"18-101","name":"Електромагнітний повітряний компресор для СО2 верстата АСО-001А 220V 25W","url":"https://cncprom.ua/ua/p2040211158-elektromagnitnyj-vozdushnyj-kompressor.html","availability":"Готово до відправки"},{"index":12,"code":"18-103","name":"Електромагнітний повітряний компресор для СО2 верстата АСО-006 220V 80W","url":"https://cncprom.ua/ua/p2040211160-elektromagnitnyj-vozdushnyj-kompressor.html","availability":"Готово до відправки"},{"index":13,"code":"10-116","name":"Вихровий вакуумний компресор HG-1100, 220V, 1.1kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940221-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":14,"code":"10-122","name":"Вихровий вакуумний компресор HG-1100С, 380V, 1.1kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940222-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":15,"code":"10-117","name":"Вихровий вакуумний компресор HG-1500, 220V, 1.5kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940223-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":16,"code":"10-123","name":"Вихровий вакуумний компресор HG-1500С, 380V, 1.5kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940224-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":17,"code":"10-111","name":"Вихровий вакуумний компресор HG-200, 220V, 200W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940225-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":18,"code":"10-124","name":"Вихровий вакуумний компресор HG-2200С, 380V, 2.2kW, компресор для аерації","url":"https://cncprom.ua/ua/p2224940227-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":19,"code":"10-115","name":"Вихровий вакуумний компресор HG-750, 220V, 750W, компресор для аерації","url":"https://cncprom.ua/ua/p2224940232-vihrevoj-vakuumnyj-kompressor.html","availability":"Немає в наявності"},{"index":20,"code":"18-105","name":"Електромагнітний повітряний компресор для СО2 верстата АСО-009D 220V 135W","url":"https://cncprom.ua/ua/p2040211162-elektromagnitnyj-vozdushnyj-kompressor.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":20,"own_yes":12,"own_no":8,"total_products":20,"total_yes":12,"total_no":8,"subcategories_count":0,"site_counter":13,"diff":-1}}],"stats":{"own_products":5,"own_yes":0,"own_no":5,"total_products":72,"total_yes":27,"total_no":45,"subcategories_count":8,"site_counter":28,"diff":-1}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

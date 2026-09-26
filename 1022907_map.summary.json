@@ -1,0 +1,269 @@
+{
+  "id": "1022907",
+  "levels": 3,
+  "categories_count": 16,
+  "has_products": true,
+  "total_products": 283,
+  "total_yes": 164,
+  "total_no": 119,
+  "site_counter": 166,
+  "diff": -2,
+  "scraped_at": "26.09.2026 03:41",
+  "source": "1022907_catalog.json",
+  "mismatch_categories": [
+    {
+      "categoryId": "1022907",
+      "name": "Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри",
+      "collected": 164,
+      "siteCounter": 166,
+      "diff": -2
+    },
+    {
+      "categoryId": "60641972",
+      "name": "Датчики визначення положення об'єктів і аксесуари до них",
+      "collected": 23,
+      "siteCounter": 24,
+      "diff": -1
+    },
+    {
+      "categoryId": "108680792",
+      "name": "Реле",
+      "collected": 9,
+      "siteCounter": 10,
+      "diff": -1
+    }
+  ],
+  "crumb_summary": {
+    "match": 283,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [
+    {
+      "id": "node-1022907",
+      "name": "Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри",
+      "level": 1,
+      "own": 29
+    },
+    {
+      "id": "node-71378567",
+      "name": "Кабелі",
+      "level": 2,
+      "own": 6
+    }
+  ],
+  "nodes": [
+    {
+      "id": "1022907",
+      "name": "Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g1022907-datchiki-knopki-razemy",
+      "own": 29,
+      "products": 283,
+      "yes": 164,
+      "no": 119,
+      "counter": 166,
+      "diff": -2
+    },
+    {
+      "id": "71378567",
+      "name": "Кабелі",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g71378567-kabeli",
+      "own": 6,
+      "products": 35,
+      "yes": 28,
+      "no": 7,
+      "counter": 28,
+      "diff": 0
+    },
+    {
+      "id": "111002896",
+      "name": "Силові та сигнальні кабелі",
+      "parentId": "71378567",
+      "level": 3,
+      "url": "https://cncprom.ua/ua/g111002896-silovye-signalnye-kabeli",
+      "own": 11,
+      "products": 11,
+      "yes": 11,
+      "no": 0,
+      "counter": 11,
+      "diff": 0
+    },
+    {
+      "id": "111003226",
+      "name": "Шлейфи та кабелі-подовжувачі",
+      "parentId": "71378567",
+      "level": 3,
+      "url": "https://cncprom.ua/ua/g111003226-shlejfy-kabeli-udliniteli",
+      "own": 16,
+      "products": 16,
+      "yes": 9,
+      "no": 7,
+      "counter": 9,
+      "diff": 0
+    },
+    {
+      "id": "153788265",
+      "name": "Силовые и сигнальные кабели",
+      "parentId": "71378567",
+      "level": 3,
+      "url": "https://cncprom.ua/ua/g153788265-silovye-signalnye-kabeli",
+      "own": 2,
+      "products": 2,
+      "yes": 2,
+      "no": 0,
+      "counter": 2,
+      "diff": 0
+    },
+    {
+      "id": "43880598",
+      "name": "Роз'єми та перехідники",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g43880598-razemy-perehodniki",
+      "own": 31,
+      "products": 31,
+      "yes": 16,
+      "no": 15,
+      "counter": 16,
+      "diff": 0
+    },
+    {
+      "id": "42830023",
+      "name": "Фільтри живлення",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g42830023-filtry-pitaniya",
+      "own": 24,
+      "products": 24,
+      "yes": 14,
+      "no": 10,
+      "counter": 14,
+      "diff": 0
+    },
+    {
+      "id": "60641972",
+      "name": "Датчики визначення положення об'єктів і аксесуари до них",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g60641972-datchiki-opredeleniya-polozheniya",
+      "own": 45,
+      "products": 45,
+      "yes": 23,
+      "no": 22,
+      "counter": 24,
+      "diff": -1
+    },
+    {
+      "id": "86056289",
+      "name": "Датчики висоти інструменту",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g86056289-datchiki-vysoty-instrumenta",
+      "own": 12,
+      "products": 12,
+      "yes": 3,
+      "no": 9,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "90316353",
+      "name": "Інклінометри (кутоміри)",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g90316353-inklinometry-uglomery",
+      "own": 5,
+      "products": 5,
+      "yes": 3,
+      "no": 2,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "101282545",
+      "name": "Перетворювачі напруги",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g101282545-preobrazovateli-napryazheniya",
+      "own": 7,
+      "products": 7,
+      "yes": 2,
+      "no": 5,
+      "counter": 2,
+      "diff": 0
+    },
+    {
+      "id": "101606288",
+      "name": "Кнопки, вимикачі, світлові сигналізатори",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g101606288-knopki-vyklyuchateli-svetovye",
+      "own": 32,
+      "products": 32,
+      "yes": 15,
+      "no": 17,
+      "counter": 15,
+      "diff": 0
+    },
+    {
+      "id": "108680792",
+      "name": "Реле",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g108680792-rele",
+      "own": 22,
+      "products": 22,
+      "yes": 9,
+      "no": 13,
+      "counter": 10,
+      "diff": -1
+    },
+    {
+      "id": "151791855",
+      "name": "Датчики світлової завіси безпеки",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g151791855-datchiki-svitlovoyi-zavisi",
+      "own": 18,
+      "products": 18,
+      "yes": 18,
+      "no": 0,
+      "counter": 18,
+      "diff": 0
+    },
+    {
+      "id": "131447206",
+      "name": "РК дисплеї",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g131447206-zhk-displei",
+      "own": 9,
+      "products": 9,
+      "yes": 9,
+      "no": 0,
+      "counter": 9,
+      "diff": 0
+    },
+    {
+      "id": "154899610",
+      "name": "Гальмівні резистори",
+      "parentId": "1022907",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g154899610-tormoznye-rezistory",
+      "own": 14,
+      "products": 14,
+      "yes": 9,
+      "no": 5,
+      "counter": 9,
+      "diff": 0
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Історія змін каталогу</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../map-common.css?v=6982d142">
+<link rel="stylesheet" href="reports.css?v=a165efaa">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <span class="btn-theme-toggle catalog-subtitle-btn" style="cursor:default">📜 Історія змін каталогу · останній знімок <span id="generated">…</span></span>
+    </div>
+    <div class="header-center"></div>
+    <div class="header-right">
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Що означають типи змін і як рахується період">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
+      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="../logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="../logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="../logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Як читати зміни каталогу</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term"><div class="help-term-label">Період</div>
+          <div class="help-term-desc">Порівнюються два знімки каталогу: на початок і на кінець періоду. Скрапер знімає каталог щоночі. Зміни <b>всередині</b> періоду не видно: товар, що зник і повернувся між двома датами, не потрапить у список. Побачити, в які дні щось відбувалося, можна на графіку.</div></div>
+        <div class="help-term"><div class="help-term-label">Графік «Змін за день»</div>
+          <div class="help-term-desc">Кожен стовпчик — скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня. Графік згорнутий за замовчуванням — розгортається кліком по назві, і браузер запам'ятовує вибір.</div></div>
+        <div class="help-term"><div class="help-term-label">▼ Зникли з наявності · ▲ Знову в наявності</div>
+          <div class="help-term-desc">Статус товару змінився між «Готово до відправки» та будь-яким іншим (зазвичай «Немає в наявності»).</div></div>
+        <div class="help-term"><div class="help-term-label">+ Нові · − Видалені товари</div>
+          <div class="help-term-desc">Товар з'явився на сайті або зник із нього (за внутрішнім ID сайту, а не за назвою).</div></div>
+        <div class="help-term"><div class="help-term-label">⇄ Змінили категорію</div>
+          <div class="help-term-desc">Той самий товар тепер лежить в іншій категорії. Перейменування товарів не відстежуються.</div></div>
+        <div class="help-term"><div class="help-term-label">✎ Структура категорій</div>
+          <div class="help-term-desc">Категорії, що з'явились, зникли, були перейменовані або перенесені до іншого батьківського розділу.</div></div>
+        <div class="help-term"><div class="help-term-label">Поділитися</div>
+          <div class="help-term-desc">Вибраний період зберігається в адресі сторінки (<code>?from=…&amp;to=…</code>): скопіюйте посилання, і той, хто його відкриє, побачить те саме порівняння.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <main class="rep-wrap">
+    <div class="top-row">
+      <h1>Історія змін каталогу<span class="muted" id="period-label"></span></h1>
+      <div class="range-bar" id="range">
+        <label for="rf">Порівняти</label><select id="rf"></select><span class="range-arrow" aria-hidden="true">→</span>
+        <select id="rt" aria-label="по дату"></select>
+        <div class="chips" id="quick" role="group" aria-label="Швидкий вибір періоду">
+          <button class="chip" data-q="day">Останній день</button><button class="chip" data-q="week">Тиждень</button><button class="chip" data-q="all">Увесь період</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="card chart-card" id="chart-card" aria-labelledby="chart-title">
+      <div class="chart-head">
+        <h2 id="chart-title"><button type="button" class="chart-toggle" id="chart-toggle" aria-expanded="false" aria-controls="chart-body"><span class="caret" aria-hidden="true">▸</span>Змін за день</button></h2>
+        <span class="hint" id="chart-hint">Синім — дні, що входять у порівняння. Клік по стовпчику — почати період із цього дня.</span>
+      </div>
+      <div id="chart-body" hidden>
+        <svg id="chart" role="img" aria-label="Кількість змін каталогу за кожен день"></svg>
+      </div>
+    </section>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div id="panel-wrap">
+      <section class="card">
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div id="panel"><div class="empty subtle">Завантажуємо дані…</div></div>
+      </section>
+    </div>
+  </main>
+  <div class="chart-tip" id="chart-tip" role="tooltip"></div>
+
+  <script src="../map-common.js?v=8f0afffa"></script>
+  <script src="reports.js?v=074ea5d7"></script>
+  <script>initReportsPage();</script>
+</body>
+</html>

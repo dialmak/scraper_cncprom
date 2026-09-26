@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Драйвери крокового двигуна (1–2 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Драйвери крокового двигуна</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:27</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Драйвери крокового двигуна</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">36</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">16</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":2,"categories_count":5,"has_products":true,"total_products":36,"total_yes":20,"total_no":16,"site_counter":20,"diff":0,"scraped_at":"26.09.2026 02:27","source":"1022837_catalog.json","mismatch_categories":[],"crumb_summary":{"match":36,"ancestor":0,"descendant":0,"other":0,"unknown":0},"crumb_other":[],"crumb_unknown":[],"orphan_categories":[]},"tree":{"id":"node-1022837","level":1,"name":"Драйвери крокового двигуна","url":"https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya","own_products":[],"children":[{"id":"node-96752491","level":2,"name":"Цифрові драйвери Leadshine (Оригінал)","url":"https://cncprom.ua/ua/g96752491-tsifrovye-drajvera-leadshine","own_products":[{"index":1,"code":"06-119","name":"Драйвер Leadshine DM556J, 5.6 А, 24–48 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p2833901485-drajver-leadshine-dm556j.html","availability":"Готово до відправки"},{"index":2,"code":"06-120","name":"Драйвер Leadshine DM542J, 4.2 А, 24—48 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p2833911723-drajver-leadshine-dm542j.html","availability":"Готово до відправки"},{"index":3,"code":"06-111","name":"Драйвер Leadshine DM2282, 8.2 А, 180–240 VDC, цифровий, для трифазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1400208460-drajver-leadshine-dm2282.html","availability":"Готово до відправки"},{"index":4,"code":"06-114","name":"Драйвер Leadshine 3DM580S, 8.2 А, 20–77 VDC, цифровий, для трифазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1904439110-drajver-leadshine-3dm580s.html","availability":"Готово до відправки"},{"index":5,"code":"06-110","name":"Драйвер Leadshine DM860, 7.2 А, 20–80 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1398528325-drajver-leadshine-dm860.html","availability":"Немає в наявності"},{"index":6,"code":"06-107","name":"Драйвер Leadshine DM542, 4.2 А, 20–50 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1398812654-drajver-leadshine-dm542.html","availability":"Немає в наявності"},{"index":7,"code":"06-108","name":"Драйвер Leadshine DM556, 5.6 А, 20–50 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1399357822-drajver-leadshine-dm556.html","availability":"Немає в наявності"},{"index":8,"code":"06-109","name":"Драйвер Leadshine DM856, 5.6 А, 20–80 VDC, цифровий, для двофазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1399583198-drajver-leadshine-dm856.html","availability":"Немає в наявності"},{"index":9,"code":"06-112","name":"Драйвер Leadshine 3DM580, 8 А, 20–50 VDC, цифровий, для трифазного крокового двигуна, оригінал","url":"https://cncprom.ua/ua/p1400034133-drajver-leadshine-3dm580.html","availability":"Немає в наявності"},{"index":10,"code":"06-118","name":"Драйвер Leadshine MА860С, 7.2 А, 30–100 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p2681026528-drajver-leadshine-ma860s.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":10,"own_yes":4,"own_no":6,"total_products":10,"total_yes":4,"total_no":6,"subcategories_count":0,"site_counter":4,"diff":0}},{"id":"node-31385623","level":2,"name":"Цифрові драйвери Leadshine","url":"https://cncprom.ua/ua/g31385623-tsifrovye-drajvera-leadshine","own_products":[{"index":1,"code":"06-101","name":"Драйвер Leadshine  DM542 , 4.2 А, 20—50 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p697716061-drajver-leadshine-dm542.html","availability":"Готово до відправки"},{"index":2,"code":"06-103","name":"Драйвер Leadshine DM856, 5.6 А, 80 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p693984055-drajver-leadshine-dm856.html","availability":"Готово до відправки"},{"index":3,"code":"06-117","name":"Драйвер Leadshine CL86C, 8 А, 30—90 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p2314787761-drajver-leadshine-cl86c.html","availability":"Готово до відправки"},{"index":4,"code":"06-102","name":"Драйвер Leadshine DM556, 5.6 А, 20—50 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p692678124-drajver-leadshine-dm556.html","availability":"Немає в наявності"},{"index":5,"code":"06-104","name":"Драйвер Leadshine DM860, 6 А, 24—80 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p695644628-drajver-leadshine-dm860.html","availability":"Немає в наявності"},{"index":6,"code":"06-105","name":"Драйвер Leadshine  DM2282, 8.2 А, 20—50 VAC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p695450759-drajver-leadshine-dm2282.html","availability":"Немає в наявності"},{"index":7,"code":"06-106","name":"Драйвер Leadshine 3DM580, 8 А, 50 VDC, цифровий, для трифазного крокового двигуна","url":"https://cncprom.ua/ua/p697716456-drajver-leadshine-3dm580.html","availability":"Немає в наявності"},{"index":8,"code":"06-116","name":"Драйвер Leadshine DMA860H , 5.6 А, 18—80 VАC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p2269529012-drajver-leadshine-dma860h.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":8,"own_yes":3,"own_no":5,"total_products":8,"total_yes":3,"total_no":5,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-155997774","level":2,"name":"Цифрові драйвери","url":"https://cncprom.ua/ua/g155997774-tsifrovye-drajvery","own_products":[{"index":1,"code":"06-003","name":"Драйвер  DM556D, 5.6 А, 24—50 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p445157486-drajver-dm556d-vdc.html","availability":"Готово до відправки"},{"index":2,"code":"06-014","name":"Драйвер  DM556, 5.6 А, 20—50 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p865450706-drajver-dm556-vdc.html","availability":"Готово до відправки"},{"index":3,"code":"06-023","name":"Драйвер 3ND2283 , 10 А, 110—220 VАC, цифровий, для трифазного крокового двигуна","url":"https://cncprom.ua/ua/p1336098108-drajver-3nd2283-110220.html","availability":"Готово до відправки"},{"index":4,"code":"06-022","name":"Драйвер 3DM2283 , 8 А, 110—220 VАC, цифровий, для трифазного крокового двигуна","url":"https://cncprom.ua/ua/p1338384982-drajver-3dm2283-110.html","availability":"Готово до відправки"},{"index":5,"code":"06-009","name":"Драйвер DM860D, 6 А, 24—80 VDC, 20V-60VAC цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p1980534045-drajver-dm860d-vdc.html","availability":"Готово до відправки"},{"index":6,"code":"06-002","name":"Драйвер CW8060, 6 А, 24—80 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p4057786-drajver-cw8060-vdc.html","availability":"Немає в наявності"},{"index":7,"code":"06-008","name":"Драйвер 2DM2280, 8.2 А, 80—240 VАC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p492139545-drajver-2dm2280-240.html","availability":"Немає в наявності"},{"index":8,"code":"06-012","name":"Драйвер 2DM860, 8.4 А, 24—80 VDC, цифровий, для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p736056342-drajver-2dm860-vdc.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":8,"own_yes":5,"own_no":3,"total_products":8,"total_yes":5,"total_no":3,"subcategories_count":0,"site_counter":5,"diff":0}},{"id":"node-155998387","level":2,"name":"Драйвери крокового двигуна","url":"https://cncprom.ua/ua/g155998387-drajvery-shagovogo-dvigatelya","own_products":[{"index":1,"code":"03-402","name":"Драйвер крокового двигуна DRV8825, 1.5 А, 8.2~45 VDC","url":"https://cncprom.ua/ua/p1250857214-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":2,"code":"06-001","name":"Драйвер CW5045, 4.5 А, 20–50 VDC, для крокового двигуна","url":"https://cncprom.ua/ua/p933524510-drajver-cw5045-45a.html","availability":"Готово до відправки"},{"index":3,"code":"06-005","name":"Драйвер крокового двигуна ВL-TB6560 V2.0 3,5 А, 10-35 VDC","url":"https://cncprom.ua/ua/p420752309-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":4,"code":"06-007","name":"Драйвер крокового двигуна MD430, 3А, 12-24 VDC","url":"https://cncprom.ua/ua/p445191653-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":5,"code":"06-011","name":"Драйвер крокового двигуна 3DМ2080, 8.2 A, 220VАC","url":"https://cncprom.ua/ua/p406571759-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":6,"code":"06-013","name":"Драйвер крокового двигуна BL-TB6600, 4.35 A, 32 VDC","url":"https://cncprom.ua/ua/p700538092-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":7,"code":"06-015","name":"Драйвер L298N, 2 А, 5~35 VDC","url":"https://cncprom.ua/ua/p960610143-drajver-l298n-535.html","availability":"Готово до відправки"},{"index":8,"code":"06-025","name":"Драйвер крокового двигуна TB6600, 4 A, 9–42 VDC","url":"https://cncprom.ua/ua/p433947483-drajver-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":9,"code":"06-113","name":"Драйвер мікрокроковий Hengyu MC542 4.2 А, 20–50 VDC для двофазного крокового двигуна","url":"https://cncprom.ua/ua/p1530995962-drajver-mikroshagovyj-hengyu.html","availability":"Немає в наявності"},{"index":10,"code":"06-006","name":"Драйвер крокового двигуна TB6600 4,5А, 12–48 VDC","url":"https://cncprom.ua/ua/p421656362-drajver-shagovogo-dvigatelya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":10,"own_yes":8,"own_no":2,"total_products":10,"total_yes":8,"total_no":2,"subcategories_count":0,"site_counter":8,"diff":0}}],"stats":{"own_products":0,"own_yes":0,"own_no":0,"total_products":36,"total_yes":20,"total_no":16,"subcategories_count":4,"site_counter":20,"diff":0}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

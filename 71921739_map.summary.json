@@ -1,0 +1,93 @@
+{
+  "id": "71921739",
+  "levels": 2,
+  "categories_count": 4,
+  "has_products": true,
+  "total_products": 35,
+  "total_yes": 23,
+  "total_no": 12,
+  "site_counter": 24,
+  "diff": -1,
+  "scraped_at": "26.09.2026 02:30",
+  "source": "71921739_catalog.json",
+  "mismatch_categories": [
+    {
+      "categoryId": "71921739",
+      "name": "Системи змащення напрямних та передач",
+      "collected": 23,
+      "siteCounter": 24,
+      "diff": -1
+    }
+  ],
+  "crumb_summary": {
+    "match": 35,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [
+    {
+      "id": "node-71921739",
+      "name": "Системи змащення напрямних та передач",
+      "level": 1,
+      "own": 23
+    }
+  ],
+  "nodes": [
+    {
+      "id": "71921739",
+      "name": "Системи змащення напрямних та передач",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g71921739-sistemy-smazki-napravlyayuschih",
+      "own": 23,
+      "products": 35,
+      "yes": 23,
+      "no": 12,
+      "counter": 24,
+      "diff": -1
+    },
+    {
+      "id": "111656490",
+      "name": "Прес-маслянки (тавотниці)",
+      "parentId": "71921739",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g111656490-press-maslenki-tavotnitsy",
+      "own": 4,
+      "products": 4,
+      "yes": 3,
+      "no": 1,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "111686308",
+      "name": "Штуцера",
+      "parentId": "71921739",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g111686308-shtutsera",
+      "own": 7,
+      "products": 7,
+      "yes": 5,
+      "no": 2,
+      "counter": 5,
+      "diff": 0
+    },
+    {
+      "id": "111733897",
+      "name": "Обтискні штуцерні кільця для трубок",
+      "parentId": "71921739",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g111733897-obzhimnye-shtutsernye-koltsa",
+      "own": 1,
+      "products": 1,
+      "yes": 0,
+      "no": 1,
+      "counter": 0,
+      "diff": 0
+    }
+  ]
+}

@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа сайту cncprom.ua</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+<script src="map-common.js?v=8f0afffa"></script>
+<style>
+  /* map-common.css розрахований на .workspace з фіксованою висотою вікна
+     (сайдбар + скрол свого вмісту); індексна сторінка його не має, тож
+     повертаємо звичайний скрол документа. Без max-width — як і мапи розділів,
+     сторінка тягнеться на всю ширину вікна.
+     overflow: visible, НЕ auto: .app-header — position: sticky, а sticky
+     прив'язується до найближчого скрол-контейнера. auto на html і body разом
+     робить body окремим скрол-боксом, і шапка їхала б разом зі сторінкою
+     (перевірено скріншотом). */
+  html, body { height: auto; overflow: visible; }
+  .index-wrap { padding: 20px; }
+  .index-wrap h1 { font-size: 1.05rem; margin-bottom: 4px; }
+  .index-wrap .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+  /* Самі панелі-дерева (.orphan-group-*, .tree-row, .failed-note) описані в
+     map-common.css: така сама панель "Товари поза категоріями" є й у кожній
+     <id>_map.html, тож вигляд має бути один на дві сторінки, а не дві копії,
+     які розійдуться. Ця сторінка теж лінкує map-common.css (вище). */
+  .failed-url-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding-left: 20px; }
+  .failed-url { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+  .failed-url:hover { text-decoration: underline; }
+  .run-error-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding-left: 20px; }
+  .run-error { font-size: 0.78rem; line-height: 1.45; color: var(--text-main); overflow-wrap: anywhere; }
+  .run-error-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
+  .run-error-badge { background: none; border: none; padding: 0; margin-left: 4px; font: inherit; line-height: 1; cursor: pointer; }
+  /* Шапка map.html має помітно більше кнопок, ніж у мапи розділу, звідки взято
+     map-common.css. Там .app-header має фіксовану висоту 44px (від неї рахується
+     .workspace: calc(100vh - 44px)), а .header-left не переноситься, тож на
+     вужчому вікні ліва група вилазила за свою коробку й накривала поле пошуку,
+     а її кнопки ставали неклікабельними, хоч і були видимі. Тут висоту можна
+     відпустити: map.html скролить увесь документ, і від неї нічого не рахується. */
+  .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
+  .header-left { flex-wrap: wrap; row-gap: 6px; }
+  /* Стилі меню-дропдаунів (.hdr-menu, .hdr-dropdown, .check-row, .badge-count)
+     лежать у map-common.css: таке саме меню є й на мапі розділу, і на
+     сторінці історії змін, тож вигляд має бути один на три сторінки. */
+  /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
+     сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
+     де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
+  .crumb-lines { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 2px; }
+  .crumb-lines .path-label { display: inline-block; min-width: 68px; font-weight: 600; color: var(--text-main); }
+
+  /* Таблиця прогонів у панелі «Лог скрапінгу» (lib/runlog.js). Стилі тут, а не
+     в map-common.css: ця панель є лише на map.html. */
+  .rl-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .rl-run { border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-white); overflow: hidden; }
+  .rl-run > summary { cursor: pointer; padding: 8px 12px; font-size: 0.78rem; color: var(--text-main);
+    background: var(--bg-subtle); font-family: var(--font-mono); list-style: none; }
+  .rl-run > summary::-webkit-details-marker { display: none; }
+  /* Стрілка малюється сама: рідний маркер <details> у різних браузерах різний,
+     а рядок моноширинний, і зсув помітний. Шрифт стрілки — sans: у JetBrains Mono
+     цього знака немає, і замість нього малювався порожній прямокутник. */
+  .rl-run > summary::before { content: '▸'; display: inline-block; width: 14px;
+    color: var(--text-subtle); font-family: var(--font-sans); }
+  .rl-run[open] > summary::before { content: '▾'; }
+  .rl-run[open] > summary { border-bottom: 1px solid var(--border-color); }
+  /* table-layout: fixed — ширини беруться з шапки, а не з вмісту. «Категорію» звужено
+     вдвічі (було 325px, 26.09.2026, на прохання користувача) з умовою «не більше двох
+     рядків»: заміряно, до 172px «Пульти ручного управління…» і «Датчики, кнопки…»
+     лягають у три, з 176px усе вміщається у два; 180 — з запасом на інший шрифт.
+     Шість числових колонок ділять решту порівну, замість тиснутись біля правого краю. */
+  .rl-tab { width: 100%; border-collapse: collapse; font-size: 0.76rem; table-layout: fixed; }
+  .rl-tab th:nth-child(1) { width: 50px; }
+  .rl-tab th:nth-child(2) { width: 180px; }
+  /* white-space: nowrap — рядки шапки задано вручну через <br> (формулювання користувача),
+     і жоден з них не має розпадатись усередині. Найдовший — «Не збігається»; те, що він
+     вміщається у свою колонку, стереже смоук-тест. */
+  .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
+    padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; white-space: nowrap; }
+  .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
+  /* Числові колонки і «Статус» — по центру в обох напрямках (26.09.2026, на прохання
+     користувача): назва категорії буває у два рядки, і число має стояти навпроти її
+     середини, а не верхнього рядка. Відступи заголовків — симетричні й вузькі: «Не
+     збігається» в Inter (найширший із шрифтів стека) займає 69px, і з відступами по 8px
+     запасу в 88-піксельній колонці лишалось 2px. */
+  .rl-tab th.rl-n, .rl-tab td.rl-n, .rl-tab th.rl-st, .rl-tab td.rl-st {
+    text-align: center; font-variant-numeric: tabular-nums; }
+  .rl-tab td.rl-n, .rl-tab td.rl-st { vertical-align: middle; }
+  .rl-tab th.rl-n, .rl-tab th.rl-st { padding-left: 2px; padding-right: 2px; }
+  .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
+  .rl-tab td.rl-name { overflow-wrap: anywhere; }
+  .rl-tab td.rl-zero { color: var(--text-subtle); }
+  .rl-tab td.rl-n.rl-bad { color: var(--status-no); font-weight: 600; }
+  .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
+  .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
+    color: var(--text-muted); font-size: 0.72rem; }
+  /* Рядок «Фініш скрапінгу» — підсумок прогону, не категорія: без зебри й рамки. */
+  .rl-tab tbody.rl-end td { color: var(--text-muted); font-weight: 600; }
+  .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
+    color: var(--text-muted); padding-top: 6px; }
+  .rl-br { font-family: var(--font-mono); color: var(--text-subtle); }
+  .rl-note + .rl-note { margin-top: 3px; }
+  /* Товари під приміткою — на рівні її тексту, після «└─». */
+  .rl-item { padding-left: 22px; }
+  .rl-item a { color: var(--text-link); }
+  .rl-loose { padding: 6px 8px; color: var(--text-muted); font-size: 0.72rem; }
+  /* Підсвітка категорії під курсором — рамкою, а не фоном (як в інших таблицях),
+     за словами користувача 26.09.2026. Рамка обхоплює весь <tbody> категорії — рядок
+     разом із примітками під ним. outline, а не border: у border-collapse рамка рядка
+     ділиться з сусіднім, і таблиця стрибала б на піксель. */
+  .rl-grp:hover { outline: 1px solid var(--border-active); outline-offset: -1px; }
+  /* Зебра — по категоріях (<tbody>), а не по рядках: примітка має бути того ж кольору,
+     що й її рядок. Колір — як у таблицях сайту (--bg-row-alt, .simple-table): --bg-tag
+     користувач назвав занадто яскравим (26.09.2026). */
+  .rl-grp:nth-of-type(even) > tr > td { background: var(--bg-row-alt); }
+  /* Назва категорії — посилання на її мапу, але в спокої виглядає звичайним текстом:
+     таблиця з 23 синіх назв читалась би як список посилань, а не як журнал. */
+  .rl-cat { color: inherit; text-decoration: none; }
+  .rl-cat:hover { color: var(--text-link); text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 05:25</button>
+      <div class="hdr-menu">
+        <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">🧮 Звірки <span class="badge-count">2</span></button>
+        <div class="hdr-dropdown" id="checks-dropdown">
+          <h3>Звірка скрапера з даними сайту</h3>
+          <div>
+          <div class="check-row">
+            <span>📐</span><span class="nm" data-tip="Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»">Розбіжності звірки</span>
+            <span class="val bad">-17 товарів</span>
+            <button class="act" data-open="mismatch-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🧭</span><span class="nm" data-tip="Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер">Не збігається з крихтами</span>
+            <span class="val ok"></span>
+            <span class="act none">немає</span>
+          </div>
+          <div class="check-row">
+            <span>🧭</span><span class="nm" data-tip="У хлібних крихтах товару немає жодної категорії">Крихти без категорії</span>
+            <span class="val bad">6 товарів</span>
+            <button class="act" data-open="crumbs-unknown-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>
+      <a href="map_cncprom_26.09.2026.xlsx" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій у форматі XLSX">⬇️ Експорт</a>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-report" class="btn-theme-toggle hdr-menu-btn" data-tip="Результат роботи скрапера">📝 Звіт скрапера</button>
+        <div class="hdr-dropdown right" id="report-dropdown">
+          <h3>Звіт про роботу скрапера</h3>
+          <div>
+          <div class="check-row">
+            <span>❗</span><span class="nm" data-tip="Помилки скрапінгу">Помилки</span>
+            <span class="val ok"></span>
+            <span class="act none">немає</span>
+          </div>
+          <div class="check-row">
+            <span>⛔</span><span class="nm" data-tip="Товари, сторінку яких скрапер не зміг прочитати">Не оброблено</span>
+            <span class="val ok"></span>
+            <span class="act none">немає</span>
+          </div>
+          <div class="check-row">
+            <span>📄</span><span class="nm">Лог скрапінгу</span>
+            <span class="val"></span>
+            <button class="act" data-open="scrape-log-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>📄</span><span class="nm">Лог збірки</span>
+            <span class="val"></span>
+            <button class="act" data-open="map-log-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="scrape-log-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Лог скрапінгу</h3>
+        <button class="btn-help-close" id="btn-scrape-log-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+      <div class="rl-wrap">
+      <details class="rl-run" open>
+        <summary>26.09.2026  ·  Час скрапінгу 02:21–05:25  ·  23 категорії  ·  4304 товари  ·  2613 готово до відправки</summary>
+        
+        <table class="rl-tab">
+          <thead><tr>
+            <th>Час</th><th>Категорія</th>
+            <th class="rl-n">Помилки</th><th class="rl-n">Не<br>оброблено</th><th class="rl-n">Розбіжності<br>звірки</th>
+            <th class="rl-n">Не збігається<br>з крихтами</th><th class="rl-n">Крихти без<br>категорії</th><th class="rl-n">Товари поза<br>категоріями</th>
+          </tr></thead>
+          
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:21</td>
+              <td class="rl-name"><a class="rl-cat" href="1477431_map.html">Пульти ручного управління і DSP контролери</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:23</td>
+              <td class="rl-name"><a class="rl-cat" href="1484318_map.html">Перетворювачі частоти (інвертори)</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:24</td>
+              <td class="rl-name"><a class="rl-cat" href="1372753_map.html">Гнучкий кабель-канал (кабелеукладач)</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:25</td>
+              <td class="rl-name"><a class="rl-cat" href="1022837_map.html">Драйвери крокового двигуна</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:27</td>
+              <td class="rl-name"><a class="rl-cat" href="100126570_map.html">Механіка</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">02:28</td>
+              <td class="rl-name"><a class="rl-cat" href="71921739_map.html">Системи змащення напрямних та передач</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-1</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">23</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:30</td>
+              <td class="rl-name"><a class="rl-cat" href="51015677_map.html">Ріжучий інструмент</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">8</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:39</td>
+              <td class="rl-name"><a class="rl-cat" href="17662477_map.html">Драйвери і крокові двигуни з енкодером</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">02:41</td>
+              <td class="rl-name"><a class="rl-cat" href="96572435_map.html">Системи охолодження і вентиляції</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-1</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">4</td><td class="rl-n">5</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:44</td>
+              <td class="rl-name"><a class="rl-cat" href="18556308_map.html">Серводвигуни із серводрайверами</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:46</td>
+              <td class="rl-name"><a class="rl-cat" href="1270337_map.html">Муфти з'єднувальні</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">5</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">02:51</td>
+              <td class="rl-name"><a class="rl-cat" href="152464274_map.html">Лінійні приводи</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-1</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">02:55</td>
+              <td class="rl-name"><a class="rl-cat" href="1022485_map.html">Контролери для ЧПК</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">27</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">03:03</td>
+              <td class="rl-name"><a class="rl-cat" href="92857157_map.html">Оснащення для верстатів</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">2</td><td class="rl-n">2</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">03:08</td>
+              <td class="rl-name"><a class="rl-cat" href="106846694_map.html">Пневматика</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-3</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">18</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">03:16</td>
+              <td class="rl-name"><a class="rl-cat" href="1022952_map.html">Джерела живлення та акумулятори</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-6</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">38</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">03:30</td>
+              <td class="rl-name"><a class="rl-cat" href="1022907_map.html">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-2</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">35</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr class="rl-dirty">
+              <td class="rl-t">03:41</td>
+              <td class="rl-name"><a class="rl-cat" href="1261329_map.html">Верстати та промислове обладнання</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-bad">-3</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">62</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">03:55</td>
+              <td class="rl-name"><a class="rl-cat" href="1022553_map.html">Електродвигуни</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">41</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">04:07</td>
+              <td class="rl-name"><a class="rl-cat" href="1484301_map.html">Шпинделі</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">54</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">04:20</td>
+              <td class="rl-name"><a class="rl-cat" href="1548856_map.html">Лінійні напрямні та підшипники</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">12</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">04:35</td>
+              <td class="rl-name"><a class="rl-cat" href="2432613_map.html">Алюмінієвий профіль</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">16</td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">04:49</td>
+              <td class="rl-name"><a class="rl-cat" href="96553590_map.html">Передачі</a></td>
+              <td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n rl-zero">·</td><td class="rl-n">9</td>
+            </tr>
+            <tr class="rl-det"><td></td><td colspan="7"><div class="rl-note"><span class="rl-br">└─</span> Сітка товарів порожня, але категорія має підкатегорії — власних товарів немає</div></td></tr>
+          </tbody>
+          <tbody class="rl-end">
+            <tr><td class="rl-t">05:25</td><td colspan="7">Фініш скрапінгу</td></tr>
+          </tbody>
+          <tfoot><tr>
+            <td></td><td>Разом</td>
+            <td class="rl-n">0</td><td class="rl-n">0</td>
+            <td class="rl-n">-17</td>
+            <td class="rl-n">0</td>
+            <td class="rl-n">6</td>
+            <td class="rl-n">355</td>
+          </tr></tfoot>
+        </table>
+      </details>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="map-log-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Лог збірки</h3>
+        <button class="btn-help-close" id="btn-map-log-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+      <div class="rl-wrap">
+      <details class="rl-run" open>
+        <summary>26.09.2026  ·  16 збірок  ·  23 категорії</summary>
+        <table class="rl-tab">
+          <thead><tr>
+            <th>Час</th><th>Збірка</th><th class="rl-n">Помилки</th><th class="rl-n">Оброблено категорій</th><th class="rl-n">Тривалість</th>
+            <th class="rl-st" data-tip="✅ Актуально
+⚠️ Застаріло
+⏳ Немає даних">Статус</th>
+          </tr></thead>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">20:59</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">19:14</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">18:49</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">18:41</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">18:30</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">17:50</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">17:42</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">14:55</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">14:30</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">14:29</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">14:15</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">13:53</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">12:07</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">11:42</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">2 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">11:29</td>
+              <td class="rl-name">Перезбірка</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+          <tbody class="rl-grp">
+            <tr>
+              <td class="rl-t">05:25</td>
+              <td class="rl-name">Нічна</td>
+              <td class="rl-n rl-zero">·</td>
+              <td class="rl-n">23 з 23</td>
+              <td class="rl-n">1 сек</td>
+              <td class="rl-st"><span class="count-yes" data-tip="Актуально: усі мапи побудовані на базі свіжих даних.">✅</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій (355)</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="2432613_map.html" class="orphan-group-head">📁 Алюмінієвий профіль <span class="node-count">(16)</span></a>
+            <div class="orphan-cat-list"><a href="2432613_map.html#cat=16945578" class="cat-found-badge tree-row dim" style="margin-left:18px;">Комплектуючі для верстатного алюмінієвого профілю <span class="node-count">(0)</span></a><a href="2432613_map.html#cat=17019050" class="cat-found-badge tree-row" style="margin-left:36px;">Болти, гвинти, гайки і сухарі <span class="node-count">(2)</span></a><a href="2432613_map.html#cat=17019390" class="cat-found-badge tree-row" style="margin-left:36px;">З'єднувачі для профілю <span class="node-count">(14)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1261329_map.html" class="orphan-group-head">📁 Верстати та промислове обладнання <span class="node-count">(62)</span></a>
+            <div class="orphan-cat-list"><a href="1261329_map.html#cat=1261329" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(8)</span></a><a href="1261329_map.html#cat=43947275" class="cat-found-badge tree-row" style="margin-left:18px;">Волоконні лазерні маркери <span class="node-count">(3)</span></a><a href="1261329_map.html#cat=65437910" class="cat-found-badge tree-row" style="margin-left:18px;">Лазерні верстати СО2 та комплектуючі <span class="node-count">(17)</span></a><a href="1261329_map.html#cat=69929994" class="cat-found-badge tree-row" style="margin-left:18px;">Універсальні лазерні фрезерно-гравірувальні верстати (шпиндель + лазер) <span class="node-count">(8)</span></a><a href="1261329_map.html#cat=85263253" class="cat-found-badge tree-row" style="margin-left:18px;">Токарні верстати <span class="node-count">(12)</span></a><a href="1261329_map.html#cat=100624790" class="cat-found-badge tree-row" style="margin-left:18px;">3D-принтери та аксесуари <span class="node-count">(13)</span></a><a href="1261329_map.html#cat=59292977" class="cat-found-badge tree-row" style="margin-left:36px;">Філамент для 3D - принтерів <span class="node-count">(1)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022907_map.html" class="orphan-group-head">📁 Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри <span class="node-count">(35)</span></a>
+            <div class="orphan-cat-list"><a href="1022907_map.html#cat=1022907" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(29)</span></a><a href="1022907_map.html#cat=71378567" class="cat-found-badge tree-row" style="margin-left:18px;">Кабелі <span class="node-count">(6)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022952_map.html" class="orphan-group-head">📁 Джерела живлення та акумулятори <span class="node-count">(38)</span></a>
+            <div class="orphan-cat-list"><a href="1022952_map.html#cat=117125490" class="cat-found-badge tree-row dim" style="margin-left:18px;">Акумулятори <span class="node-count">(0)</span></a><a href="1022952_map.html#cat=132739086" class="cat-found-badge tree-row" style="margin-left:36px;">Матеріали та комплектуючі до акумуляторів <span class="node-count">(38)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022553_map.html" class="orphan-group-head">📁 Електродвигуни <span class="node-count">(41)</span></a>
+            <div class="orphan-cat-list"><a href="1022553_map.html#cat=1022553" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(2)</span></a><a href="1022553_map.html#cat=136350336" class="cat-found-badge tree-row" style="margin-left:18px;">Безколекторні електродвигуни постійного струму <span class="node-count">(39)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022485_map.html" class="orphan-group-head">📁 Контролери для ЧПК <span class="node-count">(27)</span></a>
+            <div class="orphan-cat-list"><a href="1022485_map.html#cat=1022485" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(21)</span></a><a href="1022485_map.html#cat=83648918" class="cat-found-badge tree-row" style="margin-left:18px;">Контролери руху (генератори імпульсів) <span class="node-count">(1)</span></a><a href="1022485_map.html#cat=3367320" class="cat-found-badge tree-row" style="margin-left:18px;">Регулятори висоти різака THC (torch height control) <span class="node-count">(5)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1548856_map.html" class="orphan-group-head">📁 Лінійні напрямні та підшипники <span class="node-count">(12)</span></a>
+            <div class="orphan-cat-list"><a href="1548856_map.html#cat=1548862" class="cat-found-badge tree-row dim" style="margin-left:18px;">Вал на опорі, підшипники та аксесуари <span class="node-count">(0)</span></a><a href="1548856_map.html#cat=17406444" class="cat-found-badge tree-row" style="margin-left:36px;">Каретки SBR...UU, SBR...LUU (SME...GUU, SME...LUU) <span class="node-count">(12)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1270337_map.html" class="orphan-group-head">📁 Муфти з'єднувальні <span class="node-count">(5)</span></a>
+            <div class="orphan-cat-list"><a href="1270337_map.html#cat=1270337" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(2)</span></a><a href="1270337_map.html#cat=50143903" class="cat-found-badge tree-row" style="margin-left:18px;">Гнучкі кулачкові муфти <span class="node-count">(1)</span></a><a href="1270337_map.html#cat=50146141" class="cat-found-badge tree-row" style="margin-left:18px;">Гнучкі сильфонні муфти <span class="node-count">(2)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="92857157_map.html" class="orphan-group-head">📁 Оснащення для верстатів <span class="node-count">(2)</span></a>
+            <div class="orphan-cat-list"><a href="92857157_map.html#cat=92857157" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(2)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="96553590_map.html" class="orphan-group-head">📁 Передачі <span class="node-count">(9)</span></a>
+            <div class="orphan-cat-list"><a href="96553590_map.html#cat=2488264" class="cat-found-badge tree-row dim" style="margin-left:18px;">Ремінна передача <span class="node-count">(0)</span></a><a href="96553590_map.html#cat=84155714" class="cat-found-badge tree-row" style="margin-left:36px;">Шківи і натяжні ролики <span class="node-count">(5)</span></a><a href="96553590_map.html#cat=89889871" class="cat-found-badge tree-row" style="margin-left:54px;">Шківи і натяжні ролики 2GT (крок зубів 2 мм) <span class="node-count">(4)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="106846694_map.html" class="orphan-group-head">📁 Пневматика <span class="node-count">(18)</span></a>
+            <div class="orphan-cat-list"><a href="106846694_map.html#cat=106846694" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(1)</span></a><a href="106846694_map.html#cat=108340202" class="cat-found-badge tree-row" style="margin-left:18px;">Кріпильні елементи для пневмоциліндрів <span class="node-count">(3)</span></a><a href="106846694_map.html#cat=107897592" class="cat-found-badge tree-row" style="margin-left:18px;">Фітинги, пневмоглушники та інші аксесуари <span class="node-count">(14)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="51015677_map.html" class="orphan-group-head">📁 Ріжучий інструмент <span class="node-count">(8)</span></a>
+            <div class="orphan-cat-list"><a href="51015677_map.html#cat=51015677" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(8)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="71921739_map.html" class="orphan-group-head">📁 Системи змащення напрямних та передач <span class="node-count">(23)</span></a>
+            <div class="orphan-cat-list"><a href="71921739_map.html#cat=71921739" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(23)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="96572435_map.html" class="orphan-group-head">📁 Системи охолодження і вентиляції <span class="node-count">(5)</span></a>
+            <div class="orphan-cat-list"><a href="96572435_map.html#cat=96572435" class="cat-found-badge tree-row" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(5)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1484301_map.html" class="orphan-group-head">📁 Шпинделі <span class="node-count">(54)</span></a>
+            <div class="orphan-cat-list"><a href="1484301_map.html#cat=1260707" class="cat-found-badge tree-row" style="margin-left:18px;">Шпинделі з повітряним охолодженням <span class="node-count">(29)</span></a><a href="1484301_map.html#cat=21368468" class="cat-found-badge tree-row" style="margin-left:18px;">Радіально-упорні підшипники для шпинделів <span class="node-count">(25)</span></a></div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="mismatch-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності» (-17)</h3>
+        <button class="btn-help-close" id="btn-mismatch-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності» для того ж рівня категорії. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не співпало. Причину шукайте в найглибшому рівні. Якщо ж розбіжність є лише в самої категорії, а підкатегорії в нормі, бракує саме її власних товарів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="1261329_map.html" class="orphan-group-head">📁 Верстати та промислове обладнання</a>
+            <div class="orphan-cat-list"><a href="1261329_map.html#cat=1261329" class="cat-found-badge tree-row" style="margin-left:0px;">Верстати та промислове обладнання <span class="node-count">(зібрано 198, сайт 201, різниця -3)</span></a><a href="1261329_map.html#cat=100624790" class="cat-found-badge tree-row" style="margin-left:18px;">3D-принтери та аксесуари <span class="node-count">(зібрано 74, сайт 77, різниця -3)</span></a><a href="1261329_map.html#cat=59292977" class="cat-found-badge tree-row" style="margin-left:36px;">Філамент для 3D - принтерів <span class="node-count">(зібрано 61, сайт 64, різниця -3)</span></a><a href="1261329_map.html#cat=59329779" class="cat-found-badge tree-row" style="margin-left:54px;">Філамент PLA <span class="node-count">(зібрано 29, сайт 32, різниця -3)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022907_map.html" class="orphan-group-head">📁 Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a>
+            <div class="orphan-cat-list"><a href="1022907_map.html#cat=1022907" class="cat-found-badge tree-row" style="margin-left:0px;">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри <span class="node-count">(зібрано 164, сайт 166, різниця -2)</span></a><a href="1022907_map.html#cat=60641972" class="cat-found-badge tree-row" style="margin-left:18px;">Датчики визначення положення об'єктів і аксесуари до них <span class="node-count">(зібрано 23, сайт 24, різниця -1)</span></a><a href="1022907_map.html#cat=108680792" class="cat-found-badge tree-row" style="margin-left:18px;">Реле <span class="node-count">(зібрано 9, сайт 10, різниця -1)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="1022952_map.html" class="orphan-group-head">📁 Джерела живлення та акумулятори</a>
+            <div class="orphan-cat-list"><a href="1022952_map.html#cat=1022952" class="cat-found-badge tree-row" style="margin-left:0px;">Джерела живлення та акумулятори <span class="node-count">(зібрано 141, сайт 147, різниця -6)</span></a><a href="1022952_map.html#cat=117125490" class="cat-found-badge tree-row" style="margin-left:18px;">Акумулятори <span class="node-count">(зібрано 77, сайт 83, різниця -6)</span></a><a href="1022952_map.html#cat=116502655" class="cat-found-badge tree-row" style="margin-left:36px;">Плати захисту літієвих батарей <span class="node-count">(зібрано 25, сайт 31, різниця -6)</span></a><a href="1022952_map.html#cat=150379527" class="cat-found-badge tree-row" style="margin-left:54px;">Комплектуючі до BMS <span class="node-count">(зібрано 1, сайт 3, різниця -2)</span></a><a href="1022952_map.html#cat=150379551" class="cat-found-badge tree-row" style="margin-left:54px;">BMS JK (JiKong) <span class="node-count">(зібрано 10, сайт 14, різниця -4)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="152464274_map.html" class="orphan-group-head">📁 Лінійні приводи</a>
+            <div class="orphan-cat-list"><a href="152464274_map.html#cat=152464274" class="cat-found-badge tree-row" style="margin-left:0px;">Лінійні приводи <span class="node-count">(зібрано 69, сайт 70, різниця -1)</span></a><a href="152464274_map.html#cat=152464280" class="cat-found-badge tree-row" style="margin-left:18px;">Електричні лінійні приводи <span class="node-count">(зібрано 19, сайт 20, різниця -1)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="106846694_map.html" class="orphan-group-head">📁 Пневматика</a>
+            <div class="orphan-cat-list"><a href="106846694_map.html#cat=106846694" class="cat-found-badge tree-row" style="margin-left:0px;">Пневматика <span class="node-count">(зібрано 141, сайт 144, різниця -3)</span></a><a href="106846694_map.html#cat=106846695" class="cat-found-badge tree-row" style="margin-left:18px;">Пневмоциліндри <span class="node-count">(зібрано 28, сайт 29, різниця -1)</span></a><a href="106846694_map.html#cat=107897592" class="cat-found-badge tree-row" style="margin-left:18px;">Фітинги, пневмоглушники та інші аксесуари <span class="node-count">(зібрано 43, сайт 45, різниця -2)</span></a><a href="106846694_map.html#cat=108564090" class="cat-found-badge tree-row" style="margin-left:36px;">Фітинги з прямим різьбленням <span class="node-count">(зібрано 6, сайт 7, різниця -1)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="71921739_map.html" class="orphan-group-head">📁 Системи змащення напрямних та передач</a>
+            <div class="orphan-cat-list"><a href="71921739_map.html#cat=71921739" class="cat-found-badge tree-row" style="margin-left:0px;">Системи змащення напрямних та передач <span class="node-count">(зібрано 23, сайт 24, різниця -1)</span></a></div>
+          </div>
+          <div class="orphan-group">
+            <a href="96572435_map.html" class="orphan-group-head">📁 Системи охолодження і вентиляції</a>
+            <div class="orphan-cat-list"><a href="96572435_map.html#cat=96572435" class="cat-found-badge tree-row" style="margin-left:0px;">Системи охолодження і вентиляції <span class="node-count">(зібрано 27, сайт 28, різниця -1)</span></a><a href="96572435_map.html#cat=131029382" class="cat-found-badge tree-row" style="margin-left:18px;">Компресори <span class="node-count">(зібрано 12, сайт 13, різниця -1)</span></a></div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="help-overlay" id="crumbs-unknown-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Товари, у крихтах яких немає категорії (6)</h3>
+        <button class="btn-help-close" id="btn-crumbs-unknown-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Хлібні крихти на сторінці цих товарів не мають жодної категорії. Лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але з боку сайту хлібних крихт немає.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="92857157_map.html" class="orphan-group-head">📁 Оснащення для верстатів <span class="node-count">(2)</span></a>
+            <div class="run-error-list"><div class="run-error"><a href="https://cncprom.ua/ua/p1694903212-reztsederzhatel-bystrosmennyj-kartridzhnogo.html" class="failed-url" target="_blank" rel="noopener">↗ Різцетримач швидкозмінний картриджного типу MULTIFIX розміру Аа для токарного верстата, касетна різцетримка</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Оснащення для верстатів</div></div><div class="run-error"><a href="https://cncprom.ua/ua/p855198326-bezlyuftovyj-garmonicheskij-reduktor.html" class="failed-url" target="_blank" rel="noopener">↗ Безлюфтовий гармонійний редуктор SHF-32-80</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Оснащення для верстатів</div></div></div>
+          </div>
+          <div class="orphan-group">
+            <a href="96572435_map.html" class="orphan-group-head">📁 Системи охолодження і вентиляції <span class="node-count">(4)</span></a>
+            <div class="run-error-list"><div class="run-error"><a href="https://cncprom.ua/ua/p850446083-radiator-shtutserami-pod.html" class="failed-url" target="_blank" rel="noopener">↗ Радіатор зі штуцерами під вентилятор 120х120</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Системи охолодження і вентиляції</div></div><div class="run-error"><a href="https://cncprom.ua/ua/p850565427-radiator-275h120-pod.html" class="failed-url" target="_blank" rel="noopener">↗ Радіатор 275х120 (під вентилятори 120х120)</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Системи охолодження і вентиляції</div></div><div class="run-error"><a href="https://cncprom.ua/ua/p975193475-radiator-395h120-pod.html" class="failed-url" target="_blank" rel="noopener">↗ Радіатор 395х120 (під вентилятори 120х120)</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Системи охолодження і вентиляції</div></div><div class="run-error"><a href="https://cncprom.ua/ua/p1725304734-radiator-he120-pod.html" class="failed-url" target="_blank" rel="noopener">↗ Радіатор HE120-NF під вентилятор 120х120</a><div class="crumb-lines"><span class="path-label">Скрапер:</span> Системи охолодження і вентиляції</div></div></div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label">Рівнів</div>
+          <div class="help-term-desc">Кількість рівнів підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Усього товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера. Друге число: лічильник «В наявності» сайту. н/д: категорію ще не скраплено або дані застаріли.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Немає в наявності</div>
+          <div class="help-term-desc">Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Дата та час</div>
+          <div class="help-term-desc">Коли скрапер обійшов цю категорію, за київським часом. Годинник у шапці показує найсвіжіший із цих часів — категорії скрапляться чергою, тож між першою й останньою — кілька годин.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">✅ Актуально</div>
+          <div class="help-term-desc">Мапа побудована на базі свіжих даних.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⚠️ Застаріло</div>
+          <div class="help-term-desc">Мапа побудована на базі застарілих даних.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⏳ Немає даних</div>
+          <div class="help-term-desc">Скрапер ще жодного разу не обробляв цю категорію.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">📝 Звіт скрапера</div>
+          <div class="help-term-desc">Як відпрацював останній прогін: помилки, товари, які не вдалося обробити, і логи скрапінгу й збірки сторінок. «немає» в рядку — теж результат: перевірка відпрацювала й нічого не знайшла. Категорія з помилками має ще й значок ❗ у своєму рядку таблиці.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">❗ Помилки</div>
+          <div class="help-term-desc">Рядок у «Звіті скрапера»: скільки разів під час останнього скрапінгу щось пішло не так (наприклад, сторінка не завантажилась). Ті самі помилки, що й у «Лозі скрапінгу». Дані категорії при цьому могли зібратись частково — звіряйте з колонкою «В наявності». Така категорія має ще й значок ❗ у своєму рядку таблиці.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⛔ Не оброблено</div>
+          <div class="help-term-desc">Рядок у «Звіті скрапера»: товари, сторінку яких скрапер не зміг прочитати навіть після повторної спроби. Їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту — наступний нічний прогін їх підхопить.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">📄 Лог скрапінгу · 📄 Лог збірки</div>
+          <div class="help-term-desc">Два рядки в кінці «Звіту скрапера»: таблиці з файлів scrape.jsonl і map.jsonl. Перший пише скрапер під час обходу сайту — рядок на кожну категорію прогону; другий — збірка самих цих сторінок, рядок на кожну збірку. Найсвіжіший прогін зверху й розгорнутий.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🧮 Звірки</div>
+          <div class="help-term-desc">Звірка того, що зібрав скрапер, із тим, що є на сайті: розбіжності з лічильником «В наявності» і два випадки з хлібними крихтами. Значок на кнопці каже, скільки звірок із трьох щось знайшли, а не скільки всього знайдено.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">📐 Розбіжності звірки</div>
+          <div class="help-term-desc">Число в рядку — сама розбіжність у товарах, а не кількість вузлів: на стільки зібране «Готово до відправки» розійшлося з лічильником сайту «В наявності» по всіх категоріях разом. Мінус означає, що сайт нарахував більше, ніж вдалось зібрати. Категорії, де кількість зібраних товарів «у наявності» не збіглася з власним лічильником сайту. Збіг має бути точним: прогін нічний, замовлень тоді немає. Лічильник сайту рахує всю гілку разом, тож розбіжність у підкатегорії повторюється і в її батьків — рядки зсунуті за рівнем вкладеності, причина в найглибшому. Блідим ідуть проміжні категорії без розбіжності, щоб дерево не мало розривів. Назва відкриває саме цей вузол на мапі.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🧭 Не збігається з крихтами</div>
+          <div class="help-term-desc">Товари, у яких хлібні крихти на сторінці сайту ведуть в іншу гілку дерева, ніж та, де товар знайшов обхід. Якщо крихти вказують на батьківську чи дочірню категорію тієї самої гілки — це нормально (товар може стояти в кількох категоріях) і сюди не потрапляє.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🧭 Крихти без категорії</div>
+          <div class="help-term-desc">Товари, у крихтах яких сайт не називає жодної категорії: у ланцюгу лише «Товари та послуги» і сам товар. Скрапер відніс їх за сторінкою категорії, де знайшов, але підтвердити це з боку сайту нема чим. Це не помилка й не розбіжність: просто другої думки немає.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">⬇️ Експорт</div>
+          <div class="help-term-desc">Уся мапа категорій таблицею XLSX — лише назви, без товарів. Дерево зібране стовпцями: рівень 1 у A, рівень 2 в B і так далі; гілки згортаються кнопками [+]/[−] зліва. Аркуш захищений від сортування та редагування — перестановка рядків розірвала б дерево; як зняти, написано на аркуші «Про файл» у самому файлі.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="index-wrap">
+    <div id="index-content">
+      <h1>Категорії (23)</h1>
+      <div class="section-block">
+        <div class="table-wrap">
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th class="col-n">№</th>
+                <th>Назва категорії</th>
+                <th style="text-align:center;" data-tip="Кількість рівнів підкатегорій">Рівнів</th>
+                <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
+                <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.
+Друге число: лічильник «В наявності» сайту.
+н/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
+                <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.
+Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+                <th style="text-align:center;" data-tip="Дата та час скрапінгу">Дата та час</th>
+                <th style="text-align:center;" data-tip="✅ Актуально
+⚠️ Застаріло
+⏳ Немає даних">Статус</th>
+                <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td class="col-n">1</td>
+              <td><a href="2432613_map.html" class="fw-cat-link">Алюмінієвий профіль</a></td>
+              <td style="text-align:center;">4</td>
+              <td style="text-align:center;" class="fw-count-cell">337</td>
+              <td style="text-align:center;"><span class="diff-zero">246/246</span></td>
+              <td style="text-align:center;"><span class="count-no">91</span></td>
+              <td style="text-align:center;">26.09.2026 04:49</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g2432613-alyuminievyj-profil" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">2</td>
+              <td><a href="1261329_map.html" class="fw-cat-link">Верстати та промислове обладнання</a></td>
+              <td style="text-align:center;">4</td>
+              <td style="text-align:center;" class="fw-count-cell">319</td>
+              <td style="text-align:center;"><span class="diff-nonzero">198/201</span></td>
+              <td style="text-align:center;"><span class="count-no">121</span></td>
+              <td style="text-align:center;">26.09.2026 03:55</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1261329-stanki-promyshlennoe-oborudovanie" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">3</td>
+              <td><a href="1372753_map.html" class="fw-cat-link">Гнучкий кабель-канал (кабелеукладач)</a></td>
+              <td style="text-align:center;">1</td>
+              <td style="text-align:center;" class="fw-count-cell">32</td>
+              <td style="text-align:center;"><span class="diff-zero">26/26</span></td>
+              <td style="text-align:center;"><span class="count-no">6</span></td>
+              <td style="text-align:center;">26.09.2026 02:25</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">4</td>
+              <td><a href="1022907_map.html" class="fw-cat-link">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">283</td>
+              <td style="text-align:center;"><span class="diff-nonzero">164/166</span></td>
+              <td style="text-align:center;"><span class="count-no">119</span></td>
+              <td style="text-align:center;">26.09.2026 03:41</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1022907-datchiki-knopki-razemy" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">5</td>
+              <td><a href="1022952_map.html" class="fw-cat-link">Джерела живлення та акумулятори</a></td>
+              <td style="text-align:center;">4</td>
+              <td style="text-align:center;" class="fw-count-cell">349</td>
+              <td style="text-align:center;"><span class="diff-nonzero">141/147</span></td>
+              <td style="text-align:center;"><span class="count-no">208</span></td>
+              <td style="text-align:center;">26.09.2026 03:30</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1022952-istochniki-pitaniya-akkumulyatory" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">6</td>
+              <td><a href="17662477_map.html" class="fw-cat-link">Драйвери і крокові двигуни з енкодером</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">43</td>
+              <td style="text-align:center;"><span class="diff-zero">26/26</span></td>
+              <td style="text-align:center;"><span class="count-no">17</span></td>
+              <td style="text-align:center;">26.09.2026 02:41</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g17662477-drajvery-shagovye-dvigateli" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">7</td>
+              <td><a href="1022837_map.html" class="fw-cat-link">Драйвери крокового двигуна</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">36</td>
+              <td style="text-align:center;"><span class="diff-zero">20/20</span></td>
+              <td style="text-align:center;"><span class="count-no">16</span></td>
+              <td style="text-align:center;">26.09.2026 02:27</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">8</td>
+              <td><a href="1022553_map.html" class="fw-cat-link">Електродвигуни</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">280</td>
+              <td style="text-align:center;"><span class="diff-zero">203/203</span></td>
+              <td style="text-align:center;"><span class="count-no">77</span></td>
+              <td style="text-align:center;">26.09.2026 04:07</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1022553-elektrodvigateli" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">9</td>
+              <td><a href="1022485_map.html" class="fw-cat-link">Контролери для ЧПК</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">179</td>
+              <td style="text-align:center;"><span class="diff-zero">68/68</span></td>
+              <td style="text-align:center;"><span class="count-no">111</span></td>
+              <td style="text-align:center;">26.09.2026 03:03</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1022485-kontroleri-dlya-chpu" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">10</td>
+              <td><a href="1548856_map.html" class="fw-cat-link">Лінійні напрямні та підшипники</a></td>
+              <td style="text-align:center;">4</td>
+              <td style="text-align:center;" class="fw-count-cell">323</td>
+              <td style="text-align:center;"><span class="diff-zero">253/253</span></td>
+              <td style="text-align:center;"><span class="count-no">70</span></td>
+              <td style="text-align:center;">26.09.2026 04:35</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1548856-linejnye-napravlyayuschie-podshipniki" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">11</td>
+              <td><a href="152464274_map.html" class="fw-cat-link">Лінійні приводи</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">87</td>
+              <td style="text-align:center;"><span class="diff-nonzero">69/70</span></td>
+              <td style="text-align:center;"><span class="count-no">18</span></td>
+              <td style="text-align:center;">26.09.2026 02:55</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g152464274-linejnye-privody" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">12</td>
+              <td><a href="100126570_map.html" class="fw-cat-link">Механіка</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">29</td>
+              <td style="text-align:center;"><span class="diff-zero">20/20</span></td>
+              <td style="text-align:center;"><span class="count-no">9</span></td>
+              <td style="text-align:center;">26.09.2026 02:28</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g100126570-mehanika" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">13</td>
+              <td><a href="1270337_map.html" class="fw-cat-link">Муфти з'єднувальні</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">112</td>
+              <td style="text-align:center;"><span class="diff-zero">52/52</span></td>
+              <td style="text-align:center;"><span class="count-no">60</span></td>
+              <td style="text-align:center;">26.09.2026 02:51</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1270337-soedinitelnye-mufty" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">14</td>
+              <td><a href="92857157_map.html" class="fw-cat-link">Оснащення для верстатів</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">110</td>
+              <td style="text-align:center;"><span class="diff-zero">79/79</span></td>
+              <td style="text-align:center;"><span class="count-no">31</span></td>
+              <td style="text-align:center;">26.09.2026 03:08</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">15</td>
+              <td><a href="96553590_map.html" class="fw-cat-link">Передачі</a></td>
+              <td style="text-align:center;">5</td>
+              <td style="text-align:center;" class="fw-count-cell">826</td>
+              <td style="text-align:center;"><span class="diff-zero">540/540</span></td>
+              <td style="text-align:center;"><span class="count-no">286</span></td>
+              <td style="text-align:center;">26.09.2026 05:25</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g96553590-peredachi" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">16</td>
+              <td><a href="1484318_map.html" class="fw-cat-link">Перетворювачі частоти (інвертори)</a></td>
+              <td style="text-align:center;">1</td>
+              <td style="text-align:center;" class="fw-count-cell">36</td>
+              <td style="text-align:center;"><span class="diff-zero">21/21</span></td>
+              <td style="text-align:center;"><span class="count-no">15</span></td>
+              <td style="text-align:center;">26.09.2026 02:24</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1484318-preobrazovateli-chastoty-invertory" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">17</td>
+              <td><a href="106846694_map.html" class="fw-cat-link">Пневматика</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">201</td>
+              <td style="text-align:center;"><span class="diff-nonzero">141/144</span></td>
+              <td style="text-align:center;"><span class="count-no">60</span></td>
+              <td style="text-align:center;">26.09.2026 03:16</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g106846694-pnevmatika" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">18</td>
+              <td><a href="1477431_map.html" class="fw-cat-link">Пульти ручного управління і DSP контролери</a></td>
+              <td style="text-align:center;">1</td>
+              <td style="text-align:center;" class="fw-count-cell">35</td>
+              <td style="text-align:center;"><span class="diff-zero">20/20</span></td>
+              <td style="text-align:center;"><span class="count-no">15</span></td>
+              <td style="text-align:center;">26.09.2026 02:23</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1477431-pulty-ruchnogo-upravleniya" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">19</td>
+              <td><a href="51015677_map.html" class="fw-cat-link">Ріжучий інструмент</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">203</td>
+              <td style="text-align:center;"><span class="diff-zero">29/29</span></td>
+              <td style="text-align:center;"><span class="count-no">174</span></td>
+              <td style="text-align:center;">26.09.2026 02:39</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g51015677-rezhuschij-instrument" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">20</td>
+              <td><a href="18556308_map.html" class="fw-cat-link">Серводвигуни із серводрайверами</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">49</td>
+              <td style="text-align:center;"><span class="diff-zero">42/42</span></td>
+              <td style="text-align:center;"><span class="count-no">7</span></td>
+              <td style="text-align:center;">26.09.2026 02:46</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g18556308-servodvigateli-servodrajverami" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">21</td>
+              <td><a href="71921739_map.html" class="fw-cat-link">Системи змащення напрямних та передач</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">35</td>
+              <td style="text-align:center;"><span class="diff-nonzero">23/24</span></td>
+              <td style="text-align:center;"><span class="count-no">12</span></td>
+              <td style="text-align:center;">26.09.2026 02:30</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g71921739-sistemy-smazki-napravlyayuschih" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">22</td>
+              <td><a href="96572435_map.html" class="fw-cat-link">Системи охолодження і вентиляції</a></td>
+              <td style="text-align:center;">2</td>
+              <td style="text-align:center;" class="fw-count-cell">72</td>
+              <td style="text-align:center;"><span class="diff-nonzero">27/28</span></td>
+              <td style="text-align:center;"><span class="count-no">45</span></td>
+              <td style="text-align:center;">26.09.2026 02:44</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            <tr>
+              <td class="col-n">23</td>
+              <td><a href="1484301_map.html" class="fw-cat-link">Шпинделі</a></td>
+              <td style="text-align:center;">3</td>
+              <td style="text-align:center;" class="fw-count-cell">328</td>
+              <td style="text-align:center;"><span class="diff-zero">205/205</span></td>
+              <td style="text-align:center;"><span class="count-no">123</span></td>
+              <td style="text-align:center;">26.09.2026 04:20</td>
+              <td style="text-align:center;"><span class="count-yes" data-tip="Актуально: мапа побудована на базі свіжих даних.">✅</span></td>
+              <td style="text-align:center;vertical-align:middle;"><a href="https://cncprom.ua/ua/g1484301-shpindeli" class="link-site" target="_blank" rel="noopener">↗</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="search-results" style="display:none;"></div>
+  </div>
+<script>
+initThemeToggle();
+setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
+// У цих панелей немає власної кнопки в шапці — їх відкриває рядок меню
+// (initHeaderMenus). setupModalOverlay все одно потрібен: він вішає хрестик,
+// Esc і клік поза панеллю, а відсутню кнопку-відкривач терпить (if (openBtn)).
+setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
+setupModalOverlay('map-log-overlay', null, 'btn-map-log-close');
+setupModalOverlay('mismatch-overlay', null, 'btn-mismatch-close');
+setupModalOverlay('crumbs-overlay', null, 'btn-crumbs-close');
+setupModalOverlay('crumbs-unknown-overlay', null, 'btn-crumbs-unknown-close');
+setupModalOverlay('failed-overlay', null, 'btn-failed-close');
+setupModalOverlay('errors-overlay', null, 'btn-errors-close');
+setupModalOverlay('help-overlay', null, 'btn-help-close');
+setupModalOverlay('about-overlay', null, 'btn-about-close');
+setupModalOverlay('credits-overlay', null, 'btn-credits-close');
+// Дропдауни шапки й обробник [data-open] — спільні для трьох сторінок,
+// живуть у map-common.js (див. initHeaderMenus у render-map.js).
+initHeaderMenus();
+initNarrowGuard();
+// Значки помилок у рядках таблиці відкривають ту саму панель, що й рядок
+// «Помилки» у «Звіті скрапера».
+Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
+  b.addEventListener('click', function () {
+    var o = document.getElementById('errors-overlay');
+    if (o) o.classList.add('open');
+  });
+});
+setupTooltips();
+initSiteSearch();
+</script>
+</body>
+</html>

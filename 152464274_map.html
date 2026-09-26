@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Лінійні приводи (1–2 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Лінійні приводи</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:55</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g152464274-linejnye-privody" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Лінійні приводи</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">87</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">18</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":2,"categories_count":5,"has_products":true,"total_products":87,"total_yes":69,"total_no":18,"site_counter":70,"diff":-1,"scraped_at":"26.09.2026 02:55","source":"152464274_catalog.json","mismatch_categories":[{"categoryId":"152464274","name":"Лінійні приводи","collected":69,"siteCounter":70,"diff":-1},{"categoryId":"152464280","name":"Електричні лінійні приводи","collected":19,"siteCounter":20,"diff":-1}],"crumb_summary":{"match":87,"ancestor":0,"descendant":0,"other":0,"unknown":0},"crumb_other":[],"crumb_unknown":[],"orphan_categories":[]},"tree":{"id":"node-152464274","level":1,"name":"Лінійні приводи","url":"https://cncprom.ua/ua/g152464274-linejnye-privody","own_products":[],"children":[{"id":"node-152464280","level":2,"name":"Електричні лінійні приводи","url":"https://cncprom.ua/ua/g152464280-elektricheskie-linejnye-privody","own_products":[{"index":1,"code":"12-350","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 50 мм, тяга 20 Н (2 кг), актуатор 50/108-S4-12V-W","url":"https://cncprom.ua/ua/p2976140144-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":2,"code":"05-140","name":"Контролер лінійного приводу 12 В,  перемикач із дистанційним керуванням","url":"https://cncprom.ua/ua/p2995818293-kontroller-linejnogo-privoda.html","availability":"Готово до відправки"},{"index":3,"code":"12-357","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 100 мм, тяга 20 Н (2 кг), актуатор 100/158-S4-12V-W","url":"https://cncprom.ua/ua/p2976140148-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":4,"code":"12-362","name":"Електричний лінійний привід  15 мм/с, 12 В, хід 100 мм, тяга 50 Н (5 кг), актуатор 100/158-S3-12V-W","url":"https://cncprom.ua/ua/p2995818296-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":5,"code":"12-352","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 50 мм, тяга 150 Н (15 кг), актуатор 50/108-S1-12V-W","url":"https://cncprom.ua/ua/p2976140149-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":6,"code":"12-367","name":"Електричний лінійний привід 15 мм/с, 12 В, хід 50 мм, тяга  50 Н (5кг), актуатор 50/108-S3-12V-W","url":"https://cncprom.ua/ua/p2995818297-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":7,"code":"12-365","name":"Електричний лінійний привід 15 мм/с,12 В, хід 200 мм, тяга 50 Н (5 кг), актуатор 200/258-S3-12V-W","url":"https://cncprom.ua/ua/p2995818298-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":8,"code":"12-351","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 50 мм, тяга  70 Н (7кг), актуатор 50/108-S2-12V-W","url":"https://cncprom.ua/ua/p2976140151-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":9,"code":"12-371","name":"Електричний лінійний привід 15 мм/с,12 В, хід 200 мм, тяга 50 Н (5 кг), актуатор 200/258-S3-12V-Y","url":"https://cncprom.ua/ua/p2995818299-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":10,"code":"12-355","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 50 мм, тяга 70 Н (7кг), актуатор 50/108-S2-12V-Y","url":"https://cncprom.ua/ua/p2976140152-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":11,"code":"12-366","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 200 мм, тяга 20 Н (2 кг), актуатор 200/258-S4-12V-W","url":"https://cncprom.ua/ua/p2995818300-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":12,"code":"12-359","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 100 мм, тяга  70 Н (7кг), актуатор 100/158-S2-12V-W","url":"https://cncprom.ua/ua/p2976140153-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":13,"code":"12-361","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 100 мм, тяга 20 Н (2 кг), актуатор 100/158-S4-12V-Y","url":"https://cncprom.ua/ua/p2995818301-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":14,"code":"12-370","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 200 мм, тяга 20 Н (2 кг), актуатор 200/258-S4-12V-Y","url":"https://cncprom.ua/ua/p2995818302-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":15,"code":"12-369","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 200 мм, тяга 150 Н (15кг), актуатор 200/258-S1-12V-W","url":"https://cncprom.ua/ua/p2995818305-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":16,"code":"12-373","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 200 мм, тяга 150 Н (15 кг), актуатор 200/258-S1-12V-Y","url":"https://cncprom.ua/ua/p2995818306-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":17,"code":"12-363","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 100 мм, тяга 70 Н (7 кг), актуатор 100/158-S2-12V-Y","url":"https://cncprom.ua/ua/p2995818307-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":18,"code":"12-368","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 200 мм, тяга 70 Н (7 кг), актуатор 200/258-S2-12V-W","url":"https://cncprom.ua/ua/p2995818308-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":19,"code":"12-372","name":"Електричний лінійний привід 8 мм/с, 12 В, хід 200 мм, тяга 70 Н (7 кг), актуатор 200/258-S2-12V-Y","url":"https://cncprom.ua/ua/p2995818309-elektricheskij-linejnyj-privod.html","availability":"Готово до відправки"},{"index":20,"code":"12-354","name":"Електричний лінійний привід 15 мм/с, 12 В, хід 50 мм, тяга 50 Н (5 кг), актуатор 50/108-S3-12V-Y","url":"https://cncprom.ua/ua/p2976140145-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"},{"index":21,"code":"12-358","name":"Електричний лінійний привід 15 мм/с, 12 В, хід 100 мм, тяга 50 Н (5 кг), актуатор 100/158-S3-12V-Y","url":"https://cncprom.ua/ua/p2976140146-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"},{"index":22,"code":"12-353","name":"Електричний лінійний привід 30 мм/с, 12 В, хід 50 мм, тяга 20 Н (2 кг), актуатор 50/108-S4-12V-Y","url":"https://cncprom.ua/ua/p2976140147-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"},{"index":23,"code":"12-356","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 50 мм, тяга 150 Н (15 кг), актуатор 50/108-S1-12V-Y","url":"https://cncprom.ua/ua/p2976140150-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"},{"index":24,"code":"12-364","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 100 мм, тяга 150 Н (15 кг), актуатор 100/158-S1-12V-Y","url":"https://cncprom.ua/ua/p2995818303-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"},{"index":25,"code":"12-360","name":"Електричний лінійний привід 4 мм/с, 12 В, хід 100 мм, тяга 150 Н (15 кг), актуатор 100/158-S1-12V-W","url":"https://cncprom.ua/ua/p2995818304-elektricheskij-linejnyj-privod.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":25,"own_yes":19,"own_no":6,"total_products":25,"total_yes":19,"total_no":6,"subcategories_count":0,"site_counter":20,"diff":-1}},{"id":"node-153793456","level":2,"name":"Прецизійні модулі кулькового гвинта","url":"https://cncprom.ua/ua/g153793456-pretsizionnye-moduli-sharikovogo","own_products":[{"index":1,"code":"12-320","name":"Мініатюрний прецизійний модуль кулькового гвинта 100 мм, кроковий двигун NEMA 11, GX28-T6*12-100","url":"https://cncprom.ua/ua/p2826948641-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":2,"code":"12-328","name":"Мініатюрний прецизійний модуль кулькового гвинта 200 мм, кроковий двигун NEMA 11, GX28-T6*12-200","url":"https://cncprom.ua/ua/p3034107430-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":3,"code":"12-337","name":"Мініатюрний прецизійний модуль кулькового гвинта 300 мм, кроковий двигун NEMA 11, GX28-T6*6-300","url":"https://cncprom.ua/ua/p3034991112-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":4,"code":"12-324","name":"Мініатюрний прецизійний модуль кулькового гвинта 100 мм, кроковий двигун NEMA 11, GX28-T6*6-100","url":"https://cncprom.ua/ua/p3034107431-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":5,"code":"12-326","name":"Мініатюрний прецизійний модуль кулькового гвинта 200 мм, кроковий двигун NEMA 11, GX28-T6*2-200","url":"https://cncprom.ua/ua/p3034107432-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":6,"code":"12-325","name":"Мініатюрний прецизійний модуль кулькового гвинта 100 мм, кроковий двигун NEMA 11, GX28-T6*2-100","url":"https://cncprom.ua/ua/p3034107433-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":7,"code":"12-327","name":"Мініатюрний прецизійний модуль кулькового гвинта 200 мм, кроковий двигун NEMA 11, GX28-T6*6-200","url":"https://cncprom.ua/ua/p3034107434-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":8,"code":"12-338","name":"Мініатюрний прецизійний модуль кулькового гвинта 300 мм, кроковий двигун NEMA 11, GX28-T6*12-300","url":"https://cncprom.ua/ua/p3034991110-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"},{"index":9,"code":"12-329","name":"Мініатюрний прецизійний модуль кулькового гвинта 300 мм, кроковий двигун NEMA 11, GX28-T6*2-300","url":"https://cncprom.ua/ua/p3034991111-miniatyurnyj-pretsizionnyj-modul.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":9,"own_yes":9,"own_no":0,"total_products":9,"total_yes":9,"total_no":0,"subcategories_count":0,"site_counter":9,"diff":0}},{"id":"node-154721209","level":2,"name":"Електричні крокові лінійні приводи","url":"https://cncprom.ua/ua/g154721209-elektricheskie-shagovye-linejnye","own_products":[{"index":1,"code":"12-347","name":"Електричний кроковий лінійний привід 12 мм/с, 24 В, хід 100 мм, тяга 250 Н (до 25 кг), актуатор BJXL","url":"https://cncprom.ua/ua/p3090948538-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":2,"code":"12-342","name":"Електричний кроковий лінійний привід 50 мм/с, 24 В, хід 100 мм, тяга 70 Н (до 7 кг), актуатор BTXL","url":"https://cncprom.ua/ua/p3090948539-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":3,"code":"12-346","name":"Електричний кроковий лінійний привід 12 мм/с, 24 В, хід 200 мм, тяга 250 Н (до 25 кг), актуатор BJXL","url":"https://cncprom.ua/ua/p3090948540-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":4,"code":"12-343","name":"Електричний кроковий лінійний привід 50 мм/с, 24 В, хід 200 мм, тяга 70 Н (до 7 кг), актуатор BTXL","url":"https://cncprom.ua/ua/p3090948541-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":5,"code":"12-345","name":"Електричний кроковий лінійний привід 12 мм/с, 24 В, хід 300 мм, тяга 250 Н (до 25 кг), актуатор BJXL","url":"https://cncprom.ua/ua/p3090948542-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":6,"code":"12-341","name":"Електричний кроковий лінійний привід 50 мм/с, 24 В, хід 300 мм, тяга 70 Н (до 7 кг), актуатор BTXL","url":"https://cncprom.ua/ua/p3090948543-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":7,"code":"12-344","name":"Електричний кроковий лінійний привід 12 мм/с, 24 В, хід 400 мм, тяга, 250 Н (до 25 кг), актуатор BJXL","url":"https://cncprom.ua/ua/p3090948544-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"},{"index":8,"code":"12-340","name":"Електричний кроковий лінійний привід 50 мм/с, 24 В, хід 400 мм, тяга 70 Н (до 7 кг), актуатор BTXL","url":"https://cncprom.ua/ua/p3090948545-elektricheskij-shagovyj-linejnyj.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":8,"own_yes":8,"own_no":0,"total_products":8,"total_yes":8,"total_no":0,"subcategories_count":0,"site_counter":8,"diff":0}},{"id":"node-83180132","level":2,"name":"Модулі лінійного переміщення і аксесуари до них","url":"https://cncprom.ua/ua/g83180132-moduli-linejnogo-peremescheniya","own_products":[{"index":1,"code":"10-051","name":"Модуль лінійного переміщення MLM-Z45-T8-N17, вісь Z у зборі для фрезерного або лазерного верстата з ЧПК (ЧПУ)","url":"https://cncprom.ua/ua/p1683690536-modul-linejnogo-peremescheniya.html","availability":"Готово до відправки"},{"index":2,"code":"22-201","name":"Натягувач ременя для профілю серії 20, тип А (чорний)","url":"https://cncprom.ua/ua/p1076852495-natyazhitel-remnya-dlya.html","availability":"Готово до відправки"},{"index":3,"code":"22-203","name":"Роликова каретка 50х50 для профілю серії 20 V-Slot","url":"https://cncprom.ua/ua/p1077900427-rolikovaya-karetka-50h50.html","availability":"Готово до відправки"},{"index":4,"code":"22-204","name":"Роликова каретка 65х65 для профілю серії 20 V-Slot","url":"https://cncprom.ua/ua/p1078286467-rolikovaya-karetka-65h65.html","availability":"Готово до відправки"},{"index":5,"code":"12-406","name":"Кронштейн крокового двигуна серії 57 LJZ8-DS45-57 для лінійного модуля TBD45","url":"https://cncprom.ua/ua/p1470346846-kronshtejn-shagovogo-dvigatelya.html","availability":"Готово до відправки"},{"index":6,"code":"12-408","name":"Кронштейн двигуна серій 57 і 60 LJZ-DS45/60-57/60 для лінійних модулів TBD45 і TBD60","url":"https://cncprom.ua/ua/p1471878413-kronshtejn-dvigatelya-serij.html","availability":"Готово до відправки"},{"index":7,"code":"12-403","name":"Кронштейн серводвигуна серії 60 LJZ-DS45-60, для лінійного модуля TBD45","url":"https://cncprom.ua/ua/p1212309075-kronshtejn-servodvigatelya-serii.html","availability":"Готово до відправки"},{"index":8,"code":"12-404","name":"Кронштейн серводвигуна серії 60 LJZ-DS45-60-V1, для лінійного модуля TBD45","url":"https://cncprom.ua/ua/p1213504699-kronshtejn-servodvigatelya-serii.html","availability":"Готово до відправки"},{"index":9,"code":"12-405","name":"Перехідний фланець для крокового двигуна серії 86 LJP-DS45M75-86","url":"https://cncprom.ua/ua/p1213643618-perehodnoj-flanets-dlya.html","availability":"Готово до відправки"},{"index":10,"code":"12-302","name":"Лінійний модуль TBD45-500 з ремінним приводом, профіль 45×45 мм, хід 500 мм","url":"https://cncprom.ua/ua/p1089207068-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":11,"code":"12-301","name":"Лінійний модуль TBD45-300 з ремінним приводом, профіль 45×45 мм, хід 300 мм","url":"https://cncprom.ua/ua/p1086735654-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":12,"code":"12-303","name":"Лінійний модуль TBD45-700 з ремінним приводом, профіль 45×45 мм, хід 700 мм","url":"https://cncprom.ua/ua/p1089226920-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":13,"code":"12-304","name":"Лінійний модуль TBD45-1000 з ремінним приводом, профіль 45×45 мм, хід 1000 мм","url":"https://cncprom.ua/ua/p1089240555-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":14,"code":"12-307","name":"Лінійний модуль TBD45-2000 з ремінним приводом, профіль 45×45 мм, хід 2000 мм","url":"https://cncprom.ua/ua/p1089266309-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":15,"code":"12-308","name":"Лінійний модуль TBD60-500 з ремінним приводом, профіль 60×60 мм, хід 500 мм","url":"https://cncprom.ua/ua/p1089792751-linejnyj-modul-tbd60.html","availability":"Готово до відправки"},{"index":16,"code":"12-311","name":"Лінійний модуль TBD60-2000 з ремінним приводом, профіль 60×60 мм, хід 2000 мм","url":"https://cncprom.ua/ua/p1090690093-linejnyj-modul-tbd60.html","availability":"Готово до відправки"},{"index":17,"code":"22-208","name":"Ролик V-подібний для роликової каретки профілю серії 20 V-Slot D=24 mm (з нержавіючої сталі)","url":"https://cncprom.ua/ua/p1869569801-rolik-obraznyj-dlya.html","availability":"Готово до відправки"},{"index":18,"code":"12-313","name":"Лінійний модуль TBD60-300 з ремінним приводом, профіль 60×60 мм, хід 300 мм","url":"https://cncprom.ua/ua/p1876565047-linejnyj-modul-tbd60.html","availability":"Готово до відправки"},{"index":19,"code":"22-210","name":"Овальний гумовий бампер для модуля лінійного переміщення","url":"https://cncprom.ua/ua/p1882002638-ovalnyj-rezinovyj-bamper.html","availability":"Готово до відправки"},{"index":20,"code":"22-209","name":"Круглий гумовий бампер для модуля лінійного переміщення","url":"https://cncprom.ua/ua/p1882003236-kruglyj-rezinovyj-bamper.html","availability":"Готово до відправки"},{"index":21,"code":"12-315","name":"Лінійний модуль TBD45-200 з ремінним приводом, профіль 45×45 мм, хід 200 мм","url":"https://cncprom.ua/ua/p2047892926-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":22,"code":"12-318","name":"Лінійний модуль TBD45-800 з ремінним приводом, профіль 45×45 мм, хід 800 мм","url":"https://cncprom.ua/ua/p2047892929-linejnyj-modul-tbd45.html","availability":"Готово до відправки"},{"index":23,"code":"10-815","name":"Гвинт-вісь з напівкруглою головкою та внутрішнім шестигранником М5х0.8 довжиною 22 мм, призонний гвинт","url":"https://cncprom.ua/ua/p1865385777-vint-polukrugloj-golovkoj.html","availability":"Готово до відправки"},{"index":24,"code":"12-321","name":"Лінійний модульний ковзаючий механізм GX80 (хід 500 мм) з кульковим підшипником SFU1605","url":"https://cncprom.ua/ua/p2850294697-linejnyj-modulnyj-skolzyaschij.html","availability":"Готово до відправки"},{"index":25,"code":"12-322","name":"Лінійний модульний ковзаючий механізм GX60 (хід 300 мм) з кульковим підшипником SFU1610","url":"https://cncprom.ua/ua/p2850294698-linejnyj-modulnyj-skolzyaschij.html","availability":"Готово до відправки"},{"index":26,"code":"12-323","name":"Модуль ковзання передачі GF80 (хід 300 мм ) з герметичним кульковим підшипником SFU1610","url":"https://cncprom.ua/ua/p2850294699-modul-skolzheniya-peredachi.html","availability":"Готово до відправки"},{"index":27,"code":"12-330","name":"Лінійний модуль FG20-100, хід 100 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237657-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":28,"code":"12-331","name":"Лінійний модуль FG20-200, хід 200 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237658-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":29,"code":"12-332","name":"Лінійний модуль FG20-300, хід 300 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237659-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":30,"code":"12-333","name":"Лінійний модуль FG20-400, хід 400 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237660-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":31,"code":"12-334","name":"Лінійний модуль FG20-500, хід 500 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237661-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":32,"code":"12-335","name":"Лінійний модуль FG20-600, хід 600 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237662-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":33,"code":"12-336","name":"Лінійний модуль FG20-700, хід 700 мм, під двигун NEMA23 (57 мм), платформа 180×180 мм, ШВП SFU2005-C7","url":"https://cncprom.ua/ua/p3092237663-linejnyj-modul-fg20.html","availability":"Готово до відправки"},{"index":34,"code":"22-202","name":"Натягувач ременя для профілю серії 20, тип А (сріблястий)","url":"https://cncprom.ua/ua/p1076355549-natyazhitel-remnya-dlya.html","availability":"Немає в наявності"},{"index":35,"code":"12-402","name":"Кронштейн крокового двигуна серії 57 LJZ-DS45-57, для лінійного модуля TBD45","url":"https://cncprom.ua/ua/p1210988427-kronshtejn-shagovogo-dvigatelya.html","availability":"Немає в наявності"},{"index":36,"code":"12-407","name":"Кронштейн крокового двигуна серії 57 і серводвигуна серії 60 LJZ-DS45-57/60 для лінійного модуля TBD45","url":"https://cncprom.ua/ua/p1470498255-kronshtejn-shagovogo-dvigatelya.html","availability":"Немає в наявності"},{"index":37,"code":"12-305","name":"Лінійний модуль TBD45-1200 з ремінним приводом, профіль 45×45 мм, хід 1200 мм","url":"https://cncprom.ua/ua/p1089255965-linejnyj-modul-tbd45.html","availability":"Немає в наявності"},{"index":38,"code":"12-306","name":"Лінійний модуль TBD45-1500 з ремінним приводом, профіль 45×45 мм, хід 1500 мм","url":"https://cncprom.ua/ua/p1089262049-linejnyj-modul-tbd45.html","availability":"Немає в наявності"},{"index":39,"code":"12-309","name":"Лінійний модуль TBD60-1000 з ремінним приводом, профіль 60×60 мм, хід 1000 мм","url":"https://cncprom.ua/ua/p1090651149-linejnyj-modul-tbd60.html","availability":"Немає в наявності"},{"index":40,"code":"12-310","name":"Лінійний модуль TBD60-1500 з ремінним приводом, профіль 60×60 мм, хід 1500 мм","url":"https://cncprom.ua/ua/p1090686824-linejnyj-modul-tbd60.html","availability":"Немає в наявності"},{"index":41,"code":"22-206","name":"Ролик V-подібний для роликової каретки профілю серії 20 V-Slot D=24 mm (чорний)","url":"https://cncprom.ua/ua/p1869569802-rolik-obraznyj-dlya.html","availability":"Немає в наявності"},{"index":42,"code":"22-207","name":"Ролик для роликової каретки профілю серії 20 V-Slot D=15.3 mm (чорний)","url":"https://cncprom.ua/ua/p1869569803-rolik-dlya-rolikovoj.html","availability":"Немає в наявності"},{"index":43,"code":"22-205","name":"Ролик для роликової каретки профілю серії 20 V-Slot D=24 mm (чорний)","url":"https://cncprom.ua/ua/p1869569804-rolik-dlya-rolikovoj.html","availability":"Немає в наявності"},{"index":44,"code":"12-316","name":"Лінійний модуль TBD45-260 з ремінним приводом, профіль 45×45 мм, хід 260 мм","url":"https://cncprom.ua/ua/p2047892927-linejnyj-modul-tbd45.html","availability":"Немає в наявності"},{"index":45,"code":"12-317","name":"Лінійний модуль TBD45-750 з ремінним приводом, профіль 45×45 мм, хід 750 мм","url":"https://cncprom.ua/ua/p2047892928-linejnyj-modul-tbd45.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":45,"own_yes":33,"own_no":12,"total_products":45,"total_yes":33,"total_no":12,"subcategories_count":0,"site_counter":33,"diff":0}}],"stats":{"own_products":0,"own_yes":0,"own_no":0,"total_products":87,"total_yes":69,"total_no":18,"subcategories_count":4,"site_counter":70,"diff":-1}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "id": "96572435",
+  "levels": 2,
+  "categories_count": 9,
+  "has_products": true,
+  "total_products": 72,
+  "total_yes": 27,
+  "total_no": 45,
+  "site_counter": 28,
+  "diff": -1,
+  "scraped_at": "26.09.2026 02:44",
+  "source": "96572435_catalog.json",
+  "mismatch_categories": [
+    {
+      "categoryId": "96572435",
+      "name": "Системи охолодження і вентиляції",
+      "collected": 27,
+      "siteCounter": 28,
+      "diff": -1
+    },
+    {
+      "categoryId": "131029382",
+      "name": "Компресори",
+      "collected": 12,
+      "siteCounter": 13,
+      "diff": -1
+    }
+  ],
+  "crumb_summary": {
+    "match": 68,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 4
+  },
+  "crumb_other": [],
+  "crumb_unknown": [
+    {
+      "id": "850446083",
+      "name": "Радіатор зі штуцерами під вентилятор 120х120",
+      "url": "https://cncprom.ua/ua/p850446083-radiator-shtutserami-pod.html",
+      "assigned": "Системи охолодження і вентиляції"
+    },
+    {
+      "id": "850565427",
+      "name": "Радіатор 275х120 (під вентилятори 120х120)",
+      "url": "https://cncprom.ua/ua/p850565427-radiator-275h120-pod.html",
+      "assigned": "Системи охолодження і вентиляції"
+    },
+    {
+      "id": "975193475",
+      "name": "Радіатор 395х120 (під вентилятори 120х120)",
+      "url": "https://cncprom.ua/ua/p975193475-radiator-395h120-pod.html",
+      "assigned": "Системи охолодження і вентиляції"
+    },
+    {
+      "id": "1725304734",
+      "name": "Радіатор HE120-NF під вентилятор 120х120",
+      "url": "https://cncprom.ua/ua/p1725304734-radiator-he120-pod.html",
+      "assigned": "Системи охолодження і вентиляції"
+    }
+  ],
+  "orphan_categories": [
+    {
+      "id": "node-96572435",
+      "name": "Системи охолодження і вентиляції",
+      "level": 1,
+      "own": 5
+    }
+  ],
+  "nodes": [
+    {
+      "id": "96572435",
+      "name": "Системи охолодження і вентиляції",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii",
+      "own": 5,
+      "products": 72,
+      "yes": 27,
+      "no": 45,
+      "counter": 28,
+      "diff": -1
+    },
+    {
+      "id": "67235371",
+      "name": "Фільтровентиляційні установки",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g67235371-filtroventilyatsionnye-ustanovki",
+      "own": 9,
+      "products": 9,
+      "yes": 1,
+      "no": 8,
+      "counter": 1,
+      "diff": 0
+    },
+    {
+      "id": "66817074",
+      "name": "Чилери",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g66817074-chillery",
+      "own": 7,
+      "products": 7,
+      "yes": 3,
+      "no": 4,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "3124168",
+      "name": "Водяні насоси (помпи)",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g3124168-vodyanye-nasosy-pompy",
+      "own": 6,
+      "products": 6,
+      "yes": 4,
+      "no": 2,
+      "counter": 4,
+      "diff": 0
+    },
+    {
+      "id": "87830857",
+      "name": "Вентилятори",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g87830857-ventilyatory",
+      "own": 15,
+      "products": 15,
+      "yes": 3,
+      "no": 12,
+      "counter": 3,
+      "diff": 0
+    },
+    {
+      "id": "96574966",
+      "name": "Захисні решітки для вентиляторів",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g96574966-zaschitnye-reshetki-dlya",
+      "own": 4,
+      "products": 4,
+      "yes": 2,
+      "no": 2,
+      "counter": 2,
+      "diff": 0
+    },
+    {
+      "id": "96574974",
+      "name": "Трубки для охолоджуючої рідини",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g96574974-trubki-dlya-ohlazhdayuschej",
+      "own": 2,
+      "products": 2,
+      "yes": 2,
+      "no": 0,
+      "counter": 2,
+      "diff": 0
+    },
+    {
+      "id": "96574779",
+      "name": "Трубки для подачі ЗОР",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g96574779-trubki-dlya-podachi",
+      "own": 4,
+      "products": 4,
+      "yes": 0,
+      "no": 4,
+      "counter": 0,
+      "diff": 0
+    },
+    {
+      "id": "131029382",
+      "name": "Компресори",
+      "parentId": "96572435",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g131029382-kompressory",
+      "own": 20,
+      "products": 20,
+      "yes": 12,
+      "no": 8,
+      "counter": 13,
+      "diff": -1
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "id": "100126570",
+  "levels": 2,
+  "categories_count": 5,
+  "has_products": true,
+  "total_products": 29,
+  "total_yes": 20,
+  "total_no": 9,
+  "site_counter": 20,
+  "diff": 0,
+  "scraped_at": "26.09.2026 02:28",
+  "source": "100126570_catalog.json",
+  "mismatch_categories": [],
+  "crumb_summary": {
+    "match": 29,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "100126570",
+      "name": "Механіка",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g100126570-mehanika",
+      "own": 0,
+      "products": 29,
+      "yes": 20,
+      "no": 9,
+      "counter": 20,
+      "diff": 0
+    },
+    {
+      "id": "99849748",
+      "name": "Опорні ролики",
+      "parentId": "100126570",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g99849748-opornye-roliki",
+      "own": 12,
+      "products": 12,
+      "yes": 11,
+      "no": 1,
+      "counter": 11,
+      "diff": 0
+    },
+    {
+      "id": "89710788",
+      "name": "Підшипникові вузли серії UCP",
+      "parentId": "100126570",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g89710788-podshipnikovye-uzly-serii",
+      "own": 10,
+      "products": 10,
+      "yes": 6,
+      "no": 4,
+      "counter": 6,
+      "diff": 0
+    },
+    {
+      "id": "82323270",
+      "name": "Маховики",
+      "parentId": "100126570",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g82323270-mahoviki",
+      "own": 3,
+      "products": 3,
+      "yes": 1,
+      "no": 2,
+      "counter": 1,
+      "diff": 0
+    },
+    {
+      "id": "112722902",
+      "name": "Перехідні втулки",
+      "parentId": "100126570",
+      "level": 2,
+      "url": "https://cncprom.ua/ua/g112722902-perehodnye-vtulki",
+      "own": 4,
+      "products": 4,
+      "yes": 2,
+      "no": 2,
+      "counter": 2,
+      "diff": 0
+    }
+  ]
+}

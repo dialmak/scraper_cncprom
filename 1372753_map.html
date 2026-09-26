@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Гнучкий кабель-канал (кабелеукладач) (рівень 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Гнучкий кабель-канал (кабелеукладач)</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:25</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Гнучкий кабель-канал (кабелеукладач)</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">32</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">6</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":1,"categories_count":1,"has_products":true,"total_products":32,"total_yes":26,"total_no":6,"site_counter":26,"diff":0,"scraped_at":"26.09.2026 02:25","source":"1372753_catalog.json","mismatch_categories":[],"crumb_summary":{"match":32,"ancestor":0,"descendant":0,"other":0,"unknown":0},"crumb_other":[],"crumb_unknown":[],"orphan_categories":[]},"tree":{"id":"node-1372753","level":1,"name":"Гнучкий кабель-канал (кабелеукладач)","url":"https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal","own_products":[{"index":1,"code":"34-029","name":"Гнучкий кабель-канал відкритий 10х10, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1326145265-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":2,"code":"34-028","name":"Гнучкий кабель-канал відкритий 15х20, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1217570915-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":3,"code":"34-013","name":"Гнучкий кабель-канал напівзакритий 18х25, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198782003-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":4,"code":"34-031","name":"Гнучкий кабель-канал відкритий 18х35, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1489062706-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":5,"code":"34-023","name":"Гнучкий кабель-канал напівзакритий 18х38, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1208685097-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":6,"code":"34-032","name":"Гнучкий кабель-канал відкритий 25х38, кабелеукладач із секціями для кріплення на кожен метр, кабельний ланцюг","url":"https://cncprom.ua/ua/p1671300145-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":7,"code":"34-018","name":"Гнучкий кабель-канал закритий 25х38, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198929338-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":8,"code":"34-024","name":"Гнучкий кабель-канал відкритий 25х57, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1207290899-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":9,"code":"34-019","name":"Гнучкий кабель-канал закритий 25х57, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198936241-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":10,"code":"34-015","name":"Гнучкий кабель-канал відкритий 35х50, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198852249-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":11,"code":"34-016","name":"Гнучкий кабель-канал відкритий 35х75, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198864586-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":12,"code":"34-021","name":"Гнучкий кабель-канал закритий 35х100, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198949772-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":13,"code":"34-020","name":"Гнучкий кабель-канал закритий 35х60, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198943573-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":14,"code":"34-004","name":"Гнучкий кабель-канал (кабелеукладач) з внутрішнім розміром 43х125 з секцією для кріплення","url":"https://cncprom.ua/ua/p25420401-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":15,"code":"34-017","name":"Гнучкий кабель-канал відкритий 45х75, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198877457-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":16,"code":"34-025","name":"Гнучкий кабель-канал відкритий 45х125, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1207287553-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":17,"code":"34-022","name":"Гнучкий кабель-канал закритий 45х75, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198958756-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":18,"code":"34-008","name":"Комплект секцій для кріплення кабель-каналу 43х120","url":"https://cncprom.ua/ua/p25420447-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":19,"code":"34-005","name":"Комплект секцій для кріплення кабель-каналу 15х20","url":"https://cncprom.ua/ua/p5665385-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":20,"code":"34-006","name":"Комплект секцій для кріплення кабель-каналу 18х37","url":"https://cncprom.ua/ua/p5666577-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":21,"code":"34-012","name":"Комплект секцій для кріплення кабель-каналу 10х15","url":"https://cncprom.ua/ua/p782958528-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":22,"code":"34-007","name":"Комплект секцій для кріплення кабель-каналу 24х58","url":"https://cncprom.ua/ua/p5665412-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":23,"code":"34-035","name":"Комплект секцій для кріплення кабель-каналу 15х15","url":"https://cncprom.ua/ua/p1877492706-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":24,"code":"34-037","name":"Комплект секцій для кріплення кабель-каналу 25x75","url":"https://cncprom.ua/ua/p2248932986-komplekt-sektsij-dlya.html","availability":"Готово до відправки"},{"index":25,"code":"34-038","name":"Гнучкий кабель-канал відкритий 8х8, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p2326246403-gibkij-kabel-kanal.html","availability":"Готово до відправки"},{"index":26,"code":"34-039","name":"Комплект пермичок для кріплення кабель-каналу 43х125","url":"https://cncprom.ua/ua/p2661319537-komplekt-permichek-dlya.html","availability":"Готово до відправки"},{"index":27,"code":"34-030","name":"Гнучкий кабель-канал відкритий 10х15, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1326178701-gibkij-kabel-kanal.html","availability":"Немає в наявності"},{"index":28,"code":"34-027","name":"Гнучкий кабель-канал відкритий 18х25, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1326208810-gibkij-kabel-kanal.html","availability":"Немає в наявності"},{"index":29,"code":"34-014","name":"Гнучкий кабель-канал відкритий 25х77, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1198845014-gibkij-kabel-kanal.html","availability":"Немає в наявності"},{"index":30,"code":"34-036","name":"Гнучкий кабель-канал напівзакритий 18х37, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p1910261000-gibkij-kabel-kanal.html","availability":"Немає в наявності"},{"index":31,"code":"34-034","name":"Гнучкий кабель-канал напівзакритий 15х15, кабелеукладач із секціями для кріплення на кожен метр","url":"https://cncprom.ua/ua/p2359700143-gibkij-kabel-kanal.html","availability":"Немає в наявності"},{"index":32,"code":"34-033","name":"Комплект секцій для кріплення кабель-каналу 10х15","url":"https://cncprom.ua/ua/p2745695130-komplekt-sektsij-dlya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":32,"own_yes":26,"own_no":6,"total_products":32,"total_yes":26,"total_no":6,"subcategories_count":0,"site_counter":26,"diff":0}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

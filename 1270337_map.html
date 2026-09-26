@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Муфти з'єднувальні (1–3 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Муфти з'єднувальні</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:51</button>
+      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">⚠️ Товари поза категоріями</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g1270337-soedinitelnye-mufty" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+  <div class="help-overlay" id="orphan-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Знайдені товари, які не входять до підкатегорій (5)</h3>
+        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
+        <div class="orphan-group-list">
+          <div class="orphan-group">
+            <a href="#" class="orphan-group-head orphan-cat-link" data-id="node-1270337">📁 Муфти з'єднувальні <span class="node-count">(5)</span></a>
+            <div class="orphan-cat-list"><a href="#" class="cat-found-badge tree-row orphan-cat-link" data-id="node-1270337" style="margin-left:0px;">Товари категорії, які не входять до підкатегорій <span class="node-count">(2)</span></a><a href="#" class="cat-found-badge tree-row orphan-cat-link" data-id="node-50143903" style="margin-left:18px;">Гнучкі кулачкові муфти <span class="node-count">(1)</span></a><a href="#" class="cat-found-badge tree-row orphan-cat-link" data-id="node-50146141" style="margin-left:18px;">Гнучкі сильфонні муфти <span class="node-count">(2)</span></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Муфти з'єднувальні</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">112</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">60</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":3,"categories_count":13,"has_products":true,"total_products":112,"total_yes":52,"total_no":60,"site_counter":52,"diff":0,"scraped_at":"26.09.2026 02:51","source":"1270337_catalog.json","mismatch_categories":[],"crumb_summary":{"match":112,"ancestor":0,"descendant":0,"other":0,"unknown":0},"crumb_other":[],"crumb_unknown":[],"orphan_categories":[{"id":"node-1270337","name":"Муфти з'єднувальні","level":1,"own":2},{"id":"node-50143903","name":"Гнучкі кулачкові муфти","level":2,"own":1},{"id":"node-50146141","name":"Гнучкі сильфонні муфти","level":2,"own":2}]},"tree":{"id":"node-1270337","level":1,"name":"Муфти з'єднувальні","url":"https://cncprom.ua/ua/g1270337-soedinitelnye-mufty","own_products":[{"index":1,"code":"33-109","name":"Муфта жорстка RC25L40 10x10 мм, муфта для з'єднання валів","url":"https://cncprom.ua/ua/p2804348929-mufta-zhorstka-rc25l40.html","availability":"Немає в наявності"},{"index":2,"code":"33-090","name":"Муфта жорстка RC32L45 14x14 мм, муфта для з'єднання валів","url":"https://cncprom.ua/ua/p2176776204-mufta-zhestkaya-rc32l45.html","availability":"Немає в наявності"}],"children":[{"id":"node-50143903","level":2,"name":"Гнучкі кулачкові муфти","url":"https://cncprom.ua/ua/g50143903-gibkie-kulachkovye-mufty","own_products":[{"index":1,"code":"33-091","name":"Муфта сполучна кулачкова 25х25 (L66, D45), гнучка віброгасна алюмінієва муфта для з'єднання валів","url":"https://cncprom.ua/ua/p2182905886-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"}],"children":[{"id":"node-50145876","level":3,"name":"Гнучкі кулачкові муфти ММ (довжина - 30мм, зовнішній діаметр - 20мм)","url":"https://cncprom.ua/ua/g50145876-gibkie-kulachkovye-mufty","own_products":[{"index":1,"code":"33-055","name":"Гнучка кулачкова муфта 10х10ММ (L30, D20)","url":"https://cncprom.ua/ua/p1000057821-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-045","name":"Гнучка кулачкова муфта 8х10ММ (L30, D20)","url":"https://cncprom.ua/ua/p702659480-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":2,"own_yes":1,"own_no":1,"total_products":2,"total_yes":1,"total_no":1,"subcategories_count":0,"site_counter":1,"diff":0}},{"id":"node-50144452","level":3,"name":"Гнучкі кулачкові муфти М (довжина - 30мм, зовнішній діаметр - 25мм)","url":"https://cncprom.ua/ua/g50144452-gibkie-kulachkovye-mufty","own_products":[{"index":1,"code":"33-013","name":"Гнучка кулачкова муфта 6х6М (L30, D25)","url":"https://cncprom.ua/ua/p45083538-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":2,"code":"33-014","name":"Гнучка кулачкова муфта 6х6,35М (L30, D25)","url":"https://cncprom.ua/ua/p45083956-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":3,"code":"33-015","name":"Гнучка кулачкова муфта 6х8М (L30, D25)","url":"https://cncprom.ua/ua/p45084675-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":4,"code":"33-040","name":"Гнучка кулачкова муфта 6,35х6,35М (L30, D25)","url":"https://cncprom.ua/ua/p6475443-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":5,"code":"33-018","name":"Гнучка кулачкова муфта 6,35х8М (L30, D25)","url":"https://cncprom.ua/ua/p6475447-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":6,"code":"33-019","name":"Гнучка кулачкова муфта 6,35х10М (L30, D25)","url":"https://cncprom.ua/ua/p6475451-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":7,"code":"33-057","name":"Гнучка кулачкова муфта 10х12М (L30, D25)","url":"https://cncprom.ua/ua/p1000071094-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":8,"code":"33-059","name":"Гнучка кулачкова муфта 6х12,7М (L30, D25)","url":"https://cncprom.ua/ua/p1000072514-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":9,"code":"33-062","name":"Гнучка кулачкова муфта 12,7х12,7М (L30, D25)","url":"https://cncprom.ua/ua/p1000075393-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":10,"code":"33-094","name":"Муфта сполучна кулачкова 6,35х12,7 (L30, D25), гнучка віброгасна алюмінієва муфта","url":"https://cncprom.ua/ua/p2248932338-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":11,"code":"33-016","name":"Гнучка кулачкова муфта 6х10М (L30, D25)","url":"https://cncprom.ua/ua/p45084932-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":12,"code":"33-021","name":"Гнучка кулачкова муфта 8х8М (L30, D25)","url":"https://cncprom.ua/ua/p5131336-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":13,"code":"33-022","name":"Гнучка кулачкова муфта 8х10М (L30, D25)","url":"https://cncprom.ua/ua/p5131330-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":14,"code":"33-025","name":"Гнучка кулачкова муфта 10х10М (L30, D25)","url":"https://cncprom.ua/ua/p6475455-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":15,"code":"33-056","name":"Гнучка кулачкова муфта 8х12М (L30, D25)","url":"https://cncprom.ua/ua/p1000069411-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":16,"code":"33-058","name":"Гнучка кулачкова муфта 12х12М (L30, D25)","url":"https://cncprom.ua/ua/p1000072284-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":17,"code":"33-060","name":"Гнучка кулачкова муфта 10х12,7М (L30, D25)","url":"https://cncprom.ua/ua/p1000073363-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":18,"code":"33-076","name":"Гнучка кулачкова муфта 6х12М (L30, D25)","url":"https://cncprom.ua/ua/p1008382803-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":19,"code":"33-092","name":"Муфта сполучна кулачкова 6,35х12 (L30, D25)","url":"https://cncprom.ua/ua/p2248932339-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":19,"own_yes":10,"own_no":9,"total_products":19,"total_yes":10,"total_no":9,"subcategories_count":0,"site_counter":10,"diff":0}},{"id":"node-50145893","level":3,"name":"Гнучкі кулачкові муфти С (довжина - 35...40 мм, зовнішній діаметр - 30 мм)","url":"https://cncprom.ua/ua/g50145893-gibkie-kulachkovye-mufty","own_products":[{"index":1,"code":"33-065","name":"Муфта сполучна кулачкова 6,35х12,7 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000085062-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":2,"code":"33-028","name":"Гнучка кулачкова муфта 12х12С (L35, D30)","url":"https://cncprom.ua/ua/p21405711-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":3,"code":"33-030","name":"Муфта сполучна кулачкова 12х12,7 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405730-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":4,"code":"33-020","name":"Муфта сполучна кулачкова 6х12 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p45084940-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":5,"code":"33-077","name":"Муфта сполучна кулачкова 6,35х10 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1065416436-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":6,"code":"33-064","name":"Муфта сполучна кулачкова 6,35х12 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000084453-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":7,"code":"33-063","name":"Муфта сполучна кулачкова 8х10 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000083841-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":8,"code":"33-023","name":"Муфта сполучна кулачкова 8х12 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405608-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":9,"code":"33-027","name":"Муфта сполучна кулачкова 8х12,7 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405622-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":10,"code":"33-026","name":"Муфта сполучна кулачкова 10х12 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405684-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":11,"code":"33-029","name":"Муфта сполучна кулачкова 10х12,7 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405699-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":12,"code":"33-031","name":"Муфта сполучна кулачкова 12,7х12,7 C (L35, D30), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p21405755-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":13,"code":"33-078","name":"Муфта кулачкова 8х14 С (L40, D30)","url":"https://cncprom.ua/ua/p1301654976-mufta-kulachkovaya-8h14.html","availability":"Немає в наявності"},{"index":14,"code":"33-079","name":"Муфта сполучна кулачкова 12х14 C (L35, D30), гнучка віброгасна муфта для з'єднання валів","url":"https://cncprom.ua/ua/p1664171570-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":15,"code":"33-095","name":"Муфта сполучна кулачкова 8х8 C (L38, D30), гнучка віброгасна алюмінієва муфта","url":"https://cncprom.ua/ua/p2248932341-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":16,"code":"33-093","name":"Муфта сполучна кулачкова 6х6 C (L35, D30), гнучка віброгасна алюмінієва муфта","url":"https://cncprom.ua/ua/p2248932340-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":17,"code":"33-098","name":"Муфта сполучна кулачкова 10х14С (L40, D30), гнучка віброгасна алюмінієва муфта","url":"https://cncprom.ua/ua/p2445577509-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":17,"own_yes":3,"own_no":14,"total_products":17,"total_yes":3,"total_no":14,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-50144044","level":3,"name":"Гнучкі кулачкові муфти В (довжина - 50 мм, зовнішній діаметр - 40мм)","url":"https://cncprom.ua/ua/g50144044-gibkie-kulachkovye-mufty","own_products":[{"index":1,"code":"33-041","name":"Гнучка кулачкова муфта 12х12.7В (L50, D40)","url":"https://cncprom.ua/ua/p33876215-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-042","name":"Муфта сполучна кулачкова 12.7х12.7В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p33876234-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":3,"code":"33-034","name":"Гнучка кулачкова муфта 12.7х14В (L50, D40)","url":"https://cncprom.ua/ua/p33876244-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":4,"code":"33-044","name":"Гнучка кулачкова муфта 17х19В (L50, D40)","url":"https://cncprom.ua/ua/p469554332-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":5,"code":"33-066","name":"Муфта сполучна кулачкова 10х10В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000096855-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":6,"code":"33-071","name":"Гнучка кулачкова муфта 12х17В (L50, D40)","url":"https://cncprom.ua/ua/p1000103339-gibkaya-kulachkovaya-mufta.html","availability":"Готово до відправки"},{"index":7,"code":"33-072","name":"Муфта сполучна кулачкова 17х17В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000106323-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":8,"code":"33-074","name":"Муфта сполучна кулачкова 17х12.7В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000109121-mufta-soedinitelnaya-kulachkovaya.html","availability":"Готово до відправки"},{"index":9,"code":"33-032","name":"Муфта сполучна кулачкова 10х14 В (L50, D40), гнучка віброгасна муфта для з'єднання валів","url":"https://cncprom.ua/ua/p11966081-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":10,"code":"33-046","name":"Гнучка кулачкова муфта 10х19В (L50, D40)","url":"https://cncprom.ua/ua/p840926196-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":11,"code":"33-033","name":"Гнучка кулачкова муфта 12х14В (L50, D40)","url":"https://cncprom.ua/ua/p29770732-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":12,"code":"33-043","name":"Гнучка кулачкова муфта 12.7х19В (L50, D40)","url":"https://cncprom.ua/ua/p33876270-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":13,"code":"33-035","name":"Муфта сполучна кулачкова 14х14В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p5604543-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":14,"code":"33-036","name":"Муфта сполучна кулачкова 14х17В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p47022033-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":15,"code":"33-037","name":"Муфта сполучна кулачкова 14х19В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p6475458-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":16,"code":"33-038","name":"Гнучка кулачкова муфта 19х19В (L50, D40)","url":"https://cncprom.ua/ua/p6475461-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":17,"code":"33-067","name":"Гнучка кулачкова муфта 10х17В (L50, D40)","url":"https://cncprom.ua/ua/p1000097634-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":18,"code":"33-068","name":"Муфта сполучна кулачкова 10х20В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000099625-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":19,"code":"33-069","name":"Гнучка кулачкова муфта 12х12В (L50, D40)","url":"https://cncprom.ua/ua/p1000101187-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":20,"code":"33-070","name":"Муфта сполучна кулачкова 12х19В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000102100-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":21,"code":"33-073","name":"Муфта сполучна кулачкова 17х20В (L50, D40), гнучка віброгасна алюмінієва муфта з еластоміром","url":"https://cncprom.ua/ua/p1000107542-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":22,"code":"33-075","name":"Гнучка кулачкова муфта 20х20В (L50, D40)","url":"https://cncprom.ua/ua/p1000112029-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"},{"index":23,"code":"33-085","name":"Муфта сполучна кулачкова 22х22 В (L50, D40), гнучка віброгасна муфта для з'єднання валів","url":"https://cncprom.ua/ua/p2016263013-mufta-soedinitelnaya-kulachkovaya.html","availability":"Немає в наявності"},{"index":24,"code":"33-099","name":"Гнучка кулачкова муфта 18х24В (L50, D40)","url":"https://cncprom.ua/ua/p2483593725-gibkaya-kulachkovaya-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":24,"own_yes":8,"own_no":16,"total_products":24,"total_yes":8,"total_no":16,"subcategories_count":0,"site_counter":8,"diff":0}},{"id":"node-43925266","level":3,"name":"Еластичні зубчасті вінці (еластомери) для муфт","url":"https://cncprom.ua/ua/g43925266-elastichnye-zubchatye-ventsy","own_products":[{"index":1,"code":"33-103","name":"Зубчастий вінець еластичний GS09 для муфт","url":"https://cncprom.ua/ua/p1162776055-zubchatyj-venets-elastichnyj.html","availability":"Готово до відправки"},{"index":2,"code":"33-101","name":"Еластична 6-ти зубчаста зірочка GS19 для кулачковою муфти","url":"https://cncprom.ua/ua/p819838069-zubchatyj-venets-elastichnyj.html","availability":"Готово до відправки"},{"index":3,"code":"33-104","name":"Зубчастий вінець еластичний GS14 для муфт","url":"https://cncprom.ua/ua/p1162369805-zubchatyj-venets-elastichnyj.html","availability":"Готово до відправки"},{"index":4,"code":"33-102","name":"Зубчастий вінець еластичний GS12 для муфт","url":"https://cncprom.ua/ua/p819822670-zubchatyj-venets-elastichnyj.html","availability":"Готово до відправки"},{"index":5,"code":"33-105","name":"Зубчастий вінець еластичний GS16 для муфт","url":"https://cncprom.ua/ua/p1162226977-zubchatyj-venets-elastichnyj.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":5,"own_yes":4,"own_no":1,"total_products":5,"total_yes":4,"total_no":1,"subcategories_count":0,"site_counter":4,"diff":0}}],"stats":{"own_products":1,"own_yes":1,"own_no":0,"total_products":68,"total_yes":27,"total_no":41,"subcategories_count":5,"site_counter":27,"diff":0}},{"id":"node-50146141","level":2,"name":"Гнучкі сильфонні муфти","url":"https://cncprom.ua/ua/g50146141-gibkie-silfonnye-mufty","own_products":[{"index":1,"code":"33-061","name":"Гнучка  сильфонна муфта 5х5 М (L25, D19), для крокового двигуна","url":"https://cncprom.ua/ua/p1559518110-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-087","name":"Гнучка сильфонна муфта для крокового двигуна 12х19 (L50, D40)","url":"https://cncprom.ua/ua/p2423470509-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"}],"children":[{"id":"node-53940352","level":3,"name":"Гнучкі сильфонні муфти М (довжина - 25 мм, зовнішній діаметр - 18.25...20 мм)","url":"https://cncprom.ua/ua/g53940352-gibkie-silfonnye-mufty","own_products":[{"index":1,"code":"33-008","name":"Гнучка сильфонна муфта для крокового двигуна 6,35х8 М (L25, D20)","url":"https://cncprom.ua/ua/p6475469-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-001","name":"Гнучка сильфонна муфта для крокового двигуна 5х5 М (L25, D18.25)","url":"https://cncprom.ua/ua/p22062606-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":3,"code":"33-003","name":"Гнучка сильфонна муфта для крокового двигуна 5х8 М (L25, D20)","url":"https://cncprom.ua/ua/p28526642-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":4,"code":"33-002","name":"Гнучка сильфонна муфта для крокового двигуна 5х6,35 М (L25, D18.25)","url":"https://cncprom.ua/ua/p45078871-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":5,"code":"33-007","name":"Гнучка сильфонна муфта для крокового двигуна 6,35х6,35 М (L25, D20)","url":"https://cncprom.ua/ua/p45080634-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":6,"code":"33-149","name":"Гнучка сильфонна муфта для крокового двигуна 5х8 мм (L25, D19)","url":"https://cncprom.ua/ua/p2850293035-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":7,"code":"33-147","name":"Гнучка сильфонна муфта для крокового двигуна 6.35х6.35 мм (L25, D19)","url":"https://cncprom.ua/ua/p2850293036-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":8,"code":"33-006","name":"Гнучка сильфонна муфта для крокового двигуна 6х8 М (L25, D20)","url":"https://cncprom.ua/ua/p6475471-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":9,"code":"33-005","name":"Гнучка сильфонна муфта для крокового двигуна 6х6 М (L25, D20)","url":"https://cncprom.ua/ua/p6475472-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":10,"code":"33-048","name":"Гнучка сильфонна муфта для крокового двигуна 8х10 М (L25, D19)","url":"https://cncprom.ua/ua/p914486862-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"},{"index":11,"code":"33-004","name":"Гнучка сильфонна муфта для крокового двигуна 5х10 М (L25, D18.25)","url":"https://cncprom.ua/ua/p45078614-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":12,"code":"33-047","name":"Гнучка сильфонна муфта для крокового двигуна 8х8 М (L25, D18)","url":"https://cncprom.ua/ua/p921108453-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"},{"index":13,"code":"33-148","name":"Гнучка сильфонна муфта для крокового двигуна 5х10 мм (L25, D19)","url":"https://cncprom.ua/ua/p2850293034-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"},{"index":14,"code":"33-112","name":"Гнучка сильфонна муфта для крокового двигуна 6х10 мм (L25, D20)","url":"https://cncprom.ua/ua/p2850293037-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":14,"own_yes":7,"own_no":7,"total_products":14,"total_yes":7,"total_no":7,"subcategories_count":0,"site_counter":7,"diff":0}},{"id":"node-53940505","level":3,"name":"Гнучкі сильфонні муфти С (довжина - 30 мм, зовнішній діаметр - 25 мм)","url":"https://cncprom.ua/ua/g53940505-gibkie-silfonnye-mufty","own_products":[{"index":1,"code":"33-011","name":"Гнучка сильфонна муфта для крокового двигуна 8х10 С (L30, D25)","url":"https://cncprom.ua/ua/p5131313-gibkaya-silfonovaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-049","name":"Гнучка сильфонна муфта для крокового двигуна 5х10 С (L30, D25)","url":"https://cncprom.ua/ua/p914606948-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":3,"code":"33-050","name":"Гнучка сильфонна муфта для крокового двигуна 8х12 С (L30, D25)","url":"https://cncprom.ua/ua/p914622727-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":4,"code":"33-051","name":"Гнучка сильфонна муфта для крокового двигуна 10х12 C (L30, D25)","url":"https://cncprom.ua/ua/p914634929-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":5,"code":"33-096","name":"Гнучка сильфонна муфта для крокового двигуна 6,35х6Al С (L30, D25)","url":"https://cncprom.ua/ua/p2527504760-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":6,"code":"33-010","name":"Гнучка сильфонна муфта для крокового двигуна 8х8 С (L30, D25)","url":"https://cncprom.ua/ua/p5131319-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":7,"code":"33-009","name":"Гнучка сильфонна муфта для крокового двигуна 6,35х10 С (L30, D25)","url":"https://cncprom.ua/ua/p6475468-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":8,"code":"33-012","name":"Гнучка сильфонна муфта для крокового двигуна 10х10 С (L30, D25)","url":"https://cncprom.ua/ua/p35866417-gibkaya-silfonovaya-mufta.html","availability":"Немає в наявності"},{"index":9,"code":"33-089","name":"Гнучка сильфонна муфта для крокового двигуна 6,35х8Al С (L30, D25)","url":"https://cncprom.ua/ua/p2299404295-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":9,"own_yes":5,"own_no":4,"total_products":9,"total_yes":5,"total_no":4,"subcategories_count":0,"site_counter":5,"diff":0}},{"id":"node-53940533","level":3,"name":"Гнучкі сильфонні муфти В (довжина - 38 мм, зовнішній діаметр - 30 мм)","url":"https://cncprom.ua/ua/g53940533-gibkie-silfonnye-mufty","own_products":[{"index":1,"code":"33-052","name":"Гнучка сильфонна муфта для крокового двигуна 10х12 В (L38, D30)","url":"https://cncprom.ua/ua/p914643540-gibkaya-silfonnaya-mufta.html","availability":"Готово до відправки"},{"index":2,"code":"33-082","name":"Гнучка сильфонна муфта 10х14 мм CR-3038-10x14, для з'єднання валів","url":"https://cncprom.ua/ua/p1732719449-gibkaya-mufta-silfonnaya.html","availability":"Немає в наявності"},{"index":3,"code":"33-054","name":"Гнучка сильфонна муфта для крокового двигуна 12х14 В (L38, D30)","url":"https://cncprom.ua/ua/p914667197-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"},{"index":4,"code":"33-083","name":"Гнучка сильфонна муфта 12х14 мм CR-3038-12x14, для з'єднання валів","url":"https://cncprom.ua/ua/p1732719450-gibkaya-mufta-silfonnaya.html","availability":"Немає в наявності"},{"index":5,"code":"33-053","name":"Гнучка сильфонна муфта для крокового двигуна 10х14 В (L38, D30)","url":"https://cncprom.ua/ua/p914652104-gibkaya-silfonnaya-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":5,"own_yes":1,"own_no":4,"total_products":5,"total_yes":1,"total_no":4,"subcategories_count":0,"site_counter":1,"diff":0}}],"stats":{"own_products":2,"own_yes":1,"own_no":1,"total_products":30,"total_yes":14,"total_no":16,"subcategories_count":3,"site_counter":14,"diff":0}},{"id":"node-110021167","level":2,"name":"Муфти гнучкі мембранні","url":"https://cncprom.ua/ua/g110021167-mufty-gibkie-membrannye","own_products":[{"index":1,"code":"33-081","name":"Муфта з'єднувальна мембранна 8х12 мм CM1S-3436-8x12, гнучка безлюфтова муфта для з'єднання валів","url":"https://cncprom.ua/ua/p1664229226-mufta-soedinitelnaya-membrannaya.html","availability":"Готово до відправки"},{"index":2,"code":"33-097","name":"Гнучка кулачкова муфта 8х12 С (L40, D30), з'єднувальна віброгасна муфта для валів","url":"https://cncprom.ua/ua/p2790743452-gnuchka-kulachkova-mufta.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":2,"own_yes":1,"own_no":1,"total_products":2,"total_yes":1,"total_no":1,"subcategories_count":0,"site_counter":1,"diff":0}},{"id":"node-147136150","level":2,"name":"Фланцеві муфти","url":"https://cncprom.ua/ua/g147136150-flantsevye-mufty","own_products":[{"index":1,"code":"33-152","name":"Фланцева муфта з діаметром отвору 10 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248807-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":2,"code":"33-155","name":"Фланцева муфта з діаметром отвору 14 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248808-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":3,"code":"33-154","name":"Фланцева муфта з діаметром отвору 14 мм зі шпонкою, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248809-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":4,"code":"33-156","name":"Фланцева муфта з діаметром отвору 15 мм зі шпонкою, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248810-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":5,"code":"33-158","name":"Фланцева муфта з діаметром отвору 16 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248811-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":6,"code":"33-157","name":"Фланцева муфта з діаметром отвору 16 мм зі шпонкою, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248812-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":7,"code":"33-151","name":"Фланцева муфта з діаметром отвору 8 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2760248813-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":8,"code":"33-153","name":"Фланцева муфта з діаметром отвору 12 мм, фланцеве з'єднання для валів ЧПК, редукторів і приводів","url":"https://cncprom.ua/ua/p2896626696-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":9,"code":"33-159","name":"Фланцева муфта з діаметром отвору 6 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2966024267-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"},{"index":10,"code":"33-160","name":"Фланцева муфта з діаметром отвору 6,35 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів","url":"https://cncprom.ua/ua/p2966024268-flantsevaya-mufta-diametrom.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":10,"own_yes":10,"own_no":0,"total_products":10,"total_yes":10,"total_no":0,"subcategories_count":0,"site_counter":10,"diff":0}}],"stats":{"own_products":2,"own_yes":0,"own_no":2,"total_products":112,"total_yes":52,"total_no":60,"subcategories_count":4,"site_counter":52,"diff":0}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

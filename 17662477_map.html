@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мапа: Драйвери і крокові двигуни з енкодером (1–2 рівні)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="map-common.css?v=6982d142">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">Драйвери і крокові двигуни з енкодером</span>
+      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">🕒 26.09.2026 02:41</button>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">📜 Історія змін</a>
+
+      <div class="hdr-menu">
+        <button id="btn-help" class="btn-theme-toggle hdr-menu-btn" data-tip="Про проєкт, пояснення до цифр і подяки">❓ Довідка</button>
+        <div class="hdr-dropdown right" id="help-dropdown">
+          <h3>Опис проєкту, довідка та подяки</h3>
+          <div>
+          <div class="check-row">
+            <span><span class="ico-green">ℹ️</span></span><span class="nm" data-tip="Що це за проєкт і як він працює">Навіщо це</span>
+            <span class="val"></span>
+            <button class="act" data-open="about-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>🔢</span><span class="nm" data-tip="Пояснення до цифр і позначок на цій сторінці">Що означають цифри та позначки</span>
+            <span class="val"></span>
+            <button class="act" data-open="help-overlay">відкрити</button>
+          </div>
+          <div class="check-row">
+            <span>❤️</span><span class="nm" data-tip="Хто зробив і на чому все це зроблено">Про проєкт і подяки</span>
+            <span class="val"></span>
+            <button class="act" data-open="credits-overlay">відкрити</button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
+        <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
+      </button>
+      <a href="https://cncprom.ua/ua/g17662477-drajvery-shagovye-dvigateli" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Що означають ці цифри та позначки</h3>
+        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-term">
+          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
+          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
+          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Товарів</div>
+          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">В наявності</div>
+          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
+          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">🔍 Пошук</div>
+          <div class="help-term-desc">Шукає за назвою, кодом і категорією товару. Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту. Кілька слів — у будь-якому порядку: «двигун кроковий» знайде «Кроковий двигун». Код можна вводити без дефіса: 05116 знайде 05-116. Великі й малі літери не розрізняються, як і кирилиця з латиницею в кодах і розмірах: М8 і M8, СО2 і CO2, 120х120 і 120x120.</div>
+          <div class="help-term-desc">* — будь-які символи, зокрема пробіли: шків*19 знайде назви, де після «шків» десь є «19». ? — рівно один символ.</div>
+          <div class="help-term-desc">Якщо точних збігів немає, пошук пробує той самий запит в іншій розкладці клавіатури, а потім схожі слова (одна помилка, у довгих словах — дві; коди й числа не розмиваються). Що саме показано, пише рядок над результатами.</div>
+          <div class="help-term-desc">Клік по заголовку «Наявність» сортує результати по колу: спершу «Готово до відправки», спершу «Немає в наявності», знову від кращого збігу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  
+
+  <div class="help-overlay" id="about-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Навіщо це</h3>
+        <button class="btn-help-close" id="btn-about-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">Цей проєкт збирає дані про товари інтернет-магазину cncprom.ua, й потім створює зручну мапу каталогу та звіти про зміни.</p>
+        <div class="help-term">
+          <div class="help-term-label">Як формується мапа каталогу магазину cncprom.ua</div>
+          <div class="help-term-desc">Щоночі скрапер обходить увесь сайт і складає з нього мапу: які є категорії, що в них лежить, скільки товарів у наявності і що змінилося з учора. Сам магазин такого не показує: там видно окрему категорію, але не каталог цілком.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Скрапер</div>
+          <div class="help-term-desc">Програма, яка відкриває сторінки сайту так само, як браузер, і зчитує з них дані. Це справжній браузер без вікна, який ходить по сторінках категорій і товарів. До REST API сайту немає доступу, тож усе зібрано зі сторінок сайту.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Хлібні крихти</div>
+          <div class="help-term-desc">Це навігаційний шлях дерева мапи угорі сторінки товару: «Товари та послуги › Категорія › Підкатегорія › Товар». Скрапер порівнює цей шлях з тим, де знайшов товар. Збіг — усе гаразд. Якщо товар в іншій гілці дерева мапи — це сигнал, що десь помилка.</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Як працює скрапінг</div>
+          <div class="help-term-desc">Спершу обхід дерева категорій з усіма сторінками пагінації. Далі сторінка кожного знайденого товару: назва, код, наявність, хлібні крихти. Наприкінці звірка з самим сайтом і знімок дня, який лишається назавжди, саме з цих знімків будується «Історія змін».</div>
+        </div>
+        <div class="help-term">
+          <div class="help-term-label">Звірки</div>
+          <div class="help-term-desc">Фіксуються знайдені товари, які не входять до підкатегорій. Реєструються розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності». Виконується звірка хлібних крихт сайту з деревом категорій скрапінгу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="help-overlay" id="credits-overlay">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>Про проєкт і подяки</h3>
+        <button class="btn-help-close" id="btn-credits-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <div class="credit-list">
+          <a class="credit" href="viber://chat?number=%2B380988212590">
+            <img class="credit-logo" src="logos/support.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Остапчук Віктор</b><span>Технічна підтримка cncprom.ua · Viber +380988212590</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Велика подяка розробникам використаних компонентів та технологій:</p>
+        <div class="credit-list">
+          <a class="credit" href="https://nodejs.org" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nodejs.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Node.js</b><span>середовище, у якому працює скрапер і збираються ці сторінки</span></span>
+          </a>
+          <a class="credit" href="https://playwright.dev" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/playwright.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Playwright</b><span>браузер під керуванням програми — ним скрапер ходить по сайту</span></span>
+          </a>
+          <a class="credit" href="https://github.com/dialmak/scraper_cncprom" target="_blank" rel="noopener">
+            <img class="credit-logo invert" src="logos/github.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>GitHub</b><span>Actions запускає прогін щоночі, Pages роздає готові сторінки, код теж тут</span></span>
+          </a>
+          <a class="credit" href="https://nic.ua/" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/nicua.png" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>nic.ua</b><span>безкоштовний домен cncprom.pp.ua, на якому живе цей сайт</span></span>
+          </a>
+          <a class="credit" href="https://github.com/exceljs/exceljs" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/npm.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>ExcelJS</b><span>npm-пакет, яким пишеться XLSX з мапою категорій</span></span>
+          </a>
+          <a class="credit" href="https://fonts.google.com" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/googlefonts.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Google Fonts</b><span>шрифти Inter і JetBrains Mono</span></span>
+          </a>
+          <a class="credit" href="https://claude.com/claude-code" target="_blank" rel="noopener">
+            <img class="credit-logo" src="logos/claude.svg" alt="" width="30" height="30" loading="lazy">
+            <span class="credit-text"><b>Claude Code</b><span>із ним написано код цього проєкту</span></span>
+          </a>
+        </div>
+        <p class="failed-note">Дані зібрані з каталогу магазину cncprom.ua на платформі prom.ua.<br>Проєкт нічого не змінює на сайті, лише читає сторінки, як звичайний відвідувач.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <span class="sidebar-label">Категорії</span>
+        <div class="sidebar-tools">
+          <button id="btn-expand-all" class="btn-link" data-tip="Розгорнути підкатегорії">Розгорнути</button>
+          <span class="divider">|</span>
+          <button id="btn-collapse-all" class="btn-link" data-tip="Згорнути підкатегорії (крім рівня 1)">Згорнути</button>
+        </div>
+      </div>
+      <nav class="category-tree" id="category-tree"></nav>
+    </aside>
+
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle" data-tip="Перетягніть, щоб змінити ширину меню"></div>
+
+    <main class="main-content">
+      <div class="category-header" id="category-header">
+        <div class="breadcrumbs" id="breadcrumbs"><a href="map.html" class="crumb-link">Мапа</a></div>
+        <div class="title-row table-wrap" id="node-header-row">
+          <table class="simple-table aligned-table"><thead><tr>
+            <th class="col-n"></th>
+            <th>Назва категорії</th>
+            <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
+            <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
+            <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
+          </tr></thead><tbody><tr>
+            <td class="col-n"></td>
+            <td id="cat-heading" class="fw-cat-link">Драйвери і крокові двигуни з енкодером</td>
+            <td style="text-align:center;"><span id="cat-level-badge" class="level-tag">Рівень 1</span></td>
+            <td style="text-align:center;" class="fw-count-cell" id="cat-total-products">43</td>
+            <td style="text-align:center;" id="cat-verdict-badge"></td>
+            <td style="text-align:center;" id="cat-total-no"><span class="count-no">17</span></td>
+            <td style="text-align:center;vertical-align:middle;"><a id="cat-site-link" href="#" class="link-site" target="_blank" rel="noopener">↗</a></td>
+          </tr></tbody></table>
+        </div>
+        <!-- Окремий заголовок для режиму пошуку: колонки й підказки таблиці вище
+             (Рівень/Товарів/В наявності/…) мають сенс лише для вибраного вузла.
+             Коли пошук писав прямо в #cat-heading/#cat-level-badge, бейдж
+             кількості знахідок успадковував підказку колонки «Рівень». Видимість
+             #node-header-row і #search-header-row перемикають updateHeader() і
+             renderSearchResultsView() — так само, як #index-content/#search-results
+             на map.html. -->
+        <div class="search-header-row" id="search-header-row" style="display:none;">
+          <span id="search-heading" class="fw-cat-link"></span>
+          <span id="search-found-badge" class="level-tag"></span>
+        </div>
+      </div>
+      
+      <div class="content-body" id="content-body"></div>
+    </main>
+  </div>
+
+<script src="map-common.js?v=8f0afffa"></script>
+<script>
+const CATALOG_DATA = {"global_stats":{"levels":2,"categories_count":7,"has_products":true,"total_products":43,"total_yes":26,"total_no":17,"site_counter":26,"diff":0,"scraped_at":"26.09.2026 02:41","source":"17662477_catalog.json","mismatch_categories":[],"crumb_summary":{"match":43,"ancestor":0,"descendant":0,"other":0,"unknown":0},"crumb_other":[],"crumb_unknown":[],"orphan_categories":[]},"tree":{"id":"node-17662477","level":1,"name":"Драйвери і крокові двигуни з енкодером","url":"https://cncprom.ua/ua/g17662477-drajvery-shagovye-dvigateli","own_products":[],"children":[{"id":"node-109692060","level":2,"name":"Крокові сервоприводи у зборі","url":"https://cncprom.ua/ua/g109692060-shagovye-servoprivody-sbore","own_products":[{"index":1,"code":"12-090","name":"Кроковий сервопривід у зборі 2.0 Нм iHSS57-36-20, кроковий двигун з енкодером та вбудованим серводрайвером","url":"https://cncprom.ua/ua/p1656591744-shagovyj-servoprivod-sbore.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":1,"own_yes":0,"own_no":1,"total_products":1,"total_yes":0,"total_no":1,"subcategories_count":0,"site_counter":0,"diff":0}},{"id":"node-114705547","level":2,"name":"Гібридні серводрайвери","url":"https://cncprom.ua/ua/g114705547-gibridnye-servodrajvera","own_products":[{"index":1,"code":"04-024","name":"Цифровий кроковий серводрайвер з дисплеєм HBS57AJ-XL, 6 А, 24~80 VDC для крокового двигуна з енкодером серій 42 і 57 (60)","url":"https://cncprom.ua/ua/p1772567583-tsifrovoj-shagovyj-servodrajver.html","availability":"Готово до відправки"},{"index":2,"code":"06-026","name":"Цифровий гібридний кроковий серводрайвер 2HSS86H-N, 6 А, 30~110VDC, 24~75 VАC для крокового двигуна з енкодером серії 86","url":"https://cncprom.ua/ua/p1525779949-tsifrovoj-gibridnyj-shagovyj.html","availability":"Готово до відправки"},{"index":3,"code":"04-012","name":"Гібридний серводрайвер HSS86, 8 А, 30~110VDC, 20~80 VАC","url":"https://cncprom.ua/ua/p991841734-gibridnyj-servodrajver-hss86.html","availability":"Готово до відправки"},{"index":4,"code":"04-010","name":"Гібридний серводрайвер HSS57, 6 А, 24—50 VDC","url":"https://cncprom.ua/ua/p990009570-gibridnyj-servodrajver-hss57.html","availability":"Готово до відправки"},{"index":5,"code":"06-027","name":"Гібридний кроковий серводрайвер ZDM-2HA860AJWL-X, 8.2 А, 24~110VDC, 18~80 VАC для крокового двигуна з енкодером серії 86","url":"https://cncprom.ua/ua/p2644858251-gibridnyj-shagovyj-servodrajver.html","availability":"Готово до відправки"},{"index":6,"code":"06-028","name":"Гібридний кроковий серводрайвер ZDM-2HA860AJWL, 8.2 А, 24~110VDC, 18~80 VАC для крокового двигуна з енкодером серії 86","url":"https://cncprom.ua/ua/p2644858250-gibridnyj-shagovyj-servodrajver.html","availability":"Готово до відправки"},{"index":7,"code":"04-026","name":"Цифровий кроковий серводрайвер SL2-57D, 6 А, 24~80 VDC для крокового двигуна з енкодером серії 57 (60)","url":"https://cncprom.ua/ua/p1772570684-tsifrovoj-shagovyj-servodrajver.html","availability":"Немає в наявності"},{"index":8,"code":"04-017","name":"Гібридний серводрайвер 3HSS2260, 6 А, 0~220VDC, 220 VАC","url":"https://cncprom.ua/ua/p1173752269-gibridnyj-servodrajver-3hss2260.html","availability":"Немає в наявності"},{"index":9,"code":"04-020","name":"Гібридний серводрайвер HSS758, 8 А, 0~75VDC, 75 VАC","url":"https://cncprom.ua/ua/p1601078299-gibridnyj-servodrajver-hss758.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":9,"own_yes":6,"own_no":3,"total_products":9,"total_yes":6,"total_no":3,"subcategories_count":0,"site_counter":6,"diff":0}},{"id":"node-155999999","level":2,"name":"Крокові серводвигуни з драйвером","url":"https://cncprom.ua/ua/g155999999-shagovye-servodvigateli-drajverom","own_products":[{"index":1,"code":"12-608","name":"Кроковий сервопривід 1.5 Нм 57EBP75ALC-TF0 + DL57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1519081251-shagovyj-servoprivod-57ebp75alc.html","availability":"Готово до відправки"},{"index":2,"code":"12-613","name":"Кроковий сервопривід 1.5 Нм 57EBP75ALC-TF0 + SL2-57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1530682002-shagovyj-servoprivod-57ebp75alc.html","availability":"Готово до відправки"},{"index":3,"code":"12-609","name":"Кроковий сервопривід 2.5 Нм 57EBP105ALC-TF0 + DL57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1515679060-shagovyj-servoprivod-57ebp105alc.html","availability":"Готово до відправки"},{"index":4,"code":"12-610","name":"Кроковий сервопривід з гальмом 2.5 Нм 57EBP105ALC-TF0B + DL57D кроковий двигун з енкодером і кроковий драйвер","url":"https://cncprom.ua/ua/p1519223054-shagovyj-servoprivod-tormozom.html","availability":"Готово до відправки"},{"index":5,"code":"12-611","name":"Кроковий сервопривід 4.0 Нм 60EBP143ALC-TFA + DL57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1519166632-shagovyj-servoprivod-60ebp143alc.html","availability":"Готово до відправки"},{"index":6,"code":"12-605","name":"Кроковий сервопривід з енкодером (зворотний зв'язок) 86EBP111ALC-TK0 + ZDM-2HA860AJWL-X, 5.0 Nm","url":"https://cncprom.ua/ua/p1082926885-shagovyj-servoprivod-enkoderom.html","availability":"Готово до відправки"},{"index":7,"code":"12-614","name":"Кроковий сервопривід з енкодером і гальмом 2.2 Нм 57EBP105ALC-TF0B + кроковий драйвер DL57D","url":"https://cncprom.ua/ua/p1865765399-shagovyj-servoprivod-enkoderom.html","availability":"Готово до відправки"},{"index":8,"code":"12-617","name":"Кроковий сервопривіод з енкодером (зворотний зв'язок) 86EBP147ALC-TKО+ZDM-2HA860AJWL , 8.5 Nm","url":"https://cncprom.ua/ua/p3056899095-shagovyj-servoprivod-enkoderom.html","availability":"Готово до відправки"},{"index":9,"code":"12-601","name":"Кроковий сервопривід зі зворотним зв'язком 57EBP75ALC-TFA + HBS57AJ, 1.5 Nm","url":"https://cncprom.ua/ua/p1082263096-shagovyj-servoprivod-obratnoj.html","availability":"Немає в наявності"},{"index":10,"code":"12-602","name":"Кроковий сервопривід 2.5 Нм 57EBP105ALC-TF0 + SL2-57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1080853911-shagovyj-servoprivod-57ebp105alc.html","availability":"Немає в наявності"},{"index":11,"code":"12-603","name":"Кроковий сервопривід 3.0 Нм 60EBP115ALC-TF0 + SL2-57D, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1081544420-shagovyj-servoprivod-60ebp115alc.html","availability":"Немає в наявності"},{"index":12,"code":"12-604","name":"Кроковий сервопривід 4.0 Нм 60EBP143ALC-TFО + HBS57AJ-XK, кроковий двигун з енкодером і кроковий серводрайвер","url":"https://cncprom.ua/ua/p1082450663-shagovyj-servoprivod-60ebp143alc.html","availability":"Немає в наявності"},{"index":13,"code":"12-606","name":"Кроковий сервопривод з енкодером (зворотний зв'язок) 86EBP145ALC-TK0 + HBS86H, 8.5 Nm","url":"https://cncprom.ua/ua/p1085166384-shagovyj-servoprivod-enkoderom.html","availability":"Немає в наявності"},{"index":14,"code":"12-612","name":"Кроковий сервопривід зі зворотним зв'язком 86EBP181ALC-TKA + ZDM-2HA860, 12.5 Nm","url":"https://cncprom.ua/ua/p1510609928-shagovyj-servoprivod-obratnoj.html","availability":"Немає в наявності"},{"index":15,"code":"12-607","name":"Кроковий сервопривід з енкодером (зворотний зв'язок) 86EBP181ALC-TK0 + HBS86H, 12.5 Nm","url":"https://cncprom.ua/ua/p1085347053-shagovyj-servoprivod-enkoderom.html","availability":"Немає в наявності"},{"index":16,"code":"12-618","name":"Кроковий сервопривід з енкодером (зворотним зв'язком) 86EBP18ALC-TKО + ZDM-2HA860AJWL , 12.5 Nm","url":"https://cncprom.ua/ua/p3056899094-shagovyj-servoprivod-enkoderoj.html","availability":"Немає в наявності"},{"index":17,"code":"12-616","name":"Кроковий сервопривід з енкодером (зворотний зв'язок) 86EBP111ALC-TKО + ZDM-2HA860AJWL, 4.5 Nm","url":"https://cncprom.ua/ua/p2674162174-shagovyj-servoprivod-enkoderom.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":17,"own_yes":8,"own_no":9,"total_products":17,"total_yes":8,"total_no":9,"subcategories_count":0,"site_counter":8,"diff":0}},{"id":"node-156000000","level":2,"name":"Гібридні крокові серводвигуни з драйвером","url":"https://cncprom.ua/ua/g156000000-gibridnye-shagovye-servodvigateli","own_products":[{"index":1,"code":"04-001","name":"Кроковий двигун з енкодером, замкнутого типу NEMA23 57HSE2N-D25 з гібридним серводрайвером HSS57","url":"https://cncprom.ua/ua/p454362988-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":2,"code":"04-002","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE4N-B38 з гібридним серводрайвером HSS86","url":"https://cncprom.ua/ua/p454372436-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":3,"code":"04-003","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE8N-B38 з гібридним серводрайвером HSS86","url":"https://cncprom.ua/ua/p454405119-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":4,"code":"04-008","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE8N-BC38 з гібридним серводрайвером HSS758","url":"https://cncprom.ua/ua/p962971654-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":5,"code":"04-009","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE12N-BC38 з гібридним серводрайвером HSS758","url":"https://cncprom.ua/ua/p961323156-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":6,"code":"04-005","name":"3-х фазний КД з енкодером, NEMA42 110HCE139-4203A19-B39 з гібридним серводрайвером 3HSS2260, 12 Nm","url":"https://cncprom.ua/ua/p964544113-faznyj-shd-enkoderom.html","availability":"Готово до відправки"},{"index":7,"code":"04-007","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE4N-BC38 з гібридним серводрайвером HSS758","url":"https://cncprom.ua/ua/p963025345-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":8,"code":"04-006","name":"3-х фазний КД з енкодером, NEMA42 110HCE221-4203A19-B39 з гібридним серводрайвером 3HSS2260, 20 Nm","url":"https://cncprom.ua/ua/p1114015822-faznyj-shd-enkoderom.html","availability":"Готово до відправки"},{"index":9,"code":"04-004","name":"Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE12N-B38 з гібридним серводрайвером HSS86","url":"https://cncprom.ua/ua/p454433832-shagovyj-dvigatel-enkoderom.html","availability":"Немає в наявності"},{"index":10,"code":"12-615","name":"Кроковий серводвигун з гальмом 2.2 Нм 57EBP98ALC-TF0B + SL2-57D серводвигун з енкодером та серводрайвер","url":"https://cncprom.ua/ua/p2152652206-shagovyj-servodvigatel-tormozom.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":10,"own_yes":8,"own_no":2,"total_products":10,"total_yes":8,"total_no":2,"subcategories_count":0,"site_counter":8,"diff":0}},{"id":"node-156001249","level":2,"name":"Крокові двигуни з енкодером","url":"https://cncprom.ua/ua/g156001249-shagovye-dvigateli-enkoderom","own_products":[{"index":1,"code":"04-011","name":"Кроковий двигун з енкодером замкнутого типу 57HSE2N-D25, NEMA23","url":"https://cncprom.ua/ua/p990334089-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":2,"code":"04-023","name":"Гібридний кроковий серводвигун із гальмом 2.5 Нм 57EBP105ALC-TF0B, кроковий двигун з енкодером","url":"https://cncprom.ua/ua/p1721455212-gibridnyj-shagovyj-servodvigatel.html","availability":"Готово до відправки"},{"index":3,"code":"04-013","name":"Кроковий двигун з енкодером замкнутого типу 86HSE4N-BC38, NEMA34","url":"https://cncprom.ua/ua/p992047892-shagovyj-dvigatel-enkoderom.html","availability":"Готово до відправки"},{"index":4,"code":"04-014","name":"Кроковий двигун з енкодером замкнутого типу 86HSE8N-BC38, NEMA34","url":"https://cncprom.ua/ua/p992174425-shagovyj-dvigatel-enkoderom.html","availability":"Немає в наявності"},{"index":5,"code":"04-015","name":"Кроковий двигун з енкодером замкнутого типу 86HSE12N-BC38, NEMA34","url":"https://cncprom.ua/ua/p992572621-shagovyj-dvigatel-enkoderom.html","availability":"Немає в наявності"}],"children":[],"stats":{"own_products":5,"own_yes":3,"own_no":2,"total_products":5,"total_yes":3,"total_no":2,"subcategories_count":0,"site_counter":3,"diff":0}},{"id":"node-156001250","level":2,"name":"Кабелі та аксесуари","url":"https://cncprom.ua/ua/g156001250-kabeli-aksessuary","own_products":[{"index":1,"code":"04-022","name":"Кабель енкодера завдовжки 3 м","url":"https://cncprom.ua/ua/p1971572292-kabel-enkodera-dlinoj.html","availability":"Готово до відправки"}],"children":[],"stats":{"own_products":1,"own_yes":1,"own_no":0,"total_products":1,"total_yes":1,"total_no":0,"subcategories_count":0,"site_counter":1,"diff":0}}],"stats":{"own_products":0,"own_yes":0,"own_no":0,"total_products":43,"total_yes":26,"total_no":17,"subcategories_count":6,"site_counter":26,"diff":0}}};
+initCatalogMap(CATALOG_DATA);
+initNarrowGuard();
+</script>
+</body>
+</html>

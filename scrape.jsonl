@@ -1,0 +1,116 @@
+{"t":"2026-09-25T23:21:51.000Z","ev":"start","run":"2026-09-26","id":"1477431","url":"https://cncprom.ua/ua/g1477431-pulty-ruchnogo-upravleniya"}
+{"t":"2026-09-25T23:21:54.000Z","ev":"category","run":"2026-09-26","id":"1477431","name":"Пульти ручного управління і DSP контролери"}
+{"t":"2026-09-25T23:21:58.000Z","ev":"stage1","run":"2026-09-26","id":"1477431","products":35,"orphans":0}
+{"t":"2026-09-25T23:23:12.000Z","ev":"stage2","run":"2026-09-26","id":"1477431","got":35,"ready":20,"failed":0}
+{"t":"2026-09-25T23:23:12.000Z","ev":"finish","run":"2026-09-26","id":"1477431","min":1.4,"total":35,"ready":20,"rec":{"yes":20,"site":20,"diff":0,"nodes":0},"crumbs":{"match":35,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:23:12.000Z","ev":"start","run":"2026-09-26","id":"1484318","url":"https://cncprom.ua/ua/g1484318-preobrazovateli-chastoty-invertory"}
+{"t":"2026-09-25T23:23:16.000Z","ev":"category","run":"2026-09-26","id":"1484318","name":"Перетворювачі частоти (інвертори)"}
+{"t":"2026-09-25T23:23:20.000Z","ev":"stage1","run":"2026-09-26","id":"1484318","products":36,"orphans":0}
+{"t":"2026-09-25T23:24:35.000Z","ev":"stage2","run":"2026-09-26","id":"1484318","got":36,"ready":21,"failed":0}
+{"t":"2026-09-25T23:24:35.000Z","ev":"finish","run":"2026-09-26","id":"1484318","min":1.4,"total":36,"ready":21,"rec":{"yes":21,"site":21,"diff":0,"nodes":0},"crumbs":{"match":36,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:24:35.000Z","ev":"start","run":"2026-09-26","id":"1372753","url":"https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal"}
+{"t":"2026-09-25T23:24:39.000Z","ev":"category","run":"2026-09-26","id":"1372753","name":"Гнучкий кабель-канал (кабелеукладач)"}
+{"t":"2026-09-25T23:24:45.000Z","ev":"stage1","run":"2026-09-26","id":"1372753","products":32,"orphans":0}
+{"t":"2026-09-25T23:25:49.000Z","ev":"stage2","run":"2026-09-26","id":"1372753","got":32,"ready":26,"failed":0}
+{"t":"2026-09-25T23:25:49.000Z","ev":"finish","run":"2026-09-26","id":"1372753","min":1.2,"total":32,"ready":26,"rec":{"yes":26,"site":26,"diff":0,"nodes":0},"crumbs":{"match":32,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:25:50.000Z","ev":"start","run":"2026-09-26","id":"1022837","url":"https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya"}
+{"t":"2026-09-25T23:25:53.000Z","ev":"category","run":"2026-09-26","id":"1022837","name":"Драйвери крокового двигуна"}
+{"t":"2026-09-25T23:26:13.000Z","ev":"stage1","run":"2026-09-26","id":"1022837","products":36,"orphans":0}
+{"t":"2026-09-25T23:27:31.000Z","ev":"stage2","run":"2026-09-26","id":"1022837","got":36,"ready":20,"failed":0}
+{"t":"2026-09-25T23:27:31.000Z","ev":"finish","run":"2026-09-26","id":"1022837","min":1.7,"total":36,"ready":20,"rec":{"yes":20,"site":20,"diff":0,"nodes":0},"crumbs":{"match":36,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:27:31.000Z","ev":"start","run":"2026-09-26","id":"100126570","url":"https://cncprom.ua/ua/g100126570-mehanika"}
+{"t":"2026-09-25T23:27:35.000Z","ev":"category","run":"2026-09-26","id":"100126570","name":"Механіка"}
+{"t":"2026-09-25T23:27:55.000Z","ev":"stage1","run":"2026-09-26","id":"100126570","products":29,"orphans":0}
+{"t":"2026-09-25T23:28:58.000Z","ev":"stage2","run":"2026-09-26","id":"100126570","got":29,"ready":20,"failed":0}
+{"t":"2026-09-25T23:28:58.000Z","ev":"finish","run":"2026-09-26","id":"100126570","min":1.4,"total":29,"ready":20,"rec":{"yes":20,"site":20,"diff":0,"nodes":0},"crumbs":{"match":29,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:28:58.000Z","ev":"start","run":"2026-09-26","id":"71921739","url":"https://cncprom.ua/ua/g71921739-sistemy-smazki-napravlyayuschih"}
+{"t":"2026-09-25T23:29:02.000Z","ev":"category","run":"2026-09-26","id":"71921739","name":"Системи змащення напрямних та передач"}
+{"t":"2026-09-25T23:29:18.000Z","ev":"stage1","run":"2026-09-26","id":"71921739","products":35,"orphans":23}
+{"t":"2026-09-25T23:30:32.000Z","ev":"stage2","run":"2026-09-26","id":"71921739","got":35,"ready":23,"failed":0}
+{"t":"2026-09-25T23:30:32.000Z","ev":"finish","run":"2026-09-26","id":"71921739","min":1.6,"total":35,"ready":23,"rec":{"yes":23,"site":24,"diff":-1,"nodes":1},"crumbs":{"match":35,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:30:32.000Z","ev":"start","run":"2026-09-26","id":"51015677","url":"https://cncprom.ua/ua/g51015677-rezhuschij-instrument"}
+{"t":"2026-09-25T23:30:35.000Z","ev":"category","run":"2026-09-26","id":"51015677","name":"Ріжучий інструмент"}
+{"t":"2026-09-25T23:31:55.000Z","ev":"stage1","run":"2026-09-26","id":"51015677","products":203,"orphans":8}
+{"t":"2026-09-25T23:39:06.000Z","ev":"stage2","run":"2026-09-26","id":"51015677","got":203,"ready":29,"failed":0}
+{"t":"2026-09-25T23:39:06.000Z","ev":"finish","run":"2026-09-26","id":"51015677","min":8.6,"total":203,"ready":29,"rec":{"yes":29,"site":29,"diff":0,"nodes":0},"crumbs":{"match":203,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:39:06.000Z","ev":"start","run":"2026-09-26","id":"17662477","url":"https://cncprom.ua/ua/g17662477-drajvery-shagovye-dvigateli"}
+{"t":"2026-09-25T23:39:10.000Z","ev":"category","run":"2026-09-26","id":"17662477","name":"Драйвери і крокові двигуни з енкодером"}
+{"t":"2026-09-25T23:39:36.000Z","ev":"stage1","run":"2026-09-26","id":"17662477","products":43,"orphans":0}
+{"t":"2026-09-25T23:41:08.000Z","ev":"stage2","run":"2026-09-26","id":"17662477","got":43,"ready":26,"failed":0}
+{"t":"2026-09-25T23:41:08.000Z","ev":"finish","run":"2026-09-26","id":"17662477","min":2,"total":43,"ready":26,"rec":{"yes":26,"site":26,"diff":0,"nodes":0},"crumbs":{"match":43,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:41:09.000Z","ev":"start","run":"2026-09-26","id":"96572435","url":"https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii"}
+{"t":"2026-09-25T23:41:12.000Z","ev":"category","run":"2026-09-26","id":"96572435","name":"Системи охолодження і вентиляції"}
+{"t":"2026-09-25T23:41:51.000Z","ev":"stage1","run":"2026-09-26","id":"96572435","products":72,"orphans":5}
+{"t":"2026-09-25T23:44:26.000Z","ev":"stage2","run":"2026-09-26","id":"96572435","got":72,"ready":27,"failed":0}
+{"t":"2026-09-25T23:44:27.000Z","ev":"finish","run":"2026-09-26","id":"96572435","min":3.3,"total":72,"ready":27,"rec":{"yes":27,"site":28,"diff":-1,"nodes":2},"crumbs":{"match":68,"ancestor":0,"descendant":0,"other":0,"unknown":4},"errors":0}
+{"t":"2026-09-25T23:44:27.000Z","ev":"start","run":"2026-09-26","id":"18556308","url":"https://cncprom.ua/ua/g18556308-servodvigateli-servodrajverami"}
+{"t":"2026-09-25T23:44:30.000Z","ev":"category","run":"2026-09-26","id":"18556308","name":"Серводвигуни із серводрайверами"}
+{"t":"2026-09-25T23:44:59.000Z","ev":"stage1","run":"2026-09-26","id":"18556308","products":49,"orphans":0}
+{"t":"2026-09-25T23:46:42.000Z","ev":"stage2","run":"2026-09-26","id":"18556308","got":49,"ready":42,"failed":0}
+{"t":"2026-09-25T23:46:42.000Z","ev":"finish","run":"2026-09-26","id":"18556308","min":2.3,"total":49,"ready":42,"rec":{"yes":42,"site":42,"diff":0,"nodes":0},"crumbs":{"match":49,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:46:43.000Z","ev":"start","run":"2026-09-26","id":"1270337","url":"https://cncprom.ua/ua/g1270337-soedinitelnye-mufty"}
+{"t":"2026-09-25T23:46:46.000Z","ev":"category","run":"2026-09-26","id":"1270337","name":"Муфти з'єднувальні"}
+{"t":"2026-09-25T23:47:44.000Z","ev":"stage1","run":"2026-09-26","id":"1270337","products":112,"orphans":5}
+{"t":"2026-09-25T23:51:38.000Z","ev":"stage2","run":"2026-09-26","id":"1270337","got":112,"ready":52,"failed":0}
+{"t":"2026-09-25T23:51:38.000Z","ev":"finish","run":"2026-09-26","id":"1270337","min":4.9,"total":112,"ready":52,"rec":{"yes":52,"site":52,"diff":0,"nodes":0},"crumbs":{"match":112,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:51:38.000Z","ev":"start","run":"2026-09-26","id":"152464274","url":"https://cncprom.ua/ua/g152464274-linejnye-privody"}
+{"t":"2026-09-25T23:51:42.000Z","ev":"category","run":"2026-09-26","id":"152464274","name":"Лінійні приводи"}
+{"t":"2026-09-25T23:52:12.000Z","ev":"stage1","run":"2026-09-26","id":"152464274","products":87,"orphans":0}
+{"t":"2026-09-25T23:55:09.000Z","ev":"stage2","run":"2026-09-26","id":"152464274","got":87,"ready":69,"failed":0}
+{"t":"2026-09-25T23:55:09.000Z","ev":"finish","run":"2026-09-26","id":"152464274","min":3.5,"total":87,"ready":69,"rec":{"yes":69,"site":70,"diff":-1,"nodes":2},"crumbs":{"match":87,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-25T23:55:10.000Z","ev":"start","run":"2026-09-26","id":"1022485","url":"https://cncprom.ua/ua/g1022485-kontroleri-dlya-chpu"}
+{"t":"2026-09-25T23:55:13.000Z","ev":"category","run":"2026-09-26","id":"1022485","name":"Контролери для ЧПК"}
+{"t":"2026-09-25T23:56:52.000Z","ev":"stage1","run":"2026-09-26","id":"1022485","products":179,"orphans":27}
+{"t":"2026-09-26T00:03:07.000Z","ev":"stage2","run":"2026-09-26","id":"1022485","got":179,"ready":68,"failed":0}
+{"t":"2026-09-26T00:03:07.000Z","ev":"finish","run":"2026-09-26","id":"1022485","min":8,"total":179,"ready":68,"rec":{"yes":68,"site":68,"diff":0,"nodes":0},"crumbs":{"match":179,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T00:03:08.000Z","ev":"start","run":"2026-09-26","id":"92857157","url":"https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov"}
+{"t":"2026-09-26T00:03:11.000Z","ev":"category","run":"2026-09-26","id":"92857157","name":"Оснащення для верстатів"}
+{"t":"2026-09-26T00:04:14.000Z","ev":"stage1","run":"2026-09-26","id":"92857157","products":110,"orphans":2}
+{"t":"2026-09-26T00:08:12.000Z","ev":"stage2","run":"2026-09-26","id":"92857157","got":110,"ready":79,"failed":0}
+{"t":"2026-09-26T00:08:12.000Z","ev":"finish","run":"2026-09-26","id":"92857157","min":5.1,"total":110,"ready":79,"rec":{"yes":79,"site":79,"diff":0,"nodes":0},"crumbs":{"match":108,"ancestor":0,"descendant":0,"other":0,"unknown":2},"errors":0}
+{"t":"2026-09-26T00:08:12.000Z","ev":"start","run":"2026-09-26","id":"106846694","url":"https://cncprom.ua/ua/g106846694-pnevmatika"}
+{"t":"2026-09-26T00:08:15.000Z","ev":"category","run":"2026-09-26","id":"106846694","name":"Пневматика"}
+{"t":"2026-09-26T00:10:04.000Z","ev":"stage1","run":"2026-09-26","id":"106846694","products":201,"orphans":18}
+{"t":"2026-09-26T00:16:46.000Z","ev":"stage2","run":"2026-09-26","id":"106846694","got":201,"ready":141,"failed":0}
+{"t":"2026-09-26T00:16:46.000Z","ev":"finish","run":"2026-09-26","id":"106846694","min":8.6,"total":201,"ready":141,"rec":{"yes":141,"site":144,"diff":-3,"nodes":4},"crumbs":{"match":201,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T00:16:46.000Z","ev":"start","run":"2026-09-26","id":"1022952","url":"https://cncprom.ua/ua/g1022952-istochniki-pitaniya-akkumulyatory"}
+{"t":"2026-09-26T00:16:50.000Z","ev":"category","run":"2026-09-26","id":"1022952","name":"Джерела живлення та акумулятори"}
+{"t":"2026-09-26T00:18:55.000Z","ev":"stage1","run":"2026-09-26","id":"1022952","products":349,"orphans":38}
+{"t":"2026-09-26T00:30:41.000Z","ev":"stage2","run":"2026-09-26","id":"1022952","got":349,"ready":141,"failed":0}
+{"t":"2026-09-26T00:30:41.000Z","ev":"finish","run":"2026-09-26","id":"1022952","min":13.9,"total":349,"ready":141,"rec":{"yes":141,"site":147,"diff":-6,"nodes":5},"crumbs":{"match":349,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T00:30:41.000Z","ev":"start","run":"2026-09-26","id":"1022907","url":"https://cncprom.ua/ua/g1022907-datchiki-knopki-razemy"}
+{"t":"2026-09-26T00:30:44.000Z","ev":"category","run":"2026-09-26","id":"1022907","name":"Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри"}
+{"t":"2026-09-26T00:32:17.000Z","ev":"stage1","run":"2026-09-26","id":"1022907","products":283,"orphans":35}
+{"t":"2026-09-26T00:41:54.000Z","ev":"stage2","run":"2026-09-26","id":"1022907","got":283,"ready":164,"failed":0}
+{"t":"2026-09-26T00:41:54.000Z","ev":"finish","run":"2026-09-26","id":"1022907","min":11.2,"total":283,"ready":164,"rec":{"yes":164,"site":166,"diff":-2,"nodes":3},"crumbs":{"match":283,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T00:41:54.000Z","ev":"start","run":"2026-09-26","id":"1261329","url":"https://cncprom.ua/ua/g1261329-stanki-promyshlennoe-oborudovanie"}
+{"t":"2026-09-26T00:41:58.000Z","ev":"category","run":"2026-09-26","id":"1261329","name":"Верстати та промислове обладнання"}
+{"t":"2026-09-26T00:44:39.000Z","ev":"stage1","run":"2026-09-26","id":"1261329","products":319,"orphans":62}
+{"t":"2026-09-26T00:55:34.000Z","ev":"stage2","run":"2026-09-26","id":"1261329","got":319,"ready":198,"failed":0}
+{"t":"2026-09-26T00:55:34.000Z","ev":"finish","run":"2026-09-26","id":"1261329","min":13.7,"total":319,"ready":198,"rec":{"yes":198,"site":201,"diff":-3,"nodes":4},"crumbs":{"match":319,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T00:55:34.000Z","ev":"start","run":"2026-09-26","id":"1022553","url":"https://cncprom.ua/ua/g1022553-elektrodvigateli"}
+{"t":"2026-09-26T00:55:37.000Z","ev":"category","run":"2026-09-26","id":"1022553","name":"Електродвигуни"}
+{"t":"2026-09-26T00:57:28.000Z","ev":"stage1","run":"2026-09-26","id":"1022553","products":280,"orphans":41}
+{"t":"2026-09-26T01:07:10.000Z","ev":"stage2","run":"2026-09-26","id":"1022553","got":280,"ready":203,"failed":0}
+{"t":"2026-09-26T01:07:10.000Z","ev":"finish","run":"2026-09-26","id":"1022553","min":11.6,"total":280,"ready":203,"rec":{"yes":203,"site":203,"diff":0,"nodes":0},"crumbs":{"match":280,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T01:07:11.000Z","ev":"start","run":"2026-09-26","id":"1484301","url":"https://cncprom.ua/ua/g1484301-shpindeli"}
+{"t":"2026-09-26T01:07:14.000Z","ev":"category","run":"2026-09-26","id":"1484301","name":"Шпинделі"}
+{"t":"2026-09-26T01:09:25.000Z","ev":"stage1","run":"2026-09-26","id":"1484301","products":328,"orphans":54}
+{"t":"2026-09-26T01:20:25.000Z","ev":"stage2","run":"2026-09-26","id":"1484301","got":328,"ready":205,"failed":0}
+{"t":"2026-09-26T01:20:25.000Z","ev":"finish","run":"2026-09-26","id":"1484301","min":13.2,"total":328,"ready":205,"rec":{"yes":205,"site":205,"diff":0,"nodes":0},"crumbs":{"match":328,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T01:20:25.000Z","ev":"start","run":"2026-09-26","id":"1548856","url":"https://cncprom.ua/ua/g1548856-linejnye-napravlyayuschie-podshipniki"}
+{"t":"2026-09-26T01:20:28.000Z","ev":"category","run":"2026-09-26","id":"1548856","name":"Лінійні напрямні та підшипники"}
+{"t":"2026-09-26T01:24:06.000Z","ev":"stage1","run":"2026-09-26","id":"1548856","products":323,"orphans":12}
+{"t":"2026-09-26T01:35:04.000Z","ev":"stage2","run":"2026-09-26","id":"1548856","got":323,"ready":253,"failed":0}
+{"t":"2026-09-26T01:35:04.000Z","ev":"finish","run":"2026-09-26","id":"1548856","min":14.6,"total":323,"ready":253,"rec":{"yes":253,"site":253,"diff":0,"nodes":0},"crumbs":{"match":323,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T01:35:04.000Z","ev":"start","run":"2026-09-26","id":"2432613","url":"https://cncprom.ua/ua/g2432613-alyuminievyj-profil"}
+{"t":"2026-09-26T01:35:08.000Z","ev":"category","run":"2026-09-26","id":"2432613","name":"Алюмінієвий профіль"}
+{"t":"2026-09-26T01:38:16.000Z","ev":"stage1","run":"2026-09-26","id":"2432613","products":337,"orphans":16}
+{"t":"2026-09-26T01:49:38.000Z","ev":"stage2","run":"2026-09-26","id":"2432613","got":337,"ready":246,"failed":0}
+{"t":"2026-09-26T01:49:38.000Z","ev":"finish","run":"2026-09-26","id":"2432613","min":14.6,"total":337,"ready":246,"rec":{"yes":246,"site":246,"diff":0,"nodes":0},"crumbs":{"match":337,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
+{"t":"2026-09-26T01:49:38.000Z","ev":"start","run":"2026-09-26","id":"96553590","url":"https://cncprom.ua/ua/g96553590-peredachi"}
+{"t":"2026-09-26T01:49:41.000Z","ev":"category","run":"2026-09-26","id":"96553590","name":"Передачі"}
+{"t":"2026-09-26T01:56:53.000Z","ev":"warn","run":"2026-09-26","id":"96553590","msg":"Сітка товарів порожня, але категорія має підкатегорії — власних товарів немає: https://cncprom.ua/ua/g104993823-zubchatye-shkivy-natyazhiteli"}
+{"t":"2026-09-26T01:57:17.000Z","ev":"stage1","run":"2026-09-26","id":"96553590","products":826,"orphans":9}
+{"t":"2026-09-26T02:25:23.000Z","ev":"stage2","run":"2026-09-26","id":"96553590","got":826,"ready":540,"failed":0}
+{"t":"2026-09-26T02:25:23.000Z","ev":"finish","run":"2026-09-26","id":"96553590","min":35.8,"total":826,"ready":540,"rec":{"yes":540,"site":540,"diff":0,"nodes":0},"crumbs":{"match":826,"ancestor":0,"descendant":0,"other":0,"unknown":0},"errors":0}
