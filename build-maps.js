@@ -824,11 +824,15 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
     padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; white-space: nowrap; }
   .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
-  .rl-tab th.rl-n, .rl-tab td.rl-n { text-align: right; font-variant-numeric: tabular-nums; }
-  /* Заголовки числових колонок вирівняні праворуч, тож лівий відступ там порожній —
-     забираємо його під текст: «Не збігається» в Inter (найширший із шрифтів стека)
-     займає 69px, і з відступом 8px запасу лишалось 2px. */
-  .rl-tab th.rl-n { padding-left: 2px; }
+  /* Числові колонки і «Статус» — по центру в обох напрямках (26.09.2026, на прохання
+     користувача): назва категорії буває у два рядки, і число має стояти навпроти її
+     середини, а не верхнього рядка. Відступи заголовків — симетричні й вузькі: «Не
+     збігається» в Inter (найширший із шрифтів стека) займає 69px, і з відступами по 8px
+     запасу в 88-піксельній колонці лишалось 2px. */
+  .rl-tab th.rl-n, .rl-tab td.rl-n, .rl-tab th.rl-st, .rl-tab td.rl-st {
+    text-align: center; font-variant-numeric: tabular-nums; }
+  .rl-tab td.rl-n, .rl-tab td.rl-st { vertical-align: middle; }
+  .rl-tab th.rl-n, .rl-tab th.rl-st { padding-left: 2px; padding-right: 2px; }
   .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
   .rl-tab td.rl-name { overflow-wrap: anywhere; }
   .rl-tab td.rl-zero { color: var(--text-subtle); }
@@ -836,6 +840,8 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
   .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
     color: var(--text-muted); font-size: 0.72rem; }
+  /* Рядок «Фініш скрапінгу» — підсумок прогону, не категорія: без зебри й рамки. */
+  .rl-tab tbody.rl-end td { color: var(--text-muted); font-weight: 600; }
   .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
     color: var(--text-muted); padding-top: 6px; }
   .rl-br { font-family: var(--font-mono); color: var(--text-subtle); }
@@ -855,7 +861,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-grp:nth-of-type(even) > tr > td { background: var(--bg-row-alt); }
   /* Назва категорії — посилання на її мапу, але в спокої виглядає звичайним текстом:
      таблиця з 23 синіх назв читалась би як список посилань, а не як журнал. */
-  .rl-tab th.rl-st, .rl-tab td.rl-st { text-align: center; }
   .rl-cat { color: inherit; text-decoration: none; }
   .rl-cat:hover { color: var(--text-link); text-decoration: underline; }
 </style>
