@@ -768,6 +768,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     color: var(--text-subtle); font-family: var(--font-sans); }
   .rl-run[open] > summary::before { content: '▾'; }
   .rl-run[open] > summary { border-bottom: 1px solid var(--border-color); }
+  /* Заголовок прогону клікабельний (розгортає й згортає таблицю), тож реагує на
+     наведення, як усе клікабельне на сайті (зауваження користувача 27.09.2026). */
+  .rl-run > summary:hover { background: var(--bg-hover); color: var(--text-link); }
+  .rl-run > summary:hover::before { color: var(--text-link); }
   /* table-layout: fixed — ширини беруться з шапки, а не з вмісту. «Категорію» звужено
      вдвічі (було 325px, 26.09.2026, на прохання користувача) з умовою «не більше двох
      рядків»: заміряно, до 172px «Пульти ручного управління…» і «Датчики, кнопки…»
