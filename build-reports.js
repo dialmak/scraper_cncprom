@@ -300,7 +300,9 @@ function initReportsPage() {
   function drawTiles() {
     var t = D.totals;
     $('tiles').innerHTML = TYPES.map(function (k) {
-      var on = st.tab === 'prod' && Object.keys(st.types).length === 1 && !!st.types[k];
+      // Підсвічена кожна плитка, чий тип вибраний, скільки б типів не було вибрано
+      // (до 27.09.2026 лише коли вибраний рівно один, і з двома фішками плитки гасли).
+      var on = st.tab === 'prod' && !!st.types[k];
       return '<button class="card tile" data-type="' + k + '" aria-pressed="' + on + '">' + badge(k, true) +
         '<span class="num' + (t[k] ? '' : ' zero') + '">' + t[k] + '</span><span class="lbl">' + TYPE[k].label + '</span></button>';
     }).join('') +
@@ -490,9 +492,11 @@ html, body { height: auto; overflow: visible; }
 .range-arrow { color: var(--text-faint); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font: inherit; font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-dark); background: var(--bg-white); color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-.chip:hover:not([disabled]) { background: var(--bg-hover); }
+/* Під курсором рамка й текст світлішають: одного тла в темній темі майже не видно. */
+.chip:hover:not([disabled]) { background: var(--bg-hover); border-color: var(--text-muted); color: var(--text-main); }
 .chip[disabled] { opacity: .45; cursor: default; }
 .chip[aria-pressed="true"] { background: var(--bg-active); border-color: var(--border-active); color: var(--text-main); }
+.chip[aria-pressed="true"]:hover { background: var(--bg-active); border-color: var(--text-link); }
 .chip .n { font-family: var(--font-mono); font-size: .72rem; color: var(--text-subtle); }
 
 .chart-card { padding: 16px 18px 10px; margin-bottom: 16px; }
