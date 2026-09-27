@@ -562,9 +562,7 @@ html, body { height: auto; overflow: visible; }
 .pname:hover { color: var(--text-link); text-decoration: underline; }
 .cat-link { color: var(--text-muted); text-decoration: none; }
 .cat-link:hover { color: var(--text-link); text-decoration: underline; }
-/* Посилання з data-tip: [data-tip] у map-common.css ставить cursor: help,
-   а на посиланні правильний курсор — pointer. */
-.cat-site, .cat-site[data-tip] { color: inherit; text-decoration: none; cursor: pointer; }
+.cat-site { color: inherit; text-decoration: none; }
 .cat-site:hover { color: var(--text-link); text-decoration: underline; }
 .path-line + .path-line { margin-top: 4px; }
 .path-label { display: inline-block; min-width: 48px; color: var(--text-muted); }

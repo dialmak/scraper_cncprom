@@ -433,8 +433,8 @@ table.search-table .col-n { width: 4%; }
 table.search-table .col-code { width: 8%; }
 table.search-table .col-cat { width: 32%; }
 table.search-table .col-avail { width: 16%; }
-/* Заголовок «Наявність» у результатах пошуку сортує (sortByAvailability).
-   cursor: pointer перебиває [data-tip] { cursor: help } — це кнопка. */
+/* Заголовок «Наявність» у результатах пошуку сортує (sortByAvailability):
+   <th> сам по собі не клікабельний, тож руку йому ставимо явно. */
 .simple-table th.th-sort { cursor: pointer; user-select: none; }
 .simple-table th.th-sort:hover { color: var(--text-main); }
 .sort-arrow { margin-left: 5px; opacity: 0.55; }
@@ -493,7 +493,20 @@ th.th-sort.active .sort-arrow { opacity: 1; color: var(--text-link); }
 /* Гарні підказки замість нативного title (той не переноситься й губиться на довгому тексті).
    Позиціонується через JS (setupTooltips) в координатах в'юпорта — саме тому fixed, а не
    absolute, щоб не обрізáлось контейнерами з overflow (.table-wrap, .main-content). */
-[data-tip] { cursor: help; }
+/* Курсор над елементом з підказкою — за тим, ЩО це, а не за тим, що є підказка:
+   - неклікабельне (заголовок колонки, значок статусу, назва в меню) — знак
+     питання: «наведи — пояснять»;
+   - клікабельне (посилання, кнопка, пункт меню, що відкриває панель чи меню,
+     «Експорт») — рука, як у будь-якого клікабельного елемента.
+   Обидва правила в :where(), тобто з нульовою вагою: власний курсор елемента
+   (↔ у ручки ширини меню, рука в .th-sort) їх перебиває. Колись тут стояло
+   просте [data-tip] { cursor: help } з вагою класу, і воно, як пізніше за
+   .btn-theme-toggle, давало знак питання всім кнопкам шапки. */
+:where([data-tip]) { cursor: help; }
+:where(a[href], button:not(:disabled), summary, label, select, [role="button"], [data-open])[data-tip] { cursor: pointer; }
+/* Штамп дати скрапінгу в шапці — мертва <button>: на ній нічого не
+   відбувається, тож знак питання, а не рука від .btn-theme-toggle. */
+button.hdr-stamp[data-tip] { cursor: help; }
 #custom-tooltip {
   position: fixed; z-index: 200; max-width: 300px;
   background: var(--text-main); color: var(--bg-white);
@@ -2089,7 +2102,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">

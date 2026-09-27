@@ -824,7 +824,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn" data-tip="Дата та час скрапінгу">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
     </div>
     <div class="header-center">
       <div class="search-wrap">
