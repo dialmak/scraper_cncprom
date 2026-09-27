@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, writeLogos } = require('./lib/help');
+const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, searchHelpMenuHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -309,14 +309,16 @@ a:hover { text-decoration: underline; }
 .search-wrap { position: relative; display: flex; align-items: center; width: 100%; }
 .search-icon { position: absolute; left: 10px; font-size: 0.8rem; opacity: 0.6; pointer-events: none; }
 .header-search-input {
-  width: 100%; padding: 5px 32px 5px 30px; font-size: 0.8rem; font-family: inherit;
+  width: 100%; padding: 5px 58px 5px 30px; font-size: 0.8rem; font-family: inherit;
   border-radius: 4px; border: 1px solid var(--border-dark); background: var(--bg-tag); color: var(--text-main); outline: none;
   transition: all 0.15s ease;
 }
 .header-search-input:focus { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active); background: var(--bg-white); }
 .header-search-input::placeholder { color: var(--text-subtle); }
+/* Порожнє поле: ✕ схований, праворуч лише «?» — вужчий відступ, щоб плейсхолдер не обрізався. */
+.header-search-input:placeholder-shown { padding-right: 32px; }
 .btn-clear-search {
-  position: absolute; right: 6px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
+  position: absolute; right: 32px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
   border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 50%; font-size: 0.75rem;
   transition: background 0.12s;
 }
@@ -621,6 +623,22 @@ button.hdr-stamp[data-tip] { cursor: help; }
 /* Для кнопки в правій групі — вирівнювання по правому краю, інакше
    список виліз би за межі екрана. */
 .hdr-dropdown.right { left: auto; right: 0; }
+/* «?» у полі пошуку зі шпаргалкою (searchHelpMenuHtml у lib/help.js): звичайне меню
+   шапки, лише кнопка — голий знак питання, без кружечка (так попросив користувач).
+   ✕ очищення стоїть ліворуч від нього, тому поле має відступ праворуч під обидва. */
+.search-help { position: absolute; top: 0; bottom: 0; right: 4px; align-items: center; }
+.search-help-btn { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: none;
+  color: var(--text-muted); font: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1; cursor: pointer; }
+.search-help-btn:hover { color: var(--text-link); background: var(--bg-hover); }
+.search-help-drop { top: calc(100% + 4px); width: 460px; padding: 10px 16px 12px; font-size: 0.8rem; color: var(--text-main); }
+.search-help:has(.open) .search-help-btn { color: var(--text-link); }
+.sh-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
+.sh-list { margin: 0; padding-left: 18px; line-height: 1.55; }
+.sh-list li { margin: 2px 0; }
+.sh-list code { font-family: var(--font-mono); font-size: 0.74rem; background: var(--bg-tag); border: 1px solid var(--border-color); border-radius: 3px; padding: 0 4px; }
+.sh-more { margin-top: 8px; color: var(--text-muted); font-size: 0.76rem; }
+.sh-link { border: 0; padding: 0; background: none; font: inherit; color: var(--text-link); cursor: pointer; }
+.sh-link:hover { text-decoration: underline; }
 .hdr-dropdown.open { display: block; }
 /* Шторка під відкритим меню — як у модальних панелей, але легша (0.28 проти 0.4):
    меню не блокує роботу, воно закривається будь-яким кліком. z-index 9, а не
@@ -2125,7 +2143,7 @@ const html = `<!DOCTYPE html>
       <div class="search-wrap">
         <span class="search-icon">${ICONS.search}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
-        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>${searchHelpMenuHtml()}
       </div>
     </div>
     <div class="header-right">
@@ -2165,7 +2183,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
         <div class="help-term">
           <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
           <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
-        </div>${searchHelpHtml(' Спершу показує товари цього розділу, під ними — знайдені в інших розділах сайту.')}
+        </div>${searchHelpHtml(' Спершу показує товари цього розділу, під ними знайдені в інших розділах сайту.')}
       </div>
     </div>
   </div>

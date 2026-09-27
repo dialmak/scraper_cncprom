@@ -11,7 +11,7 @@ const { runLogHtml, buildLogHtml } = require('./lib/runlog');
 const { plural } = require('./lib/plural');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, writeLogos } = require('./lib/help');
+const { menuRow, helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, searchHelpMenuHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -830,7 +830,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       <div class="search-wrap">
         <span class="search-icon">${ICONS.search}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
-        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>${searchHelpMenuHtml()}
       </div>
     </div>
     <div class="header-right">
