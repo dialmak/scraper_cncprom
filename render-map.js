@@ -404,7 +404,8 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
   display: inline-flex; align-items: center; padding: 4px 10px; font-size: 0.76rem; font-weight: 500;
   border: 1px solid var(--border-color); background: var(--bg-white); border-radius: 4px; color: var(--text-main); cursor: pointer;
 }
-.btn-default:hover { background: var(--bg-hover); }
+/* Не лише тло: одного --bg-hover на білому майже не видно (аудит ui-check, 27.09.2026). */
+.btn-default:hover { background: var(--bg-hover); border-color: var(--border-dark); }
 
 .content-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 
