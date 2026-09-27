@@ -633,7 +633,7 @@ button.hdr-stamp[data-tip] { cursor: help; }
 /* 572px: пункти в один рядок займають 503px, плюс запас на інший шрифт — 520px, і ще 10% на прохання користувача. */
 .search-help-drop { top: calc(100% + 4px); width: 572px; max-width: none; padding: 10px 16px 12px; font-size: 0.8rem; color: var(--text-main); }
 .search-help:has(.open) .search-help-btn { color: var(--text-link); }
-.sh-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
+.sh-title { font-weight: 400; font-size: 0.85rem; margin-bottom: 6px; }
 .sh-list { margin: 0; padding-left: 18px; line-height: 1.55; }
 .sh-list li { margin: 2px 0; }
 .sh-list code { font-family: var(--font-mono); font-size: 0.74rem; background: var(--bg-tag); border: 1px solid var(--border-color); border-radius: 3px; padding: 0 4px; }
