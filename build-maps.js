@@ -364,7 +364,7 @@ function diffBadgeHtml(e) {
 function runErrorBadgeHtml(e) {
   const n = (e.run_errors || []).length;
   if (n === 0) return '';
-  return ` <button class="run-error-badge" data-tip="${n} ${n === 1 ? 'помилка' : 'помилок'} під час останнього скрапінгу цієї категорії — клік для списку">${ICONS.errors}</button>`;
+  return ` <button class="run-error-badge" data-tip="${n} ${plural(n, 'помилка', 'помилки', 'помилок')} під час останнього скрапінгу цієї категорії: клік для списку">${ICONS.errors}</button>`;
 }
 
 function statusBadgeHtml(e) {
@@ -790,7 +790,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab th.rl-n, .rl-tab th.rl-st { padding-left: 2px; padding-right: 2px; }
   .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
   .rl-tab td.rl-name { overflow-wrap: anywhere; }
-  .rl-tab td.rl-zero { color: var(--text-subtle); }
+  .rl-tab td.rl-zero { color: var(--text-faint); }
   .rl-tab td.rl-n.rl-bad { color: var(--status-no); font-weight: 600; }
   .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
   .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
@@ -799,7 +799,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab tbody.rl-end td { color: var(--text-muted); font-weight: 600; }
   .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
     color: var(--text-muted); padding-top: 6px; }
-  .rl-br { font-family: var(--font-mono); color: var(--text-subtle); }
+  .rl-br { font-family: var(--font-mono); color: var(--text-faint); }
   .rl-note + .rl-note { margin-top: 3px; }
   /* Товари під приміткою — на рівні її тексту, після «└─». */
   .rl-item { padding-left: 22px; }

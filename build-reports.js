@@ -479,12 +479,6 @@ const css = `
    auto на html і body разом робить body окремим скрол-контейнером, і липка
    .app-header їде разом зі сторінкою. */
 html, body { height: auto; overflow: visible; }
-/* Смуга прокрутки й нативні елементи (select) — у кольорах поточної теми.
-   Без color-scheme браузер малює світлу смугу навіть на темній сторінці.
-   Тема задається перемикачем (data-theme) або системою — враховано обидва. */
-:root { color-scheme: light; }
-:root[data-theme="dark"] { color-scheme: dark; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
 .rep-wrap { max-width: 1280px; margin: 0 auto; padding: 20px 20px 48px; }
 .card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; }
 .top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
@@ -495,7 +489,7 @@ html, body { height: auto; overflow: visible; }
 .range-bar label { font-size: .8rem; color: var(--text-muted); }
 .range-bar select, .filters select { font: inherit; font-size: .85rem; padding: 5px 8px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); }
 .filters select { max-width: 260px; }
-.range-arrow { color: var(--text-subtle); }
+.range-arrow { color: var(--text-faint); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font: inherit; font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-dark); background: var(--bg-white); color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .chip:hover:not([disabled]) { background: var(--bg-hover); }
@@ -526,7 +520,7 @@ html, body { height: auto; overflow: visible; }
 .chart-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0;
   font: inherit; color: inherit; cursor: pointer; }
 .chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
-.chart-toggle:hover .caret { color: var(--text-link); }
+.chart-toggle:hover, .chart-toggle:hover .caret { color: var(--text-link); }
 
 .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -539,6 +533,7 @@ html, body { height: auto; overflow: visible; }
 
 .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-color); padding: 0 12px; }
 .tab { font: inherit; font-size: .88rem; padding: 10px 14px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer; margin-bottom: -1px; }
+.tab:hover { color: var(--text-main); }
 .tab[aria-selected="true"] { color: var(--text-main); border-bottom-color: var(--border-active); font-weight: 600; }
 .tab .n { font-family: var(--font-mono); font-size: .75rem; color: var(--text-subtle); margin-left: 4px; }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
@@ -570,7 +565,7 @@ html, body { height: auto; overflow: visible; }
 .path-link:hover { color: var(--text-link); text-decoration: underline; }
 .muted { color: var(--text-muted); }
 .subtle { color: var(--text-subtle); }
-.arrow-to { color: var(--text-subtle); padding: 0 4px; }
+.arrow-to { color: var(--text-faint); padding: 0 4px; }
 .more-row { padding: 12px; text-align: center; border-top: 1px solid var(--border-color); }
 .empty { padding: 48px 16px; text-align: center; color: var(--text-muted); }
 .empty b { display: block; color: var(--text-main); font-size: 1rem; margin-bottom: 6px; }

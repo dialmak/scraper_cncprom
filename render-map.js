@@ -234,7 +234,8 @@ const css = `
 
   --text-main: #0f172a;
   --text-muted: #475569;
-  --text-subtle: #94a3b8;
+  --text-subtle: #64748b;
+  --text-faint: #94a3b8;   /* лише розділювачі (/ › → · └─): нічого не повідомляють, тож бліді */
   --text-link: #1d4ed8;
 
   --status-yes: #15803d;
@@ -244,6 +245,10 @@ const css = `
   --status-no: #b91c1c;
   --status-no-bg: #fef2f2;
   --status-no-border: #fecaca;
+  /* Суцільне червоне тло під білим текстом (значок-лічильник на «Звірках»). Окремо від
+     --status-no: у темній темі червоний тексту світлий (#f66a6a), і білий на ньому
+     не читався б (2.9:1); тут — 4.6:1. */
+  --badge-bg: #b91c1c;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -251,19 +256,28 @@ const css = `
     --bg-page: #1f1f1f; --bg-white: #1f1f1f; --bg-header: #181818; --bg-sidebar: #181818;
     --bg-subtle: #252526; --bg-tag: #2d2d2d; --bg-row-alt: #242424; --bg-hover: #2a2d2e; --bg-active: #04395e;
     --border-color: #2b2b2b; --border-dark: #3c3c3c; --border-active: #007acc;
-    --text-main: #cccccc; --text-muted: #969696; --text-subtle: #6e7681; --text-link: #3794ff;
+    --text-main: #cccccc; --text-muted: #969696; --text-subtle: #8b949e; --text-faint: #6e7681; --text-link: #3794ff;
     --status-yes: #89d185; --status-yes-bg: rgba(137, 209, 133, 0.12); --status-yes-border: rgba(137, 209, 133, 0.25);
-    --status-no: #f14c4c; --status-no-bg: rgba(241, 76, 76, 0.12); --status-no-border: rgba(241, 76, 76, 0.25);
+    --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
+    --badge-bg: #d93636;
   }
 }
 :root[data-theme="dark"] {
   --bg-page: #1f1f1f; --bg-white: #1f1f1f; --bg-header: #181818; --bg-sidebar: #181818;
   --bg-subtle: #252526; --bg-tag: #2d2d2d; --bg-row-alt: #242424; --bg-hover: #2a2d2e; --bg-active: #04395e;
   --border-color: #2b2b2b; --border-dark: #3c3c3c; --border-active: #007acc;
-  --text-main: #cccccc; --text-muted: #969696; --text-subtle: #6e7681; --text-link: #3794ff;
+  --text-main: #cccccc; --text-muted: #969696; --text-subtle: #8b949e; --text-faint: #6e7681; --text-link: #3794ff;
   --status-yes: #89d185; --status-yes-bg: rgba(137, 209, 133, 0.12); --status-yes-border: rgba(137, 209, 133, 0.25);
-  --status-no: #f14c4c; --status-no-bg: rgba(241, 76, 76, 0.12); --status-no-border: rgba(241, 76, 76, 0.25);
+  --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
+  --badge-bg: #d93636;
 }
+/* Смуги прокрутки й нативні елементи (select, поля) — у кольорах поточної теми:
+   без color-scheme браузер малює світлу смугу навіть на темній сторінці. Тема
+   задається перемикачем (data-theme) або системою — враховано обидва. Спільне для
+   всіх трьох сторінок (reports.css мав власну копію до 27.09.2026). */
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
 
 html, body {
   height: 100%;
@@ -346,7 +360,9 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .sidebar-top { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-subtle); }
 .sidebar-label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
 .sidebar-tools { display: flex; align-items: center; gap: 6px; }
-.btn-link { background: none; border: none; color: var(--text-link); font-size: 0.74rem; font-weight: 500; cursor: pointer; padding: 0; }
+/* Відступ з від'ємним полем — більша область кліку (текст 12px заввишки легко
+   промахнути) без зсуву розкладки. */
+.btn-link { background: none; border: none; color: var(--text-link); font-size: 0.74rem; font-weight: 500; cursor: pointer; padding: 4px 3px; margin: -4px -3px; }
 .btn-link:hover { text-decoration: underline; }
 .divider { color: var(--border-color); font-size: 0.7rem; }
 
@@ -374,6 +390,7 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
 .breadcrumbs .crumb-link { color: var(--text-muted); cursor: pointer; }
 .breadcrumbs .crumb-link:hover { text-decoration: underline; }
 .breadcrumbs .crumb-current { color: var(--text-main); font-weight: 600; }
+.breadcrumbs .sep { color: var(--text-faint); }
 
 /* Стовпці зі спільними шириними колонками (заголовок категорії + список підкатегорій під ним)
    мають лишатись вирівняними по вертикалі — фіксований layout читає ширини з першого рядка. */
@@ -648,7 +665,7 @@ button.hdr-stamp[data-tip] { cursor: help; }
 /* Значок біля "Звірки": скільки звірок щось знайшли. */
 .badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
   height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
-  font-weight: 600; background: var(--status-no); color: #fff; }
+  font-weight: 600; background: var(--badge-bg); color: #fff; }
 
 /* Подяки: картка-посилання з логотипом. Логотипи — окремі файли в logos/,
    а не вбудовані SVG: панель однакова на двох десятках сторінок. */
@@ -1386,7 +1403,7 @@ function initCatalogMap(CATALOG_DATA) {
     // (HAS_PRODUCTS=false, тоді total_yes завжди 0 — порівнювати з ним не можна,
     // інакше майже кожна категорія хибно підсвітилась би червоним).
     if (stats.diff === null || stats.diff === undefined) {
-      return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені — звірка неможлива.">н/д</span>';
+      return '<span class="stock-badge neutral" data-tip="Сайт не показав лічильник «В наявності N», або товари не завантажені: звірка неможлива.">н/д</span>';
     }
     var cls = stats.diff === 0 ? 'diff-zero' : 'diff-nonzero';
     // Без data-tip на кожному значенні — пояснення формату "X/Y" дає сам <th> колонки.
@@ -2180,7 +2197,7 @@ ${aboutPanelHtml()}${creditsPanelHtml()}
             <th>Назва категорії</th>
             <th style="width:80px;text-align:center;" data-tip="Глибина вкладеності категорії в дереві каталогу.">Рівень</th>
             <th style="width:90px;text-align:center;" data-tip="Усього товарів у цій категорії разом з усіма її підкатегоріями.">Товарів</th>
-            <th style="width:100px;text-align:center;" data-tip="Перше число — кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число — кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
+            <th style="width:100px;text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.">В наявності</th>
             <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера. Незалежного лічильника на сайті для цього нема.">Немає в наявності</th>
             <th style="width:72px;white-space:normal;text-align:center;vertical-align:middle;">Перейти на сайт</th>
           </tr></thead><tbody><tr>
