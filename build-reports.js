@@ -165,8 +165,8 @@ function initReportsPage() {
 
   function fail(err) {
     $('panel-wrap').innerHTML = '<div class="card empty"><b>⚠️ Не вдалося завантажити дані звіту</b>' +
-      'Якщо сторінка відкрита подвійним кліком з диска — браузер блокує fetch() локальних файлів; відкрийте її через сервер (напр. Live Server). ' +
-      'Якщо через сервер — перевірте, що reports/data/ існує (його пише build-reports.js).<div class="subtle" style="margin-top:8px">' + esc(err && err.message) + '</div></div>';
+      'Якщо сторінка відкрита подвійним кліком з диска, браузер блокує fetch() локальних файлів; відкрийте її через сервер (напр. Live Server). ' +
+      'Якщо через сервер, перевірте, що reports/data/ існує (його пише build-reports.js).<div class="subtle" style="margin-top:8px">' + esc(err && err.message) + '</div></div>';
     $('chart-card').style.display = 'none'; $('tiles').style.display = 'none';
   }
 
@@ -270,11 +270,11 @@ function initReportsPage() {
     var tip = $('chart-tip'), g = e.target.closest && e.target.closest('g[data-i]');
     if (!g) { tip.style.display = 'none'; return; }
     var i = +g.getAttribute('data-i'), d = idx.daily[i];
-    if (!d.t) tip.innerHTML = '<b>' + fmtLong(d.date) + '</b><div class="foot">Перший знімок — порівнювати нема з чим</div>';
+    if (!d.t) tip.innerHTML = '<b>' + fmtLong(d.date) + '</b><div class="foot">Перший знімок: порівнювати нема з чим</div>';
     else tip.innerHTML = '<b>' + fmtLong(d.date) + ' · змін: ' + dayTotal(d) + '</b>' +
       TYPES.map(function (k) { return '<div class="row"><span>' + TYPE[k].icon + ' ' + TYPE[k].label + '</span><span>' + d.t[k] + '</span></div>'; }).join('') +
       '<div class="row"><span>✎ Структура категорій</span><span>' + d.t.cats + '</span></div>' +
-      '<div class="foot">Клік — порівняти з ' + fmtShort(idx.dates[i - 1]) + (range.to > d.date ? ' по ' + fmtShort(range.to) : '') + '</div>';
+      '<div class="foot">Клік: порівняти з ' + fmtShort(idx.dates[i - 1]) + (range.to > d.date ? ' по ' + fmtShort(range.to) : '') + '</div>';
     tip.style.display = 'block';
     tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8) + 'px';
     tip.style.top = (e.clientY + 14) + 'px';
@@ -390,7 +390,7 @@ function initReportsPage() {
       '<input id="q" class="search-mini" type="search" placeholder="Пошук: назва, код, категорія" value="' + esc(st.q) + '"></div></div>' +
       (rows.length ? productTable(rows)
         : '<div class="empty"><b>' + (D.rows.length ? 'Нічого не знайдено' : 'Товари за цей період не змінювались') + '</b>' +
-          (D.rows.length ? 'Зніміть фільтри або змініть запит.' : 'Оберіть ширший період — угорі або кліком по графіку.') + '</div>');
+          (D.rows.length ? 'Зніміть фільтри або змініть запит.' : 'Оберіть ширший період угорі або кліком по графіку.') + '</div>');
     if (focused) { var qi = $('q'); qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
   }
 
@@ -624,7 +624,7 @@ ${aboutPanelHtml()}${creditsPanelHtml('../')}
         <div class="help-term"><div class="help-term-label">Період</div>
           <div class="help-term-desc">Порівнюються два знімки каталогу: на початок і на кінець періоду. Скрапер знімає каталог щоночі. Зміни <b>всередині</b> періоду не видно: товар, що зник і повернувся між двома датами, не потрапить у список. Побачити, в які дні щось відбувалося, можна на графіку.</div></div>
         <div class="help-term"><div class="help-term-label">Графік «Змін за день»</div>
-          <div class="help-term-desc">Кожен стовпчик — скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня. Графік згорнутий за замовчуванням — розгортається кліком по назві, і браузер запам'ятовує вибір.</div></div>
+          <div class="help-term-desc">Кожен стовпчик показує, скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня. Графік згорнутий за замовчуванням: розгортається кліком по назві, і браузер запам'ятовує вибір.</div></div>
         <div class="help-term"><div class="help-term-label">▼ Зникли з наявності · ▲ Знову в наявності</div>
           <div class="help-term-desc">Статус товару змінився між «Готово до відправки» та будь-яким іншим (зазвичай «Немає в наявності»).</div></div>
         <div class="help-term"><div class="help-term-label">+ Нові · − Видалені товари</div>
@@ -654,7 +654,7 @@ ${aboutPanelHtml()}${creditsPanelHtml('../')}
     <section class="card chart-card" id="chart-card" aria-labelledby="chart-title">
       <div class="chart-head">
         <h2 id="chart-title"><button type="button" class="chart-toggle" id="chart-toggle" aria-expanded="false" aria-controls="chart-body"><span class="caret" aria-hidden="true">▸</span>Змін за день</button></h2>
-        <span class="hint" id="chart-hint">Синім — дні, що входять у порівняння. Клік по стовпчику — почати період із цього дня.</span>
+        <span class="hint" id="chart-hint">Синім виділено дні, що входять у порівняння. Клік по стовпчику починає період із цього дня.</span>
       </div>
       <div id="chart-body" hidden>
         <svg id="chart" role="img" aria-label="Кількість змін каталогу за кожен день"></svg>

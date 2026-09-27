@@ -141,7 +141,7 @@ async function getSubcategoryLinks(page, url) {
     }).filter(Boolean),
     BASE
   ).catch(e => {
-    logError(`Не вдалось прочитати список підкатегорій: ${url} — ${e.message}`);
+    logError(`Не вдалось прочитати список підкатегорій: ${url} (${e.message})`);
     return [];
   });
 }
@@ -238,7 +238,7 @@ async function loadListingPage(page, url, mapOut, hasSubcategories) {
   }
   if (hasSubcategories) {
     console.warn(`  Власних товарів немає (усі в підкатегоріях): ${url}`);
-    logWarn(`Сітка товарів порожня, але категорія має підкатегорії — власних товарів немає: ${url}`);
+    logWarn(`Сітка товарів порожня, але категорія має підкатегорії, тож власних товарів немає: ${url}`);
     return false;
   }
   emptyGridFailures++;
@@ -567,7 +567,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
     // стає лише те, що не вдалось і вдруге.
     if (retryLater.length > 0) {
       console.log(`\n  Не вдалось з першого разу: ${retryLater.length} — повторний прохід через ${RETRY_PASS_DELAY_MS / 1000} с`);
-      logEvt('retry', { id: START_CATEGORY_ID, msg: `${retryLater.length} товарів не вдалось з першого разу — повторний прохід.`, pending: retryLater.length });
+      logEvt('retry', { id: START_CATEGORY_ID, msg: `${retryLater.length} товарів не вдалось з першого разу, повторний прохід.`, pending: retryLater.length });
       await sleep(RETRY_PASS_DELAY_MS);
       let recovered = 0;
       for (const assignment of retryLater) {

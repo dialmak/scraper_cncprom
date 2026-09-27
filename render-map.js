@@ -1310,7 +1310,7 @@ function initSiteSearch() {
         '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
         '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
         '<div class="fw-meta-label" style="font-size:1.05rem;margin-bottom:8px;color:var(--text-main);">Не вдалося завантажити пошуковий індекс (search-index.json)</div>' +
-        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Якщо сторінка відкрита подвійним кліком з диска — браузер блокує fetch() локальних файлів; відкрий через сервер (напр. Live Server). Якщо через сервер — переконайся, що search-index.json взагалі існує поруч (пишеться build-maps.js).</div>' +
+        '<div style="font-size:0.85rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Якщо сторінка відкрита подвійним кліком з диска, браузер блокує fetch() локальних файлів; відкрий через сервер (напр. Live Server). Якщо через сервер, переконайся, що search-index.json взагалі існує поруч (пишеться build-maps.js).</div>' +
         '</div>';
       return;
     }
@@ -1567,7 +1567,7 @@ function initCatalogMap(CATALOG_DATA) {
   function productsSectionHtml(node, hasChildren, prods) {
     if (prods.length === 0) {
       if (!CATALOG_DATA.global_stats.has_products) {
-        return '<div class="empty-note">Товари не завантажено — запустіть скрапер для цієї категорії ще раз.</div>';
+        return '<div class="empty-note">Товари не завантажено. Запустіть скрапер для цієї категорії ще раз.</div>';
       }
       return hasChildren ? '' : '<div class="empty-note">У цій категорії немає товарів.</div>';
     }
@@ -1856,7 +1856,7 @@ function initCatalogMap(CATALOG_DATA) {
       body.innerHTML =
         '<div class="empty-note" style="padding:40px 20px;text-align:center;">' +
         '<div style="font-size:1.6rem;margin-bottom:10px;">🔍</div>' +
-        '<div class="fw-meta-label" style="font-size:0.9rem;color:var(--text-muted);">У цій категорії нічого немає — перевіряємо решту сайту…</div>' +
+        '<div class="fw-meta-label" style="font-size:0.9rem;color:var(--text-muted);">У цій категорії нічого немає, перевіряємо решту сайту…</div>' +
         '</div>';
     } else {
       body.innerHTML = '';
@@ -2033,7 +2033,7 @@ const maxLevelSafe = CATALOG_DATA.global_stats.levels;
 const infoBanner = HAS_PRODUCTS ? '' : `
     <div class="info-banner warning" style="margin: 12px 20px 0;">
       <span>⚠️</span>
-      <span>Товари не завантажені — мапа показує лише структуру категорій і лічильники сайту.
+      <span>Товари не завантажені: мапа показує лише структуру категорій і лічильники сайту.
       Щоб їх зібрати, запустіть скрапер для цієї категорії ще раз: <code>node scrape-complete.js "${escapeHtmlOuter(catalog.url || '')}"</code></span>
     </div>`;
 
@@ -2108,7 +2108,7 @@ const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
         <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">У дужках — скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
+        <p class="failed-note">У дужках вказано, скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
         <div class="orphan-group-list">
           <div class="orphan-group">
             <a href="#" class="orphan-group-head orphan-cat-link" data-id="${escapeHtmlOuter(appTree.id)}">${ICONS.folder} ${escapeHtmlOuter(appTree.name)} <span class="node-count">(${orphanTotalProducts})</span></a>
@@ -2182,7 +2182,7 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
         </div>
         <div class="help-term">
           <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
-          <div class="help-term-desc">Зелений — точний збіг. Червоний — будь-яка розбіжність.</div>
+          <div class="help-term-desc">Зелений: точний збіг. Червоний: будь-яка розбіжність.</div>
         </div>${searchHelpHtml(' Спершу показує товари цього розділу, під ними знайдені в інших розділах сайту.')}
       </div>
     </div>
