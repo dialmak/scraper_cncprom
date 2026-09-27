@@ -16,5 +16,7 @@ node_modules/
 CLAUDE.md
 README.md
 HISTORY.md
+# Скіли Claude Code для цього проєкту (ui-check) — теж лише локально
+.claude/skills/
 run.txt
 SESSION-GUIDE.md
