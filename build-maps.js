@@ -348,7 +348,9 @@ function readRunErrors(id) {
 // map-common.js: тема, панелі, підказки, меню, заставка й пошук по сайту.
 function diffBadgeHtml(e) {
   if (e.status !== 'ok' || e.diff === null || e.diff === undefined) {
-    return '<span class="stock-badge neutral">н/д</span>';
+    // Тире, як у сусідніх колонках рядка без даних; «н/д» прибрано на прохання
+    // користувача 27.09.2026 разом із його поясненням у підказці заголовка.
+    return '—';
   }
   const cls = e.diff === 0 ? 'diff-zero' : 'diff-nonzero';
   return `<span class="${cls}">${e.total_yes}/${e.site_counter ?? '—'}</span>`;
@@ -868,7 +870,7 @@ ${narrowGuardHtml()}
                 <th>Назва категорії</th>
                 <th style="text-align:center;" data-tip="Кількість рівнів підкатегорій">Рівнів</th>
                 <th style="text-align:center;" data-tip="Усього товарів у категорії разом з усіма підкатегоріями.">Товарів</th>
-                <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.\nн/д: категорію ще не скраплено або дані застаріли.">В наявності</th>
+                <th style="text-align:center;" data-tip="Перше число: кількість товарів зі статусом «Готово до відправки» за даними скрапера.\nДруге число: лічильник «В наявності» сайту.">В наявності</th>
                 <th style="width:78px;white-space:normal;text-align:center;vertical-align:middle;" data-tip="Скільки товарів зі статусом «Немає в наявності» за даними скрапера.\nНезалежного лічильника на сайті для цього нема.">Немає в наявності</th>
                 <th style="text-align:center;" data-tip="Дата та час скрапінгу">Дата та час</th>
                 <th style="text-align:center;" data-tip="${ICONS.ok} Актуально\n${ICONS.stale} Застаріло\n${ICONS.nodata} Немає даних">Статус</th>
