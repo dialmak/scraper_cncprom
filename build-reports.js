@@ -302,11 +302,13 @@ function initReportsPage() {
     $('tiles').innerHTML = TYPES.map(function (k) {
       // Підсвічена кожна плитка, чий тип вибраний, скільки б типів не було вибрано
       // (до 27.09.2026 лише коли вибраний рівно один, і з двома фішками плитки гасли).
+      // Нульова плитка неклікабельна, як і фішка: інакше клік давав порожню таблицю з
+      // натиснутою, але вимкненою фішкою, яку вже не зняти (27.09.2026).
       var on = st.tab === 'prod' && !!st.types[k];
-      return '<button class="card tile" data-type="' + k + '" aria-pressed="' + on + '">' + badge(k, true) +
+      return '<button class="card tile" data-type="' + k + '" aria-pressed="' + on + '"' + (t[k] ? '' : ' disabled') + '>' + badge(k, true) +
         '<span class="num' + (t[k] ? '' : ' zero') + '">' + t[k] + '</span><span class="lbl">' + TYPE[k].label + '</span></button>';
     }).join('') +
-      '<button class="card tile" data-type="cats" aria-pressed="' + (st.tab === 'cats') + '"><span class="tb t-mov" aria-label="Структура категорій"><span class="ic" aria-hidden="true">✎</span></span>' +
+      '<button class="card tile" data-type="cats" aria-pressed="' + (st.tab === 'cats') + '"' + (t.cats || st.tab === 'cats' ? '' : ' disabled') + '><span class="tb t-mov" aria-label="Структура категорій"><span class="ic" aria-hidden="true">✎</span></span>' +
       '<span class="num' + (t.cats ? '' : ' zero') + '">' + t.cats + '</span><span class="lbl">Змін у структурі категорій</span></button>';
   }
 
@@ -406,11 +408,17 @@ function initReportsPage() {
     Promise.all([loadSnap(range.from), loadSnap(range.to)]).then(function (s) {
       if (my !== seq) return; // користувач уже обрав інший період — застарілу відповідь відкидаємо
       D = reportDiff(s[0], s[1], products);
+      // Фільтр, якому в новому періоді нема що показати, знімається: вимкнену фішку не
+      // зняти кліком, а розділу, якого немає в списку, не видно в <select>. Інакше після
+      // зміни періоду таблиця порожня без видимої причини (27.09.2026).
+      Object.keys(st.types).forEach(function (k) { if (!D.totals[k]) delete st.types[k]; });
+      if (st.top && !D.rows.some(function (r) { return r.top === st.top; })) st.top = '';
       st.limit = PAGE; render();
     }).catch(fail);
   }
 
   // ---------- Події ----------
+  function toggleType(k) { if (st.types[k]) delete st.types[k]; else st.types[k] = true; }
   function bindEvents() {
     $('chart-toggle').addEventListener('click', function () { setChartOpen($('chart-body').hidden); });
     $('rf').addEventListener('change', function (e) { setRange(e.target.value, range.to); });
@@ -429,15 +437,21 @@ function initReportsPage() {
     $('tiles').addEventListener('click', function (e) {
       var b = e.target.closest('[data-type]'); if (!b) return;
       var k = b.getAttribute('data-type');
-      if (k === 'cats') st.tab = 'cats';
-      else { var only = st.tab === 'prod' && Object.keys(st.types).length === 1 && st.types[k]; st.types = {}; if (!only) st.types[k] = true; st.tab = 'prod'; }
+      // Плитка діє так само, як фішка того ж типу: клік вмикає або вимикає тип. До
+      // 27.09.2026 плитка лишала «тільки цей тип», і клік по вже підсвіченій плитці при
+      // двох вибраних не знімав її, а скидав другу. Плитка категорій перемикає вкладку
+      // туди й назад; з вкладки «Категорії» плитка товарів повертає на «Товари» з цим
+      // типом увімкненим, а не вимкненим.
+      if (k === 'cats') st.tab = st.tab === 'cats' ? 'prod' : 'cats';
+      else if (st.tab === 'cats') { st.tab = 'prod'; st.types[k] = true; }
+      else toggleType(k);
       st.limit = PAGE; render();
     });
     $('tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) { st.tab = b.getAttribute('data-tab'); render(); } });
     var panel = $('panel');
     panel.addEventListener('click', function (e) {
       var c = e.target.closest('[data-chip]');
-      if (c) { var k = c.getAttribute('data-chip'); if (st.types[k]) delete st.types[k]; else st.types[k] = true; st.limit = PAGE; render(); return; }
+      if (c) { toggleType(c.getAttribute('data-chip')); st.limit = PAGE; render(); return; }
       if (e.target.closest('[data-more]')) { st.limit += PAGE; render(); }
     });
     panel.addEventListener('change', function (e) { if (e.target.id === 'top') { st.top = e.target.value; st.limit = PAGE; render(); } });
@@ -526,7 +540,8 @@ html, body { height: auto; overflow: visible; }
 
 .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
-.tile:hover { border-color: var(--border-dark); }
+.tile:hover:not([disabled]) { border-color: var(--border-dark); }
+.tile[disabled] { cursor: default; }
 .tile[aria-pressed="true"] { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active) inset; }
 .tile .tb { align-self: flex-start; }
 .tile .num { font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
