@@ -103,7 +103,7 @@ function reportDiff(a, b, products) {
   }
   function row(type, id, cat, avail) {
     var p = products[id] || ['#' + id, '', ''], t = topOf(cat);
-    return { type: type, id: id, name: p[0], sku: p[1], url: p[2], cat: cat, catName: catName(cat), catPath: pathOf(cat),
+    return { type: type, id: id, name: p[0], sku: p[1], url: p[2], cat: cat, catName: catName(cat),
       top: t ? t.id : '', topName: t ? t.name : '—', avail: avail };
   }
   var rows = [], cats = [];
@@ -111,7 +111,7 @@ function reportDiff(a, b, products) {
     var pa = a.prods.get(id);
     if (!pa) { rows.push(row('added', id, pb.cat, pb.avail)); return; }
     if (reportIsYes(pa.avail) !== reportIsYes(pb.avail)) rows.push(row(reportIsYes(pb.avail) ? 'in' : 'out', id, pb.cat, pb.avail));
-    if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); r.fromCatPath = pathOf(pa.cat); var ft = topOf(pa.cat); r.fromTop = ft ? ft.id : ''; rows.push(r); }
+    if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); var ft = topOf(pa.cat); r.fromTop = ft ? ft.id : ''; rows.push(r); }
   });
   a.prods.forEach(function (pa, id) { if (!b.prods.has(id)) rows.push(row('removed', id, pa.cat, pa.avail)); });
   b.cats.forEach(function (cb, id) {
@@ -322,15 +322,17 @@ function initReportsPage() {
       : '<span data-tip="' + esc(path) + '">' + esc(name) + '</span>';
   }
   // Категорія товару → мапа розділу одразу на цю категорію (#cat=<id>), як шлях на
-  // вкладці «Категорії»; до 27.09.2026 вела на сайт. Немає розділу — текст.
-  function mapLink(top, id, name, path) {
-    return top ? '<a class="cat-map" href="../' + esc(top) + '_map.html#cat=' + encodeURIComponent(id) + '" data-tip="' + esc(path) + '">' + esc(name) + '</a>'
-      : '<span data-tip="' + esc(path) + '">' + esc(name) + '</span>';
+  // вкладці «Категорії»; до 27.09.2026 вела на сайт. Вигляд і поведінка — як у
+  // розділу 1 рівня поруч (.cat-link, без підказки): користувач попросив, щоб усі
+  // ланки виглядали однаково. Немає розділу — текст.
+  function mapLink(top, id, name) {
+    return top ? '<a class="cat-link" href="../' + esc(top) + '_map.html#cat=' + encodeURIComponent(id) + '">' + esc(name) + '</a>'
+      : '<span class="muted">' + esc(name) + '</span>';
   }
   function detail(r) {
     if (r.type === 'in')  return '<span class="subtle">Немає</span><span class="arrow-to">→</span><b class="count-yes">В наявності</b>';
     if (r.type === 'out') return '<span class="subtle">В наявності</span><span class="arrow-to">→</span><b class="count-no">Немає</b>';
-    if (r.type === 'moved') return '<span class="subtle">' + mapLink(r.fromTop, r.fromCat, r.fromCatName, r.fromCatPath) + '</span><span class="arrow-to">→</span>' + mapLink(r.top, r.cat, r.catName, r.catPath);
+    if (r.type === 'moved') return mapLink(r.fromTop, r.fromCat, r.fromCatName) + '<span class="arrow-to">→</span>' + mapLink(r.top, r.cat, r.catName);
     if (r.type === 'added') return '<span class="muted">' + (reportIsYes(r.avail) ? 'В наявності' : 'Немає в наявності') + '</span>';
     return '<span class="subtle">зник із сайту</span>';
   }
@@ -344,7 +346,7 @@ function initReportsPage() {
           '<td>' + (r.sku ? '<span class="code">' + esc(r.sku) + '</span>' : '<span class="subtle">—</span>') + '</td>' +
           '<td>' + (r.url ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(r.url) + '">' + esc(r.name) + '</a>' : esc(r.name)) + '</td>' +
           '<td>' + (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
-          (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + mapLink(r.top, r.cat, r.catName, r.catPath) : '') + '</td>' +
+          (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + mapLink(r.top, r.cat, r.catName) : '') + '</td>' +
           '<td>' + detail(r) + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
       (rows.length > st.limit ? '<div class="more-row"><button class="chip" data-more>Показати ще ' + Math.min(PAGE, rows.length - st.limit) + ' з ' + (rows.length - st.limit) + '</button></div>' : '');
@@ -580,8 +582,8 @@ html, body { height: auto; overflow: visible; }
 .pname:hover { color: var(--text-link); text-decoration: underline; }
 .cat-link { color: var(--text-muted); text-decoration: none; }
 .cat-link:hover { color: var(--text-link); text-decoration: underline; }
-.cat-site, .cat-map { color: inherit; text-decoration: none; }
-.cat-site:hover, .cat-map:hover { color: var(--text-link); text-decoration: underline; }
+.cat-site { color: inherit; text-decoration: none; }
+.cat-site:hover { color: var(--text-link); text-decoration: underline; }
 .path-line + .path-line { margin-top: 4px; }
 .path-label { display: inline-block; min-width: 48px; color: var(--text-muted); }
 .path-link { color: inherit; text-decoration: none; }
