@@ -797,15 +797,12 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab th.rl-n, .rl-tab th.rl-st { padding-left: 2px; padding-right: 2px; }
   .rl-tab td.rl-t { font-family: var(--font-mono); color: var(--text-subtle); white-space: nowrap; }
   .rl-tab td.rl-name { overflow-wrap: anywhere; }
-  .rl-tab td.rl-zero { color: var(--text-faint); }
-  .rl-tab td.rl-n.rl-bad { color: var(--status-no); font-weight: 600; }
   .rl-tab tr.rl-dirty td.rl-name { font-weight: 500; }
   .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
     color: var(--text-muted); font-size: 0.72rem; }
   /* Рядок «Фініш скрапінгу» — підсумок прогону, не категорія: без зебри й рамки. */
   .rl-tab tbody.rl-end td { color: var(--text-muted); font-weight: 600; }
-  .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark);
-    color: var(--text-muted); padding-top: 6px; }
+  .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark); padding-top: 6px; }
   .rl-br { font-family: var(--font-mono); color: var(--text-faint); }
   .rl-note + .rl-note { margin-top: 3px; }
   /* Товари під приміткою — на рівні її тексту, після «└─». */
