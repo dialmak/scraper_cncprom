@@ -630,7 +630,8 @@ button.hdr-stamp[data-tip] { cursor: help; }
 .search-help-btn { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: none;
   color: var(--text-muted); font: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1; cursor: pointer; }
 .search-help-btn:hover { color: var(--text-link); background: var(--bg-hover); }
-.search-help-drop { top: calc(100% + 4px); width: 460px; padding: 10px 16px 12px; font-size: 0.8rem; color: var(--text-main); }
+/* 572px: пункти в один рядок займають 503px, плюс запас на інший шрифт — 520px, і ще 10% на прохання користувача. */
+.search-help-drop { top: calc(100% + 4px); width: 572px; max-width: none; padding: 10px 16px 12px; font-size: 0.8rem; color: var(--text-main); }
 .search-help:has(.open) .search-help-btn { color: var(--text-link); }
 .sh-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
 .sh-list { margin: 0; padding-left: 18px; line-height: 1.55; }
