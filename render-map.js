@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { helpButtonHtml, searchHelpMenuHtml, writeLogos } = require('./lib/help');
+const { helpButtonHtml, searchHelpButtonHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -640,23 +640,13 @@ button.hdr-stamp[data-tip] { cursor: help; }
 /* Для кнопки в правій групі — вирівнювання по правому краю, інакше
    список виліз би за межі екрана. */
 .hdr-dropdown.right { left: auto; right: 0; }
-/* «?» у полі пошуку зі шпаргалкою (searchHelpMenuHtml у lib/help.js): звичайне меню
-   шапки, лише кнопка — голий знак питання, без кружечка (так попросив користувач).
+/* «?» у полі пошуку (searchHelpButtonHtml у lib/help.js): відкриває Довідку на
+   розділі «Пошук». Голий знак питання, без кружечка (так попросив користувач).
    ✕ очищення стоїть ліворуч від нього, тому поле має відступ праворуч під обидва. */
-.search-help { position: absolute; top: 0; bottom: 0; right: 4px; align-items: center; }
+.search-help { position: absolute; top: 0; bottom: 0; right: 4px; display: flex; align-items: center; }
 .search-help-btn { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: none;
   color: var(--text-muted); font: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1; cursor: pointer; }
 .search-help-btn:hover { color: var(--text-link); background: var(--bg-hover); }
-/* 572px: пункти в один рядок займають 503px, плюс запас на інший шрифт — 520px, і ще 10% на прохання користувача. */
-.search-help-drop { top: calc(100% + 4px); width: 572px; max-width: none; padding: 10px 16px 12px; font-size: 0.8rem; color: var(--text-main); }
-.search-help:has(.open) .search-help-btn { color: var(--text-link); }
-.sh-title { font-weight: 400; font-size: 0.85rem; margin-bottom: 6px; }
-.sh-list { margin: 0; padding-left: 18px; line-height: 1.55; }
-.sh-list li { margin: 2px 0; }
-.sh-list code { font-family: var(--font-mono); font-size: 0.74rem; background: var(--bg-tag); border: 1px solid var(--border-color); border-radius: 3px; padding: 0 4px; }
-.sh-more { margin-top: 8px; color: var(--text-muted); font-size: 0.76rem; }
-.sh-link { border: 0; padding: 0; background: none; font: inherit; color: var(--text-link); cursor: pointer; }
-.sh-link:hover { text-decoration: underline; }
 .hdr-dropdown.open { display: block; }
 /* Шторка під відкритим меню — як у модальних панелей, але легша (0.28 проти 0.4):
    меню не блокує роботу, воно закривається будь-яким кліком. z-index 9, а не
@@ -2221,7 +2211,7 @@ const html = `<!DOCTYPE html>
       <div class="search-wrap">
         <span class="search-icon">${ICONS.search}</span>
         <input type="text" id="search-input" class="header-search-input" placeholder="Пошук товарів, кодів, категорій...">
-        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>${searchHelpMenuHtml()}
+        <button id="btn-clear-search" class="btn-clear-search" data-tip="Очистити пошук (Esc)" style="display:none;">✕</button>${searchHelpButtonHtml()}
       </div>
     </div>
     <div class="header-right">
