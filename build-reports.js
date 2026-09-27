@@ -33,7 +33,7 @@
 const fs = require('fs');
 const path = require('path');
 const { ICONS } = require('./lib/icons');
-const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, writeLogos } = require('./lib/help');
+const { helpButtonHtml, writeLogos } = require('./lib/help');
 const { assetVer, contentVer } = require('./lib/assets');
 const { narrowGuardHtml } = require('./lib/notice');
 
@@ -443,10 +443,8 @@ function initReportsPage() {
   }
 
   initThemeToggle();
-  setupModalOverlay('help-overlay', null, 'btn-help-close');
-  setupModalOverlay('about-overlay', null, 'btn-about-close');
-  setupModalOverlay('credits-overlay', null, 'btn-credits-close');
   initHeaderMenus();
+  initHelpWindow();
   initNarrowGuard();
   setupTooltips();
   Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json'),
@@ -606,39 +604,13 @@ const html = `<!DOCTYPE html>
     <div class="header-center"></div>
     <div class="header-right">
       <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
-${helpMenuHtml('Що означають типи змін і як рахується період')}
+${helpButtonHtml('changes', '../')}
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
       <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
 
 ${narrowGuardHtml()}
-${aboutPanelHtml()}${creditsPanelHtml('../')}
-  <div class="help-overlay" id="help-overlay">
-    <div class="help-panel">
-      <div class="help-panel-head">
-        <h3>Як читати зміни каталогу</h3>
-        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
-      </div>
-      <div class="help-panel-body">
-        <div class="help-term"><div class="help-term-label">Період</div>
-          <div class="help-term-desc">Порівнюються два знімки каталогу: на початок і на кінець періоду. Скрапер знімає каталог щоночі. Зміни <b>всередині</b> періоду не видно: товар, що зник і повернувся між двома датами, не потрапить у список. Побачити, в які дні щось відбувалося, можна на графіку.</div></div>
-        <div class="help-term"><div class="help-term-label">Графік «Змін за день»</div>
-          <div class="help-term-desc">Кожен стовпчик показує, скільки змін було саме того дня порівняно з попереднім знімком. Синім виділено дні, що входять у вибраний період. Клік по стовпчику починає період із цього дня. Графік згорнутий за замовчуванням: розгортається кліком по назві, і браузер запам'ятовує вибір.</div></div>
-        <div class="help-term"><div class="help-term-label">▼ Зникли з наявності · ▲ Знову в наявності</div>
-          <div class="help-term-desc">Статус товару змінився між «Готово до відправки» та будь-яким іншим (зазвичай «Немає в наявності»).</div></div>
-        <div class="help-term"><div class="help-term-label">+ Нові · − Видалені товари</div>
-          <div class="help-term-desc">Товар з'явився на сайті або зник із нього (за внутрішнім ID сайту, а не за назвою).</div></div>
-        <div class="help-term"><div class="help-term-label">⇄ Змінили категорію</div>
-          <div class="help-term-desc">Той самий товар тепер лежить в іншій категорії. Перейменування товарів не відстежуються.</div></div>
-        <div class="help-term"><div class="help-term-label">✎ Структура категорій</div>
-          <div class="help-term-desc">Категорії, що з'явились, зникли, були перейменовані або перенесені до іншого батьківського розділу.</div></div>
-        <div class="help-term"><div class="help-term-label">Поділитися</div>
-          <div class="help-term-desc">Вибраний період зберігається в адресі сторінки (<code>?from=…&amp;to=…</code>): скопіюйте посилання, і той, хто його відкриє, побачить те саме порівняння.</div></div>
-      </div>
-    </div>
-  </div>
-
   <main class="rep-wrap">
     <div class="top-row">
       <h1>Історія змін каталогу<span class="muted" id="period-label"></span></h1>

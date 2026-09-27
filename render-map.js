@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { helpMenuHtml, aboutPanelHtml, creditsPanelHtml, searchHelpHtml, searchHelpMenuHtml, writeLogos } = require('./lib/help');
+const { helpButtonHtml, searchHelpMenuHtml, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
@@ -539,6 +539,19 @@ button.hdr-stamp[data-tip] { cursor: help; }
 }
 #custom-tooltip.visible { opacity: 1; }
 
+/* Вікно Довідки (initHelpWindow): help.html в iframe поверх сторінки. Над
+   модальними панелями (100), під підказкою (200). .full — на весь екран. */
+.help-window {
+  position: fixed; inset: 0; z-index: 150; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.4);
+}
+.help-window.open { display: flex; }
+.help-window-frame {
+  width: min(1180px, calc(100vw - 64px)); height: calc(100vh - 80px); border: 0; border-radius: 10px;
+  background: var(--bg-white); box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.help-window.full .help-window-frame { width: 100vw; height: 100vh; border-radius: 0; }
+
 .help-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100;
   display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto;
@@ -716,6 +729,67 @@ function initNarrowGuard() {
 // Дропдауни шапки: відкритий завжди один, закриваються кліком поза межами
 // й Esc. Свідомо не через setupModalOverlay: той робить модальне вікно із
 // затемненням на весь екран, а тут потрібен список під своєю кнопкою.
+// ==================== ВІКНО ДОВІДКИ (усі три сторінки) ====================
+// Кнопка з data-help="<розділ>" відкриває help.html у вікні поверх сторінки,
+// одразу на цьому розділі; сторінка під ним лишається як була (концепт 2,
+// 27.09.2026). Вікно й iframe створюються лише при першому відкритті, щоб
+// сторінка не вантажила Довідку, яку, можливо, ніхто не відкриє. Закривають ✕ і
+// Esc (вони в самій Довідці, приходять повідомленням), Esc на цій сторінці й
+// клік по затемненню; ⤢ розгортає на весь екран, вибір запам'ятовується.
+function initHelpWindow() {
+  var win = null, frame = null;
+  function isFull() { return !!win && win.classList.contains('full'); }
+  function tellFrame() {
+    try { frame.contentWindow.postMessage(isFull() ? 'help-full-on' : 'help-full-off', '*'); } catch (e) {}
+  }
+  function close() { if (win) win.classList.remove('open'); }
+  function open(section, src) {
+    var url = src + '#' + section;
+    if (!win) {
+      win = document.createElement('div');
+      win.className = 'help-window';
+      try { if (localStorage.getItem('help-full') === '1') win.classList.add('full'); } catch (e) {}
+      frame = document.createElement('iframe');
+      frame.className = 'help-window-frame';
+      frame.setAttribute('title', 'Довідка');
+      frame.addEventListener('load', tellFrame);
+      win.appendChild(frame);
+      document.body.appendChild(win);
+      win.addEventListener('click', function (e) { if (e.target === win) close(); });
+      frame.src = url;
+    } else {
+      // Той самий документ: міняємо лише розділ, без перезавантаження.
+      try { frame.contentWindow.location.hash = '#' + section; } catch (e) { frame.src = url; }
+    }
+    win.classList.add('open');
+    var tip = document.getElementById('custom-tooltip');
+    if (tip) tip.classList.remove('visible');
+    setTimeout(function () { try { frame.focus(); } catch (e) {} }, 50);
+  }
+  // Фаза перехоплення: «Докладніше в Довідці» лежить у шпаргалці пошуку, а
+  // випадне меню зупиняє спливання кліків усередині себе (initHeaderMenus).
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-help]') : null;
+    if (!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    Array.prototype.forEach.call(document.querySelectorAll('.hdr-dropdown.open'), function (d) { d.classList.remove('open'); });
+    var scrim = document.querySelector('.menu-scrim');
+    if (scrim) scrim.classList.remove('open');
+    open(b.getAttribute('data-help'), b.getAttribute('data-help-src') || 'help.html');
+  }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  window.addEventListener('message', function (e) {
+    if (!frame || e.source !== frame.contentWindow) return;
+    if (e.data === 'help-close') close();
+    if (e.data === 'help-full') {
+      win.classList.toggle('full');
+      try { localStorage.setItem('help-full', isFull() ? '1' : '0'); } catch (x) {}
+      tellFrame();
+    }
+  });
+}
+
 function initHeaderMenus() {
   var drops = [];
   // Шторка — окремий елемент .menu-scrim (CSS вище), клас open на ньому вмикає
@@ -1914,12 +1988,8 @@ function initCatalogMap(CATALOG_DATA) {
       });
     });
 
-    // Відкривача-кнопки в панелей більше немає — їх відкриває рядок меню «Довідка»
-    // (initHeaderMenus), тож setupModalOverlay потрібен лише заради закриття.
-    setupModalOverlay('help-overlay', null, 'btn-help-close');
-    setupModalOverlay('about-overlay', null, 'btn-about-close');
-    setupModalOverlay('credits-overlay', null, 'btn-credits-close');
     initHeaderMenus();
+    initHelpWindow();
     setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 
     var searchInput = document.getElementById('search-input');
@@ -2020,7 +2090,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
@@ -2150,7 +2220,7 @@ const html = `<!DOCTYPE html>
     <div class="header-right">
       <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
       <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
-${helpMenuHtml('Пояснення до цифр і позначок на цій сторінці')}
+${helpButtonHtml('category')}
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
@@ -2158,39 +2228,8 @@ ${helpMenuHtml('Пояснення до цифр і позначок на цій
     </div>
   </header>
 
-  <div class="help-overlay" id="help-overlay">
-    <div class="help-panel">
-      <div class="help-panel-head">
-        <h3>Що означають ці цифри та позначки</h3>
-        <button class="btn-help-close" id="btn-help-close" data-tip="Закрити (Esc)">✕</button>
-      </div>
-      <div class="help-panel-body">
-        <div class="help-term">
-          <div class="help-term-label"><span class="level-tag">Рівень N</span></div>
-          <div class="help-term-desc">Глибина вкладеності категорії в дереві каталогу сайту.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label">Число в дужках біля назви категорії в лівому меню</div>
-          <div class="help-term-desc">Кількість товарів, які не входять до підкатегорій.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label">Товарів</div>
-          <div class="help-term-desc">Кількість товарів у категорії разом з усіма підкатегоріями.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label">В наявності</div>
-          <div class="help-term-desc">Перше число: кількість товарів зі статусом «Готово до відправки», яке нарахував скрапер. Друге число: кількість товарів з лічильника «В наявності» сайту.</div>
-        </div>
-        <div class="help-term">
-          <div class="help-term-label">Зелений/червоний колір в стовпчику «В наявності»</div>
-          <div class="help-term-desc">Зелений: точний збіг. Червоний: будь-яка розбіжність.</div>
-        </div>${searchHelpHtml(' Спершу показує товари цього розділу, під ними знайдені в інших розділах сайту.')}
-      </div>
-    </div>
-  </div>
 ${narrowGuardHtml()}
   ${orphanPanelHtml}
-${aboutPanelHtml()}${creditsPanelHtml()}
 
   <div class="workspace">
     <aside class="sidebar">
