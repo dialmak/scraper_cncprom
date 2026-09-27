@@ -528,7 +528,10 @@ th.th-sort.active .sort-arrow { opacity: 1; color: var(--text-link); }
    відбувається, тож знак питання, а не рука від .btn-theme-toggle. */
 button.hdr-stamp[data-tip] { cursor: help; }
 #custom-tooltip {
-  position: fixed; z-index: 200; max-width: 300px;
+  /* 510, не 300: при 300 речення-рядок підказок «Немає в наявності» й «В наявності»
+     на map.html ламались на два (користувач 27.09.2026: «в один рядок»); 510 вміщує
+     всі речення, розділені "\n", довгі абзаци переносяться як і раніше. */
+  position: fixed; z-index: 200; max-width: 510px; box-sizing: border-box;
   background: var(--text-main); color: var(--bg-white);
   padding: 8px 10px; border-radius: 6px;
   /* pre-line, не normal: дає звичайне перенесення по ширині (max-width вище) і
