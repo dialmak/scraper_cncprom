@@ -477,7 +477,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-failed-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">Скрапер не зміг прочитати сторінку цих товарів навіть після повторного проходу, тому їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту: наступний нічний прогін їх підхопить.</p>
+        <p class="failed-note">Скрапер не зміг прочитати сторінку цих товарів навіть після повторного проходу, тому їх немає на мапі, у пошуку й у звірці з лічильником сайту. Зазвичай це короткий збій сайту: наступний нічний скрапінг їх підхопить.</p>
         <div class="orphan-group-list">${failedGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">${ICONS.folder} ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.failed_urls.length})</span></a>
@@ -501,7 +501,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <div class="help-overlay" id="errors-overlay">
     <div class="help-panel">
       <div class="help-panel-head">
-        <h3>Помилки останнього прогону (${errorTotal})</h3>
+        <h3>Помилки останнього скрапінгу (${errorTotal})</h3>
         <button class="btn-help-close" id="btn-errors-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
@@ -544,7 +544,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-mismatch-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності» для того ж рівня категорії. Збіг має бути точним: прогін нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не співпало. Причину шукайте в найглибшому рівні. Якщо ж розбіжність є лише в самої категорії, а підкатегорії в нормі, бракує саме її власних товарів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
+        <p class="failed-note">Скрапер рахує товари зі статусом «Готово до відправки» і порівнює з власним лічильником сайту «В наявності» для того ж рівня категорії. Збіг має бути точним: скрапінг нічний, замовлень тоді немає, тож навіть різниця в одиницю означає, що щось не співпало. Причину шукайте в найглибшому рівні. Якщо ж розбіжність є лише в самої категорії, а підкатегорії в нормі, бракує саме її власних товарів.<br>Натисніть назву, щоб відкрити цей вузол на мапі.</p>
         <div class="orphan-group-list">${mismatchGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">${ICONS.folder} ${escapeHtmlOuter(e.name)}</a>

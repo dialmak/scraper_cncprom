@@ -1609,7 +1609,7 @@ function initCatalogMap(CATALOG_DATA) {
     });
 
     badge.textContent = 'Рівень ' + node.level;
-    badge.setAttribute('data-tip', 'Глибина вкладеності цієї категорії в дереві каталогу (1 = коренева категорія цього прогону).');
+    badge.setAttribute('data-tip', 'Глибина вкладеності цієї категорії в дереві каталогу (1 = коренева категорія цього розділу).');
     totalCell.textContent = node.stats.total_products;
     verdict.innerHTML = diffBadge(node.stats);
     totalNoCell.innerHTML = '<span class="count-no">' + node.stats.total_no + '</span>';
@@ -1726,7 +1726,7 @@ function initCatalogMap(CATALOG_DATA) {
             '<tr>' +
             '<td class="col-n">' + (i + 1) + '</td>' +
             '<td><a href="#" class="cat-jump-link fw-cat-link" data-id="' + ch.id + '">' + escapeHtml(ch.name) + '</a></td>' +
-            '<td style="width:80px;text-align:center;"><span class="level-tag" data-tip="Глибина вкладеності в дереві категорій (1 = коренева категорія цього прогону).">Рівень ' + ch.level + '</span></td>' +
+            '<td style="width:80px;text-align:center;"><span class="level-tag" data-tip="Глибина вкладеності в дереві категорій (1 = коренева категорія цього розділу).">Рівень ' + ch.level + '</span></td>' +
             '<td style="width:90px;text-align:center;" class="fw-count-cell">' + ch.stats.total_products + '</td>' +
             '<td style="width:100px;text-align:center;">' + diffBadge(ch.stats) + '</td>' +
             '<td style="width:78px;text-align:center;"><span class="count-no">' + ch.stats.total_no + '</span></td>' +

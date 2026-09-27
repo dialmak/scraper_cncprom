@@ -452,7 +452,7 @@ function initReportsPage() {
     idx = r[0]; products = r[1]; catUrls = r[2];
     $('generated').textContent = fmtLong(idx.dates[idx.dates.length - 1]);
     if (idx.dates.length < 2) {
-      $('panel-wrap').innerHTML = '<div class="card empty"><b>Поки що є лише один знімок (' + fmtLong(idx.dates[0]) + ')</b>Порівняння з\'явиться після наступного нічного прогону.</div>';
+      $('panel-wrap').innerHTML = '<div class="card empty"><b>Поки що є лише один знімок (' + fmtLong(idx.dates[0]) + ')</b>Порівняння з\'явиться після наступного нічного скрапінгу.</div>';
       $('chart-card').style.display = 'none'; $('tiles').style.display = 'none'; $('range').style.display = 'none';
       return;
     }
