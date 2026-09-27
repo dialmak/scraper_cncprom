@@ -1,7 +1,9 @@
-name: Скрапінг + деплой мапи на GitHub Pages
+name: Скрапінг та перебудова сайту
 
 # Нічний прогін повного конвеєра на ubuntu-latest: scrape-site → build-maps →
-# знімок дня в гілку data → build-reports.
+# знімок дня в гілку data → build-reports. Запускається за розкладом і вручну.
+# Перебудова без скрапінгу — окремий workflow «Перебудувати сайт»
+# (rebuild-pages.yml), який викликає цей зі scrape: false.
 # Готовий output/site/ пушиться одним orphan-комітом у гілку `site`, з якої
 # GitHub Pages публікує сайт (Settings → Pages → Deploy from a branch, site /).
 # Вміст гілки — корінь сайту: /map.html, /<id>_map.html, /reports/index.html.
@@ -22,21 +24,19 @@ on:
     - cron: '18 20 * * *'
   workflow_dispatch: # ручний запуск з вкладки Actions
     inputs:
-      rebuild_only:
-        # Лише перебудувати мапи й сторінку змін НОВИМ кодом з даних останнього
-        # опублікованого прогону (fetch-published.js) — пів хвилини замість ~3 год.
-        # Без скрапінгу, без нового знімка й без коміту в гілку data.
-        # Типово УВІМКНЕНО: ручний запуск майже завжди означає «викотити код», а
-        # клік без галочки запускав тригодинний скрапінг. Повний прогін вручну —
-        # зняти галочку (gh: -f rebuild_only=false).
-        description: 'Без скрапінгу: перебудувати сайт з уже опублікованих даних (зніміть, щоб скрапити весь сайт, ~3 год)'
+      scrape:
+        # Знята галочка — лише перебудувати мапи й сторінку змін НОВИМ кодом з
+        # даних останнього опублікованого прогону (fetch-published.js): без
+        # скрапінгу, без нового знімка й без коміту в гілку data. Для цього є
+        # окрема кнопка «Перебудувати сайт»; тут галочка лишена про запас.
+        description: 'Скрапінг (~3 год). Зніміть — лише перебудувати сайт з опублікованих даних'
         type: boolean
         default: true
-  # Виклик з rebuild-pages.yml — окрема кнопка «Перебудувати сайт» у списку
-  # Actions, без галочок і без дублювання кроків.
+  # Виклик з rebuild-pages.yml («Перебудувати сайт») зі scrape: false — окремий
+  # пункт у списку Actions без дублювання кроків.
   workflow_call:
     inputs:
-      rebuild_only:
+      scrape:
         type: boolean
         default: true
 
@@ -49,19 +49,20 @@ jobs:
   scrape-and-build:
     runs-on: ubuntu-latest
     # Не даємо двом прогонам публікувати одночасно (нічний за розкладом міг
-    # накластися на ручний запуск чи на rebuild-pages.yml) — другий чекає.
+    # накластися на ручний запуск чи на «Перебудувати сайт») — другий чекає.
     # На рівні job, а не workflow: при виклику через workflow_call однакова
     # група на рівні workflow в того, хто викликає, і кого викликають, може
     # заблокувати сама себе.
     concurrency:
       group: pages
       cancel-in-progress: false
-    # Режим прогону — один раз тут, кроки читають env.REBUILD_ONLY. Розклад
-    # скрапить ЗАВЖДИ, незалежно від значення галочки за замовчуванням: у
-    # schedule inputs порожні, але покладатися лише на це не можна — зміна
-    # поведінки GitHub тихо вимкнула б нічний скрапінг.
+    # Режим прогону — один раз тут, кроки читають env.SCRAPE ('true'/'false').
+    # Розклад скрапить ЗАВЖДИ: у schedule inputs порожні, а порівняння у
+    # виразах нестроге (null == false), тож без окремої умови на розклад
+    # нічний прогін лише перебудовував би сайт. Вручну й через workflow_call
+    # значення завжди є — з галочки або default: true.
     env:
-      REBUILD_ONLY: ${{ github.event_name != 'schedule' && inputs.rebuild_only == true }}
+      SCRAPE: ${{ github.event_name == 'schedule' || inputs.scrape == true }}
     # Реальний нічний прогін усіх 23 категорій зараз ~3 год — лишаємо
     # запас, але нижче платформного ліміту в 360 хв, щоб зависання падало явно,
     # а не мовчки з'їдало весь ліміт.
@@ -80,7 +81,7 @@ jobs:
         run: npm ci
 
       - name: Встановити Chromium для Playwright
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         run: npx playwright install --with-deps chromium
 
       - name: Адреса GitHub Pages
@@ -88,7 +89,7 @@ jobs:
         run: echo "url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
 
       - name: Дата знімка
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         # Знімок датується РАНКОМ, якому належить: прогін стартує ввечері і
         # триває ~3 год, тож вечірній старт — це дата наступного дня.
         #
@@ -104,24 +105,24 @@ jobs:
           echo "Знімок цього прогону буде датовано $d"
 
       - name: "Історія логів з опублікованого сайту"
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         # Чекаут свіжий, output/ порожній — без цього кроку scrape.jsonl щоночі
         # починався б з нуля, і таблиця прогонів на сайті мала б одну ніч. Сайт
         # недоступний — не помилка: скрипт лише попередить, скрапінг піде далі.
         run: node fetch-published.js --logs-only "${{ steps.pages-url.outputs.url }}"
 
       - name: Етап 1 — розвідка категорій + скрапінг усіх за чергою
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         run: node scrape-site.js
 
       - name: "Без скрапінгу: дані останнього опублікованого прогону"
-        if: ${{ env.REBUILD_ONLY == 'true' }}
+        if: ${{ env.SCRAPE != 'true' }}
         run: node fetch-published.js "${{ steps.pages-url.outputs.url }}"
 
       - name: Етап 2 — згенерувати мапи + індекс
         # Звідки збірка — для колонки «Збірка» у «Лозі збірки» (map.jsonl).
         env:
-          BUILD_KIND: ${{ env.REBUILD_ONLY == 'true' && 'rebuild' || (github.event_name == 'schedule' && 'nightly' || 'manual') }}
+          BUILD_KIND: ${{ env.SCRAPE != 'true' && 'rebuild' || (github.event_name == 'schedule' && 'nightly' || 'manual') }}
         run: node build-maps.js
 
       - name: "Підготувати робочу копію гілки data"
@@ -136,11 +137,11 @@ jobs:
           fi
 
       - name: "Знімок дня"
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         run: node generate-snapshot.js data-branch
 
       - name: "Закомітити й запушити гілку data"
-        if: ${{ env.REBUILD_ONLY != 'true' }}
+        if: ${{ env.SCRAPE == 'true' }}
         run: |
           cd data-branch
           git add snapshots
