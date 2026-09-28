@@ -811,7 +811,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab tr.rl-det td { border-bottom: 0; padding-top: 0; padding-bottom: 5px;
     color: var(--text-muted); font-size: 0.72rem; }
   /* Рядок «Фініш скрапінгу» — підсумок прогону, не категорія: без зебри й рамки. */
-  .rl-tab tbody.rl-end td { color: var(--text-muted); font-weight: 600; }
+  /* Час — як у решті рядків (не жирний, --text-subtle з td.rl-t): до 28.09.2026 правило
+     чіпляло й його, і час «Фінішу» виділявся (зауваження користувача). */
+  .rl-tab tbody.rl-end td:not(.rl-t) { color: var(--text-muted); font-weight: 600; }
   .rl-tab tfoot td { border-bottom: 0; border-top: 1px solid var(--border-dark); padding-top: 6px; }
   /* «Лог скрапінгу»: щоб аномалії було видно, числа в рядках категорій синім, а
      «Разом» — червоним (вибір користувача 28.09.2026 зі сторінки «до / після», варіант
@@ -820,6 +822,10 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
      курсор звичайний, хоч синій на сайті зазвичай означає посилання. */
   #scrape-log-overlay .rl-tab tbody.rl-grp td.rl-n { color: var(--text-link); }
   #scrape-log-overlay .rl-tab tfoot td.rl-n { color: var(--status-no); }
+  /* Напівжирні (28.09.2026, варіант «в»): тонкі дрібні кольорові цифри здавались
+     блідими, хоч контраст ≥ 5:1. Crimson замість синього користувач відхилив: він
+     зливався з червоним «Разом». 600, як інші числа сайту (не 700). */
+  #scrape-log-overlay .rl-tab tbody.rl-grp td.rl-n, #scrape-log-overlay .rl-tab tfoot td.rl-n { font-weight: 600; }
   .rl-br { font-family: var(--font-mono); color: var(--text-faint); }
   .rl-note + .rl-note { margin-top: 3px; }
   /* Товари під приміткою — на рівні її тексту, після «└─». */
