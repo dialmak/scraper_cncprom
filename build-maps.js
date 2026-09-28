@@ -507,7 +507,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
         <button class="btn-help-close" id="btn-errors-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">Що саме пішло не так під час останнього скрапінгу кожної категорії. Ті самі помилки, що й у «Лозі скрапінгу», але зібрані разом. Дані категорії при цьому могли зібратись частково: звіряйте з колонкою «В наявності».</p>
+        <p class="failed-note">Що саме пішло не так під час останнього скрапінгу кожної категорії. Ті самі помилки, що й у «Лог скрапінгу», але зібрані разом. Дані категорії при цьому могли зібратись частково: звіряйте з колонкою «В наявності».</p>
         <div class="orphan-group-list">${errorGroups.map(e => `
           <div class="orphan-group">
             <a href="${escapeHtmlOuter(e.id)}_map.html" class="orphan-group-head">${ICONS.folder} ${escapeHtmlOuter(e.name)} <span class="node-count">(${e.run_errors.length})</span></a>
@@ -1064,5 +1064,5 @@ function writeRedirect(file, target) {
   // зник би весь нічний результат (знімок, сторінка змін, деплой) через одну
   // категорію з 23. Сигналом лишається ⚠️ в самому індексі й помилка в «Лозі
   // збірки», які видно там, де дивляться.
-  console.log("Готово. Деталі — у «Лозі збірки» (map.jsonl).");
+  console.log("Готово. Деталі в «Лог збірки» (map.jsonl).");
 })();
