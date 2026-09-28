@@ -43,10 +43,14 @@ let XLSX_FILE = `${XLSX_PREFIX}_${XLSX_DATE}.xlsx`;
 // ==================== ЛОГ (map.jsonl — доповнюється, як scrape.jsonl) ====================
 // Одна збірка = build-start, за потреби error, build-finish; усі з одним build.
 // BUILD_KIND ставить workflow (nightly / rebuild / manual); локально його немає.
+// У map.jsonl пишеться ЛИШЕ нічна збірка (рішення користувача 28.09.2026): перебудови
+// після кожної правки дописували десятки записів на день і засмічували «Лог збірки».
+// Решта збірок пише ті самі рядки лише в консоль (видно в журналі GitHub Actions).
 const BUILD_ID = new Date().toISOString();
 const BUILD_KIND = process.env.BUILD_KIND || 'local';
+const LOG_TO_FILE = BUILD_KIND === 'nightly';
 const BUILD_T0 = Date.now();
-const logEvt = (ev, fields) => logEvent(LOG_FILE, ev, Object.assign({ build: BUILD_ID, kind: BUILD_KIND }, fields));
+const logEvt = (ev, fields) => logEvent(LOG_TO_FILE ? LOG_FILE : null, ev, Object.assign({ build: BUILD_ID, kind: BUILD_KIND }, fields));
 let buildErrors = 0;
 const logError = msg => { buildErrors++; logEvt('error', { msg }); };
 
