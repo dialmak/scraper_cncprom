@@ -9,6 +9,7 @@ const { spawnSync } = require('child_process');
 const { logEvent, readEvents } = require('./lib/log');
 const { runLogHtml, buildLogHtml } = require('./lib/runlog');
 const { plural } = require('./lib/plural');
+const { signed } = require('./lib/num');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
@@ -129,7 +130,7 @@ function mismatchFigures(row) {
   if (counter === null || counter === undefined || diff === null || diff === undefined) {
     return 'зібрано ' + collected + ', лічильник сайту не зчитано';
   }
-  return 'зібрано ' + collected + ', сайт ' + counter + ', різниця ' + (diff > 0 ? '+' : '') + diff;
+  return 'зібрано ' + collected + ', сайт ' + counter + ', різниця ' + signed(diff);
 }
 
 // ==================== ЕКСПОРТ МАПИ КАТЕГОРІЙ У XLSX ====================
@@ -541,7 +542,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // сайту рахує всю гілку, тож розбіжність у підкатегорії повторюється в усіх її батьків
   // і сума по вузлах помножила б її на глибину (дало б 42 замість 17).
   const mismatchDiff = sorted.reduce((n, e) => n + (Number.isFinite(e.diff) ? e.diff : 0), 0);
-  const mismatchDiffText = (mismatchDiff > 0 ? '+' : '') + mismatchDiff;
+  const mismatchDiffText = signed(mismatchDiff);
   const mismatchPanelHtml = mismatchTotal === 0 ? '' : `
   <div class="help-overlay" id="mismatch-overlay">
     <div class="help-panel">
@@ -788,8 +789,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .rl-tab th:nth-child(2) { width: 180px; }
   /* white-space: nowrap — рядки шапки задано вручну через <br> (формулювання користувача),
      і жоден з них не має розпадатись усередині. Найдовший — «Не збігається»; те, що він
-     вміщається у свою колонку, стереже смоук-тест. */
-  .rl-tab th { text-align: left; font-weight: 600; font-size: 0.68rem; color: var(--text-muted);
+     вміщається у свою колонку, стереже смоук-тест. Розмір шапки — як у комірок
+     (28.09.2026, користувач: «чому шрифт у назві стовпчика менше»); до того 0.68rem,
+     заміряно, що в 0.76rem усі назви все одно влазять. Колір лишається приглушеним,
+     як у всіх таблицях сайту (користувач: «не міняти»). */
+  .rl-tab th { text-align: left; font-weight: 600; font-size: 0.76rem; color: var(--text-muted);
     padding: 5px 8px; border-bottom: 1px solid var(--border-dark); vertical-align: bottom; white-space: nowrap; }
   .rl-tab td { padding: 3px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
   /* Числові колонки і «Статус» — по центру в обох напрямках (26.09.2026, на прохання
