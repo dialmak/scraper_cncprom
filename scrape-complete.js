@@ -659,7 +659,7 @@ function buildCategoryStats(node, allRows, depth = 0, out = []) {
     });
   } catch (fatalErr) {
     const elapsedMin = ((Date.now() - startTime) / 60000).toFixed(1);
-    logError(`ФАТАЛЬНА: ${fatalErr && fatalErr.message ? fatalErr.message : fatalErr}`);
+    logError(`Фатальна помилка: ${fatalErr && fatalErr.message ? fatalErr.message : fatalErr}`);
     logEvt('finish', { id: START_CATEGORY_ID, aborted: true, min: +elapsedMin, errors: runErrors.length });
     console.error('Скрапінг перервано помилкою:', fatalErr);
     process.exitCode = 1;
