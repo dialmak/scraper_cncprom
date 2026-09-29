@@ -304,6 +304,12 @@ html, body { height: auto; overflow: visible; }
 /* 11 колонок мають влазити від 1300px без горизонтальної прокрутки: ширини фіксовані
    (<colgroup>), решту ділять «Товар» і «Категорія Prom»; відступи вужчі за звичайні. */
 .pt-table { table-layout: fixed; }
+/* «Товар» — на 30% вужчий, ніж коли він ділив залишок порівну з «Категорією Prom»
+   (користувач 29.09.2026), на будь-якій ширині: 0.7 × (T − 728) / 2, де T — ширина таблиці,
+   728 — сума фіксованих колонок до того, як «Категорію магазину» розширили до 240px.
+   cqw, а не %: calc() з % у ширині колонки браузер ігнорує (стає auto). */
+.pt-card { container-type: inline-size; }
+.pt-col-name { width: calc(35cqw - 254.8px); }
 /* Шапка таблиці закріплена під шапкою сайту (.app-header, 44px) при прокрутці сторінки.
    Нижня межа — тінню: з border-collapse рамка sticky-комірки лишається на місці. */
 .pt-table thead th { position: sticky; top: 44px; z-index: 5; box-shadow: inset 0 -1px 0 var(--border-color); }
@@ -373,16 +379,18 @@ ${narrowGuardHtml()}
     <h2>Товари (${ps.length})</h2>
     <div class="pt-card"><table class="simple-table pt-table">
       <colgroup>
-        <col style="width:34px"><col><col style="width:88px"><col style="width:120px"><col>
-        <col style="width:64px"><col style="width:84px"><col style="width:84px">
+        <col style="width:34px"><col class="pt-col-name"><col style="width:88px"><col style="width:240px"><col>
+        <col style="width:64px"><col style="width:104px"><col style="width:84px">
         <col style="width:106px"><col style="width:52px"><col style="width:96px">
       </colgroup>
       <thead><tr>
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
-        <th class="num c">Рівень<br>категорії</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="% від ціни, з файлу «${esc(COMMISSION_FILES[0].file)}». Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія в гривнях за перехід на картку товару, з файлу «${esc(COMMISSION_FILES[1].file)}».\nТак Prom бере оплату в категоріях, яких немає у файлі «за замовлення».\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<br>за перехід<span class="sort-ind"></span></th>
+        <th class="num c" data-tip="Рівень категорії Prom">Рівень<br>категорії</th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Єдина комісія за замовлення у % від ціни
+Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за замовлення</th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія за перехід на картку товару, грн
+Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за перехід</th>
         <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
