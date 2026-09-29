@@ -670,12 +670,24 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // сума знайденого: сума змішувала б вузли з товарами. Коли все чисто,
   // значка немає зовсім — червоний «0» читався б як проблема.
   const checksProblems = [mismatchTotal, crumbTotal, crumbUnknownTotal].filter(n => n > 0).length;
+  // Розділ «Аудит категорій товару на prom.ua» (назва користувача, 29.09.2026): поки
+  // лише пробна сторінка platform-test.html (platform-test.js), тож у значок кнопки
+  // не рахується. Сторінка окрема, не панель: <a>, а не [data-open].
+  const platformRowHtml = `
+          <div class="check-row">
+            <span>${ICONS.platform}</span><span class="nm" data-tip="Пробний тест: категорії платформи Prom, комісії й службові дані товарів однієї категорії («Контролери для ЧПК»)">Тест платформи</span>
+            <span class="val">пробний</span>
+            <a class="act" href="platform-test.html">відкрити</a>
+          </div>`;
   const checksMenuButtonHtml = `
       <div class="hdr-menu">
         <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">${ICONS.checks} Звірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
         <div class="hdr-dropdown" id="checks-dropdown">
           <h3>Звірка скрапера з даними сайту</h3>
           <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, null, 'mismatch-overlay', `${mismatchDiffText} ${plural(Math.abs(mismatchDiff), 'товар', 'товари', 'товарів')}`)}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
+          </div>
+          <h3>Аудит категорій товару на prom.ua</h3>
+          <div>${platformRowHtml}
           </div>
         </div>
       </div>`;

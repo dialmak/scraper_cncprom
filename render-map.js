@@ -684,6 +684,7 @@ button.hdr-stamp[data-tip] { cursor: help; }
 /* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
 .check-row .act { font: inherit; color: var(--text-link); background: none;
   border: 0; padding: 0; cursor: pointer; }
+.check-row a.act { text-decoration: none; }  /* рядок-посилання на окрему сторінку (Тест платформи) */
 .check-row .act:hover { text-decoration: underline; }
 /* "немає" — стан, а не дія: без кольору посилання, без підкреслення й руки. */
 .check-row .act.none { color: var(--text-subtle); cursor: default; }

@@ -154,6 +154,14 @@ jobs:
         # браузері з компактних знімків — див. build-reports.js).
         run: node build-reports.js data-branch
 
+      - name: "Тест платформи (пробний, одна категорія)"
+        # Пробна сторінка platform-test.html (platform-test.js). Зі скрапінгом —
+        # збирає заново (~5 хв запитів до сторінок товарів); без нього — бере
+        # platform-test.json, завантажений fetch-published.js, і лише перебудовує
+        # сторінку. Збій не зупиняє публікацію сайту: це лише тест.
+        continue-on-error: true
+        run: node platform-test.js 1022485 ${{ env.SCRAPE != 'true' && '--reuse' || '' }}
+
       - name: "Опублікувати сайт у гілку site"
         # Окремий репозиторій просто в output/site: `main` цю теку гітигнорить,
         # тож додати її як звичайні файли з основного checkout не вийде.
