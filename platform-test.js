@@ -9,8 +9,10 @@
 //     ціна в гривнях і доларах, тип продажу, Prom-оплата, доставка Rozetka тощо.
 //     Це не офіційний інтерфейс: Prom може змінити його без попередження;
 //   - JSON-LD Product (код, ціна, наявність, фото, опис) і блок характеристик.
-// Назви категорій Prom і комісії — з таблиці «Комісія Prom» (Google Sheets,
-// відкривається без входу; два аркуші: комісія за замовлення і за перехід).
+// Назви категорій Prom і «Єдина комісія» — з файлу Комісія_Prom.csv у корені репозиторію
+// (дав користувач 29.09.2026; «;», UTF-8 з BOM; до того бралися з Google-таблиці «Комісія
+// Prom», яку користувач сказав більше не використовувати). Шукаються під час побудови
+// сторінки, не під час збору: новий файл підхоплює й --reuse, без повторного збору.
 //
 // node platform-test.js [categoryId] [--reuse]
 //   без --reuse — зібрати заново (≈3 хв на 180 товарів) і побудувати сторінку;
@@ -38,57 +40,35 @@ const CAT_ID = ARGS.find(a => /^\d+$/.test(a)) || '1022485';   // Контрол
 const DELAY_MS = 700;   // ввічливість до сервера, як DELAY_MS у скрапері
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36';
 
-const SHEET_ID = '1mQ86nxmPTsEj23MAAu4bGn4iKtaX-yEIiKefu4SqvkA';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-const SHEETS = [
-  { kind: 'order', gid: '688167001', title: 'Категорії з комісією за замовлення' },
-  { kind: 'click', gid: '1421856945', title: 'Категорії з комісією за перехід' }
-];
+const COMMISSION_FILE = 'Комісія_Prom.csv';
+const COMMISSION_URL = 'https://github.com/dialmak/scraper_cncprom/blob/main/' + encodeURIComponent(COMMISSION_FILE);
 
-// ==================== ТАБЛИЦЯ «КОМІСІЯ PROM» ====================
-function parseCsv(t) {
-  const rows = []; let row = [], f = '', q = false;
-  for (let i = 0; i < t.length; i++) {
-    const c = t[i];
-    if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
-    else if (c === '"') q = true;
-    else if (c === ',') { row.push(f); f = ''; }
-    else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
-    else if (c !== '\r') f += c;
-  }
-  if (f || row.length) { row.push(f); rows.push(row); }
-  return rows;
-}
-
-// id → { level, names: [рівень 0 … рівень N], order?: {...}, click?: {...} }.
-// Комісії лишаються рядками, як у таблиці («6.59%», «1.71»).
-async function loadSheets() {
+// ==================== ФАЙЛ «КОМІСІЯ_PROM.CSV» ====================
+// id → { level, names: [рівень 0 … рівень N], single: «6.59%» }. Лапок у файлі немає,
+// у кожному рядку 9 полів через «;» — розбір простим split.
+function loadCommission() {
+  const t = fs.readFileSync(path.join(__dirname, COMMISSION_FILE), 'utf8').replace(/^\uFEFF/, '');
+  const rows = t.split(/\r?\n/).filter(Boolean).map(l => l.split(';').map(v => v.trim()));
+  const H = rows[0], iId = H.indexOf('ID категорії'), iLvl = H.indexOf('Рівень категорії'), iFee = H.indexOf('Єдина комісія');
+  if (iId < 0 || iLvl < 0 || iFee < 0) throw new Error(`${COMMISSION_FILE}: немає колонки «ID категорії», «Рівень категорії» чи «Єдина комісія»`);
   const byId = new Map();
-  for (const s of SHEETS) {
-    const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${s.gid}`);
-    if (!r.ok) throw new Error(`таблиця «${s.title}»: HTTP ${r.status}`);
-    const rows = parseCsv(await r.text());
-    const hi = rows.findIndex(x => x.includes('ID категорії'));
-    if (hi < 0) throw new Error(`таблиця «${s.title}»: немає колонки «ID категорії»`);
-    const H = rows[hi].map(h => h.trim());
-    const col = name => H.findIndex(h => h.startsWith(name));
-    const iId = col('ID категорії'), iLvl = col('Рівень категорії');
-    const fees = {
-      econom: col('Комісія для режиму «Економ»'), single: col('Єдина комісія'),
-      more: col('Комісія для «Більше продажів»'), turbo: col('Комісія для «Турбо»'),
-      turboClick: col('Комісія за перехід в рекламних блоках')
-    };
-    for (const x of rows.slice(hi + 1)) {
-      const id = (x[iId] || '').trim();
-      if (!/^\d+$/.test(id)) continue;
-      const level = Number(x[iLvl]);
-      const e = byId.get(id) || { level, names: x.slice(0, level + 1).map(v => v.trim()) };
-      e[s.kind] = {};
-      for (const k in fees) if (fees[k] >= 0 && x[fees[k]]) e[s.kind][k] = x[fees[k]].trim();
-      byId.set(id, e);
-    }
+  for (const x of rows.slice(1)) {
+    if (!/^\d+$/.test(x[iId] || '')) continue;
+    const level = Number(x[iLvl]);
+    byId.set(x[iId], { level, names: x.slice(0, level + 1), single: x[iFee] });
   }
   return byId;
+}
+
+// Категорія Prom товару за файлом. Назви рівнів — з рядка файлу, ланцюжок ID від кореня
+// лягає на колонки рівнів. Якщо самої категорії у файлі немає, назви її предків
+// беремо з ланцюжків інших товарів, які у файлі є (names: id → назва).
+function resolveProm(chain, byId, names) {
+  if (!chain || !chain.length) return null;
+  const ids = chain.slice().reverse();              // 0, 1 рівень, …, найглибша
+  const row = byId.get(chain[0]);
+  if (row) return { found: true, level: row.level, single: row.single, path: row.names.map((n, k) => ({ id: ids[k] || '', name: n })) };
+  return { found: false, level: ids.length - 1, single: '', path: ids.map(id => ({ id, name: names.get(id) || '' })) };
 }
 
 // ==================== СТОРІНКА ТОВАРУ ====================
@@ -130,7 +110,6 @@ async function getPage(url) {
 // ==================== ЗБІР ====================
 async function collect() {
   const catalog = JSON.parse(fs.readFileSync(path.join(DIR, `${CAT_ID}_catalog.json`), 'utf8'));
-  const sheets = await loadSheets();
   const products = [];
   let i = 0;
   for (const p of catalog.products) {
@@ -159,18 +138,12 @@ async function collect() {
       variations: c.variations ?? e.variations, product_selection: c.product_selection ?? e.product_selection,
       prosale_campaign_id: e.ec_prosale_campaign_id
     };
-    const leaf = row.chain[0] && sheets.get(row.chain[0]);
-    if (leaf) {
-      // Назви проміжних рівнів: ланцюжок від кореня лягає на колонки рівнів таблиці.
-      const ids = row.chain.slice().reverse();
-      row.prom = { level: leaf.level, path: leaf.names.map((n, k) => ({ id: ids[k] || '', name: n })), order: leaf.order || null, click: leaf.click || null };
-    }
     products.push(row);
     if (i % 20 === 0) console.log(`  ${i} з ${catalog.products.length}`);
     await sleep(DELAY_MS);
   }
   const data = { generatedAt: new Date().toISOString(), category: { id: CAT_ID, name: catalog.categoryName, url: catalog.url },
-    sheet: { url: SHEET_URL, rows: sheets.size }, products };
+    products };
   fs.writeFileSync(OUT_JSON, JSON.stringify(data));
   return data;
 }
@@ -196,37 +169,26 @@ function promHtml(p) {
   // ID — у тому ж порядку, що й назви над ними (від 1 рівня до найглибшого), без кореня 0;
   // на сторінці товару ланцюжок іде навпаки: «504 514 5 0».
   const ids = `<div class="pt-ids">${esc(p.chain.filter(x => x !== '0').reverse().join(' › '))}</div>`;
-  if (!p.prom) return `<span class="count-no">немає в таблиці «Комісія Prom»</span>${ids}`;
-  const names = p.prom.path.slice(1).map(x => esc(x.name));
-  const last = names.pop();
-  return `<span class="pt-path">${names.join('<span class="arrow-to">›</span>')}${names.length ? '<span class="arrow-to">›</span>' : ''}<b>${last}</b></span>${ids}`;
+  const parts = p.prom.path.slice(1).map(x => x.name ? esc(x.name) : `<span class="subtle">ID ${esc(x.id)}</span>`);
+  const last = parts.pop();
+  const miss = p.prom.found ? '' : `<div class="pt-sub" data-tip="Цієї категорії Prom немає у файлі ${esc(COMMISSION_FILE)}, тому немає її назви й комісії.">немає у файлі комісій</div>`;
+  return `<span class="pt-path">${parts.join('<span class="arrow-to">›</span>')}${parts.length ? '<span class="arrow-to">›</span>' : ''}<b>${last}</b></span>${ids}${miss}`;
 }
 
-// Комісії — чотири колонки, лише у відсотках і лише з аркуша «Категорії з комісією за
-// замовлення» (gid 688167001), як у таблиці «Комісія Prom» (вимога користувача
-// 29.09.2026: «комісія має бути в %»). Під «Єдиною» — сума в гривнях для ціни товару.
-// Категорії, якої на цьому аркуші немає, відсотка не існує: Prom бере за неї оплату за
-// перехід (аркуш «…за перехід», гривні) — клітинки «немає», сума за перехід у підказці.
-const FEE_KEYS = ['econom', 'single', 'more', 'turbo'];
-function feeCells(p) {
-  if (!p.prom) return FEE_KEYS.map(() => '<td class="num"></td>').join('');
-  const o = p.prom.order, c = p.prom.click, price = parseFloat(p.price);
-  if (o && pct(o.single) != null) return FEE_KEYS.map(k => {
-    const v = o[k] ? esc(o[k]) : '';
-    const sum = k === 'single' && Number.isFinite(price) ? `<div class="pt-sub">${money(price * pct(o.single) / 100)} ₴</div>` : '';
-    const tip = k === 'turbo' && o.turboClick ? ` data-tip="Ще ${esc(o.turboClick)} ₴ за перехід у рекламних блоках"` : '';
-    return `<td class="num"><span${tip}>${v}</span>${sum}</td>`;
-  }).join('');
-  const why = 'Цієї категорії Prom немає на аркуші «Категорії з комісією за замовлення», тож відсотка немає: Prom бере за неї оплату за перехід' +
-    (c && c.single ? `, ${c.single} ₴ за перехід (аркуш «Категорії з комісією за перехід»).` : '.');
-  return FEE_KEYS.map(() => `<td class="num"><span class="subtle" data-tip="${esc(why)}">немає</span></td>`).join('');
+// Комісія — лише «Єдина комісія» з файлу (користувач 29.09.2026: інші режими не потрібні),
+// у відсотках; під нею — скільки це в гривнях для ціни товару.
+function feeCell(p) {
+  if (!p.prom) return '<td class="num"></td>';
+  if (!p.prom.found || pct(p.prom.single) == null) return '<td class="num"><span class="subtle" data-tip="Цієї категорії Prom немає у файлі комісій.">немає</span></td>';
+  const price = parseFloat(p.price);
+  const sum = Number.isFinite(price) ? `<div class="pt-sub">${money(price * pct(p.prom.single) / 100)} ₴</div>` : '';
+  return `<td class="num">${esc(p.prom.single)}${sum}</td>`;
 }
 
-// Сортування комісій на клієнті (29.09.2026, прохання користувача): рядок несе
-// відсотки всіх чотирьох режимів; товари без відсотка («немає») — завжди внизу.
+// Сортування за комісією: рядок несе відсоток; товари без комісії — завжди внизу.
 function sortAttrs(p, i) {
-  const o = p.prom && p.prom.order && pct(p.prom.order.single) != null ? p.prom.order : null;
-  return ` data-i="${i}"` + FEE_KEYS.map(k => ` data-${k}="${o && pct(o[k]) != null ? pct(o[k]) : ''}"`).join('');
+  const v = p.prom && p.prom.found ? pct(p.prom.single) : null;
+  return ` data-i="${i}" data-single="${v == null ? '' : v}"`;
 }
 
 // Клієнтський код сортування — серіалізується в сторінку через .toString().
@@ -266,8 +228,16 @@ function initFeeSort() {
 }
 
 function render(data) {
+  const byId = loadCommission();
+  // Назви проміжних рівнів з ланцюжків товарів, чия категорія у файлі є.
+  const names = new Map();
+  for (const p of data.products) {
+    const r = p.chain && byId.get(p.chain[0]);
+    if (r) p.chain.slice().reverse().forEach((id, k) => { if (r.names[k]) names.set(id, r.names[k]); });
+  }
+  data.products.forEach(p => { p.prom = resolveProm(p.chain, byId, names); });
   const ps = data.products, ok = ps.filter(p => !p.error);
-  const withChain = ok.filter(p => p.chain && p.chain.length), withProm = ok.filter(p => p.prom);
+  const withChain = ok.filter(p => p.chain && p.chain.length), withProm = ok.filter(p => p.prom && p.prom.found);
   const promCats = new Set(withChain.map(p => p.chain[0]));
   const rows = ps.map((p, i) => `
           <tr${sortAttrs(p, i)}>
@@ -277,7 +247,7 @@ function render(data) {
             <td><a class="cat-link" href="${esc(data.category.id)}_map.html#cat=${encodeURIComponent(p.shopCatId)}">${esc(p.shopCatName)}</a>${p.groupId && p.groupId !== p.shopCatId ? `<div class="pt-sub" data-tip="Сайт вказує іншу категорію магазину (ec_group_id), ніж та, де товар знайшов скрапер.">група ${esc(p.groupId)}</div>` : ''}</td>
             <td>${p.error ? `<span class="count-no">${esc(p.error)}</span>` : promHtml(p)}</td>
             <td class="num c">${p.prom ? p.prom.level : ''}</td>
-            ${feeCells(p)}
+            ${feeCell(p)}
             <td class="num">${p.attrs && p.attrs.length ? `<span data-tip-source="site" data-tip="${esc(p.attrs.map(a => a.join(': ')).join('\n'))}">${p.attrs.length}</span>` : (p.error ? '' : '<span class="subtle">0</span>')}</td>
             <td class="num">${p.error ? '' : p.descLen ? p.descLen : '<span class="count-no">0</span>'}</td>
             <td>${p.error ? '' : flagsHtml(p)}</td>
@@ -353,13 +323,13 @@ ${narrowGuardHtml()}
     <div class="pt-note">
       <b>Це пробний тест.</b> Перевіряємо, що ще можна дізнатися про товари зі сторінок товарів на платформі Prom, крім того, що вже збирає скрапер. Поки лише одна категорія, «${esc(data.category.name)}».<br>
       Категорія платформи Prom (ланцюжок ID її рівнів), ціна й позначки платформи беруться зі службових даних аналітики на сторінці товару. Це не офіційний інтерфейс Prom, і він може змінитися без попередження.
-      Назви категорій Prom і комісії беруться з таблиці <a href="${esc(data.sheet.url)}" target="_blank" rel="noopener">«Комісія Prom»</a>. Дані зібрано ${esc(when)}.
+      Назви категорій Prom і «Єдина комісія» беруться з файлу <a href="${esc(COMMISSION_URL)}" target="_blank" rel="noopener">${esc(COMMISSION_FILE)}</a>. Ціна в доларах — з тих самих службових даних сторінки (Prom сам перераховує ціну в долари). Дані зібрано ${esc(when)}.
     </div>
     <div class="pt-stats">
       <span>Товарів <b>${ps.length}</b></span>
       <span>Сторінку прочитано <b>${ok.length}</b></span>
       <span>Є категорія Prom <b>${withChain.length}</b></span>
-      <span>Знайдено в таблиці комісій <b>${withProm.length}</b></span>
+      <span>Є комісія у файлі <b>${withProm.length}</b></span>
       <span>Різних категорій Prom <b>${promCats.size}</b></span>
     </div>
 
@@ -367,17 +337,14 @@ ${narrowGuardHtml()}
     <div class="pt-card"><table class="simple-table pt-table">
       <colgroup>
         <col style="width:34px"><col><col style="width:88px"><col style="width:120px"><col>
-        <col style="width:64px"><col style="width:84px"><col style="width:78px"><col style="width:84px"><col style="width:84px">
+        <col style="width:64px"><col style="width:84px">
         <col style="width:106px"><col style="width:52px"><col style="width:96px">
       </colgroup>
       <thead><tr>
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
         <th class="num c">Рівень<br>категорії</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="econom" data-tip="% від ціни за кожне замовлення, з аркуша «Категорії з комісією за замовлення» таблиці «Комісія Prom». «немає»: категорії на цьому аркуші немає, Prom бере оплату за перехід (див. підказку в клітинці).\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>режиму<br>«Економ»<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="more" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>«Більше<br>продажів»<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="turbo" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>«Турбо»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="% від ціни, з файлу Комісія_Prom.csv. Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
         <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
@@ -393,7 +360,7 @@ initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setup
 </html>
 `;
   fs.writeFileSync(OUT_HTML, html);
-  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${promCats.size}, у таблиці комісій ${withProm.length} → ${path.relative(__dirname, OUT_HTML)}`);
+  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${promCats.size}, у файлі комісій ${withProm.length} → ${path.relative(__dirname, OUT_HTML)}`);
 }
 
 (async () => {
