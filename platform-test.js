@@ -211,11 +211,14 @@ function feeCells(p) {
   return `<td class="num">${esc(p.prom.single)}${sum}</td>` + empty;
 }
 
-// Сортування за комісією: рядок несе % і гривні за перехід; порожні — завжди внизу.
+// «Готово до відправки» — лише /готово/i, як скрізь у скрапері: /наявн/i ловить і «Немає в наявності».
+const isYes = p => /готово/i.test(p.availability || '');
+
+// Сортування: рядок несе % і гривні за перехід, наявність (1 — готово, 0 — ні); порожні — завжди внизу.
 function sortAttrs(p, i) {
   const v = p.prom && p.prom.found ? pct(p.prom.single) : null;
   const order = p.prom && p.prom.mode === 'order' ? v : null, click = p.prom && p.prom.mode === 'click' ? v : null;
-  return ` data-i="${i}" data-single="${order == null ? '' : order}" data-click="${click == null ? '' : click}"`;
+  return ` data-i="${i}" data-single="${order == null ? '' : order}" data-click="${click == null ? '' : click}" data-avail="${p.availability ? (isYes(p) ? 1 : 0) : ''}"`;
 }
 
 // Клієнтський код сортування — серіалізується в сторінку через .toString().
@@ -279,6 +282,7 @@ function render(data) {
             <td class="num">${p.attrs && p.attrs.length ? `<span data-tip-source="site" data-tip="${esc(p.attrs.map(a => a.join(': ')).join('\n'))}">${p.attrs.length}</span>` : (p.error ? '' : '<span class="subtle">0</span>')}</td>
             <td class="num">${p.error ? '' : p.descLen ? p.descLen : '<span class="count-no">0</span>'}</td>
             <td>${p.error ? '' : flagsHtml(p)}</td>
+            <td class="pt-avail">${p.availability ? `<span class="stock-badge ${isYes(p) ? 'yes' : 'no'}">${esc(p.availability)}</span>` : ''}</td>
           </tr>`).join('');
   const when = fmtDateTime(new Date(data.generatedAt));
   const css = `
@@ -323,6 +327,15 @@ html, body { height: auto; overflow: visible; }
 .pt-table th.th-sort:focus-visible { outline: 2px solid var(--border-active); outline-offset: -2px; }
 .sort-ind { color: var(--text-link); }
 .pt-table .c { text-align: center; }
+/* «Наявність» — значок як на мапі розділу (.stock-badge). На екранах від 1500px значок
+   в один рядок (123px); вужче колонка 88px і значок у два рядки, інакше «Категорії Prom»
+   на 1300px лишилось би менше 100px. */
+.pt-col-avail { width: 138px; }
+.pt-avail { text-align: center; }
+@media (max-width: 1499px) {
+  .pt-col-avail { width: 88px; }
+  .pt-avail .stock-badge { white-space: normal; line-height: 1.3; }
+}
 .pt-table td.num, .pt-table th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pt-table .pt-sub { white-space: nowrap; }
 .pt-sub { font-size: .72rem; color: var(--text-subtle); margin-top: 2px; }
@@ -381,7 +394,7 @@ ${narrowGuardHtml()}
       <colgroup>
         <col style="width:34px"><col class="pt-col-name"><col style="width:88px"><col style="width:240px"><col>
         <col style="width:64px"><col style="width:104px"><col style="width:84px">
-        <col style="width:106px"><col style="width:52px"><col style="width:96px">
+        <col style="width:72px"><col style="width:52px"><col style="width:96px"><col class="pt-col-avail">
       </colgroup>
       <thead><tr>
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
@@ -391,9 +404,10 @@ ${narrowGuardHtml()}
 Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за замовлення</th>
         <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія за перехід на картку товару, грн
 Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за перехід</th>
-        <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
+        <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характе-<br>ристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
+        <th class="c th-sort" role="button" tabindex="0" aria-sort="none" data-sort="avail" data-tip="Наявність товару на сайті, як на мапі розділу.\nКлік сортує: спершу «Готово до відправки», повторний клік спершу «Немає в наявності», третій повертає як було.">Наявність<span class="sort-ind"></span></th>
       </tr></thead>
       <tbody id="pt-rows">${rows}
       </tbody>
