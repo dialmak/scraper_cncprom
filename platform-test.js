@@ -202,13 +202,14 @@ function promHtml(p) {
   return `<span class="pt-path">${names.join('<span class="arrow-to">›</span>')}${names.length ? '<span class="arrow-to">›</span>' : ''}<b>${last}</b></span>${ids}`;
 }
 
-// Комісії — чотири колонки в порядку таблиці «Комісія Prom». Для категорій з аркуша
-// «за замовлення» — % від ціни (під «Єдиною» ще сума для цієї ціни), з аркуша «за
-// перехід» — гривні за перехід (позначка «₴»; пояснення в підказці заголовка).
+// Комісії — чотири колонки, лише у відсотках і лише з аркуша «Категорії з комісією за
+// замовлення» (gid 688167001), як у таблиці «Комісія Prom» (вимога користувача
+// 29.09.2026: «комісія має бути в %»). Під «Єдиною» — сума в гривнях для ціни товару.
+// Категорії, якої на цьому аркуші немає, відсотка не існує: Prom бере за неї оплату за
+// перехід (аркуш «…за перехід», гривні) — клітинки «немає», сума за перехід у підказці.
 const FEE_KEYS = ['econom', 'single', 'more', 'turbo'];
 function feeCells(p) {
-  const empty = FEE_KEYS.map(() => '<td class="num"></td>').join('');
-  if (!p.prom) return empty;
+  if (!p.prom) return FEE_KEYS.map(() => '<td class="num"></td>').join('');
   const o = p.prom.order, c = p.prom.click, price = parseFloat(p.price);
   if (o && pct(o.single) != null) return FEE_KEYS.map(k => {
     const v = o[k] ? esc(o[k]) : '';
@@ -216,17 +217,16 @@ function feeCells(p) {
     const tip = k === 'turbo' && o.turboClick ? ` data-tip="Ще ${esc(o.turboClick)} ₴ за перехід у рекламних блоках"` : '';
     return `<td class="num"><span${tip}>${v}</span>${sum}</td>`;
   }).join('');
-  if (c) return FEE_KEYS.map(k => `<td class="num">${c[k] ? esc(c[k]) + ' ₴' : ''}</td>`).join('');
-  return empty;
+  const why = 'Цієї категорії Prom немає на аркуші «Категорії з комісією за замовлення», тож відсотка немає: Prom бере за неї оплату за перехід' +
+    (c && c.single ? `, ${c.single} ₴ за перехід (аркуш «Категорії з комісією за перехід»).` : '.');
+  return FEE_KEYS.map(() => `<td class="num"><span class="subtle" data-tip="${esc(why)}">немає</span></td>`).join('');
 }
 
-// Сортування комісій на клієнті (29.09.2026, прохання користувача): рядок несе числа
-// всіх чотирьох режимів і одиницю: % (за замовлення) чи ₴ (за перехід). Різні
-// величини між собою не порівнюються: відсотки завжди йдуть першими.
+// Сортування комісій на клієнті (29.09.2026, прохання користувача): рядок несе
+// відсотки всіх чотирьох режимів; товари без відсотка («немає») — завжди внизу.
 function sortAttrs(p, i) {
-  const src = p.prom && (p.prom.order && pct(p.prom.order.single) != null ? p.prom.order : p.prom.click);
-  const unit = !src ? '' : src === (p.prom && p.prom.order) ? 'pct' : 'uah';
-  return ` data-i="${i}" data-unit="${unit}"` + FEE_KEYS.map(k => ` data-${k}="${src && pct(src[k]) != null ? pct(src[k]) : ''}"`).join('');
+  const o = p.prom && p.prom.order && pct(p.prom.order.single) != null ? p.prom.order : null;
+  return ` data-i="${i}"` + FEE_KEYS.map(k => ` data-${k}="${o && pct(o[k]) != null ? pct(o[k]) : ''}"`).join('');
 }
 
 // Клієнтський код сортування — серіалізується в сторінку через .toString().
@@ -240,9 +240,6 @@ function initFeeSort() {
     rows.sort(function (a, b) {
       var ia = +a.getAttribute('data-i'), ib = +b.getAttribute('data-i');
       if (!st.k) return ia - ib;
-      var ua = a.getAttribute('data-unit'), ub = b.getAttribute('data-unit');
-      var ra = ua === 'pct' ? 0 : ua === 'uah' ? 1 : 2, rb = ub === 'pct' ? 0 : ub === 'uah' ? 1 : 2;
-      if (ra !== rb) return ra - rb;
       var va = num(a, st.k), vb = num(b, st.k);
       if (va === null || vb === null) return (va === null) - (vb === null) || ia - ib;
       return (va - vb) * st.dir || ia - ib;
@@ -377,10 +374,10 @@ ${narrowGuardHtml()}
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
         <th class="num c">Рівень<br>категорії</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="econom" data-tip="% від ціни за кожне замовлення або, з позначкою ₴, гривні за перехід (так у таблиці «Комісія Prom»).\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>режиму<br>«Економ»<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Єдина<br>комісія<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="more" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>«Більше<br>продажів»<span class="sort-ind"></span></th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="turbo" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>«Турбо»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="econom" data-tip="% від ціни за кожне замовлення, з аркуша «Категорії з комісією за замовлення» таблиці «Комісія Prom». «немає»: категорії на цьому аркуші немає, Prom бере оплату за перехід (див. підказку в клітинці).\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>режиму<br>«Економ»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="more" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>«Більше<br>продажів»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="turbo" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Комісія для<br>«Турбо»<span class="sort-ind"></span></th>
         <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
