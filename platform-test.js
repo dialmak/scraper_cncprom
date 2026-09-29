@@ -218,14 +218,6 @@ function sortAttrs(p, i) {
   return ` data-i="${i}" data-single="${order == null ? '' : order}" data-click="${click == null ? '' : click}"`;
 }
 
-// «?» біля заголовка показує й ховає пояснення (користувач 29.09.2026: сховати під «?»).
-function initNoteToggle() {
-  var btn = document.getElementById('pt-note-btn'), note = document.getElementById('pt-note');
-  function set(open) { note.hidden = !open; btn.setAttribute('aria-expanded', open ? 'true' : 'false'); btn.classList.toggle('active', open); }
-  btn.addEventListener('click', function () { set(note.hidden); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !note.hidden) set(false); });
-}
-
 // Клієнтський код сортування — серіалізується в сторінку через .toString().
 function initFeeSort() {
   var tb = document.getElementById('pt-rows');
@@ -296,11 +288,12 @@ html, body { height: auto; overflow: visible; }
 /* «?» — голий знак питання, як у полі пошуку (без кружечка). */
 .pt-help-btn { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 4px; background: none;
   color: var(--text-muted); font: inherit; font-size: 1.05rem; font-weight: 600; line-height: 1; cursor: pointer; }
-.pt-help-btn:hover, .pt-help-btn.active { color: var(--text-link); background: var(--bg-hover); }
+.pt-help-btn:hover { color: var(--text-link); background: var(--bg-hover); }
 .pt-help-btn:focus-visible { outline: 2px solid var(--border-active); outline-offset: 1px; }
-.pt-note[hidden] { display: none; }
-.pt-note { background: var(--bg-white); border: 1px solid var(--border-color); border-left: 4px solid var(--status-warn, #d97706); border-radius: 8px;
-  padding: 12px 16px; margin-bottom: 16px; font-size: .85rem; line-height: 1.6; color: var(--text-main); }
+/* Пояснення — модальне вікно (.help-overlay, як панелі на map.html), а не блок над таблицею:
+   блок, що з'являвся й зникав, зсував таблицю на 179 рядків, і браузер щоразу
+   перераховував її розмітку — сторінка підвисала після кількох кліків (29.09.2026). */
+.pt-note { font-size: .85rem; line-height: 1.6; color: var(--text-main); padding-top: 14px; gap: 10px; }
 .pt-note a { color: var(--text-link); }
 .pt-stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 18px; font-size: .85rem; color: var(--text-muted); }
 .pt-stats b { color: var(--text-main); font-weight: 600; }
@@ -367,12 +360,7 @@ ${helpButtonHtml('map')}
 ${narrowGuardHtml()}
   <main class="pt-wrap">
     <h1>${ICONS.platform} Тест платформи: <a class="cat-link" href="${esc(data.category.id)}_map.html">${esc(data.category.name)}</a>
-      <button type="button" id="pt-note-btn" class="pt-help-btn" aria-expanded="false" aria-controls="pt-note" data-tip="Про цей тест і звідки дані">?</button></h1>
-    <div class="pt-note" id="pt-note" hidden>
-      <b>Це пробний тест.</b> Перевіряємо, що ще можна дізнатися про товари зі сторінок товарів на платформі Prom, крім того, що вже збирає скрапер. Поки лише одна категорія, «${esc(data.category.name)}».<br>
-      Категорія платформи Prom (ланцюжок ID її рівнів), ціна й позначки платформи беруться зі службових даних аналітики на сторінці товару. Це не офіційний інтерфейс Prom, і він може змінитися без попередження.
-      Назви категорій Prom і «Єдина комісія» беруться з файлів <a href="${esc(fileUrl(COMMISSION_FILES[0].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[0].file)}»</a> (у відсотках від ціни) і <a href="${esc(fileUrl(COMMISSION_FILES[1].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[1].file)}»</a> (у гривнях за перехід). Ціна в доларах — з тих самих службових даних сторінки (Prom сам перераховує ціну в долари). Дані зібрано ${esc(when)}.
-    </div>
+      <button type="button" id="pt-note-btn" class="pt-help-btn" aria-haspopup="dialog" data-tip="Про цей тест і звідки дані">?</button></h1>
     <div class="pt-stats">
       <span>Товарів <b>${ps.length}</b></span>
       <span>Сторінку прочитано <b>${ok.length}</b></span>
@@ -403,10 +391,22 @@ ${narrowGuardHtml()}
       </tbody>
     </table></div>
   </main>
+  <div class="help-overlay" id="pt-note-overlay" role="dialog" aria-modal="true" aria-labelledby="pt-note-title">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3 id="pt-note-title">Про тест платформи</h3>
+        <button class="btn-help-close" id="btn-pt-note-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body pt-note">
+        <p><b>Це пробний тест.</b> Перевіряємо, що ще можна дізнатися про товари зі сторінок товарів на платформі Prom, крім того, що вже збирає скрапер. Поки лише одна категорія, «${esc(data.category.name)}».</p>
+        <p>Категорія платформи Prom (ланцюжок ID її рівнів), ціна й позначки платформи беруться зі службових даних аналітики на сторінці товару. Це не офіційний інтерфейс Prom, і він може змінитися без попередження. Назви категорій Prom і «Єдина комісія» беруться з файлів <a href="${esc(fileUrl(COMMISSION_FILES[0].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[0].file)}»</a> (у відсотках від ціни) і <a href="${esc(fileUrl(COMMISSION_FILES[1].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[1].file)}»</a> (у гривнях за перехід). Ціна в доларах — з тих самих службових даних сторінки (Prom сам перераховує ціну в долари). Дані зібрано ${esc(when)}.</p>
+      </div>
+    </div>
+  </div>
   <script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
   <script>${initFeeSort.toString()}
-${initNoteToggle.toString()}
-initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort(); initNoteToggle();</script>
+initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort();
+setupModalOverlay('pt-note-overlay', 'pt-note-btn', 'btn-pt-note-close');</script>
 </body>
 </html>
 `;
