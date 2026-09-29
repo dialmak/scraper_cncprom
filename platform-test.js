@@ -9,10 +9,11 @@
 //     ціна в гривнях і доларах, тип продажу, Prom-оплата, доставка Rozetka тощо.
 //     Це не офіційний інтерфейс: Prom може змінити його без попередження;
 //   - JSON-LD Product (код, ціна, наявність, фото, опис) і блок характеристик.
-// Назви категорій Prom і «Єдина комісія» — з файлу Комісія_Prom.csv у корені репозиторію
-// (дав користувач 29.09.2026; «;», UTF-8 з BOM; до того бралися з Google-таблиці «Комісія
-// Prom», яку користувач сказав більше не використовувати). Шукаються під час побудови
-// сторінки, не під час збору: новий файл підхоплює й --reuse, без повторного збору.
+// Назви категорій Prom і «Єдина комісія» — з двох файлів у корені репозиторію, вивантажених
+// з таблиці «Комісія Prom» (дав користувач 29.09.2026, замість попереднього Комісія_Prom.csv):
+// «…за замовлення» (% від ціни) і «…за перехід» (гривні за перехід на картку). Кожна
+// категорія Prom є рівно в одному з них. Шукаються під час побудови сторінки, не під час
+// збору: нові файли підхоплює й --reuse, без повторного збору.
 //
 // node platform-test.js [categoryId] [--reuse]
 //   без --reuse — зібрати заново (≈3 хв на 180 товарів) і побудувати сторінку;
@@ -40,35 +41,56 @@ const CAT_ID = ARGS.find(a => /^\d+$/.test(a)) || '1022485';   // Контрол
 const DELAY_MS = 700;   // ввічливість до сервера, як DELAY_MS у скрапері
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36';
 
-const COMMISSION_FILE = 'Комісія_Prom.csv';
-const COMMISSION_URL = 'https://github.com/dialmak/scraper_cncprom/blob/main/' + encodeURIComponent(COMMISSION_FILE);
+// mode: order — «Єдина комісія» у % від ціни; click — «Єдина комісія, грн» за перехід.
+const COMMISSION_FILES = [
+  { mode: 'order', file: 'Комісія Prom - Категорії з комісією за замовлення.csv', fee: 'Єдина комісія' },
+  { mode: 'click', file: 'Комісія Prom - Категорії з комісією за перехід.csv', fee: 'Єдина комісія, грн' },
+];
+const fileUrl = f => 'https://github.com/dialmak/scraper_cncprom/blob/main/' + encodeURIComponent(f);
 
-// ==================== ФАЙЛ «КОМІСІЯ_PROM.CSV» ====================
-// id → { level, names: [рівень 0 … рівень N], single: «6.59%» }. Лапок у файлі немає,
-// у кожному рядку 9 полів через «;» — розбір простим split.
+// ==================== ФАЙЛИ КОМІСІЙ ====================
+// Вивантаження Google-таблиці як є: кома, поля в лапках (у назвах є коми), над
+// заголовком рядок-пояснення й порожні рядки — заголовок шукаємо за «ID категорії».
+function parseCsv(t) {
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c !== '"') f += c; else if (t[i + 1] === '"') { f += '"'; i++; } else q = false; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+    else f += c;
+  }
+  if (f || row.length) { row.push(f); rows.push(row); }
+  return rows.map(r => r.map(v => v.trim()));
+}
+
+// id → { mode, level, names: [рівень 0 … рівень N], single: «6.59%» чи «2.79» }.
 function loadCommission() {
-  const t = fs.readFileSync(path.join(__dirname, COMMISSION_FILE), 'utf8').replace(/^\uFEFF/, '');
-  const rows = t.split(/\r?\n/).filter(Boolean).map(l => l.split(';').map(v => v.trim()));
-  const H = rows[0], iId = H.indexOf('ID категорії'), iLvl = H.indexOf('Рівень категорії'), iFee = H.indexOf('Єдина комісія');
-  if (iId < 0 || iLvl < 0 || iFee < 0) throw new Error(`${COMMISSION_FILE}: немає колонки «ID категорії», «Рівень категорії» чи «Єдина комісія»`);
   const byId = new Map();
-  for (const x of rows.slice(1)) {
-    if (!/^\d+$/.test(x[iId] || '')) continue;
-    const level = Number(x[iLvl]);
-    byId.set(x[iId], { level, names: x.slice(0, level + 1), single: x[iFee] });
+  for (const src of COMMISSION_FILES) {
+    const rows = parseCsv(fs.readFileSync(path.join(__dirname, src.file), 'utf8').replace(/^\uFEFF/, ''));
+    const h = rows.findIndex(r => r.includes('ID категорії'));
+    const H = rows[h] || [], iId = H.indexOf('ID категорії'), iLvl = H.indexOf('Рівень категорії'), iFee = H.indexOf(src.fee);
+    if (iId < 0 || iLvl < 0 || iFee < 0) throw new Error(`${src.file}: немає колонки «ID категорії», «Рівень категорії» чи «${src.fee}»`);
+    for (const x of rows.slice(h + 1)) {
+      if (!/^\d+$/.test(x[iId] || '')) continue;
+      const level = Number(x[iLvl]);
+      byId.set(x[iId], { mode: src.mode, level, names: x.slice(0, level + 1), single: x[iFee] });
+    }
   }
   return byId;
 }
 
-// Категорія Prom товару за файлом. Назви рівнів — з рядка файлу, ланцюжок ID від кореня
-// лягає на колонки рівнів. Якщо самої категорії у файлі немає, назви її предків
-// беремо з ланцюжків інших товарів, які у файлі є (names: id → назва).
+// Категорія Prom товару за файлами. Назви рівнів — з рядка файлу, ланцюжок ID від кореня
+// лягає на колонки рівнів. Якщо самої категорії в жодному файлі немає, назви її предків
+// беремо з ланцюжків інших товарів, які у файлах є (names: id → назва).
 function resolveProm(chain, byId, names) {
   if (!chain || !chain.length) return null;
   const ids = chain.slice().reverse();              // 0, 1 рівень, …, найглибша
   const row = byId.get(chain[0]);
-  if (row) return { found: true, level: row.level, single: row.single, path: row.names.map((n, k) => ({ id: ids[k] || '', name: n })) };
-  return { found: false, level: ids.length - 1, single: '', path: ids.map(id => ({ id, name: names.get(id) || '' })) };
+  if (row) return { found: true, mode: row.mode, level: row.level, single: row.single, path: row.names.map((n, k) => ({ id: ids[k] || '', name: n })) };
+  return { found: false, mode: '', level: ids.length - 1, single: '', path: ids.map(id => ({ id, name: names.get(id) || '' })) };
 }
 
 // ==================== СТОРІНКА ТОВАРУ ====================
@@ -171,24 +193,37 @@ function promHtml(p) {
   const ids = `<div class="pt-ids">${esc(p.chain.filter(x => x !== '0').reverse().join(' › '))}</div>`;
   const parts = p.prom.path.slice(1).map(x => x.name ? esc(x.name) : `<span class="subtle">ID ${esc(x.id)}</span>`);
   const last = parts.pop();
-  const miss = p.prom.found ? '' : `<div class="pt-sub" data-tip="Цієї категорії Prom немає у файлі ${esc(COMMISSION_FILE)}, тому немає її назви й комісії.">немає у файлі комісій</div>`;
+  const miss = p.prom.found ? '' : `<div class="pt-sub" data-tip="Цієї категорії Prom немає в жодному з файлів комісій, тому немає її назви й комісії.">немає у файлах комісій</div>`;
   return `<span class="pt-path">${parts.join('<span class="arrow-to">›</span>')}${parts.length ? '<span class="arrow-to">›</span>' : ''}<b>${last}</b></span>${ids}${miss}`;
 }
 
-// Комісія — лише «Єдина комісія» з файлу (користувач 29.09.2026: інші режими не потрібні),
-// у відсотках; під нею — скільки це в гривнях для ціни товару.
-function feeCell(p) {
-  if (!p.prom) return '<td class="num"></td>';
-  if (!p.prom.found || pct(p.prom.single) == null) return '<td class="num"><span class="subtle" data-tip="Цієї категорії Prom немає у файлі комісій.">немає</span></td>';
+// Комісія — лише «Єдина» (користувач 29.09.2026: інші режими не потрібні), дві колонки:
+// «Єдина комісія» — % від ціни (під ним сума в гривнях для ціни товару), «Комісія за
+// перехід» — гривні за перехід. Заповнена одна з двох: категорія є лише в одному файлі.
+function feeCells(p) {
+  const empty = '<td class="num"></td>';
+  if (!p.prom) return empty + empty;
+  const v = pct(p.prom.single);
+  if (!p.prom.found || v == null) return '<td class="num"><span class="subtle" data-tip="Цієї категорії Prom немає в жодному з файлів комісій.">немає</span></td>' + empty;
+  if (p.prom.mode === 'click') return empty + `<td class="num">${money(v)} ₴</td>`;
   const price = parseFloat(p.price);
-  const sum = Number.isFinite(price) ? `<div class="pt-sub">${money(price * pct(p.prom.single) / 100)} ₴</div>` : '';
-  return `<td class="num">${esc(p.prom.single)}${sum}</td>`;
+  const sum = Number.isFinite(price) ? `<div class="pt-sub">${money(price * v / 100)} ₴</div>` : '';
+  return `<td class="num">${esc(p.prom.single)}${sum}</td>` + empty;
 }
 
-// Сортування за комісією: рядок несе відсоток; товари без комісії — завжди внизу.
+// Сортування за комісією: рядок несе % і гривні за перехід; порожні — завжди внизу.
 function sortAttrs(p, i) {
   const v = p.prom && p.prom.found ? pct(p.prom.single) : null;
-  return ` data-i="${i}" data-single="${v == null ? '' : v}"`;
+  const order = p.prom && p.prom.mode === 'order' ? v : null, click = p.prom && p.prom.mode === 'click' ? v : null;
+  return ` data-i="${i}" data-single="${order == null ? '' : order}" data-click="${click == null ? '' : click}"`;
+}
+
+// «?» біля заголовка показує й ховає пояснення (користувач 29.09.2026: сховати під «?»).
+function initNoteToggle() {
+  var btn = document.getElementById('pt-note-btn'), note = document.getElementById('pt-note');
+  function set(open) { note.hidden = !open; btn.setAttribute('aria-expanded', open ? 'true' : 'false'); btn.classList.toggle('active', open); }
+  btn.addEventListener('click', function () { set(note.hidden); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !note.hidden) set(false); });
 }
 
 // Клієнтський код сортування — серіалізується в сторінку через .toString().
@@ -229,7 +264,7 @@ function initFeeSort() {
 
 function render(data) {
   const byId = loadCommission();
-  // Назви проміжних рівнів з ланцюжків товарів, чия категорія у файлі є.
+  // Назви проміжних рівнів з ланцюжків товарів, чия категорія у файлах є.
   const names = new Map();
   for (const p of data.products) {
     const r = p.chain && byId.get(p.chain[0]);
@@ -238,6 +273,7 @@ function render(data) {
   data.products.forEach(p => { p.prom = resolveProm(p.chain, byId, names); });
   const ps = data.products, ok = ps.filter(p => !p.error);
   const withChain = ok.filter(p => p.chain && p.chain.length), withProm = ok.filter(p => p.prom && p.prom.found);
+  const byMode = m => withProm.filter(p => p.prom.mode === m).length;
   const promCats = new Set(withChain.map(p => p.chain[0]));
   const rows = ps.map((p, i) => `
           <tr${sortAttrs(p, i)}>
@@ -247,7 +283,7 @@ function render(data) {
             <td><a class="cat-link" href="${esc(data.category.id)}_map.html#cat=${encodeURIComponent(p.shopCatId)}">${esc(p.shopCatName)}</a>${p.groupId && p.groupId !== p.shopCatId ? `<div class="pt-sub" data-tip="Сайт вказує іншу категорію магазину (ec_group_id), ніж та, де товар знайшов скрапер.">група ${esc(p.groupId)}</div>` : ''}</td>
             <td>${p.error ? `<span class="count-no">${esc(p.error)}</span>` : promHtml(p)}</td>
             <td class="num c">${p.prom ? p.prom.level : ''}</td>
-            ${feeCell(p)}
+            ${feeCells(p)}
             <td class="num">${p.attrs && p.attrs.length ? `<span data-tip-source="site" data-tip="${esc(p.attrs.map(a => a.join(': ')).join('\n'))}">${p.attrs.length}</span>` : (p.error ? '' : '<span class="subtle">0</span>')}</td>
             <td class="num">${p.error ? '' : p.descLen ? p.descLen : '<span class="count-no">0</span>'}</td>
             <td>${p.error ? '' : flagsHtml(p)}</td>
@@ -256,17 +292,28 @@ function render(data) {
   const css = `
 html, body { height: auto; overflow: visible; }
 .pt-wrap { padding: 20px 24px 48px; }
-.pt-wrap h1 { font-size: 1.25rem; margin: 0 0 12px; font-weight: 600; }
+.pt-wrap h1 { font-size: 1.25rem; margin: 0 0 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+/* «?» — голий знак питання, як у полі пошуку (без кружечка). */
+.pt-help-btn { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 4px; background: none;
+  color: var(--text-muted); font: inherit; font-size: 1.05rem; font-weight: 600; line-height: 1; cursor: pointer; }
+.pt-help-btn:hover, .pt-help-btn.active { color: var(--text-link); background: var(--bg-hover); }
+.pt-help-btn:focus-visible { outline: 2px solid var(--border-active); outline-offset: 1px; }
+.pt-note[hidden] { display: none; }
 .pt-note { background: var(--bg-white); border: 1px solid var(--border-color); border-left: 4px solid var(--status-warn, #d97706); border-radius: 8px;
   padding: 12px 16px; margin-bottom: 16px; font-size: .85rem; line-height: 1.6; color: var(--text-main); }
 .pt-note a { color: var(--text-link); }
 .pt-stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 18px; font-size: .85rem; color: var(--text-muted); }
 .pt-stats b { color: var(--text-main); font-weight: 600; }
 .pt-wrap h2 { font-size: 1rem; margin: 22px 0 8px; font-weight: 600; }
-.pt-card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-/* 13 колонок мають влазити від 1300px без горизонтальної прокрутки: ширини фіксовані
+/* overflow: clip, не hidden: hidden робить картку контейнером прокрутки, і sticky-шапка
+   таблиці чіплялася б до неї, а не до вікна (тоді вона не закріплюється зовсім). */
+.pt-card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; overflow: clip; }
+/* 11 колонок мають влазити від 1300px без горизонтальної прокрутки: ширини фіксовані
    (<colgroup>), решту ділять «Товар» і «Категорія Prom»; відступи вужчі за звичайні. */
 .pt-table { table-layout: fixed; }
+/* Шапка таблиці закріплена під шапкою сайту (.app-header, 44px) при прокрутці сторінки.
+   Нижня межа — тінню: з border-collapse рамка sticky-комірки лишається на місці. */
+.pt-table thead th { position: sticky; top: 44px; z-index: 5; box-shadow: inset 0 -1px 0 var(--border-color); }
 .pt-table th, .pt-table td { padding: 6px 7px; }
 .pt-table th { white-space: nowrap; vertical-align: bottom; }
 .pt-table td { vertical-align: top; line-height: 1.45; overflow-wrap: break-word; }
@@ -319,17 +366,19 @@ ${helpButtonHtml('map')}
   </header>
 ${narrowGuardHtml()}
   <main class="pt-wrap">
-    <h1>${ICONS.platform} Тест платформи: <a class="cat-link" href="${esc(data.category.id)}_map.html">${esc(data.category.name)}</a></h1>
-    <div class="pt-note">
+    <h1>${ICONS.platform} Тест платформи: <a class="cat-link" href="${esc(data.category.id)}_map.html">${esc(data.category.name)}</a>
+      <button type="button" id="pt-note-btn" class="pt-help-btn" aria-expanded="false" aria-controls="pt-note" data-tip="Про цей тест і звідки дані">?</button></h1>
+    <div class="pt-note" id="pt-note" hidden>
       <b>Це пробний тест.</b> Перевіряємо, що ще можна дізнатися про товари зі сторінок товарів на платформі Prom, крім того, що вже збирає скрапер. Поки лише одна категорія, «${esc(data.category.name)}».<br>
       Категорія платформи Prom (ланцюжок ID її рівнів), ціна й позначки платформи беруться зі службових даних аналітики на сторінці товару. Це не офіційний інтерфейс Prom, і він може змінитися без попередження.
-      Назви категорій Prom і «Єдина комісія» беруться з файлу <a href="${esc(COMMISSION_URL)}" target="_blank" rel="noopener">${esc(COMMISSION_FILE)}</a>. Ціна в доларах — з тих самих службових даних сторінки (Prom сам перераховує ціну в долари). Дані зібрано ${esc(when)}.
+      Назви категорій Prom і «Єдина комісія» беруться з файлів <a href="${esc(fileUrl(COMMISSION_FILES[0].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[0].file)}»</a> (у відсотках від ціни) і <a href="${esc(fileUrl(COMMISSION_FILES[1].file))}" target="_blank" rel="noopener">«${esc(COMMISSION_FILES[1].file)}»</a> (у гривнях за перехід). Ціна в доларах — з тих самих службових даних сторінки (Prom сам перераховує ціну в долари). Дані зібрано ${esc(when)}.
     </div>
     <div class="pt-stats">
       <span>Товарів <b>${ps.length}</b></span>
       <span>Сторінку прочитано <b>${ok.length}</b></span>
       <span>Є категорія Prom <b>${withChain.length}</b></span>
-      <span>Є комісія у файлі <b>${withProm.length}</b></span>
+      <span>Комісія за замовлення <b>${byMode('order')}</b></span>
+      <span>Комісія за перехід <b>${byMode('click')}</b></span>
       <span>Різних категорій Prom <b>${promCats.size}</b></span>
     </div>
 
@@ -337,14 +386,15 @@ ${narrowGuardHtml()}
     <div class="pt-card"><table class="simple-table pt-table">
       <colgroup>
         <col style="width:34px"><col><col style="width:88px"><col style="width:120px"><col>
-        <col style="width:64px"><col style="width:84px">
+        <col style="width:64px"><col style="width:84px"><col style="width:84px">
         <col style="width:106px"><col style="width:52px"><col style="width:96px">
       </colgroup>
       <thead><tr>
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
         <th class="num c">Рівень<br>категорії</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="% від ціни, з файлу Комісія_Prom.csv. Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Товари без відсотка завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="% від ціни, з файлу «${esc(COMMISSION_FILES[0].file)}». Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Єдина<br>комісія<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія в гривнях за перехід на картку товару, з файлу «${esc(COMMISSION_FILES[1].file)}».\nТак Prom бере оплату в категоріях, яких немає у файлі «за замовлення».\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<br>за перехід<span class="sort-ind"></span></th>
         <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
@@ -355,12 +405,13 @@ ${narrowGuardHtml()}
   </main>
   <script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
   <script>${initFeeSort.toString()}
-initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort();</script>
+${initNoteToggle.toString()}
+initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort(); initNoteToggle();</script>
 </body>
 </html>
 `;
   fs.writeFileSync(OUT_HTML, html);
-  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${promCats.size}, у файлі комісій ${withProm.length} → ${path.relative(__dirname, OUT_HTML)}`);
+  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${promCats.size}, комісія за замовлення ${byMode('order')}, за перехід ${byMode('click')} → ${path.relative(__dirname, OUT_HTML)}`);
 }
 
 (async () => {
