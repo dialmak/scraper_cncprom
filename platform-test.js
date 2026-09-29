@@ -241,7 +241,8 @@ function initFeeSort() {
       var on = th.getAttribute('data-sort') === st.k;
       th.classList.toggle('active', on);
       th.setAttribute('aria-sort', on ? (st.dir < 0 ? 'descending' : 'ascending') : 'none');
-      th.querySelector('.sort-ind').textContent = on ? (st.dir < 0 ? ' ▼' : ' ▲') : '';
+      // Як «Наявність» у результатах пошуку (availSortTh): ⇅ — як було, ▼ / ▲ — активне.
+      th.querySelector('.sort-arrow').textContent = on ? (st.dir < 0 ? '▼' : '▲') : '⇅';
     });
   }
   function click(th) {
@@ -325,15 +326,14 @@ html, body { height: auto; overflow: visible; }
 .pt-table td:nth-child(4), .pt-table td:nth-child(5) { hyphens: auto; }
 .pt-table th.th-sort:hover, .pt-table th.th-sort.active { color: var(--text-main); }
 .pt-table th.th-sort:focus-visible { outline: 2px solid var(--border-active); outline-offset: -2px; }
-.sort-ind { color: var(--text-link); }
 .pt-table .c { text-align: center; }
 /* «Наявність» — значок як на мапі розділу (.stock-badge). На екранах від 1500px значок
-   в один рядок (123px); вужче колонка 88px і значок у два рядки, інакше «Категорії Prom»
+   в один рядок (123px); вужче колонка 92px і значок у два рядки, інакше «Категорії Prom»
    на 1300px лишилось би менше 100px. */
 .pt-col-avail { width: 138px; }
 .pt-avail { text-align: center; }
 @media (max-width: 1499px) {
-  .pt-col-avail { width: 88px; }
+  .pt-col-avail { width: 92px; }
   .pt-avail .stock-badge { white-space: normal; line-height: 1.3; }
 }
 .pt-table td.num, .pt-table th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -400,14 +400,12 @@ ${narrowGuardHtml()}
         <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
         <th class="num c" data-tip="Рівень категорії Prom">Рівень<br>категорії</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Єдина комісія за замовлення у % від ціни
-Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за замовлення</th>
-        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія за перехід на картку товару, грн
-Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Порожні завжди внизу.">Комісія<span class="sort-ind"></span><br>за перехід</th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Єдина комісія за замовлення у % від ціни">Комісія<span class="sort-arrow">⇅</span><br>за замовлення</th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="click" data-tip="Єдина комісія за перехід на картку товару, грн">Комісія<span class="sort-arrow">⇅</span><br>за перехід</th>
         <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характе-<br>ристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
         <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
-        <th class="c th-sort" role="button" tabindex="0" aria-sort="none" data-sort="avail" data-tip="Наявність товару на сайті, як на мапі розділу.\nКлік сортує: спершу «Готово до відправки», повторний клік спершу «Немає в наявності», третій повертає як було.">Наявність<span class="sort-ind"></span></th>
+        <th class="c th-sort" role="button" tabindex="0" aria-sort="none" data-sort="avail" data-tip="Наявність товару на сайті, як на мапі розділу.">Наявність<span class="sort-arrow">⇅</span></th>
       </tr></thead>
       <tbody id="pt-rows">${rows}
       </tbody>
