@@ -202,43 +202,85 @@ function promHtml(p) {
   return `<span class="pt-path">${names.join('<span class="arrow-to">›</span>')}${names.length ? '<span class="arrow-to">›</span>' : ''}<b>${last}</b></span>${ids}`;
 }
 
-function feeHtml(p) {
-  if (!p.prom) return '';
+// Комісії — чотири колонки в порядку таблиці «Комісія Prom». Для категорій з аркуша
+// «за замовлення» — % від ціни (під «Єдиною» ще сума для цієї ціни), з аркуша «за
+// перехід» — гривні за перехід (позначка «₴»; пояснення в підказці заголовка).
+const FEE_KEYS = ['econom', 'single', 'more', 'turbo'];
+function feeCells(p) {
+  const empty = FEE_KEYS.map(() => '<td class="num"></td>').join('');
+  if (!p.prom) return empty;
   const o = p.prom.order, c = p.prom.click, price = parseFloat(p.price);
-  if (o && pct(o.single) != null) {
-    const sum = Number.isFinite(price) ? `<div class="pt-sub">${money(price * pct(o.single) / 100)} ₴</div>` : '';
-    const tip = `За замовлення, % від ціни\nЄдина: ${o.single}\n«Економ»: ${o.econom || 'немає'}\n«Більше продажів»: ${o.more || 'немає'}\n«Турбо»: ${o.turbo || 'немає'}` +
-      (o.turboClick ? `\nЗа перехід у рекламі («Турбо»): ${o.turboClick} ₴` : '');
-    return `<span data-tip="${esc(tip)}">${esc(o.single)}</span>${sum}`;
+  if (o && pct(o.single) != null) return FEE_KEYS.map(k => {
+    const v = o[k] ? esc(o[k]) : '';
+    const sum = k === 'single' && Number.isFinite(price) ? `<div class="pt-sub">${money(price * pct(o.single) / 100)} ₴</div>` : '';
+    const tip = k === 'turbo' && o.turboClick ? ` data-tip="Ще ${esc(o.turboClick)} ₴ за перехід у рекламних блоках"` : '';
+    return `<td class="num"><span${tip}>${v}</span>${sum}</td>`;
+  }).join('');
+  if (c) return FEE_KEYS.map(k => `<td class="num">${c[k] ? esc(c[k]) + ' ₴' : ''}</td>`).join('');
+  return empty;
+}
+
+// Сортування комісій на клієнті (29.09.2026, прохання користувача): рядок несе числа
+// всіх чотирьох режимів і одиницю: % (за замовлення) чи ₴ (за перехід). Різні
+// величини між собою не порівнюються: відсотки завжди йдуть першими.
+function sortAttrs(p, i) {
+  const src = p.prom && (p.prom.order && pct(p.prom.order.single) != null ? p.prom.order : p.prom.click);
+  const unit = !src ? '' : src === (p.prom && p.prom.order) ? 'pct' : 'uah';
+  return ` data-i="${i}" data-unit="${unit}"` + FEE_KEYS.map(k => ` data-${k}="${src && pct(src[k]) != null ? pct(src[k]) : ''}"`).join('');
+}
+
+// Клієнтський код сортування — серіалізується в сторінку через .toString().
+function initFeeSort() {
+  var tb = document.getElementById('pt-rows');
+  var ths = Array.prototype.slice.call(document.querySelectorAll('th[data-sort]'));
+  var st = { k: null, dir: 0 };
+  function num(tr, k) { var v = parseFloat(tr.getAttribute('data-' + k)); return isNaN(v) ? null : v; }
+  function apply() {
+    var rows = Array.prototype.slice.call(tb.rows);
+    rows.sort(function (a, b) {
+      var ia = +a.getAttribute('data-i'), ib = +b.getAttribute('data-i');
+      if (!st.k) return ia - ib;
+      var ua = a.getAttribute('data-unit'), ub = b.getAttribute('data-unit');
+      var ra = ua === 'pct' ? 0 : ua === 'uah' ? 1 : 2, rb = ub === 'pct' ? 0 : ub === 'uah' ? 1 : 2;
+      if (ra !== rb) return ra - rb;
+      var va = num(a, st.k), vb = num(b, st.k);
+      if (va === null || vb === null) return (va === null) - (vb === null) || ia - ib;
+      return (va - vb) * st.dir || ia - ib;
+    });
+    rows.forEach(function (r) { tb.appendChild(r); });
+    ths.forEach(function (th) {
+      var on = th.getAttribute('data-sort') === st.k;
+      th.classList.toggle('active', on);
+      th.setAttribute('aria-sort', on ? (st.dir < 0 ? 'descending' : 'ascending') : 'none');
+      th.querySelector('.sort-ind').textContent = on ? (st.dir < 0 ? ' ▼' : ' ▲') : '';
+    });
   }
-  if (c && c.single) {
-    const tip = `За перехід, ₴\nЄдина: ${c.single}\n«Економ»: ${c.econom || 'немає'}\n«Більше продажів»: ${c.more || 'немає'}\n«Турбо»: ${c.turbo || 'немає'}`;
-    return `<span data-tip="${esc(tip)}">${esc(c.single)} ₴</span><div class="pt-sub">за перехід</div>`;
+  function click(th) {
+    var k = th.getAttribute('data-sort');
+    if (st.k !== k) { st.k = k; st.dir = -1; }
+    else if (st.dir < 0) st.dir = 1;
+    else { st.k = null; st.dir = 0; }
+    apply();
   }
-  return '';
+  ths.forEach(function (th) {
+    th.addEventListener('click', function () { click(th); });
+    th.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); click(th); } });
+  });
 }
 
 function render(data) {
   const ps = data.products, ok = ps.filter(p => !p.error);
   const withChain = ok.filter(p => p.chain && p.chain.length), withProm = ok.filter(p => p.prom);
-  // Зведення: скільки товарів у кожній категорії Prom.
-  const groups = new Map();
-  for (const p of withChain) {
-    const k = p.chain[0];
-    const g = groups.get(k) || { p, n: 0, shop: new Set() };
-    g.n++; g.shop.add(p.shopCatName); groups.set(k, g);
-  }
-  const groupRows = [...groups.values()].sort((a, b) => b.n - a.n).map(g => `
-          <tr><td>${promHtml(g.p)}</td><td class="num">${g.n}</td><td>${feeHtml(Object.assign({}, g.p, { price: '' }))}</td>
-            <td class="pt-shop">${[...g.shop].map(esc).join('<br>')}</td></tr>`).join('');
+  const promCats = new Set(withChain.map(p => p.chain[0]));
   const rows = ps.map((p, i) => `
-          <tr>
+          <tr${sortAttrs(p, i)}>
             <td class="num subtle">${i + 1}</td>
             <td><a class="pname" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a>${p.sku ? `<div class="pt-sub"><span class="code">${esc(p.sku)}</span></div>` : ''}</td>
             <td class="num">${p.price ? esc(money(parseFloat(p.price))) + ' ₴' : ''}${p.priceUsd ? `<div class="pt-sub">$${esc(p.priceUsd)}</div>` : ''}</td>
             <td><a class="cat-link" href="${esc(data.category.id)}_map.html#cat=${encodeURIComponent(p.shopCatId)}">${esc(p.shopCatName)}</a>${p.groupId && p.groupId !== p.shopCatId ? `<div class="pt-sub" data-tip="Сайт вказує іншу категорію магазину (ec_group_id), ніж та, де товар знайшов скрапер.">група ${esc(p.groupId)}</div>` : ''}</td>
             <td>${p.error ? `<span class="count-no">${esc(p.error)}</span>` : promHtml(p)}</td>
-            <td class="num">${feeHtml(p)}</td>
+            <td class="num c">${p.prom ? p.prom.level : ''}</td>
+            ${feeCells(p)}
             <td class="num">${p.attrs && p.attrs.length ? `<span data-tip-source="site" data-tip="${esc(p.attrs.map(a => a.join(': ')).join('\n'))}">${p.attrs.length}</span>` : (p.error ? '' : '<span class="subtle">0</span>')}</td>
             <td class="num">${p.error ? '' : p.descLen ? p.descLen : '<span class="count-no">0</span>'}</td>
             <td>${p.error ? '' : flagsHtml(p)}</td>
@@ -255,14 +297,25 @@ html, body { height: auto; overflow: visible; }
 .pt-stats b { color: var(--text-main); font-weight: 600; }
 .pt-wrap h2 { font-size: 1rem; margin: 22px 0 8px; font-weight: 600; }
 .pt-card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-.pt-table td { vertical-align: top; line-height: 1.45; }
+/* 13 колонок мають влазити від 1300px без горизонтальної прокрутки: ширини фіксовані
+   (<colgroup>), решту ділять «Товар» і «Категорія Prom»; відступи вужчі за звичайні. */
+.pt-table { table-layout: fixed; }
+.pt-table th, .pt-table td { padding: 6px 7px; }
+.pt-table th { white-space: nowrap; vertical-align: bottom; }
+.pt-table td { vertical-align: top; line-height: 1.45; overflow-wrap: break-word; }
+/* Переноси з дефісом лише у вузьких колонках категорій: на 1300px довгі слова
+   («радіовимірювальні») інакше рвались посередині без дефіса. */
+.pt-table td:nth-child(4), .pt-table td:nth-child(5) { hyphens: auto; }
+.pt-table th.th-sort:hover, .pt-table th.th-sort.active { color: var(--text-main); }
+.pt-table th.th-sort:focus-visible { outline: 2px solid var(--border-active); outline-offset: -2px; }
+.sort-ind { color: var(--text-link); }
+.pt-table .c { text-align: center; }
 .pt-table td.num, .pt-table th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pt-table .pt-sub { white-space: nowrap; }
 .pt-sub { font-size: .72rem; color: var(--text-subtle); margin-top: 2px; }
 .pt-ids { font-family: var(--font-mono); font-size: .7rem; color: var(--text-subtle); margin-top: 2px; }
 .pt-path { color: var(--text-muted); }
 .pt-path b { color: var(--text-main); font-weight: 600; }
-.pt-shop { color: var(--text-muted); font-size: .76rem; }
 .pt-tag { display: inline-block; font-size: .7rem; padding: 0 6px; margin: 0 4px 3px 0; border-radius: 999px; border: 1px solid var(--border-dark); color: var(--text-muted); white-space: nowrap; }
 .pt-flags { display: inline-block; }
 .pname { color: var(--text-main); text-decoration: none; }
@@ -310,37 +363,40 @@ ${narrowGuardHtml()}
       <span>Сторінку прочитано <b>${ok.length}</b></span>
       <span>Є категорія Prom <b>${withChain.length}</b></span>
       <span>Знайдено в таблиці комісій <b>${withProm.length}</b></span>
-      <span>Різних категорій Prom <b>${groups.size}</b></span>
+      <span>Різних категорій Prom <b>${promCats.size}</b></span>
     </div>
-
-    <h2>Категорії Prom у цьому розділі</h2>
-    <div class="pt-card"><table class="simple-table pt-table">
-      <thead><tr><th>Категорія Prom (під назвами їхні ID)</th><th class="num">Товарів</th><th class="num" data-tip="Єдина комісія за замовлення, % від ціни. Решта режимів у підказці.">Комісія</th><th>Категорії магазину цих товарів</th></tr></thead>
-      <tbody>${groupRows}
-      </tbody>
-    </table></div>
 
     <h2>Товари (${ps.length})</h2>
     <div class="pt-card"><table class="simple-table pt-table">
+      <colgroup>
+        <col style="width:34px"><col><col style="width:88px"><col style="width:120px"><col>
+        <col style="width:64px"><col style="width:84px"><col style="width:78px"><col style="width:84px"><col style="width:84px">
+        <col style="width:106px"><col style="width:52px"><col style="width:96px">
+      </colgroup>
       <thead><tr>
-        <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія магазину</th>
+        <th class="num">№</th><th>Товар</th><th class="num">Ціна</th><th>Категорія<br>магазину</th>
         <th>Категорія Prom</th>
-        <th class="num" data-tip="Єдина комісія за замовлення, % від ціни, і скільки це в гривнях для цієї ціни. Решта режимів у підказці.">Комісія</th>
-        <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характ.</th>
+        <th class="num c">Рівень<br>категорії</th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="econom" data-tip="% від ціни за кожне замовлення або, з позначкою ₴, гривні за перехід (так у таблиці «Комісія Prom»).\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>режиму<br>«Економ»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="single" data-tip="Під відсотком: скільки це в гривнях для ціни товару.\nКлік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Єдина<br>комісія<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="more" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>«Більше<br>продажів»<span class="sort-ind"></span></th>
+        <th class="num th-sort" role="button" tabindex="0" aria-sort="none" data-sort="turbo" data-tip="Клік сортує: спершу більші, повторний клік навпаки, третій повертає як було. Відсотки (за замовлення) і гривні (за перехід) сортуються окремо, відсотки першими.">Комісія для<br>«Турбо»<span class="sort-ind"></span></th>
+        <th class="num" data-tip="Кількість характеристик у картці товару; список у підказці.">Характеристики</th>
         <th class="num" data-tip="Довжина опису товару, символів.">Опис</th>
-        <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Платформа</th>
+        <th data-tip="Позначки платформи. У підказці всі службові поля як є.">Позначки<br>платформи</th>
       </tr></thead>
-      <tbody>${rows}
+      <tbody id="pt-rows">${rows}
       </tbody>
     </table></div>
   </main>
   <script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
-  <script>initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips();</script>
+  <script>${initFeeSort.toString()}
+initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort();</script>
 </body>
 </html>
 `;
   fs.writeFileSync(OUT_HTML, html);
-  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${groups.size}, у таблиці комісій ${withProm.length} → ${path.relative(__dirname, OUT_HTML)}`);
+  console.log(`Тест платформи: ${ok.length} з ${ps.length} сторінок, категорій Prom ${promCats.size}, у таблиці комісій ${withProm.length} → ${path.relative(__dirname, OUT_HTML)}`);
 }
 
 (async () => {
