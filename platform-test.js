@@ -291,7 +291,7 @@ html, body { height: auto; overflow: visible; }
 .pt-wrap { padding: 20px 24px 48px; }
 .pt-wrap h1 { font-size: 1.25rem; margin: 0 0 12px; font-weight: 600; }
 .pt-note { background: var(--bg-white); border: 1px solid var(--border-color); border-left: 4px solid var(--status-warn, #d97706); border-radius: 8px;
-  padding: 12px 16px; margin-bottom: 16px; font-size: .85rem; line-height: 1.6; color: var(--text-main); max-width: 1100px; }
+  padding: 12px 16px; margin-bottom: 16px; font-size: .85rem; line-height: 1.6; color: var(--text-main); }
 .pt-note a { color: var(--text-link); }
 .pt-stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 18px; font-size: .85rem; color: var(--text-muted); }
 .pt-stats b { color: var(--text-main); font-weight: 600; }
