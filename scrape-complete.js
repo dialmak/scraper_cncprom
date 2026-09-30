@@ -390,11 +390,26 @@ function readProductPage(page) {
     // переносами рядків. JSON-LD Product.description — лише запас: у ньому немає
     // тексту посилань («(завантажити)», список розділів магазину), а для історії
     // змін опису потрібен саме видимий текст. null — блоку немає зовсім.
+    // Картинки (схеми, креслення, графіки) і посилання лишаються на своєму місці
+    // позначками: картинка — окремий рядок `![](адреса)`, посилання — `[текст](адреса)`.
+    // Так опис можна показати з картинками, а історія змін лишається текстом.
     let description = null;
     const descEl = document.querySelector('[data-qaid="product_description"]');
     if (descEl) {
       const c = descEl.cloneNode(true);
       c.querySelectorAll('script, style').forEach(el => el.remove());
+      const http = u => /^https?:\/\//i.test(u || '');
+      c.querySelectorAll('a[href]').forEach(a => {
+        const href = a.href, t = a.textContent.replace(/\s+/g, ' ').trim();
+        // Посилання навколо картинки чи без тексту — лишається лише вміст.
+        if (a.querySelector('img') || !t || !http(href)) { a.replaceWith(...a.childNodes); return; }
+        a.replaceWith(t === href ? href : `[${t}](${href})`);
+      });
+      c.querySelectorAll('img').forEach(img => {
+        const src = img.getAttribute('data-src') ? new URL(img.getAttribute('data-src'), location.href).href : img.src;
+        // Іконка кнопки «товар» з редактора Prom (ckeditor/…/insert_button) — не зміст.
+        img.replaceWith(http(src) && !/\/ckeditor/i.test(src) ? `\n![](${src})\n` : '');
+      });
       c.querySelectorAll('br').forEach(el => el.replaceWith('\n'));
       c.querySelectorAll('td, th').forEach(el => el.append('\t'));
       c.querySelectorAll('p, div, li, tr, ul, ol, table, h1, h2, h3, h4, h5, h6, blockquote').forEach(el => el.append('\n'));
