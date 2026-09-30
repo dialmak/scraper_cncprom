@@ -953,7 +953,8 @@ function setupTooltips() {
 //   - коди й розміри без розділювачів: 05116 → 05-116, hgr 25 → HGR25H;
 //   - коли точних збігів немає — той самий запит в іншій розкладці клавіатури,
 //     далі схожі слова (1 помилка, для слів від 8 літер — 2);
-//   - порядок — від кращого збігу (точний код, ціле слово, початок слова…).
+//   - порядок — від кращого збігу (точний код, ціле слово, початок слова…);
+//     слова запиту поруч і в тому самому порядку — вище (nema 43 → NEMA43).
 
 // Текст → { t: нормалізований, тієї ж довжини, що вихідний (тому позиції
 // підсвітки збігаються); c: лише літери й цифри; pos: позиція кожного символу
@@ -1017,7 +1018,11 @@ function compileSearch(query) {
     });
     terms.push({ wild: true, parts: parts, re: new RegExp(src, 'g'), reC: new RegExp(srcC, 'g') });
   });
-  return { raw: raw, terms: terms };
+  // Слова запиту разом, лише літери й цифри: «nema 43» → nema43. Товар, де вони
+  // стоять поруч і в тому самому порядку (NEMA 43, NEMA43, NEMA-43), вище.
+  var phrase = terms.length > 1 && terms.every(function (t) { return !t.wild; })
+    ? terms.map(function (t) { return t.c; }).join('') : '';
+  return { raw: raw, terms: terms, phrase: phrase };
 }
 
 // Оцінка збігу одного слова запиту з одним полем; 0 — не знайдено.
@@ -1067,7 +1072,17 @@ function filterProducts(products, query, fields) {
       if (!best) break;
       total += best;
     }
-    if (i === q.terms.length) scored.push({ p: products[idx], s: total, i: idx });
+    if (i !== q.terms.length) continue;
+    // Фраза важить більше за частину коду: інакше «nema 43» ставив першим
+    // NEMA 17 з кодом 12-043, а NEMA43 опускав у кінець.
+    if (q.phrase) {
+      var bonus = 0;
+      for (var g = 0; g < fields.length; g++) {
+        if (row[g].c.indexOf(q.phrase) !== -1) bonus = Math.max(bonus, kinds[g] === 'cat' ? 15 : 50);
+      }
+      total += bonus;
+    }
+    scored.push({ p: products[idx], s: total, i: idx });
   }
   scored.sort(function (a, b) { return b.s - a.s || a.i - b.i; });
   return scored.map(function (x) { return x.p; });
