@@ -14,8 +14,8 @@ name: Скрапінг та перебудова сайту
 #
 # Після build-maps.js той самий job готує робочу копію гілки `data` через git
 # worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
-# знімок (generate-snapshot.js) і комітить/пушить лише його в `data` —
-# output/ це не зачіпає.
+# знімок (generate-snapshot.js) і описи товарів (descriptions/) і комітить/пушить
+# лише їх у `data` — output/ це не зачіпає.
 on:
   schedule:
     # cron-хвилина навмисно не кругла (не :00) — на круглих позначках GitHub
@@ -145,6 +145,9 @@ jobs:
         run: |
           cd data-branch
           git add snapshots
+          # Описи товарів (з 30.09.2026): git комітить лише змінені файли, тож
+          # історія опису товару — `git log -p descriptions/<id>.txt`.
+          if [ -d descriptions ]; then git add descriptions; fi
           git commit -m "Знімок за ${SNAPSHOT_DATE}" || echo "Немає змін для коміту"
           git push origin data
 

@@ -9,7 +9,9 @@
 //   переміщено);
 // - скорочений список товарів: id, name, sku, categoryId, availability, url
 //   (finalUrl — на нього веде назва товару на сторінці змін; сирих крихт
-//   тут немає — від них лишається вердикт звірки crumbVerdict, а не рядок).
+//   тут немає — від них лишається вердикт звірки crumbVerdict, а не рядок),
+//   і descHash — відбиток опису;
+// - сам опис з характеристиками — descriptions/<id>.txt поруч зі знімками.
 //
 // Знімок пишеться НЕ в output/ (те гітигнориться на main), а в окрему теку —
 // у реальному нічному прогоні це робочий checkout гілки `data`
@@ -23,6 +25,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { readCategoriesOrExit } = require('./lib/categories');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -55,15 +58,39 @@ function flattenTree(node, parentId, out) {
 // Саме він дає змогу через тиждень сказати, чи була та "зміна категорії"
 // справжньою, чи це скрапер помилився.
 function trimProducts(products) {
-  return (products || []).map(p => ({
-    id: String(p.productId),
-    name: p.productName,
-    sku: p.sku,
-    categoryId: String(p.categoryId),
-    availability: p.availabilityStatus,
-    url: p.finalUrl,
-    crumbVerdict: p.crumbVerdict || 'unknown',
-  }));
+  return (products || []).map(p => {
+    const row = {
+      id: String(p.productId),
+      name: p.productName,
+      sku: p.sku,
+      categoryId: String(p.categoryId),
+      availability: p.availabilityStatus,
+      url: p.finalUrl,
+      crumbVerdict: p.crumbVerdict || 'unknown',
+    };
+    // Відбиток опису й характеристик: за ним видно, що текст змінився, не
+    // тягнучи сам текст у кожен знімок (він — у descriptions/, див. нижче).
+    // Лише коли опис читався (каталог з 30.09.2026); інакше поля немає.
+    if (typeof p.description === 'string') row.descHash = descHash(descriptionText(p));
+    return row;
+  });
+}
+
+// ==================== ОПИСИ ====================
+// Опис і характеристики кожного товару — окремим текстовим файлом
+// descriptions/<id>.txt у гілці data. Git комітить лише змінені файли, тож
+// історія переписування опису — це `git log -p descriptions/<id>.txt`.
+// Файли ніколи не видаляються: товар, що зник, або категорія, яку тієї ночі
+// не зібрано, інакше дали б у історії «видалено» й наступної ночі «додано».
+function descriptionText(p) {
+  const attrs = (p.attrs || []).map(([n, v]) => `${n}: ${v}`).join('\n');
+  return (p.description || '') + (attrs ? `\n\nХарактеристики:\n${attrs}` : '');
+}
+function descHash(text) {
+  return crypto.createHash('sha1').update(text).digest('hex').slice(0, 10);
+}
+function descriptionFile(p) {
+  return `${p.sku ? p.sku + ' ' : ''}${p.productName}\n${p.finalUrl}\n\n${descriptionText(p)}\n`;
 }
 
 // Помилки прогону цієї категорії — щоб знімок відповідав і на питання "чи все
@@ -77,6 +104,7 @@ function readRunErrors(categoryId) {
 const rows = readCategoriesOrExit(SITE_DIR);
 const categories = [];
 const productsById = new Map(); // захист від дублів, якщо productId колись з'явиться у двох деревах
+const descriptionsById = new Map(); // id → вміст descriptions/<id>.txt
 
 let missingCatalog = 0;
 const run = [];
@@ -93,6 +121,11 @@ rows.forEach(row => {
 
   trimProducts(catalog.products).forEach(p => {
     if (!productsById.has(p.id)) productsById.set(p.id, p);
+  });
+  (catalog.products || []).forEach(p => {
+    if (typeof p.description === 'string' && !descriptionsById.has(String(p.productId))) {
+      descriptionsById.set(String(p.productId), descriptionFile(p));
+    }
   });
 
   run.push({
@@ -122,7 +155,22 @@ fs.mkdirSync(snapshotsDir, { recursive: true });
 const outPath = path.join(snapshotsDir, `${DATE}.json`);
 fs.writeFileSync(outPath, JSON.stringify(snapshot, null, 2), 'utf-8');
 
+// Переписується лише файл, чий вміст справді змінився: так і mtime, і git
+// бачать тільки справжні зміни опису.
+let descWritten = 0;
+if (descriptionsById.size) {
+  const descDir = path.join(OUT_DIR, 'descriptions');
+  fs.mkdirSync(descDir, { recursive: true });
+  descriptionsById.forEach((text, id) => {
+    const file = path.join(descDir, `${id}.txt`);
+    let old = null;
+    try { old = fs.readFileSync(file, 'utf-8'); } catch (e) { /* нового товару ще немає */ }
+    if (old !== text) { fs.writeFileSync(file, text, 'utf-8'); descWritten++; }
+  });
+}
+
 console.log(`Знімок записано: ${outPath}`);
+if (descriptionsById.size) console.log(`Описів: ${descriptionsById.size}, нових чи змінених: ${descWritten}`);
 console.log(`Категорій: ${categories.length}, товарів: ${snapshot.products.length}` +
   (missingCatalog ? `, без каталогу: ${missingCatalog}` : '') +
   `, помилок прогону: ${run.reduce((n, r) => n + r.errors.length, 0)}`);

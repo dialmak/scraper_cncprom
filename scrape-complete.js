@@ -386,13 +386,47 @@ function readProductPage(page) {
         .filter(Boolean);
     }
 
+    // Опис — видимий текст блоку, як його бачить покупець: абзаци й <br> стають
+    // переносами рядків. JSON-LD Product.description — лише запас: у ньому немає
+    // тексту посилань («(завантажити)», список розділів магазину), а для історії
+    // змін опису потрібен саме видимий текст. null — блоку немає зовсім.
+    let description = null;
+    const descEl = document.querySelector('[data-qaid="product_description"]');
+    if (descEl) {
+      const c = descEl.cloneNode(true);
+      c.querySelectorAll('script, style').forEach(el => el.remove());
+      c.querySelectorAll('br').forEach(el => el.replaceWith('\n'));
+      c.querySelectorAll('td, th').forEach(el => el.append('\t'));
+      c.querySelectorAll('p, div, li, tr, ul, ol, table, h1, h2, h3, h4, h5, h6, blockquote').forEach(el => el.append('\n'));
+      description = c.textContent.replace(/ /g, ' ').replace(/[ \t]+/g, ' ')
+        .replace(/ ?\n ?/g, '\n').replace(/\n{2,}/g, '\n').trim();
+    } else {
+      for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
+        try {
+          const data = JSON.parse(el.textContent);
+          const items = Array.isArray(data) ? data : (data['@graph'] || [data]);
+          const product = items.find(it => it && it['@type'] === 'Product');
+          if (product) { description = String(product.description || '').trim(); break; }
+        } catch (e) { /* побитий JSON-LD — опису немає */ }
+      }
+    }
+
+    // Характеристики — пари [назва, значення] з таблиці на сторінці товару.
+    const attrs = [...document.querySelectorAll('[data-qaid="attribute_item"]')].map(row => {
+      const n = row.querySelector('[data-qaid="attribute_name"]');
+      const v = row.querySelector('[data-qaid="attribute_value"]');
+      return n && v ? [n.textContent.trim(), v.textContent.replace(/\s+/g, ' ').trim()] : null;
+    }).filter(Boolean);
+
     return {
       productName: nameEl ? nameEl.textContent.trim() : "",
       sku: skuEl ? skuEl.textContent.trim() : "",
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
-      crumbs
+      crumbs,
+      description,
+      attrs
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [] }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], description: null, attrs: [] }));
 }
 
 // Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
@@ -435,7 +469,11 @@ async function extractProductData(page, url, assignment, silent = false) {
     availabilityStatus: data.availabilityStatus,
     finalUrl: url,
     crumbIds: data.crumbs.map(c => c.id),
-    crumbNames: data.crumbs.map(c => c.name)
+    crumbNames: data.crumbs.map(c => c.name),
+    // '' — опису на сторінці немає; поля немає зовсім — каталог зібрано до
+    // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
+    description: data.description || '',
+    attrs: data.attrs
   };
 }
 
