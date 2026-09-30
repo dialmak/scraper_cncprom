@@ -15,6 +15,7 @@ const { ICONS } = require('./lib/icons');
 const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
+const { hasDescription, descriptionJson } = require('./lib/desc');
 const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
@@ -25,6 +26,7 @@ const { readCategories, filePath: categoriesFile } = require('./lib/categories')
 // ROOT_DIR, а всі шляхи до даних будуються від DIR.
 const ROOT_DIR = __dirname;
 const DIR = path.join(ROOT_DIR, 'output', 'site');
+const DESC_DIR = path.join(DIR, 'desc');
 // Лог збірки — map.jsonl, лог скрапінгу — scrape.jsonl (з 26.09.2026, до того —
 // текстові map.log і scrape.log): панелі «Лог збірки» й «Лог скрапінгу» будують
 // з них таблиці.
@@ -321,11 +323,27 @@ function readSearchEntries(id) {
         categoryName: node.categoryName,
         topId,
         topName,
+        // id файлу desc/<id>.json (кнопка «Опис»); без опису поля немає
+        desc: hasDescription(r) ? String(r.productId) : undefined,
       });
     });
     (node.children || []).forEach(walk);
   })(catalog.tree);
   return out;
+}
+
+// Опис кожного товару — окремим файлом desc/<productId>.json (~7 КБ): кнопка
+// «Опис» у таблицях товарів завантажує його лише при кліку. Разом описи
+// ~20–25 МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
+// Повертає кількість записаних файлів.
+function writeDescriptions(id) {
+  let catalog;
+  try { catalog = JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8')); } catch (e) { return 0; }
+  const withDesc = (catalog.products || []).filter(hasDescription);
+  if (!withDesc.length) return 0;
+  fs.mkdirSync(DESC_DIR, { recursive: true });
+  withDesc.forEach(p => fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p), 'utf-8'));
+  return withDesc.length;
 }
 
 // <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
@@ -946,6 +964,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), func
 });
 setupTooltips();
 initSiteSearch();
+initDescriptions();
 </script>
 </body>
 </html>
@@ -990,6 +1009,9 @@ function writeRedirect(file, target) {
   const entries = [];
   const searchEntries = [];
   let renderFailures = 0;
+  // desc/ збирається заново щоразу: файл товару, що зник з каталогу, не лишається.
+  fs.rmSync(DESC_DIR, { recursive: true, force: true });
+  let descFiles = 0;
 
   // Результат buildRealMap() перевіряється: інакше впалий render-map.js давав
   // категорію 'ok' із зеленою ✅, а readSummary() підтягував цифри з
@@ -999,6 +1021,7 @@ function writeRedirect(file, target) {
     if (buildRealMap(id)) {
       entries.push({ id, name, url, status: 'ok', ...readSummary(id), failed_urls: readFailedUrls(id) });
       searchEntries.push(...readSearchEntries(id));
+      descFiles += writeDescriptions(id);
       return;
     }
     renderFailures++;
@@ -1030,6 +1053,7 @@ function writeRedirect(file, target) {
   // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
   // людям його не читати; ~1.8 МБ на весь сайт.
   fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
+  if (descFiles) console.log(`Описів товарів (desc/): ${descFiles}`);
 
   // Експорт мапи категорій (без товарів) — кнопка "Експорт" на map.html.
   // Помилка тут не валить прогін: xlsx це зручність, а не результат, і нічний

@@ -27,6 +27,7 @@ const { helpButtonHtml, searchHelpButtonHtml, writeLogos } = require('./lib/help
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
+const { hasDescription } = require('./lib/desc');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -91,7 +92,9 @@ function buildAppNode(node) {
     code: r.sku || '',
     name: r.productName || r.productId || '',
     url: r.finalUrl || '',
-    availability: r.availabilityStatus || ''
+    availability: r.availabilityStatus || '',
+    // id для desc/<id>.json; немає опису — поля немає (JSON.stringify пропускає undefined)
+    desc: hasDescription(r) ? String(r.productId) : undefined
   }));
   const ownYes = products.filter(isAvailableProduct).length;
   const ownNo = products.length - ownYes;
@@ -249,6 +252,10 @@ const css = `
      --status-no: у темній темі червоний тексту світлий (#f66a6a), і білий на ньому
      не читався б (2.9:1); тут — 4.6:1. */
   --badge-bg: #b91c1c;
+  /* Кнопка «Опис»: суцільна, щоб її було видно (побажання користувача 30.09.2026).
+     Білий на ній — 5.2:1 (наведення 6.7:1). */
+  --desc-btn-bg: #2563eb;
+  --desc-btn-hover: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -260,6 +267,7 @@ const css = `
     --status-yes: #89d185; --status-yes-bg: rgba(137, 209, 133, 0.12); --status-yes-border: rgba(137, 209, 133, 0.25);
     --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
     --badge-bg: #d93636;
+    --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c;
   }
 }
 :root[data-theme="dark"] {
@@ -270,6 +278,8 @@ const css = `
   --status-yes: #89d185; --status-yes-bg: rgba(137, 209, 133, 0.12); --status-yes-border: rgba(137, 209, 133, 0.25);
   --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
   --badge-bg: #d93636;
+  /* Кнопка «Опис»: білий на ній 4.85:1 (при наведенні 6.4:1), від тла рядка 3.4:1. */
+  --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c;
 }
 /* Смуги прокрутки й нативні елементи (select, поля) — у кольорах поточної теми:
    без color-scheme браузер малює світлу смугу навіть на темній сторінці. Тема
@@ -450,8 +460,42 @@ mark.search-highlight { background: rgba(250, 204, 21, 0.4); color: inherit; bor
    колонки «Категорія» немає. */
 table.search-table { table-layout: fixed; }
 table.search-table .col-n { width: 4%; }
-table.search-table .col-code { width: 8%; }
-table.search-table .col-cat { width: 32%; }
+table.search-table .col-code { width: 12%; }
+table.search-table .col-cat { width: 28%; }
+
+/* Кнопка «Опис» після коду товару й вікно опису (initDescriptions). Кнопка
+   суцільна й кольорова, щоб її було видно в кожному рядку (користувач
+   30.09.2026); код і кнопка не переносяться. Вікно — 90% ширини вікна браузера:
+   ліворуч текст зі схемами, праворуч характеристики (лишаються на місці при
+   прокрутці тексту). */
+.col-code { white-space: nowrap; }
+.desc-btn {
+  display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; min-height: 20px;
+  padding: 1px 8px; border: none; border-radius: 10px; vertical-align: middle;
+  background: var(--desc-btn-bg); color: #fff; font: 600 0.7rem var(--font-sans); cursor: pointer;
+}
+.desc-btn:hover { background: var(--desc-btn-hover); }
+.desc-btn:focus-visible { outline: 2px solid var(--border-active); outline-offset: 2px; }
+.help-overlay.desc-overlay { padding: 4vh 0; align-items: flex-start; }
+.help-panel.desc-panel { width: 90vw; max-width: none; }
+.desc-body { max-height: calc(92vh - 58px); overflow-y: auto; padding: 16px 22px 22px; }
+.desc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 36px; align-items: start; }
+.desc-grid.no-side { grid-template-columns: minmax(0, 1fr); }
+.desc-side { position: sticky; top: 0; }
+.desc-links { display: flex; gap: 20px; font-size: 0.8rem; margin-bottom: 14px; }
+.desc-links a, .desc-text a { color: var(--text-link); text-decoration: none; }
+.desc-links a:hover, .desc-text a:hover { text-decoration: underline; }
+.desc-text { font-size: 0.86rem; line-height: 1.6; color: var(--text-main); overflow-wrap: anywhere; }
+/* Блоком, а не inline-block: інакше наступний рядок тексту ставав праворуч від картинки. */
+.desc-img-link { display: block; width: fit-content; max-width: 100%; }
+.desc-img {
+  display: block; max-width: 100%; height: auto; margin: 6px 0 12px;
+  border: 1px solid var(--border-color); border-radius: 4px; background: #fff;
+}
+.desc-h { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 6px; }
+.desc-attrs { border-collapse: collapse; width: 100%; font-size: 0.8rem; }
+.desc-attrs td { padding: 4px 0; border-bottom: 1px solid var(--border-color); vertical-align: top; color: var(--text-main); }
+.desc-attrs td:first-child { width: 48%; padding-right: 12px; color: var(--text-muted); }
 table.search-table .col-avail { width: 16%; }
 /* Заголовок «Наявність» у результатах пошуку сортує (sortByAvailability):
    <th> сам по собі не клікабельний, тож руку йому ставимо явно. */
@@ -881,6 +925,91 @@ function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
   if (closeBtn) closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+}
+
+// ==================== ОПИС ТОВАРУ (спільний для <id>_map.html і map.html) ====================
+// Кнопка «Опис» після коду товару в таблицях товарів і в результатах пошуку;
+// вікно на 90% ширини (вибір користувача 30.09.2026). p.desc — id файлу
+// desc/<id>.json (build-maps.js); немає опису — немає й кнопки.
+function descBtnHtml(p) {
+  return p.desc ? '<button type="button" class="desc-btn" data-desc="' + escapeAttr(p.desc) +
+    '" data-tip="Опис товару: текст, схеми й характеристики">📄 Опис</button>' : '';
+}
+
+// Позначки опису (scrape-complete.js): рядок ![](адреса) — картинка на своєму
+// місці, [текст](адреса) — посилання. Решта — звичайний текст, рядок за рядком.
+function descBodyHtml(d) {
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  var text = String(d.description || '').split('\n').map(function (line) {
+    var im = line.match(/^!\[\]\((https?:\/\/[^)\s]+)\)$/);
+    if (im) {
+      return '<a class="desc-img-link" href="' + esc(im[1]) + '" target="_blank" rel="noopener">' +
+        '<img class="desc-img" loading="lazy" alt="" src="' + esc(im[1]) + '"></a>';
+    }
+    return esc(line).replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, function (m, t, u) {
+      return '<a href="' + u + '" target="_blank" rel="noopener">' + t + '</a>';
+    }) + '<br>';
+  }).join('');
+  var attrs = d.attrs || [];
+  var side = attrs.length
+    ? '<aside class="desc-side"><div class="desc-h">Характеристики</div><table class="desc-attrs">' +
+      attrs.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td>' + esc(a[1]) + '</td></tr>'; }).join('') +
+      '</table></aside>'
+    : '';
+  var links = '<div class="desc-links">' +
+    '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
+    '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/descriptions/' + esc(d.id) + '.txt" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
+    '</div>';
+  return '<div class="desc-grid' + (side ? '' : ' no-side') + '"><div class="desc-main">' + links +
+    '<div class="desc-text">' + (d.description ? text : '<span class="empty-note">Опису на сайті немає.</span>') + '</div></div>' +
+    side + '</div>';
+}
+
+// Одне вікно на сторінку; клік по будь-якій кнопці «Опис» (делеговано: таблиці
+// перемальовуються) завантажує desc/<id>.json і показує його. Закриття ✕, Esc і
+// клік поза вікном — setupModalOverlay. Top-level: потрібне й map.html.
+function initDescriptions() {
+  var overlay = document.createElement('div');
+  overlay.id = 'desc-overlay';
+  overlay.className = 'help-overlay desc-overlay';
+  overlay.innerHTML = '<div class="help-panel desc-panel" role="dialog" aria-modal="true" aria-labelledby="desc-title">' +
+    '<div class="help-panel-head"><h3 id="desc-title"></h3>' +
+    '<button type="button" class="btn-help-close" id="desc-close" aria-label="Закрити">✕</button></div>' +
+    '<div class="desc-body" id="desc-body"></div></div>';
+  document.body.appendChild(overlay);
+  setupModalOverlay('desc-overlay', null, 'desc-close');
+  var title = document.getElementById('desc-title');
+  var body = document.getElementById('desc-body');
+  var cache = {};
+  var current = null;
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-desc]');
+    if (!btn) return;
+    e.preventDefault();
+    var id = btn.getAttribute('data-desc');
+    current = id;
+    var tip = document.getElementById('custom-tooltip');
+    if (tip) tip.classList.remove('visible');
+    title.textContent = 'Опис товару';
+    body.innerHTML = '<div class="empty-note">Завантаження опису…</div>';
+    overlay.classList.add('open');
+    document.getElementById('desc-close').focus();
+    if (!cache[id]) {
+      cache[id] = fetch('desc/' + encodeURIComponent(id) + '.json').then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      });
+    }
+    cache[id].then(function (d) {
+      if (current !== id) return;
+      title.textContent = (d.code ? d.code + ' ' : '') + d.name;
+      body.innerHTML = descBodyHtml(d);
+      body.scrollTop = 0;
+    }).catch(function () {
+      delete cache[id];
+      if (current === id) body.innerHTML = '<div class="empty-note">Не вдалося завантажити опис. Спробуйте ще раз.</div>';
+    });
+  });
 }
 
 // ==================== ПІДКАЗКИ (спільні для <id>_map.html і map.html) ====================
@@ -1415,7 +1544,7 @@ function initSiteSearch() {
       var isYes = /готово/i.test(p.availability || '');
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', hq) + '</span></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', hq) + '</span>' + descBtnHtml(p) + '</td>' +
         '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, hq) + '</a></td>' +
         '<td class="col-cat"><a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, hq) + '</a></td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
@@ -1639,7 +1768,7 @@ function initCatalogMap(CATALOG_DATA) {
       return (
         '<tr>' +
         '<td class="col-n">' + (p.index || i + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span></td>' +
+        '<td class="col-code"><span class="item-code">' + escapeHtml(p.code || ' ') + '</span>' + descBtnHtml(p) + '</td>' +
         '<td class="col-name">' + (p.url ? '<a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + escapeHtml(p.name) + '</a>' : escapeHtml(p.name)) + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
         '</tr>'
@@ -1856,7 +1985,7 @@ function initCatalogMap(CATALOG_DATA) {
         : '<a href="' + escapeAttr(p.topId) + '_map.html" class="cat-found-badge" data-tip="Відкрити мапу цієї категорії">📁 ' + highlightMatch(p.categoryName, query) + '</a>';
       return (
         '<tr><td class="col-n">' + (idx + 1) + '</td>' +
-        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span></td>' +
+        '<td class="col-code"><span class="item-code">' + highlightMatch(p.code || '', query) + '</span>' + descBtnHtml(p) + '</td>' +
         '<td class="col-name"><a href="' + escapeAttr(p.url) + '" target="_blank" rel="noopener">' + highlightMatch(p.name, query) + '</a></td>' +
         '<td class="col-cat">' + categoryCell + '</td>' +
         '<td class="col-avail"><span class="stock-badge ' + (isYes ? 'yes' : 'no') + '">' + escapeHtml(p.availability || ' ') + '</span></td>' +
@@ -2103,7 +2232,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, descBtnHtml, descBodyHtml, initDescriptions, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
@@ -2303,6 +2432,7 @@ ${narrowGuardHtml()}
 const CATALOG_DATA = ${JSON.stringify(CATALOG_DATA)};
 initCatalogMap(CATALOG_DATA);
 initNarrowGuard();
+initDescriptions();
 </script>
 </body>
 </html>`;
