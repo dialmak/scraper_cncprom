@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
 const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
+const { stripShopListing } = require('./lib/desc');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -426,6 +427,13 @@ function readProductPage(page) {
       }
     }
 
+    // Специфікації — окрема вкладка сторінки товару: прикріплені файли (посібники,
+    // креслення, PDF), пари [назва, адреса]. Описи часто відсилають до них
+    // («Докладніше дивіться в специфікації»).
+    const specs = [...document.querySelectorAll('[data-qaid="specs_item"]')]
+      .map(a => [a.textContent.replace(/\s+/g, ' ').trim(), a.href])
+      .filter(([n, u]) => n && /^https?:\/\//i.test(u));
+
     // Характеристики — пари [назва, значення] з таблиці на сторінці товару.
     const attrs = [...document.querySelectorAll('[data-qaid="attribute_item"]')].map(row => {
       const n = row.querySelector('[data-qaid="attribute_name"]');
@@ -439,9 +447,10 @@ function readProductPage(page) {
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
       crumbs,
       description,
-      attrs
+      attrs,
+      specs
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], description: null, attrs: [] }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], description: null, attrs: [], specs: [] }));
 }
 
 // Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
@@ -487,8 +496,10 @@ async function extractProductData(page, url, assignment, silent = false) {
     crumbNames: data.crumbs.map(c => c.name),
     // '' — опису на сторінці немає; поля немає зовсім — каталог зібрано до
     // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
-    description: data.description || '',
-    attrs: data.attrs
+    // Шаблон «Дивіться всі наші оголошення» зі списком розділів — геть (lib/desc.js).
+    description: stripShopListing(data.description || ''),
+    attrs: data.attrs,
+    specs: data.specs
   };
 }
 

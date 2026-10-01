@@ -493,6 +493,9 @@ table.search-table .col-cat { width: 28%; }
   border: 1px solid var(--border-color); border-radius: 4px; background: #fff;
 }
 .desc-h { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 6px; }
+.desc-specs { list-style: none; margin: 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; }
+.desc-specs a { color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+.desc-specs a:hover { text-decoration: underline; }
 .desc-attrs { border-collapse: collapse; width: 100%; font-size: 0.8rem; }
 .desc-attrs td { padding: 4px 0; border-bottom: 1px solid var(--border-color); vertical-align: top; color: var(--text-main); }
 .desc-attrs td:first-child { width: 48%; padding-right: 12px; color: var(--text-muted); }
@@ -951,11 +954,19 @@ function descBodyHtml(d) {
     }) + '<br>';
   }).join('');
   var attrs = d.attrs || [];
-  var side = attrs.length
-    ? '<aside class="desc-side"><div class="desc-h">Характеристики</div><table class="desc-attrs">' +
-      attrs.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td>' + esc(a[1]) + '</td></tr>'; }).join('') +
-      '</table></aside>'
+  var specs = d.specs || [];
+  // Специфікації — файли з вкладки «Специфікації» сторінки товару (посібники, PDF).
+  var specsHtml = specs.length
+    ? '<div class="desc-h">Специфікації</div><ul class="desc-specs">' +
+      specs.map(function (s) { return '<li><a href="' + esc(s[1]) + '" target="_blank" rel="noopener">📎 ' + esc(s[0]) + ' ↗</a></li>'; }).join('') +
+      '</ul>'
     : '';
+  var attrsHtml = attrs.length
+    ? '<div class="desc-h">Характеристики</div><table class="desc-attrs">' +
+      attrs.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td>' + esc(a[1]) + '</td></tr>'; }).join('') +
+      '</table>'
+    : '';
+  var side = specsHtml || attrsHtml ? '<aside class="desc-side">' + specsHtml + attrsHtml + '</aside>' : '';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
     '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/descriptions/' + esc(d.id) + '.txt" target="_blank" rel="noopener">Історія змін опису ↗</a>' +

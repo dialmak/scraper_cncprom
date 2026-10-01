@@ -84,7 +84,9 @@ function trimProducts(products) {
 // не зібрано, інакше дали б у історії «видалено» й наступної ночі «додано».
 function descriptionText(p) {
   const attrs = (p.attrs || []).map(([n, v]) => `${n}: ${v}`).join('\n');
-  return (p.description || '') + (attrs ? `\n\nХарактеристики:\n${attrs}` : '');
+  const specs = (p.specs || []).map(([n, u]) => `${n}: ${u}`).join('\n');
+  return (p.description || '') + (attrs ? `\n\nХарактеристики:\n${attrs}` : '') +
+    (specs ? `\n\nСпецифікації:\n${specs}` : '');
 }
 function descHash(text) {
   return crypto.createHash('sha1').update(text).digest('hex').slice(0, 10);
