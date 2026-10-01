@@ -481,14 +481,22 @@ table.search-table .col-cat { width: 28%; }
 .desc-btn:focus-visible { outline: 2px solid var(--border-active); outline-offset: 2px; }
 .help-overlay.desc-overlay { padding: 4vh 0; align-items: flex-start; }
 .help-panel.desc-panel { width: 90vw; max-width: none; }
-.desc-body { max-height: calc(92vh - 58px); overflow-y: auto; padding: 16px 22px 22px; }
+.desc-body { max-height: calc(92vh - 58px); overflow-y: auto; padding: 0 22px 22px; }
+.desc-body > .empty-note { padding-top: 16px; }
+/* .help-panel-head розсуває двох дітей; тут їх три: назва тягнеться, код і ✕ праворуч. */
+.desc-panel .help-panel-head h3 { flex: 1; min-width: 0; }
+.desc-head-code { margin: 0 14px 0 16px; font-size: 1rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+.desc-head-code:empty { display: none; }
 .desc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 32px; align-items: start; }
-.desc-side { position: sticky; top: 0; }
+.desc-side { position: sticky; top: 62px; }
 .desc-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8rem; margin-top: 14px; }
-.desc-back { border: none; background: none; padding: 0; margin: 0 0 10px; font: 500 0.82rem var(--font-sans); color: var(--text-link); cursor: pointer; }
+.desc-back { border: none; background: none; padding: 0 12px 0 0; font: 500 0.82rem var(--font-sans); color: var(--text-link); cursor: pointer; }
 .desc-back:hover { text-decoration: underline; }
 /* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «Комплект постачання», «З цим товаром також замовляють», «До цього товару у нас можна придбати». */
-.desc-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--border-active); margin-bottom: 14px; }
+/* Ряд вкладок — на всю ширину вікна (шість вкладок — 1070px, у ліву колонку не
+   вміщались) і закріплений: при прокрутці опису лишається під заголовком. */
+.desc-tabs { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 4px; border-bottom: 2px solid var(--border-active);
+  margin-bottom: 14px; padding-top: 14px; position: sticky; top: 0; z-index: 2; background: var(--bg-white); }
 .desc-tab { border: 1px solid var(--border-color); border-bottom: none; border-radius: 5px 5px 0 0; background: var(--bg-subtle);
   color: var(--text-main); padding: 7px 14px; font: 500 0.82rem var(--font-sans); cursor: pointer; }
 .desc-tab:hover { background: var(--bg-hover); border-color: var(--border-dark); }
@@ -1125,7 +1133,8 @@ function descBodyHtml(d, back) {
   // Карусель сайту й список з опису — окремими вкладками, з назвами сайту.
   if (acc.length) tabs.push(['acc', 'З цим товаром також замовляють', cardsHtml(acc)]);
   if (also.length) tabs.push(['also', 'До цього товару у нас можна придбати', cardsHtml(also)]);
-  var tabsHtml = '<div class="desc-tabs" role="tablist">' + tabs.map(function (t, i) {
+  var tabsHtml = '<div class="desc-tabs" role="tablist">' +
+    (back ? '<button type="button" class="desc-back" data-desc-back>← Назад</button>' : '') + tabs.map(function (t, i) {
     var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'kit' ? kit.length : t[0] === 'acc' ? acc.length : t[0] === 'also' ? also.length : 0;
     return '<button type="button" role="tab" class="desc-tab' + (i ? '' : ' on') + '" data-desc-tab="' + t[0] + '" aria-selected="' + (i ? 'false' : 'true') + '">' +
       t[1] + (n ? ' <span class="desc-tab-n">' + n + '</span>' : '') + '</button>';
@@ -1144,7 +1153,7 @@ function descBodyHtml(d, back) {
       '</div>'
     : '';
   var facts = d.category ? '' : '<table class="desc-facts">' +
-    '<tr><td>Код</td><td>' + esc(d.code || 'н/д') + '</td></tr>' +
+    '<tr><td>Код</td><td class="desc-price">' + esc(d.code || 'н/д') + '</td></tr>' +
     (d.price != null ? '<tr><td>Ціна</td><td class="desc-price">' + (d.oldPrice != null ? '<s class="desc-old-price">' + price(d.oldPrice, d.currency) + '</s> ' : '') + price(d.price, d.currency) + '</td></tr>' : '') +
     (d.avail ? '<tr><td>Наявність</td><td>' + badge(d.avail) + '</td></tr>' : '') +
     '</table>';
@@ -1152,9 +1161,7 @@ function descBodyHtml(d, back) {
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
     '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/' + (d.category ? 'categories/' + esc(String(d.id).slice(1)) : 'products/' + esc(d.id)) + '.html" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
     '</div>';
-  return '<div class="desc-grid"><div class="desc-main">' +
-    (back ? '<button type="button" class="desc-back" data-desc-back>← Назад</button>' : '') +
-    tabsHtml + panes + '</div>' +
+  return tabsHtml + '<div class="desc-grid"><div class="desc-main">' + panes + '</div>' +
     '<aside class="desc-side">' + gallery + facts + links + '</aside></div>';
 }
 
@@ -1217,7 +1224,7 @@ function initDescriptions() {
   overlay.id = 'desc-overlay';
   overlay.className = 'help-overlay desc-overlay';
   overlay.innerHTML = '<div class="help-panel desc-panel" role="dialog" aria-modal="true" aria-labelledby="desc-title">' +
-    '<div class="help-panel-head"><h3 id="desc-title"></h3>' +
+    '<div class="help-panel-head"><h3 id="desc-title"></h3><span class="desc-head-code" id="desc-code"></span>' +
     '<button type="button" class="btn-help-close" id="desc-close" aria-label="Закрити">✕</button></div>' +
     '<div class="desc-body" id="desc-body"></div></div>';
   document.body.appendChild(overlay);
@@ -1232,6 +1239,7 @@ function initDescriptions() {
     '<button type="button" class="btn-help-close desc-lb-close" aria-label="Закрити фото">✕</button>';
   document.body.appendChild(lb);
   var title = document.getElementById('desc-title');
+  var code = document.getElementById('desc-code');
   var body = document.getElementById('desc-body');
   var cache = {};
   var current = null;
@@ -1294,6 +1302,7 @@ function initDescriptions() {
   function show(id) {
     current = id;
     title.textContent = 'Опис товару';
+    code.textContent = '';
     body.innerHTML = '<div class="empty-note">Завантаження опису…</div>';
     if (!cache[id]) {
       cache[id] = fetch('desc/' + encodeURIComponent(id) + '.json').then(function (r) {
@@ -1303,8 +1312,9 @@ function initDescriptions() {
     }
     cache[id].then(function (d) {
       if (current !== id) return;
-      title.textContent = (d.code ? d.code + ' ' : '') + d.name;
-      if (d.category) title.textContent = 'Категорія: ' + d.name;
+      // Назва без коду; код — праворуч, перед ✕ (користувач 02.10.2026).
+      title.textContent = d.category ? 'Категорія: ' + d.name : d.name;
+      code.textContent = d.category ? '' : d.code || '';
       photos = d.photos || [];
       pi = 0;
       body.innerHTML = descBodyHtml(d, stack.length > 0);
