@@ -64,17 +64,20 @@ const OUT_DATA = path.join(OUT_DIR, 'data');
 // бо "Немає в наявності" теж містить підрядок "наявн".
 function reportIsYes(s) { return /готово/i.test(s || ''); }
 
-// Компактний знімок { c: [[id, parentId, name, level]], p: [[id, catId, availIdx]] }
-// → Map-и для швидкого пошуку.
+// Компактний знімок { c: [[id, parentId, name, level]], p: [[id, catId, availIdx, price?]] }
+// → Map-и для швидкого пошуку. Ціна — четвертим елементом, лише коли знімок її має
+// (знімки від 02.10.2026).
 function reportExpand(snap, avail) {
   var cats = new Map(), prods = new Map();
   snap.c.forEach(function (c) { cats.set(c[0], { id: c[0], parentId: c[1], name: c[2], level: c[3] }); });
-  snap.p.forEach(function (p) { prods.set(p[0], { id: p[0], cat: p[1], avail: avail[p[2]] }); });
+  snap.p.forEach(function (p) { prods.set(p[0], { id: p[0], cat: p[1], avail: avail[p[2]], price: p[3] }); });
   return { cats: cats, prods: prods };
 }
 
 // Diff двох розгорнутих знімків: товари додано / видалено / змінили наявність /
-// змінили категорію; категорії додано / видалено / перейменовано / перенесено.
+// змінили категорію / змінилась ціна; категорії додано / видалено / перейменовано /
+// перенесено. Ціна порівнюється, лише коли вона відома в обох знімках: перший знімок
+// з цінами не дає «змін» проти знімка без них.
 // Перейменування товару свідомо не відстежується.
 // Наявність порівнюється за reportIsYes, а не за точним текстом статусу.
 function reportDiff(a, b, products) {
@@ -112,6 +115,7 @@ function reportDiff(a, b, products) {
     if (!pa) { rows.push(row('added', id, pb.cat, pb.avail)); return; }
     if (reportIsYes(pa.avail) !== reportIsYes(pb.avail)) rows.push(row(reportIsYes(pb.avail) ? 'in' : 'out', id, pb.cat, pb.avail));
     if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); var ft = topOf(pa.cat); r.fromTop = ft ? ft.id : ''; rows.push(r); }
+    if (pa.price != null && pb.price != null && pa.price !== pb.price) { var rp = row('price', id, pb.cat, pb.avail); rp.fromPrice = pa.price; rp.price = pb.price; rows.push(rp); }
   });
   a.prods.forEach(function (pa, id) { if (!b.prods.has(id)) rows.push(row('removed', id, pa.cat, pa.avail)); });
   b.cats.forEach(function (cb, id) {
@@ -124,7 +128,7 @@ function reportDiff(a, b, products) {
   a.cats.forEach(function (ca, id) {
     if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, path: pathOf(id), level: ca.level, topName: t ? t.name : '—', before: chainIn(a, id) }); }
   });
-  var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
+  var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, price: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
   rows.forEach(function (r) { totals[r.type]++; });
   return { rows: rows, cats: cats, totals: totals };
 }
@@ -132,16 +136,17 @@ function reportDiff(a, b, products) {
 // ==================== КЛІЄНТ ====================
 function initReportsPage() {
   var DATA = 'data/';
-  var TYPES = ['out', 'in', 'added', 'removed', 'moved'];
+  var TYPES = ['out', 'in', 'added', 'removed', 'moved', 'price'];
   var TYPE = {
     out:     { icon: '▼', label: 'Зникли з наявності', cls: 't-out' },
     in:      { icon: '▲', label: 'Знову в наявності',  cls: 't-in' },
     added:   { icon: '+', label: 'Нові товари',        cls: 't-add' },
     removed: { icon: '−', label: 'Видалені товари',    cls: 't-rem' },
-    moved:   { icon: '⇄', label: 'Змінили категорію',  cls: 't-mov' }
+    moved:   { icon: '⇄', label: 'Змінили категорію',  cls: 't-mov' },
+    price:   { icon: '₴', label: 'Змінилась ціна',     cls: 't-price' }
   };
   var CAT = { added: ['+', 'Нова категорія', 't-add'], removed: ['−', 'Видалена', 't-rem'], renamed: ['✎', 'Перейменована', 't-mov'], moved: ['⇄', 'Перенесена', 't-mov'] };
-  var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4 };
+  var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4, price: 5 };
   var PAGE = 200;
 
   var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, q: '', top: '', limit: PAGE };
@@ -150,6 +155,11 @@ function initReportsPage() {
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function fmtShort(d) { var p = d.split('-'); return p[2] + '.' + p[1]; }
   function fmtLong(d) { var p = d.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+  // 12 960 ₴: пробіл між розрядами нерозривний; копійки — лише коли вони є.
+  function fmtPrice(v) {
+    var n = Math.round(v * 100) / 100;
+    return (n % 1 ? n.toFixed(2).replace('.', ',') : String(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0₴';
+  }
   function badge(type, short) {
     var t = TYPE[type];
     return '<span class="tb ' + t.cls + '"' + (short ? ' aria-label="' + esc(t.label) + '"' : '') + '><span class="ic" aria-hidden="true">' + t.icon + '</span>' + (short ? '' : esc(t.label)) + '</span>';
@@ -219,6 +229,8 @@ function initReportsPage() {
   // Одна серія (разом змін за день) — розбивка за типами в підказці; колір
   // стовпчика — не статусний, щоб не змішуватися з бейджами наявності.
   function niceMax(v) { if (v <= 5) return 5; var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
+  // Зміни цін у стовпець не входять: ціни перераховуються сотнями за ніч і затулили б
+  // решту змін. У підказці вони окремим рядком.
   function dayTotal(d) { var t = d.t; return t ? t.in + t.out + t.added + t.removed + t.moved + t.cats : null; }
   function drawChart() {
     // У згорнутому блоці svg.clientWidth — 0, і графік малювався б по запасній
@@ -272,8 +284,9 @@ function initReportsPage() {
     var i = +g.getAttribute('data-i'), d = idx.daily[i];
     if (!d.t) tip.innerHTML = '<b>' + fmtLong(d.date) + '</b><div class="foot">Перший знімок: порівнювати нема з чим</div>';
     else tip.innerHTML = '<b>' + fmtLong(d.date) + ' · змін: ' + dayTotal(d) + '</b>' +
-      TYPES.map(function (k) { return '<div class="row"><span>' + TYPE[k].icon + ' ' + TYPE[k].label + '</span><span>' + d.t[k] + '</span></div>'; }).join('') +
+      TYPES.filter(function (k) { return k !== 'price'; }).map(function (k) { return '<div class="row"><span>' + TYPE[k].icon + ' ' + TYPE[k].label + '</span><span>' + d.t[k] + '</span></div>'; }).join('') +
       '<div class="row"><span>✎ Структура категорій</span><span>' + d.t.cats + '</span></div>' +
+      (d.t.price ? '<div class="row"><span>₴ Змінилась ціна (окремо від стовпця)</span><span>' + d.t.price + '</span></div>' : '') +
       '<div class="foot">Клік: порівняти з ' + fmtShort(idx.dates[i - 1]) + (range.to > d.date ? ' по ' + fmtShort(range.to) : '') + '</div>';
     tip.style.display = 'block';
     tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8) + 'px';
@@ -336,6 +349,12 @@ function initReportsPage() {
     if (r.type === 'out') return '<span class="subtle">В наявності</span><span class="arrow-to">→</span><b class="count-no">Немає</b>';
     if (r.type === 'moved') return mapLink(r.fromTop, r.fromCat, r.fromCatName) + '<span class="arrow-to">→</span>' + mapLink(r.top, r.cat, r.catName);
     if (r.type === 'added') return '<span class="muted">' + (reportIsYes(r.avail) ? 'В наявності' : 'Немає в наявності') + '</span>';
+    if (r.type === 'price') {
+      var pct = r.fromPrice ? (r.price - r.fromPrice) / r.fromPrice * 100 : 0;
+      var sign = pct > 0 ? '+' : '−';
+      return '<span class="subtle">' + fmtPrice(r.fromPrice) + '</span><span class="arrow-to">→</span><b>' + fmtPrice(r.price) + '</b>' +
+        '<span class="muted price-pct">' + sign + Math.abs(pct).toFixed(1).replace('.', ',') + '%</span>';
+    }
     return '<span class="subtle">зник із сайту</span>';
   }
   function productTable(rows) {
@@ -491,9 +510,9 @@ function initReportsPage() {
 // --chg-bar (колір стовпчика) перевірено валідатором палітр в обох темах:
 // контраст із поверхнею ≥ 3:1, світла — #2563eb на #fff, темна — #3794ff на #1f1f1f.
 const css = `
-:root { --chg-bar: #2563eb; --chg-mov: #6d28d9; --chg-mov-bg: #f5f3ff; --chg-mov-border: #ddd6fe; }
-:root[data-theme="dark"] { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); } }
+:root { --chg-bar: #2563eb; --chg-mov: #6d28d9; --chg-mov-bg: #f5f3ff; --chg-mov-border: #ddd6fe; --chg-price: #b45309; --chg-price-bg: #fffbeb; --chg-price-border: #fde68a; }
+:root[data-theme="dark"] { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); } }
 
 /* map-common.css робить html,body { height:100%; overflow:hidden } — для
    <id>_map.html, де прокручується лише внутрішня .main-content. Тут, як і на
@@ -548,7 +567,7 @@ html, body { height: auto; overflow: visible; }
 .chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
 .chart-toggle:hover, .chart-toggle:hover .caret { color: var(--text-link); }
 
-.tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
 .tile:hover:not([disabled]) { border-color: var(--border-dark); }
 .tile[disabled] { cursor: default; }
@@ -576,6 +595,8 @@ html, body { height: auto; overflow: visible; }
 .t-add { color: var(--text-link);  background: var(--bg-active);     border-color: var(--border-dark); }
 .t-rem { color: var(--text-muted); background: var(--bg-tag);        border-color: var(--border-dark); }
 .t-mov { color: var(--chg-mov);    background: var(--chg-mov-bg);    border-color: var(--chg-mov-border); }
+.t-price { color: var(--chg-price); background: var(--chg-price-bg); border-color: var(--chg-price-border); }
+.price-pct { margin-left: 8px; white-space: nowrap; }
 
 .rep-table td { vertical-align: top; }
 .rep-table th { white-space: nowrap; }
@@ -732,7 +753,8 @@ if (require.main === module) {
     snap.categories.forEach(c => { if (c.url) catUrls[c.id] = c.url; });
     const compact = {
       c: snap.categories.map(c => [c.id, c.parentId, c.name, c.level]),
-      p: snap.products.map(p => [p.id, p.categoryId, aIdx(p.availability)])
+      // Ціна — четвертим елементом, лише коли вона є у знімку (з 02.10.2026).
+      p: snap.products.map(p => p.price != null ? [p.id, p.categoryId, aIdx(p.availability), p.price] : [p.id, p.categoryId, aIdx(p.availability)])
     };
     const json = JSON.stringify(compact);
     fs.writeFileSync(path.join(OUT_DATA, `${d}.json`), json, 'utf-8');
@@ -741,7 +763,7 @@ if (require.main === module) {
     const expanded = reportExpand(compact, avail);
     if (prevExpanded) {
       const t = reportDiff(prevExpanded, expanded).totals;
-      daily.push({ date: d, t: { in: t.in, out: t.out, added: t.added, removed: t.removed, moved: t.moved, cats: t.cats } });
+      daily.push({ date: d, t: { in: t.in, out: t.out, added: t.added, removed: t.removed, moved: t.moved, price: t.price, cats: t.cats } });
     } else {
       daily.push({ date: d, t: null });
     }
