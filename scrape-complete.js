@@ -12,6 +12,7 @@ const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
 const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
 const { stripShopListing } = require('./lib/desc');
+const { readDescription } = require('./lib/desc-dom');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -387,44 +388,17 @@ function readProductPage(page) {
         .filter(Boolean);
     }
 
-    // Опис — видимий текст блоку, як його бачить покупець: абзаци й <br> стають
-    // переносами рядків. JSON-LD Product.description — лише запас: у ньому немає
-    // тексту посилань («(завантажити)», список розділів магазину), а для історії
-    // змін опису потрібен саме видимий текст. null — блоку немає зовсім.
-    // Картинки (схеми, креслення, графіки) і посилання лишаються на своєму місці
-    // позначками: картинка — окремий рядок `![](адреса)`, посилання — `[текст](адреса)`.
-    // Так опис можна показати з картинками, а історія змін лишається текстом.
-    let description = null;
-    const descEl = document.querySelector('[data-qaid="product_description"]');
-    if (descEl) {
-      const c = descEl.cloneNode(true);
-      c.querySelectorAll('script, style').forEach(el => el.remove());
-      const http = u => /^https?:\/\//i.test(u || '');
-      c.querySelectorAll('a[href]').forEach(a => {
-        const href = a.href, t = a.textContent.replace(/\s+/g, ' ').trim();
-        // Посилання навколо картинки чи без тексту — лишається лише вміст.
-        if (a.querySelector('img') || !t || !http(href)) { a.replaceWith(...a.childNodes); return; }
-        a.replaceWith(t === href ? href : `[${t}](${href})`);
-      });
-      c.querySelectorAll('img').forEach(img => {
-        const src = img.getAttribute('data-src') ? new URL(img.getAttribute('data-src'), location.href).href : img.src;
-        // Іконка кнопки «товар» з редактора Prom (ckeditor/…/insert_button) — не зміст.
-        img.replaceWith(http(src) && !/\/ckeditor/i.test(src) ? `\n![](${src})\n` : '');
-      });
-      c.querySelectorAll('br').forEach(el => el.replaceWith('\n'));
-      c.querySelectorAll('td, th').forEach(el => el.append('\t'));
-      c.querySelectorAll('p, div, li, tr, ul, ol, table, h1, h2, h3, h4, h5, h6, blockquote').forEach(el => el.append('\n'));
-      description = c.textContent.replace(/ /g, ' ').replace(/[ \t]+/g, ' ')
-        .replace(/ ?\n ?/g, '\n').replace(/\n{2,}/g, '\n').trim();
-    } else {
-      for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
-        try {
-          const data = JSON.parse(el.textContent);
-          const items = Array.isArray(data) ? data : (data['@graph'] || [data]);
-          const product = items.find(it => it && it['@type'] === 'Product');
-          if (product) { description = String(product.description || '').trim(); break; }
-        } catch (e) { /* побитий JSON-LD — опису немає */ }
-      }
+    // Опис зі сторінки — у readDescription (lib/desc-dom.js), окремим evaluate.
+    // Тут лише запас: JSON-LD Product.description, коли видимого блоку опису немає
+    // (у ньому немає тексту посилань і розмітки). null — опису немає взагалі.
+    let ldDescription = null;
+    for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
+      try {
+        const data = JSON.parse(el.textContent);
+        const items = Array.isArray(data) ? data : (data['@graph'] || [data]);
+        const product = items.find(it => it && it['@type'] === 'Product');
+        if (product) { ldDescription = String(product.description || '').trim(); break; }
+      } catch (e) { /* побитий JSON-LD — опису немає */ }
     }
 
     // Специфікації — окрема вкладка сторінки товару: прикріплені файли (посібники,
@@ -446,11 +420,11 @@ function readProductPage(page) {
       sku: skuEl ? skuEl.textContent.trim() : "",
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
       crumbs,
-      description,
+      ldDescription,
       attrs,
       specs
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], description: null, attrs: [], specs: [] }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], ldDescription: null, attrs: [], specs: [] }));
 }
 
 // Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
@@ -483,6 +457,8 @@ async function extractProductData(page, url, assignment, silent = false) {
 
   const idMatch = url.match(/\/p(\d+)-/);
   const productId = idMatch ? idMatch[1] : "";
+  // Видимий опис: текст для історії й очищений HTML для показу (lib/desc-dom.js).
+  const desc = await page.evaluate(readDescription).catch(() => null);
 
   return {
     productId,
@@ -496,8 +472,11 @@ async function extractProductData(page, url, assignment, silent = false) {
     crumbNames: data.crumbs.map(c => c.name),
     // '' — опису на сторінці немає; поля немає зовсім — каталог зібрано до
     // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
-    // Шаблон «Дивіться всі наші оголошення» зі списком розділів — геть (lib/desc.js).
-    description: stripShopListing(data.description || ''),
+    // Шаблон «Дивіться всі наші оголошення» зі списком розділів вирізає вже
+    // readDescription; stripShopListing — запас для тексту з JSON-LD (lib/desc.js).
+    description: stripShopListing(desc ? desc.text : (data.ldDescription || '')),
+    // Очищений HTML опису — лише для показу у вікні «Опис» (таблиці, заголовки).
+    descriptionHtml: desc ? desc.html : '',
     attrs: data.attrs,
     specs: data.specs
   };

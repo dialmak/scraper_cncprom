@@ -492,6 +492,22 @@ table.search-table .col-cat { width: 28%; }
   display: block; max-width: 100%; height: auto; margin: 6px 0 12px;
   border: 1px solid var(--border-color); border-radius: 4px; background: #fff;
 }
+/* Опис очищеним HTML (descFillHtml): розмітка сайту без його шрифтів і кольорів —
+   абзаци, заголовки, списки, таблиці з об'єднаними клітинками, вирівнювання. */
+.desc-html p, .desc-html div, .desc-html ul, .desc-html ol, .desc-html blockquote { margin: 0 0 8px; }
+.desc-html h1, .desc-html h2, .desc-html h3, .desc-html h4, .desc-html h5, .desc-html h6 {
+  margin: 16px 0 8px; line-height: 1.35; color: var(--text-main); font-weight: 700;
+}
+.desc-html h1, .desc-html h2 { font-size: 1.02rem; }
+.desc-html h3, .desc-html h4, .desc-html h5, .desc-html h6 { font-size: 0.92rem; }
+.desc-html ul, .desc-html ol { padding-left: 22px; }
+.desc-html li { margin: 2px 0; }
+.desc-html hr { border: none; border-top: 1px solid var(--border-color); margin: 12px 0; }
+.desc-html blockquote { padding-left: 12px; border-left: 3px solid var(--border-dark); color: var(--text-muted); }
+.desc-html table { border-collapse: collapse; margin: 8px 0 16px; width: 100%; font-size: 0.82rem; }
+.desc-html td, .desc-html th { border: 1px solid var(--border-dark); padding: 5px 9px; vertical-align: middle; }
+.desc-html th { background: var(--bg-subtle); font-weight: 600; }
+.desc-html [style*="center"] > .desc-img-link, .desc-html td > .desc-img-link { margin-left: auto; margin-right: auto; }
 .desc-h { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 6px; }
 .desc-specs { list-style: none; margin: 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; }
 .desc-specs a { color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
@@ -971,9 +987,55 @@ function descBodyHtml(d) {
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
     '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/descriptions/' + esc(d.id) + '.txt" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
     '</div>';
+  // Є очищений HTML (каталоги з 01.10.2026) — порожнє місце, яке заповнить
+  // descFillHtml; інакше — текст з позначками, як вище.
+  var main = d.html
+    ? '<div class="desc-text desc-html" data-desc-html></div>'
+    : '<div class="desc-text">' + (d.description ? text : '<span class="empty-note">Опису на сайті немає.</span>') + '</div>';
   return '<div class="desc-grid' + (side ? '' : ' no-side') + '"><div class="desc-main">' + links +
-    '<div class="desc-text">' + (d.description ? text : '<span class="empty-note">Опису на сайті немає.</span>') + '</div></div>' +
-    side + '</div>';
+    main + '</div>' + side + '</div>';
+}
+
+// Очищений HTML опису (lib/desc-dom.js: таблиці з об'єднаними клітинками,
+// заголовки, жирний, списки) у вікно. Розбирається в <template> — там нічого не
+// завантажується й не виконується — і ще раз чиститься тим самим списком
+// дозволеного, а вже потім вставляється: скрапер чистить, але сторінка не
+// покладається на те, що в даних нічого не просочилось. Посилання — у новій
+// вкладці; картинка веде на свій повний розмір.
+function descFillHtml(slot, html) {
+  var KEEP = { P: 1, BR: 1, STRONG: 1, B: 1, EM: 1, I: 1, U: 1, S: 1, SUB: 1, SUP: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1,
+    UL: 1, OL: 1, LI: 1, TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1, CAPTION: 1, IMG: 1, A: 1, BLOCKQUOTE: 1, HR: 1, DIV: 1 };
+  var ATTRS = { IMG: { src: 1, alt: 1 }, A: { href: 1 }, TD: { colspan: 1, rowspan: 1, style: 1 }, TH: { colspan: 1, rowspan: 1, style: 1 } };
+  var tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  (function clean(el) {
+    Array.prototype.slice.call(el.children).forEach(function (ch) {
+      var tag = ch.tagName.toUpperCase();
+      if (!KEEP[tag]) { ch.remove(); return; }
+      clean(ch);
+      var ok = ATTRS[tag] || { style: 1 };
+      Array.prototype.slice.call(ch.attributes).forEach(function (a) {
+        var n = a.name.toLowerCase();
+        if (!ok[n]) ch.removeAttribute(a.name);
+        else if (n === 'style' && !/^text-align: (center|right|justify)$/.test(a.value)) ch.removeAttribute(a.name);
+        else if ((n === 'src' || n === 'href') && !/^https?:\/\//i.test(a.value)) ch.removeAttribute(a.name);
+      });
+      if (tag === 'A') { ch.target = '_blank'; ch.rel = 'noopener'; }
+      if (tag === 'IMG') {
+        if (!ch.getAttribute('src')) { ch.remove(); return; }
+        ch.className = 'desc-img';
+        ch.loading = 'lazy';
+        var link = document.createElement('a');
+        link.className = 'desc-img-link';
+        link.href = ch.getAttribute('src');
+        link.target = '_blank';
+        link.rel = 'noopener';
+        ch.replaceWith(link);
+        link.appendChild(ch);
+      }
+    });
+  })(tpl.content);
+  slot.appendChild(tpl.content);
 }
 
 // Одне вікно на сторінку; клік по будь-якій кнопці «Опис» (делеговано: таблиці
@@ -1015,6 +1077,8 @@ function initDescriptions() {
       if (current !== id) return;
       title.textContent = (d.code ? d.code + ' ' : '') + d.name;
       body.innerHTML = descBodyHtml(d);
+      var slot = body.querySelector('[data-desc-html]');
+      if (slot) descFillHtml(slot, d.html);
       body.scrollTop = 0;
     }).catch(function () {
       delete cache[id];
@@ -2243,7 +2307,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, descBtnHtml, descBodyHtml, initDescriptions, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, descBtnHtml, descBodyHtml, descFillHtml, initDescriptions, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
