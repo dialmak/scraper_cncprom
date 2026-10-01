@@ -11,8 +11,6 @@ const fs = require('fs');
 const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
 const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
-const { stripShopListing, splitDescription } = require('./lib/desc');
-const { readDescription } = require('./lib/desc-dom');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const BASE = "https://cncprom.ua";
@@ -139,7 +137,9 @@ async function getSubcategoryLinks(page, url) {
     (items, base) => items.map(li => {
       const a = li.querySelector("a.cs-product-groups-list__title") || li.querySelector("a.cs-product-groups-list__image-link");
       if (!a || !a.getAttribute("href")) return null;
-      return { url: new URL(a.getAttribute("href"), base).href, name: a.textContent.trim() };
+      const img = li.querySelector("img");
+      const src = img ? (img.getAttribute("data-src") || img.getAttribute("src") || "") : "";
+      return { url: new URL(a.getAttribute("href"), base).href, name: a.textContent.trim(), image: src ? new URL(src, base).href : "" };
     }).filter(Boolean),
     BASE
   ).catch(e => {
@@ -298,7 +298,7 @@ async function getSiteAvailableCounter(page) {
 // Перезаписується без умов — оскільки обхід іде вглиб, останній запис = найглибша
 // (найточніша) категорія. Якщо товар ніде глибше не "приземлився" — лишається
 // запис з проміжної категорії, що само по собі і є ознакою товару-сироти.
-async function crawlTree(page, url, name, depth, path, productAssignments, treeOut) {
+async function crawlTree(page, url, name, depth, path, productAssignments, treeOut, image = "") {
   const ok = await gotoWithRetry(page, url);
   await sleep(DELAY_MS);
   if (!ok) {
@@ -313,6 +313,17 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
   const fullPath = [...path, name];
 
   const subs = await getSubcategoryLinks(page, url);
+  // Опис категорії (є приблизно в чверті категорій) — як його віддав сайт, без
+  // обробки; читається з першої сторінки, до гортання сітки. '' — опису немає.
+  // У блоці поруч з описом лежать кнопки «поділитися» (cs-social-links) і службові
+  // посилання редагування — не опис; сам опис зазвичай в одному вкладеному div.
+  const descriptionRaw = await page.$eval('.b-user-content', el => {
+    const c = el.cloneNode(true);
+    c.querySelectorAll('.cs-social-links, a[data-edit-role]').forEach(x => x.remove());
+    const only = c.children.length === 1 && c.firstElementChild.tagName === 'DIV' &&
+      c.textContent.trim() === c.firstElementChild.textContent.trim() ? c.firstElementChild : c;
+    return only.textContent.trim() || only.querySelector('img, table') ? only.innerHTML : '';
+  }).catch(() => '');
   const siteCounter = await getSiteAvailableCounter(page);
   const directProducts = await getDirectProducts(page, url, subs.length > 0);
   const categoryId = extractCategoryIdFromUrl(url);
@@ -339,6 +350,8 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
     treeOut.isLeaf = isLeaf;
     treeOut.siteAvailableCounter = siteCounter;
     treeOut.directProductCount = directProducts.size;
+    treeOut.image = image;
+    treeOut.descriptionRaw = descriptionRaw;
     treeOut.children = [];
   }
 
@@ -346,7 +359,7 @@ async function crawlTree(page, url, name, depth, path, productAssignments, treeO
     for (const s of subs) {
       const childNode = treeOut ? {} : null;
       if (treeOut) treeOut.children.push(childNode);
-      await crawlTree(page, s.url, s.name, depth + 1, fullPath, productAssignments, childNode);
+      await crawlTree(page, s.url, s.name, depth + 1, fullPath, productAssignments, childNode, s.image);
     }
   }
 }
@@ -363,6 +376,12 @@ function readProductPage(page) {
     const nameEl = document.querySelector('[data-qaid="product_name"]');
     const skuEl = document.querySelector('[data-qaid="product_code"]');
     const availEl = document.querySelector('[data-qaid="presence_data"]');
+    // Опис — таким, як його віддав сайт: innerHTML блоку, без жодної обробки. Розбір
+    // (текст, вкладки, комплект, супутні товари) — у збиранні, lib/desc-parse.js.
+    const descEl = document.querySelector('[data-qaid="product_description"]');
+    // Перекреслена стара ціна поруч з поточною — лише в товарів зі знижкою.
+    const oldPriceEl = document.querySelector('[data-qaid="old_product_price"]');
+    const oldPriceNum = oldPriceEl ? parseFloat(oldPriceEl.textContent.replace(/[^\d.,]/g, '').replace(',', '.')) : NaN;
 
     let crumbs = [];
     for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
@@ -388,17 +407,13 @@ function readProductPage(page) {
         .filter(Boolean);
     }
 
-    // Опис зі сторінки — у readDescription (lib/desc-dom.js), окремим evaluate.
-    // Тут лише запас: JSON-LD Product.description, коли видимого блоку опису немає
-    // (у ньому немає тексту посилань і розмітки). null — опису немає взагалі.
-    let ldDescription = null, ldImage = '', price = null, currency = '';
+    let ldImage = '', price = null, currency = '';
     for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
       try {
         const data = JSON.parse(el.textContent);
         const items = Array.isArray(data) ? data : (data['@graph'] || [data]);
         const product = items.find(it => it && it['@type'] === 'Product');
         if (product) {
-          ldDescription = String(product.description || '').trim();
           ldImage = String([].concat(product.image || '')[0] || '');
           // Ціна — лише для показу у вікні «Опис» (Prom перераховує її з долара щодня).
           const offer = [].concat(product.offers || {})[0] || {};
@@ -444,14 +459,15 @@ function readProductPage(page) {
       sku: skuEl ? skuEl.textContent.trim() : "",
       availabilityStatus: availEl ? availEl.textContent.trim() : "",
       crumbs,
-      ldDescription,
+      descriptionRaw: descEl ? descEl.innerHTML : '',
       attrs,
       specs,
       photos,
       price,
+      oldPrice: isFinite(oldPriceNum) ? oldPriceNum : null,
       currency
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], ldDescription: null, attrs: [], specs: [], photos: [], price: null, currency: '' }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], descriptionRaw: '', attrs: [], specs: [], photos: [], price: null, oldPrice: null, currency: '' }));
 }
 
 // «З цим товаром також замовляють» — карусель над описом, яку підбирає магазин.
@@ -506,11 +522,6 @@ async function extractProductData(page, url, assignment, silent = false) {
     return null;
   }
 
-  // Видимий опис: текст для історії й очищений HTML для показу (lib/desc-dom.js).
-  const desc = await page.evaluate(readDescription).catch(() => null);
-  // Блоку опису немає — запас з JSON-LD, тим самим розбором, але на тексті (lib/desc.js).
-  const fallback = desc ? null : splitDescription(stripShopListing(data.ldDescription || ''));
-
   return {
     productId,
     productName: data.productName,
@@ -521,23 +532,16 @@ async function extractProductData(page, url, assignment, silent = false) {
     finalUrl: url,
     crumbIds: data.crumbs.map(c => c.id),
     crumbNames: data.crumbs.map(c => c.name),
-    // '' — опису на сторінці немає; поля немає зовсім — каталог зібрано до
-    // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
-    // Шаблон «Дивіться всі наші оголошення» зі списком розділів вирізає вже
-    // readDescription; cleanDescription — запас для тексту з JSON-LD (lib/desc.js).
-    description: desc ? desc.text : fallback.text,
-    // Очищений HTML опису — лише для показу у вікні «Опис» (таблиці, заголовки).
-    descriptionHtml: desc ? desc.html : '',
+    // Опис, як на сайті (HTML блоку опису). '' — опису на сторінці немає; поля немає
+    // зовсім — каталог зібрано до переходу на сирий опис (02.10.2026).
+    descriptionRaw: data.descriptionRaw,
     attrs: data.attrs,
     specs: data.specs,
-    // «Комплект постачання» (рядки) і список з опису «До цього … у нас можна придбати»
-    // ([назва, посилання, картинка]) — вийняті з опису в окремі вкладки вікна.
-    kit: desc ? desc.kit : fallback.kit,
-    xsell: desc ? desc.xsell : fallback.xsell,
-    // Для вікна «Опис»: фото (адреси без розміру), ціна й «З цим товаром також
-    // замовляють» (id товарів; null — не прочитано).
+    // Фото (адреси без розміру), ціна, стара перекреслена ціна (null — знижки немає) і
+    // карусель сайту «З цим товаром також замовляють» (id товарів; null — не прочитано).
     photos: data.photos,
     price: data.price,
+    oldPrice: data.oldPrice,
     currency: data.currency,
     accessories: await accessoriesP
   };

@@ -14,7 +14,7 @@ name: Скрапінг та перебудова сайту
 #
 # Після build-maps.js той самий job готує робочу копію гілки `data` через git
 # worktree (створює її як orphan при першому запуску), пише туди сьогоднішній
-# знімок (generate-snapshot.js) і описи товарів (descriptions/) і комітить/пушить
+# знімок (generate-snapshot.js) і файли товарів та категорій (products/, categories/) і комітить/пушить
 # лише їх у `data` — output/ це не зачіпає.
 on:
   schedule:
@@ -145,9 +145,16 @@ jobs:
         run: |
           cd data-branch
           git add snapshots
-          # Описи товарів (з 30.09.2026): git комітить лише змінені файли, тож
-          # історія опису товару — `git log -p descriptions/<id>.txt`.
-          if [ -d descriptions ]; then git add descriptions; fi
+          # Описи товарів і категорій такими, як їх віддав сайт, і блок розділів
+          # головної (generate-snapshot.js). Git комітить лише змінені файли, тож
+          # історія опису товару — `git log -p products/<id>.html`. .gitattributes
+          # (`* -text`) вимикає перетворення кінців рядків: порівняння до знака.
+          for p in .gitattributes products categories home.html home.json; do
+            if [ -e "$p" ]; then git add "$p"; fi
+          done
+          # Стара історія оброблених описів (descriptions/<id>.txt, 30.09–01.10.2026)
+          # прибирається: історія описів починається заново в новому форматі.
+          git rm -r -q --ignore-unmatch descriptions
           git commit -m "Знімок за ${SNAPSHOT_DATE}" || echo "Немає змін для коміту"
           git push origin data
 

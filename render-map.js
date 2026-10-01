@@ -27,7 +27,7 @@ const { helpButtonHtml, searchHelpButtonHtml, writeLogos } = require('./lib/help
 const { assetVer } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
-const { hasDescription } = require('./lib/desc');
+const { hasDescription, hasCategoryDescription } = require('./lib/desc');
 
 const OUTPUT_DIR = path.join(__dirname, 'output', 'site');
 
@@ -119,6 +119,8 @@ function buildAppNode(node) {
     level: node.level,
     name: node.categoryName,
     url: node.url || null,
+    // id для desc/c<id>.json — опис категорії; немає опису — поля немає
+    desc: hasCategoryDescription(node) ? 'c' + node.categoryId : undefined,
     own_products: products,
     children,
     stats: {
@@ -485,7 +487,7 @@ table.search-table .col-cat { width: 28%; }
 .desc-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8rem; margin-top: 14px; }
 .desc-back { border: none; background: none; padding: 0; margin: 0 0 10px; font: 500 0.82rem var(--font-sans); color: var(--text-link); cursor: pointer; }
 .desc-back:hover { text-decoration: underline; }
-/* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «З цим товаром також замовляють». */
+/* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «Комплект постачання», «Супутні товари». */
 .desc-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--border-active); margin-bottom: 14px; }
 .desc-tab { border: 1px solid var(--border-color); border-bottom: none; border-radius: 5px 5px 0 0; background: var(--bg-subtle);
   color: var(--text-main); padding: 7px 14px; font: 500 0.82rem var(--font-sans); cursor: pointer; }
@@ -513,7 +515,9 @@ table.search-table .col-cat { width: 28%; }
 .desc-facts td { padding: 5px 0; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
 .desc-facts td:first-child { width: 40%; color: var(--text-muted); }
 .desc-price { font-weight: 600; font-size: 1rem; }
-/* Картки «З цим товаром також замовляють». */
+.desc-old-price { font-weight: 400; font-size: 0.86rem; color: var(--text-subtle); margin-right: 4px; }
+#cat-heading .desc-btn { margin-left: 10px; vertical-align: middle; }
+/* Картки вкладки «Супутні товари». */
 .desc-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .desc-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
 .desc-card img { width: 100%; height: 130px; object-fit: contain; background: #fff; border-radius: 4px; }
@@ -1031,16 +1035,17 @@ function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
 // Кнопка «Опис» після коду товару в таблицях товарів і в результатах пошуку;
 // вікно на 90% ширини (вибір користувача 30.09.2026). p.desc — id файлу
 // desc/<id>.json (build-maps.js); немає опису — немає й кнопки.
-function descBtnHtml(p) {
+function descBtnHtml(p, tip) {
   return p.desc ? '<button type="button" class="desc-btn" data-desc="' + escapeAttr(p.desc) +
-    '" data-tip="Опис товару: текст, схеми, характеристики, фото й ціна">📄 Опис</button>' : '';
+    '" data-tip="' + (tip || 'Опис товару: текст, схеми, характеристики, фото й ціна') + '">📄 Опис</button>' : '';
 }
 
 // Вікно «Опис» (користувач 01.10.2026): ліворуч вкладки «Опис», «Характеристики»,
-// «Специфікація», «З цим товаром також замовляють» (порожня вкладка не показується);
+// «Специфікація», «Комплект постачання», «Супутні товари» (порожня вкладка не показується);
 // праворуч фото товару (як карусель на cncprom.ua: велике, стрілки, мініатюри; клік
 // — на весь екран), під ними код, ціна й наявність, посилання. back — показати
-// «← Назад» (відкрито з вкладки «З цим товаром також замовляють»).
+// «← Назад» (відкрито з вкладки «Супутні товари»). Категорія (d.category) — те саме
+// вікно без коду, ціни й вкладок товару.
 // Позначки опису без HTML (каталоги до 01.10.2026): рядок ![](адреса) — картинка на
 // своєму місці, [текст](адреса) — посилання; решта — текст рядок за рядком.
 function descBodyHtml(d, back) {
@@ -1091,7 +1096,7 @@ function descBodyHtml(d, back) {
   if (acc.length) {
     // Три види карток (lib/desc.js, descriptionJson): товар (є id) — наші код, наявність,
     // ціна й «📄 Опис»; розділ (є cat) — посилання на мапу; решта — назва з картинкою.
-    tabs.push(['acc', 'З цим товаром також замовляють', '<div class="desc-cards">' + acc.map(function (q) {
+    tabs.push(['acc', 'Супутні товари', '<div class="desc-cards">' + acc.map(function (q) {
       var img = q.photo ? '<img loading="lazy" alt="" src="' + esc(sized(q.photo, 'w200_h200')) + '">' : '';
       if (q.cat) {
         return '<div class="desc-card">' + img +
@@ -1103,7 +1108,7 @@ function descBodyHtml(d, back) {
           ? '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + ' ↗</a>'
           : '<span class="desc-card-name plain">' + esc(q.name) + '</span>') + '</div>';
       }
-      var pr = price(q.price, q.currency);
+      var pr = (q.oldPrice != null ? '<s class="desc-old-price">' + price(q.oldPrice, q.currency) + '</s> ' : '') + price(q.price, q.currency);
       return '<div class="desc-card">' + img +
         '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + '</a>' +
         '<div class="desc-card-meta"><span class="desc-card-code">' + esc(q.code) + '</span>' + badge(q.avail) + '</div>' +
@@ -1129,14 +1134,14 @@ function descBodyHtml(d, back) {
       }).join('') + '</div>' : '') +
       '</div>'
     : '';
-  var facts = '<table class="desc-facts">' +
+  var facts = d.category ? '' : '<table class="desc-facts">' +
     '<tr><td>Код</td><td>' + esc(d.code || 'н/д') + '</td></tr>' +
-    (d.price != null ? '<tr><td>Ціна</td><td class="desc-price">' + price(d.price, d.currency) + '</td></tr>' : '') +
+    (d.price != null ? '<tr><td>Ціна</td><td class="desc-price">' + (d.oldPrice != null ? '<s class="desc-old-price">' + price(d.oldPrice, d.currency) + '</s> ' : '') + price(d.price, d.currency) + '</td></tr>' : '') +
     (d.avail ? '<tr><td>Наявність</td><td>' + badge(d.avail) + '</td></tr>' : '') +
     '</table>';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
-    '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/descriptions/' + esc(d.id) + '.txt" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
+    '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/' + (d.category ? 'categories/' + esc(String(d.id).slice(1)) : 'products/' + esc(d.id)) + '.html" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
     '</div>';
   return '<div class="desc-grid"><div class="desc-main">' +
     (back ? '<button type="button" class="desc-back" data-desc-back>← Назад</button>' : '') +
@@ -1194,7 +1199,7 @@ function descFillHtml(slot, html) {
 // Одне вікно на сторінку; клік по будь-якій кнопці «Опис» (делеговано: таблиці
 // перемальовуються) завантажує desc/<id>.json і показує його. Закриття ✕, Esc і
 // клік поза вікном — setupModalOverlay. Top-level: потрібне й map.html.
-// «📄 Опис» у вкладці «З цим товаром також замовляють» відкриває той товар у цьому ж
+// «📄 Опис» у вкладці «Супутні товари» відкриває той товар у цьому ж
 // вікні, «← Назад» повертає (стек скидається, коли вікно відкривають заново).
 // Фото на весь екран — свій шар поверх вікна: Esc і клік поза фото закривають лише
 // його (слухач у фазі захоплення, раніше за Esc вікна), ← → гортають.
@@ -1290,6 +1295,7 @@ function initDescriptions() {
     cache[id].then(function (d) {
       if (current !== id) return;
       title.textContent = (d.code ? d.code + ' ' : '') + d.name;
+      if (d.category) title.textContent = 'Категорія: ' + d.name;
       photos = d.photos || [];
       pi = 0;
       body.innerHTML = descBodyHtml(d, stack.length > 0);
@@ -2062,7 +2068,8 @@ function initCatalogMap(CATALOG_DATA) {
     totalCell.textContent = node.stats.total_products;
     verdict.innerHTML = diffBadge(node.stats);
     totalNoCell.innerHTML = '<span class="count-no">' + node.stats.total_no + '</span>';
-    heading.textContent = node.name;
+    // «📄 Опис» біля назви — коли категорія має опис на сайті (користувач 01.10.2026).
+    heading.innerHTML = escapeHtml(node.name) + descBtnHtml(node, 'Опис категорії з сайту');
     if (node.url) { siteLink.href = node.url; siteLink.style.display = ''; } else siteLink.style.display = 'none';
 
     document.getElementById('node-header-row').style.display = '';

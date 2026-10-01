@@ -107,6 +107,9 @@ async function fetchLogs() {
   // Дані пробного «Тесту платформи» (platform-test.js): перебудова сайту не збирає
   // їх заново (≈3 хв запитів до сайту), а бере опубліковані. Немає — не біда:
   // platform-test.js --reuse тоді збере сам.
+  // Блок розділів головної (scrape-site.js): потрібен знімку дня.
+  const home = await fetch(BASE + 'home.html');
+  if (home.ok) { fs.writeFileSync(path.join(DIR, 'home.html'), Buffer.from(await home.arrayBuffer())); console.log('  home.html: завантажено'); }
   const pt = await fetch(BASE + 'platform-test.json');
   if (pt.ok) { fs.writeFileSync(path.join(DIR, 'platform-test.json'), Buffer.from(await pt.arrayBuffer())); console.log('  platform-test.json: завантажено'); }
 

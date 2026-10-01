@@ -15,7 +15,8 @@ const { ICONS } = require('./lib/icons');
 const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
-const { hasDescription, descriptionJson, descIndex } = require('./lib/desc');
+const { hasDescription, hasCategoryDescription, descriptionJson, categoryJson, descIndex } = require('./lib/desc');
+const { parseMany } = require('./lib/desc-parse');
 const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
@@ -332,24 +333,33 @@ function readSearchEntries(id) {
   return out;
 }
 
-// Опис кожного товару — окремим файлом desc/<productId>.json (~7 КБ): кнопка
-// «Опис» у таблицях товарів завантажує його лише при кліку. Разом описи
-// ~20–25 МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
-// Пишуться після всіх мап: «З цим товаром також замовляють» посилається на товари
-// інших розділів, тож спершу потрібен покажчик усіх каталогів (descIndex).
+// Опис кожного товару — окремим файлом desc/<productId>.json, опис категорії —
+// desc/c<categoryId>.json: кнопка «Опис» завантажує файл лише при кліку. Разом описи
+// десятки МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
+// Каталог несе опис таким, як його віддав сайт (descriptionRaw); текст, HTML для
+// вікна, комплект і супутні товари виводяться тут (lib/desc-parse.js: кілька потоків
+// і кеш на диску). Пишуться після всіх мап: супутні товари посилаються на інші
+// розділи, тож спершу потрібен покажчик усіх каталогів (descIndex).
 // Повертає кількість записаних файлів.
-function writeDescriptions(ids) {
+async function writeDescriptions(ids) {
   const catalogs = ids.map(id => {
     try { return JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8')); } catch (e) { return null; }
   }).filter(Boolean);
+  const products = [], nodes = [];
+  catalogs.forEach(c => {
+    (c.products || []).filter(hasDescription).forEach(p => products.push(p));
+    (function walk(n) { if (!n) return; if (hasCategoryDescription(n)) nodes.push(n); (n.children || []).forEach(walk); })(c.tree);
+  });
+  if (!products.length && !nodes.length) return 0;
+  const parsed = await parseMany([
+    ...products.map(p => ({ key: 'p' + p.productId, raw: p.descriptionRaw, url: p.finalUrl })),
+    ...nodes.map(n => ({ key: 'c' + n.categoryId, raw: n.descriptionRaw, url: n.url }))
+  ]);
   const idx = descIndex(catalogs);
-  let n = 0;
-  catalogs.forEach(c => (c.products || []).filter(hasDescription).forEach(p => {
-    if (!n) fs.mkdirSync(DESC_DIR, { recursive: true });
-    fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, idx), 'utf-8');
-    n++;
-  }));
-  return n;
+  fs.mkdirSync(DESC_DIR, { recursive: true });
+  products.forEach(p => fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, idx, parsed.get('p' + p.productId)), 'utf-8'));
+  nodes.forEach(n => fs.writeFileSync(path.join(DESC_DIR, `c${n.categoryId}.json`), categoryJson(n, parsed.get('c' + n.categoryId)), 'utf-8'));
+  return products.length + nodes.length;
 }
 
 // <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
@@ -1059,8 +1069,9 @@ function writeRedirect(file, target) {
   // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
   // людям його не читати; ~1.8 МБ на весь сайт.
   fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
-  const descFiles = writeDescriptions(builtIds);
-  if (descFiles) console.log(`Описів товарів (desc/): ${descFiles}`);
+  const descT0 = Date.now();
+  const descFiles = await writeDescriptions(builtIds);
+  if (descFiles) console.log(`Описів товарів і категорій (desc/): ${descFiles}, ${((Date.now() - descT0) / 1000).toFixed(1)} с`);
 
   // Експорт мапи категорій (без товарів) — кнопка "Експорт" на map.html.
   // Помилка тут не валить прогін: xlsx це зручність, а не результат, і нічний

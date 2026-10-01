@@ -16,6 +16,7 @@
 // відредагувати categories.json руками (лишити потрібні рядки, змінити
 // number) і прогнати саме їх, не чіпаючи розвідку.
 
+const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { chromium } = require('playwright');
@@ -26,6 +27,7 @@ const BASE = 'https://cncprom.ua';
 const HOMEPAGE_URL = 'https://cncprom.ua/ua/';
 const ROOT_DIR = __dirname;
 const SITE_DIR = path.join(ROOT_DIR, 'output', 'site');
+const HOME_FILE = 'home.html';
 
 const DELAY_MS = 700;
 const MAX_RETRIES = 3;
@@ -90,12 +92,23 @@ async function getLevel1Categories(page) {
   const ok = await gotoWithRetry(page, HOMEPAGE_URL);
   await sleep(DELAY_MS);
   if (!ok) return [];
+  // Блок «Групи товарів та послуг» з головної — ще й таким, як його віддав сайт
+  // (home.html): знімок дня зберігає його в гілці data поруч з описами товарів і
+  // категорій. Решта головної (Вітрина, Новини, «Ви переглядали», «Ми рекомендуємо»)
+  // не потрібна (користувач 01.10.2026).
+  const raw = await page.$eval('ul.cs-product-groups-list', el => el.innerHTML).catch(() => null);
+  if (raw) {
+    fs.mkdirSync(SITE_DIR, { recursive: true });
+    fs.writeFileSync(path.join(SITE_DIR, HOME_FILE), raw, 'utf-8');
+  }
   return page.$$eval(
     'ul.cs-product-groups-list > li.cs-product-groups-list__item',
     (items, base) => items.map(li => {
       const a = li.querySelector('a.cs-product-groups-list__title') || li.querySelector('a.cs-product-groups-list__image-link');
       if (!a) return null;
-      return { url: new URL(a.getAttribute('href'), base).href, name: a.textContent.trim() };
+      const img = li.querySelector('img');
+      const src = img ? (img.getAttribute('data-src') || img.getAttribute('src') || '') : '';
+      return { url: new URL(a.getAttribute('href'), base).href, name: a.textContent.trim(), image: src ? new URL(src, base).href : '' };
     }).filter(Boolean),
     BASE
   ).catch(() => []);
@@ -155,6 +168,9 @@ async function discover() {
         categoryName: cat.name,
         categoryUrl: cat.url,
         scrapingTime: scrapingTime === null ? null : +scrapingTime.toFixed(1),
+        // Картинка плитки й місце на головній (1 — перша): порядок черги нижче інший.
+        image: cat.image,
+        position: i + 1,
       });
     }
 
@@ -173,6 +189,8 @@ async function discover() {
       categoryName: r.categoryName,
       categoryUrl: r.categoryUrl,
       scrapingTime: r.scrapingTime,
+      image: r.image,
+      position: r.position,
     }));
 
     if (ordered.length === 0) {
