@@ -21,7 +21,9 @@
 // - ціна й наявність — у знімку дня, не у файлі товару: вони міняються часто
 //   (ціна перераховується), і зміни описів потонули б у тисячах файлів;
 // - у знімку дня на товар два відбитки: rawHash (сирий опис і поля — ловить усе,
-//   до пробілу) і textHash (видимий текст — чи змінився зміст, а не лише розмітка);
+//   до пробілу) і textHash (видимий текст — чи змінився зміст, а не лише розмітка).
+//   Обидва залежать і від нашого коду, тож у знімку є parser і format: відбитки
+//   знімків з різними parser (textHash) чи format (rawHash) не порівнюються;
 // - файли ніколи не видаляються: товар, що зник, або категорія, яку тієї ночі не
 //   зібрано, інакше дали б «видалено», а наступної ночі «додано».
 //
@@ -39,12 +41,15 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { readCategoriesOrExit } = require('./lib/categories');
-const { parseMany } = require('./lib/desc-parse');
+const { parseMany, VERSION: PARSER_VERSION } = require('./lib/desc-parse');
 
 // ==================== НАЛАШТУВАННЯ ====================
 const SITE_DIR = path.join(__dirname, 'output', 'site');
 const OUT_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const DATE = process.env.SNAPSHOT_DATE || new Date().toISOString().slice(0, 10); // UTC-дата запуску
+
+// Міняється склад чи вигляд products/<id>.json, categories/<id>.json — збільшити.
+const FORMAT = 1;
 
 const hash = text => crypto.createHash('sha1').update(text).digest('hex').slice(0, 10);
 
@@ -92,12 +97,15 @@ function writeIfChanged(file, text, same) {
 }
 const sameHtml = (a, b) => stable(a) === stable(b);
 // Опис: файл з'являється, коли опис є; порожнім стає лише коли опис зник із сайту.
-function writeHtml(file, raw) {
-  if (raw !== '' || fs.existsSync(file)) writeIfChanged(file, raw, sameHtml);
+// keepOld — запобіжник нижче: порожній опис наявного файлу не затирає.
+function writeHtml(file, raw, keepOld) {
+  if (raw === '' && (keepOld || !fs.existsSync(file))) return;
+  writeIfChanged(file, raw, sameHtml);
 }
 // JSON по полю на рядок, а пари [назва, значення] — кожна одним рядком: так різницю
 // між днями видно рядок за рядком.
-const PAIR = /\[\n\s+("(?:[^"\\]|\\.)*"),\n\s+("(?:[^"\\]|\\.)*")\n\s+\]/g;
+// Пара — масив у масиві (відступи 6 і 4): photos чи accessories з двох елементів не склеюються.
+const PAIR = /\[\n {6}("(?:[^"\\]|\\.)*"),\n {6}("(?:[^"\\]|\\.)*")\n {4}\]/g;
 const pretty = obj => JSON.stringify(obj, null, 2).replace(PAIR, '[$1, $2]') + '\n';
 
 (async () => {
@@ -151,6 +159,14 @@ const pretty = obj => JSON.stringify(obj, null, 2).replace(PAIR, '[$1, $2]') + '
   // Кінці рядків у гілці data git не чіпає: інакше «до знака» не вийде.
   if (withRaw.length || catsWithRaw.length) writeIfChanged(path.join(OUT_DIR, '.gitattributes'), '* -text\n');
 
+  // Запобіжник: скрапер не відрізняє «опису на сторінці немає» від «блок опису не
+  // знайдено» (обидва — ''). Якщо Prom змінить розмітку, порожніми за ніч стали б усі
+  // описи. Тому коли спорожніло одразу багато описів, що вчора були, файли лишаються
+  // вчорашніми, а у знімок іде descriptionsSuspect — скільки таких.
+  const blanked = withRaw.filter(p => p.descriptionRaw === '' && readOr(path.join(productsDir, `${p.productId}.html`), '') !== '').length;
+  const keepOld = blanked > Math.max(20, withRaw.length * 0.05);
+  if (keepOld) console.warn(`УВАГА: опис зник одразу в ${blanked} товарів — схоже на зміну розмітки сайту, а не на правки магазину. Файли описів лишено вчорашніми.`);
+
   const hashes = new Map();
   withRaw.forEach(p => {
     const id = String(p.productId);
@@ -169,7 +185,7 @@ const pretty = obj => JSON.stringify(obj, null, 2).replace(PAIR, '[$1, $2]') + '
       accessories,
     });
     writeIfChanged(jsonFile, json);
-    writeHtml(path.join(productsDir, `${id}.html`), p.descriptionRaw);
+    writeHtml(path.join(productsDir, `${id}.html`), p.descriptionRaw, keepOld);
     hashes.set('p' + id, { rawHash: hash(stable(p.descriptionRaw) + '\n' + json), textHash: hash(visibleText(parsed.get('p' + id))) });
   });
   catsWithRaw.forEach(({ node, parentId }) => {
@@ -226,6 +242,12 @@ const pretty = obj => JSON.stringify(obj, null, 2).replace(PAIR, '[$1, $2]') + '
   const snapshot = {
     date: DATE,
     generatedAt: new Date().toISOString(),
+    // Версія розбору описів (lib/desc-parse.js) і складу файлів products/, categories/:
+    // textHash знімків з різним parser і rawHash з різним format порівнювати не можна —
+    // змінився наш код, а не сайт.
+    parser: PARSER_VERSION,
+    format: FORMAT,
+    ...(keepOld ? { descriptionsSuspect: blanked } : {}),
     // Діагностика прогону поряд із даними: звірка, підсумок по крихтах і помилки
     // кожної категорії. Знімки в гілці data лишаються назавжди, тож "чи була
     // проблема тієї ночі" видно й через тиждень, а не лише в поточному лозі.
