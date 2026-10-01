@@ -255,6 +255,7 @@ const css = `
   /* Кнопка «Опис»: суцільна, щоб її було видно (побажання користувача 30.09.2026).
      Білий на ній — 5.2:1 (наведення 6.7:1). */
   --desc-btn-bg: #2563eb;
+  --desc-orange: #b45309;
   --desc-btn-hover: #1d4ed8;
 }
 
@@ -267,7 +268,7 @@ const css = `
     --status-yes: #89d185; --status-yes-bg: rgba(137, 209, 133, 0.12); --status-yes-border: rgba(137, 209, 133, 0.25);
     --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
     --badge-bg: #d93636;
-    --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c;
+    --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c; --desc-orange: #f0a04b;
   }
 }
 :root[data-theme="dark"] {
@@ -279,7 +280,7 @@ const css = `
   --status-no: #f66a6a; --status-no-bg: rgba(246, 106, 106, 0.12); --status-no-border: rgba(246, 106, 106, 0.28);
   --badge-bg: #d93636;
   /* Кнопка «Опис»: білий на ній 4.85:1 (при наведенні 6.4:1), від тла рядка 3.4:1. */
-  --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c;
+  --desc-btn-bg: #1e6fd9; --desc-btn-hover: #0e639c; --desc-orange: #f0a04b;
 }
 /* Смуги прокрутки й нативні елементи (select, поля) — у кольорах поточної теми:
    без color-scheme браузер малює світлу смугу навіть на темній сторінці. Тема
@@ -579,7 +580,12 @@ table.search-table .col-cat { width: 28%; }
 .desc-html .d-alert-green { border-left-color: var(--status-yes); }
 .desc-html .d-alert-red { border-left-color: var(--status-no); }
 .desc-html .d-alert-blue { border-left-color: var(--text-link); }
-.desc-html .d-alert-orange { border-left-color: #d97706; }
+.desc-html .d-alert-orange { border-left-color: var(--desc-orange); }
+/* Змістовний колір тексту з сайту (lib/desc-dom.js, colorClass) — кольорами теми. */
+.desc-html .d-red { color: var(--status-no); }
+.desc-html .d-orange { color: var(--desc-orange); }
+.desc-html .d-green { color: var(--status-yes); }
+.desc-html .d-blue { color: var(--text-link); }
 .desc-h { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 6px; }
 .desc-specs { list-style: none; margin: 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; }
 .desc-specs a { color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
@@ -1125,9 +1131,9 @@ function descBodyHtml(d, back) {
 // вкладці; картинка веде на свій повний розмір.
 function descFillHtml(slot, html) {
   var KEEP = { P: 1, BR: 1, STRONG: 1, B: 1, EM: 1, I: 1, U: 1, S: 1, SUB: 1, SUP: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1,
-    UL: 1, OL: 1, LI: 1, TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1, CAPTION: 1, IMG: 1, A: 1, BLOCKQUOTE: 1, HR: 1, DIV: 1 };
+    UL: 1, OL: 1, LI: 1, TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1, CAPTION: 1, IMG: 1, A: 1, BLOCKQUOTE: 1, HR: 1, DIV: 1, SPAN: 1 };
   var ATTRS = { IMG: { src: 1, alt: 1 }, A: { href: 1 }, TD: { colspan: 1, rowspan: 1, style: 1 }, TH: { colspan: 1, rowspan: 1, style: 1 } };
-  var LAYOUT = /^(d-flow|d-fr|d-fl|d-title|d-cols|d-col|d-alert( d-alert-(green|blue|red|orange))?)$/;
+  var LAYOUT = /^(d-flow|d-fr|d-fl|d-title|d-cols|d-col|d-red|d-orange|d-green|d-blue|d-alert( d-alert-(green|blue|red|orange))?)$/;
   var tpl = document.createElement('template');
   tpl.innerHTML = html;
   (function clean(el) {
@@ -1136,8 +1142,8 @@ function descFillHtml(slot, html) {
       if (!KEEP[tag]) { ch.remove(); return; }
       clean(ch);
       var ok = ATTRS[tag] || { style: 1 };
-      // Класи розкладки (lib/desc-dom.js, layoutClass): лише наші d-*, і лише на div та img.
-      var cls = (tag === 'DIV' || tag === 'IMG') && LAYOUT.test(ch.getAttribute('class') || '') ? ch.getAttribute('class') : '';
+      // Класи розкладки й кольору тексту (lib/desc-dom.js: layoutClass, colorClass): лише наші d-*.
+      var cls = LAYOUT.test(ch.getAttribute('class') || '') ? ch.getAttribute('class') : '';
       Array.prototype.slice.call(ch.attributes).forEach(function (a) {
         var n = a.name.toLowerCase();
         if (n === 'class') { if (!cls) ch.removeAttribute(a.name); }
