@@ -564,6 +564,22 @@ table.search-table .col-cat { width: 28%; }
 .desc-html td, .desc-html th { border: 1px solid var(--border-dark); padding: 5px 9px; vertical-align: middle; }
 .desc-html th { background: var(--bg-subtle); font-weight: 600; }
 .desc-html [style*="center"] > .desc-img-link, .desc-html td > .desc-img-link { margin-left: auto; margin-right: auto; }
+/* Розкладка редактора Prom (lib/desc-dom.js, layoutClass): блок «текст + картинка» —
+   картинка притиснута праворуч чи ліворуч, текст обтікає, як на cncprom.ua; колонки
+   «картинка + підпис»; кольорові плашки (смужка зліва: тло в обох темах одне). */
+.desc-html .d-flow { display: flow-root; }
+.desc-html .d-fr { float: right; max-width: 44%; margin: 0 0 12px 24px; }
+.desc-html .d-fl { float: left; max-width: 44%; margin: 0 24px 12px 0; }
+.desc-html .d-fr .desc-img, .desc-html .d-fl .desc-img, .desc-html .d-col .desc-img { margin: 0; }
+.desc-html .d-title { font-weight: 600; }
+.desc-html .d-cols { display: flex; flex-wrap: wrap; gap: 16px; }
+.desc-html .d-col { flex: 1 1 180px; min-width: 0; }
+.desc-html .d-alert { display: flow-root; margin: 12px 0; padding: 8px 12px; border-left: 4px solid var(--border-dark); background: var(--bg-subtle); font-weight: 600; }
+.desc-html .d-alert > :last-child { margin-bottom: 0; }
+.desc-html .d-alert-green { border-left-color: var(--status-yes); }
+.desc-html .d-alert-red { border-left-color: var(--status-no); }
+.desc-html .d-alert-blue { border-left-color: var(--text-link); }
+.desc-html .d-alert-orange { border-left-color: #d97706; }
 .desc-h { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-subtle); margin-bottom: 6px; }
 .desc-specs { list-style: none; margin: 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; }
 .desc-specs a { color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
@@ -1111,6 +1127,7 @@ function descFillHtml(slot, html) {
   var KEEP = { P: 1, BR: 1, STRONG: 1, B: 1, EM: 1, I: 1, U: 1, S: 1, SUB: 1, SUP: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1,
     UL: 1, OL: 1, LI: 1, TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1, CAPTION: 1, IMG: 1, A: 1, BLOCKQUOTE: 1, HR: 1, DIV: 1 };
   var ATTRS = { IMG: { src: 1, alt: 1 }, A: { href: 1 }, TD: { colspan: 1, rowspan: 1, style: 1 }, TH: { colspan: 1, rowspan: 1, style: 1 } };
+  var LAYOUT = /^(d-flow|d-fr|d-fl|d-title|d-cols|d-col|d-alert( d-alert-(green|blue|red|orange))?)$/;
   var tpl = document.createElement('template');
   tpl.innerHTML = html;
   (function clean(el) {
@@ -1119,10 +1136,13 @@ function descFillHtml(slot, html) {
       if (!KEEP[tag]) { ch.remove(); return; }
       clean(ch);
       var ok = ATTRS[tag] || { style: 1 };
+      // Класи розкладки (lib/desc-dom.js, layoutClass): лише наші d-*, і лише на div та img.
+      var cls = (tag === 'DIV' || tag === 'IMG') && LAYOUT.test(ch.getAttribute('class') || '') ? ch.getAttribute('class') : '';
       Array.prototype.slice.call(ch.attributes).forEach(function (a) {
         var n = a.name.toLowerCase();
-        if (!ok[n]) ch.removeAttribute(a.name);
-        else if (n === 'style' && !/^text-align: (center|right|justify)$/.test(a.value)) ch.removeAttribute(a.name);
+        if (n === 'class') { if (!cls) ch.removeAttribute(a.name); }
+        else if (!ok[n]) ch.removeAttribute(a.name);
+        else if (n === 'style' && !/^text-align: (center|right)$/.test(a.value)) ch.removeAttribute(a.name);
         else if ((n === 'src' || n === 'href') && !/^https?:\/\//i.test(a.value)) ch.removeAttribute(a.name);
       });
       if (tag === 'A') { ch.target = '_blank'; ch.rel = 'noopener'; }
@@ -1131,7 +1151,8 @@ function descFillHtml(slot, html) {
         ch.className = 'desc-img';
         ch.loading = 'lazy';
         var link = document.createElement('a');
-        link.className = 'desc-img-link';
+        // Притиснута картинка: клас переходить на посилання-обгортку.
+        link.className = 'desc-img-link' + (cls ? ' ' + cls : '');
         link.href = ch.getAttribute('src');
         link.target = '_blank';
         link.rel = 'noopener';
