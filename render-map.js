@@ -487,7 +487,7 @@ table.search-table .col-cat { width: 28%; }
 .desc-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8rem; margin-top: 14px; }
 .desc-back { border: none; background: none; padding: 0; margin: 0 0 10px; font: 500 0.82rem var(--font-sans); color: var(--text-link); cursor: pointer; }
 .desc-back:hover { text-decoration: underline; }
-/* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «Комплект постачання», «Супутні товари». */
+/* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «Комплект постачання», «З цим товаром також замовляють», «До цього товару у нас можна придбати». */
 .desc-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--border-active); margin-bottom: 14px; }
 .desc-tab { border: 1px solid var(--border-color); border-bottom: none; border-radius: 5px 5px 0 0; background: var(--bg-subtle);
   color: var(--text-main); padding: 7px 14px; font: 500 0.82rem var(--font-sans); cursor: pointer; }
@@ -517,7 +517,7 @@ table.search-table .col-cat { width: 28%; }
 .desc-price { font-weight: 600; font-size: 1rem; }
 .desc-old-price { font-weight: 400; font-size: 0.86rem; color: var(--text-subtle); margin-right: 4px; }
 #cat-heading .desc-btn { margin-left: 10px; vertical-align: middle; }
-/* Картки вкладки «Супутні товари». */
+/* Картки вкладок «З цим товаром також замовляють» і «До цього товару у нас можна придбати». */
 .desc-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .desc-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
 .desc-card img { width: 100%; height: 130px; object-fit: contain; background: #fff; border-radius: 4px; }
@@ -526,6 +526,8 @@ table.search-table .col-cat { width: 28%; }
 a.desc-card-name:hover { text-decoration: underline; }
 .desc-card-name.plain { color: var(--text-main); }
 .desc-card-kind { color: var(--text-subtle); }
+tr.row-flash > td { background: var(--bg-active); }
+tr.row-flash { outline: 2px solid var(--border-active); outline-offset: -2px; }
 .desc-kit { margin: 0; padding-left: 22px; font-size: 0.88rem; line-height: 1.7; color: var(--text-main); }
 .desc-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.76rem; color: var(--text-subtle); }
 .desc-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; font-size: 0.84rem; font-weight: 600; color: var(--text-main); }
@@ -1041,10 +1043,11 @@ function descBtnHtml(p, tip) {
 }
 
 // Вікно «Опис» (користувач 01.10.2026): ліворуч вкладки «Опис», «Характеристики»,
-// «Специфікація», «Комплект постачання», «Супутні товари» (порожня вкладка не показується);
+// «Специфікація», «Комплект постачання», «З цим товаром також замовляють», «До цього
+// товару у нас можна придбати» (порожня вкладка не показується);
 // праворуч фото товару (як карусель на cncprom.ua: велике, стрілки, мініатюри; клік
 // — на весь екран), під ними код, ціна й наявність, посилання. back — показати
-// «← Назад» (відкрито з вкладки «Супутні товари»). Категорія (d.category) — те саме
+// «← Назад» (відкрито з картки супутнього товару). Категорія (d.category) — те саме
 // вікно без коду, ціни й вкладок товару.
 // Позначки опису без HTML (каталоги до 01.10.2026): рядок ![](адреса) — картинка на
 // своєму місці, [текст](адреса) — посилання; решта — текст рядок за рядком.
@@ -1073,6 +1076,7 @@ function descBodyHtml(d, back) {
   var attrs = d.attrs || [];
   var specs = d.specs || [];
   var acc = d.acc || [];
+  var also = d.also || [];
   var kit = d.kit || [];
   var photos = d.photos || [];
   // Є очищений HTML (каталоги з 01.10.2026) — порожнє місце, яке заповнить descFillHtml.
@@ -1093,10 +1097,11 @@ function descBodyHtml(d, back) {
     tabs.push(['kit', 'Комплект постачання', '<ul class="desc-kit">' +
       kit.map(function (s) { return '<li>' + esc(String(s).replace(/^[\s—–\-•·*]+/, '')) + '</li>'; }).join('') + '</ul>']);
   }
-  if (acc.length) {
-    // Три види карток (lib/desc.js, descriptionJson): товар (є id) — наші код, наявність,
-    // ціна й «📄 Опис»; розділ (є cat) — посилання на мапу; решта — назва з картинкою.
-    tabs.push(['acc', 'Супутні товари', '<div class="desc-cards">' + acc.map(function (q) {
+  // Три види карток (lib/desc.js, descriptionJson): товар (є id) — наші код, наявність,
+  // ціна й «📄 Опис»; розділ (є cat); решта — назва з картинкою. Посилання — на мапу
+  // (користувач 02.10.2026): [data-desc-go] закриває вікно, щоб було видно вузол.
+  function cardsHtml(list) {
+    return '<div class="desc-cards">' + list.map(function (q) {
       var img = q.photo ? '<img loading="lazy" alt="" src="' + esc(sized(q.photo, 'w200_h200')) + '">' : '';
       if (q.cat) {
         return '<div class="desc-card">' + img +
@@ -1110,14 +1115,18 @@ function descBodyHtml(d, back) {
       }
       var pr = (q.oldPrice != null ? '<s class="desc-old-price">' + price(q.oldPrice, q.currency) + '</s> ' : '') + price(q.price, q.currency);
       return '<div class="desc-card">' + img +
-        '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + '</a>' +
+        (q.map ? '<a class="desc-card-name" href="' + esc(q.map) + '" data-desc-go>' + esc(q.name) + '</a>'
+          : '<span class="desc-card-name plain">' + esc(q.name) + '</span>') +
         '<div class="desc-card-meta"><span class="desc-card-code">' + esc(q.code) + '</span>' + badge(q.avail) + '</div>' +
         '<div class="desc-card-foot"><span class="desc-card-price">' + pr + '</span>' +
         (q.desc ? '<button type="button" class="desc-btn" data-desc="' + esc(q.id) + '">📄 Опис</button>' : '') + '</div></div>';
-    }).join('') + '</div>']);
+    }).join('') + '</div>';
   }
+  // Карусель сайту й список з опису — окремими вкладками, з назвами сайту.
+  if (acc.length) tabs.push(['acc', 'З цим товаром також замовляють', cardsHtml(acc)]);
+  if (also.length) tabs.push(['also', 'До цього товару у нас можна придбати', cardsHtml(also)]);
   var tabsHtml = '<div class="desc-tabs" role="tablist">' + tabs.map(function (t, i) {
-    var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'kit' ? kit.length : t[0] === 'acc' ? acc.length : 0;
+    var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'kit' ? kit.length : t[0] === 'acc' ? acc.length : t[0] === 'also' ? also.length : 0;
     return '<button type="button" role="tab" class="desc-tab' + (i ? '' : ' on') + '" data-desc-tab="' + t[0] + '" aria-selected="' + (i ? 'false' : 'true') + '">' +
       t[1] + (n ? ' <span class="desc-tab-n">' + n + '</span>' : '') + '</button>';
   }).join('') + '</div>';
@@ -1199,7 +1208,7 @@ function descFillHtml(slot, html) {
 // Одне вікно на сторінку; клік по будь-якій кнопці «Опис» (делеговано: таблиці
 // перемальовуються) завантажує desc/<id>.json і показує його. Закриття ✕, Esc і
 // клік поза вікном — setupModalOverlay. Top-level: потрібне й map.html.
-// «📄 Опис» у вкладці «Супутні товари» відкриває той товар у цьому ж
+// «📄 Опис» на картці супутнього товару відкриває той товар у цьому ж
 // вікні, «← Назад» повертає (стек скидається, коли вікно відкривають заново).
 // Фото на весь екран — свій шар поверх вікна: Esc і клік поза фото закривають лише
 // його (слухач у фазі захоплення, раніше за Esc вікна), ← → гортають.
@@ -2515,8 +2524,11 @@ function initCatalogMap(CATALOG_DATA) {
   // шлях категорії там веде на мапу саме цього вузла, а не на корінь розділу.
   // Невідомий id (категорії вже нема в дереві) просто лишає корінь.
   function selectFromHash() {
-    var m = /^#cat=([^&]+)$/.exec(location.hash);
+    // #cat=<id> — вузол; #cat=<id>&p=<productId> — ще й підсвітити рядок товару
+    // (так ведуть картки вкладок вікна «Опис»).
+    var m = /^#cat=([^&]+?)(?:&p=(\d+))?$/.exec(location.hash);
     if (!m) return false;
+    state.flashProduct = m[2] || null;
     var targetId = 'node-' + decodeURIComponent(m[1]);
     if (!nodeMap.has(targetId)) return false;
     state.selectedNodeId = targetId;
@@ -2524,14 +2536,26 @@ function initCatalogMap(CATALOG_DATA) {
     while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
     return true;
   }
+  // Рядок товару з адреси: рамка й прокрутка до нього. Шукається за кнопкою «📄 Опис»
+  // (у ній id товару), тож товар без опису не підсвічується.
+  function flashProduct() {
+    if (!state.flashProduct) return;
+    var btn = document.querySelector('.main-content [data-desc="' + state.flashProduct + '"]');
+    state.flashProduct = null;
+    var row = btn && btn.closest('tr');
+    if (!row) return;
+    row.classList.add('row-flash');
+    row.scrollIntoView({ block: 'center' });
+  }
   selectFromHash();
   window.addEventListener('hashchange', function () {
-    if (selectFromHash()) { renderSidebar(); renderContent(); }
+    if (selectFromHash()) { renderSidebar(); renderContent(); flashProduct(); }
   });
 
   initThemeToggle();
   renderSidebar();
   renderContent();
+  flashProduct();
   setupEvents();
   setupTooltips();
   setupSidebarResize();
