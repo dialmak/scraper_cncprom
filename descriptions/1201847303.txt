@@ -1,0 +1,64 @@
+61-112 Блок пилозахисту HIWIN HG25ZZ
+https://cncprom.ua/ua/p1201847303-blok-pylezaschity-hiwin.html
+
+Блок пилозахисту HIWIN HG25ZZ
+HG25ZZ - система пилозахисту, яка використовується в лінійних модулях серії HG типорозміру 25 для перешкоди попадання пилу, стружки і охолоджуючої рідини всередину каретки, тим самим продовжуючи термін її служби. Даний комплект складається з двох сталевих очищувальних скребків, маслянки і кріпильних елементів. HG25ZZ встановлюється на торець каретки перед торцевим ущільненням.
+Застосування: можна встановлювати на каретки серії HG типорозміру 25 від виробників HIWIN, HSAC, TBI, THK, STAF та інших.
+Особливості:
+Збільшує пробіг направляючої і каретки
+Не вимагає обслуговування
+Легкість монтажу та демонтажу
+Може використовуватися в умовах особливої запиленості, забрудненості та вологості
+ХАРАКТЕРИСТИКИ
+Виробник: HIWIN Technologies
+![](https://images.prom.ua/1944622869_1944622869.jpg?PIMAGE_ID=1944622869)
+Модель: HG25ZZ
+Серія: ZZ
+Типорозмір: 25
+Товщина скребка: 1.5 мм
+Вага: 35 г
+![](https://images.prom.ua/4382561021_w640_h2048_111.jpg?fresh=1&PIMAGE_ID=4382561021)
+Комплект постачання
+Блок пилозахисту HIWIN HG25ZZ (1 комплект)
+До цього блоку у нас можна придбати
+Каретка HGH 25CA HIWIN
+![](https://images.ua.prom.st/808434346_w528_h473_karetka-hgh-20ca.jpg)
+Каретка HGW 25 CC HIWIN
+![](https://images.ua.prom.st/808439592_w528_h473_karetka-hgw-20.jpg)
+Рейки HGR25 HIWIN
+![](https://images.ua.prom.st/808445507_w528_h473_relsa-hgr20-hiwin.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальник)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Виробник: Hiwin
+Країна виробник: Тайвань
+Водостійкість: Так
+Колір: Чорний
+Вага: 35 г
+Мoдель: HG25ZZ
+Серія: ZZ
+Типорозмір: 2,5"
+Товщина скребка: 1.5 мм

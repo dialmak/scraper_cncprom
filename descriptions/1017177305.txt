@@ -1,0 +1,64 @@
+03-214 Кронштейн для кріплення циліндричного датчика з різьбою М18 (кутовий)
+https://cncprom.ua/ua/p1017177305-kronshtejn-dlya-krepleniya.html
+
+Кронштейн для кріплення циліндричного датчика з різьбою М18 (кутовий)
+Дана модель кріплення являє собою сталевий кутник з поперечним регулюванням положення призначений для установки датчика в тих місцях, де немає підготовлених кріпильних отворів. Представлений типорозмір підходить для безконтактних датчиків з різьбовим корпусом М18.
+Технічні характеристики:
+Різьбовий корпус монтованого датчика: М18
+Матеріал: сталь
+Форма корпусу: куточок
+Загальний розмір: 45х26х1.7 мм
+Вага: 24.5 г
+Габаритні розміри:
+![](https://images.prom.ua/1913450053_1913450053.jpg?PIMAGE_ID=1913450053)
+Застосування:
+![](https://images.prom.ua/1913457546_1913457546.jpg?PIMAGE_ID=1913457546)
+Комплект постачання
+- Кронштейн для кріплення циліндричного датчика з різьбою М18 (кутовий)
+До цього кронштейна у нас можна придбати
+Оптичний датчик QMBONW E3F-DS30C4 NPN NO відкритий
+![](https://images.ua.prom.st/1732984113_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Оптичний датчик QMBONW E3F-DS30B2 NPN NC закритий
+![](https://images.ua.prom.st/1911613414_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Оптичний датчик QMBONW E3F-DS30P1 PNP NO відкритий
+![](https://images.ua.prom.st/1911768134_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Оптичний датчик QMBONW E3F-DS30P2 PNP NC закритий
+![](https://images.ua.prom.st/1913023593_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Оптичний датчик QMBONW E3F-DS30Y1 AC NO відкритий
+![](https://images.ua.prom.st/1913095416_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Оптичний датчик QMBONW E3F-DS30Y2 AC NC закритий
+![](https://images.ua.prom.st/1913140240_w358_h473_opticheskij-datchik-qmbonw.jpg)
+Дивіться всі наші оголошення:
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальника)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Фрези](https://cnc.prom.ua/g51015677-frezy-dlya-stankov)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Вага: 24.5 г
+Кількість в пакованні: 1 шт.
+Матеріал: Сталь
+Загальний розмір: 45х26х1.7 мм
+Нарізний корпус монтованого датчика: М18
+Стан: Нове
+Тип комплектуючого: Кронштейн для датчика
+Форма корпусу: куточок

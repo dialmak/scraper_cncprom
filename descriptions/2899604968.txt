@@ -1,0 +1,85 @@
+05-360 Сенсорний CD JK-7 дисплей 4.3″, екран для JK-BMS серії PB для контролю акумулятора
+https://cncprom.ua/ua/p2899604968-sensornyj-displej-ekran.html
+
+Сенсорний CD JK-7 дисплей 4.3″, екран для JK-BMS серії PB для контролю акумулятора
+CDJK-7 — це дисплейний модуль з TFT-екраном діагоналлю 4.3 дюйма, призначений для роботи з[Smart BMS JIKONG серії PB.](https://cncprom.ua/ua/site_search?search_term=JK+PB) Модуль використовується як панель індикації та керування параметрами акумуляторної батареї та забезпечує обмін даними з BMS через TTL-послідовний інтерфейс.
+Дисплей виконаний у вигляді друкованої плати з інтегрованим контролером, стабілізацією живлення та шлейфовими роз’ємами для підключення LCD-панелі. Конструкція орієнтована на стаціонарне та мобільне застосування в акумуляторних системах і підтримує широкий діапазон вхідної напруги, що дозволяє використовувати модуль у різних конфігураціях батарей.
+Функціональні можливості:
+відображення параметрів акумуляторної батареї BMS серії PB:
+загальна напруга батареї
+рівень заряду (SOC)
+напруга окремих осередків (по серіях)
+підтримка TTL-рівня сигналу
+стандартна швидкість обміну даними: 115200 біт/с
+Сумісність:
+[Smart BMS JIKONG серії PB](https://cncprom.ua/ua/site_search?search_term=JK+PB)
+Технічні характеристики:
+Модель: CDJK-7
+Тип дисплея: TFT
+Діагональ: 4.3 дюйма
+Роздільна здатність: 480 × 272
+Тип підсвітки: LED
+Яскравість: ≈ 300 кд/м² (нт)
+Швидкість передачі даних: 115200 біт/с
+Кути огляду (L/R/U/D): 85° / 85° / 85° / 85°
+Вхідна напруга: 9–36 В
+Розсіювання потужності: 1,32 Вт (12V/110mA)
+Робоча температура: –20 … +70 °C
+Температура зберігання: –30 … +80 °C
+Габаритні розміри: 138х96х15,5 мм
+Вага: 0.135 кг
+![](https://i.ibb.co/tT0bcb6V/S1edbca4cd82143d7b78852c7bf54d4d8-T.jpg)
+![](https://i.ibb.co/d4TxPjZG/S67eb97e7f364489885ed10f216c1bddf-L.jpg)
+![](https://i.ibb.co/7J4Bysvy/2.jpg)
+![](https://i.ibb.co/yBMkC6kx/S79c8811c750d4ab48994119ecb0cec697.jpg)
+![](https://i.ibb.co/9k8LnYVX/S550d41d5bef84f7691afd9416d1c3b059.jpg)
+![](https://i.ibb.co/k2RzWXSh/S719d46d7fc604395a853d0eb389c7c2a-N.jpg)
+![](https://i.ibb.co/vxNTnrK4/S91710bb3ca3e4cd7a1cec0e1835796fb-L.jpg)
+![](https://i.ibb.co/hJ9QyTWf/Sf1799aad7dd047c989d68561fb7287bd0.jpg)
+![](https://i.ibb.co/rK1WQtbf/55.jpg)
+З цим товаром Ви можете придбати:
+[JK PB BMS активного балансування](https://cncprom.ua/ua/site_search?search_term=PB+BMS)
+![](https://i.ibb.co/r1wMzpt/IMG-0616.jpg)
+![](https://i.ibb.co/yB4RmCfq/5.png)
+![](https://i.ibb.co/7xj3CPTt/IMG-0159.jpg)
+[Кнопка активації для JK BMS, JK07-2](https://cncprom.ua/ua/p2853200920-knopka-aktivatsii-dlya.html)
+![](https://i.ibb.co/yB4RmCfq/5.png)
+Важливо!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою.
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект постачання:
+Сенсорний CD JK-7 дисплей 4.3″, екран для JK-BMS серії PB для контролю акумулятора (1 шт.)
+Дивіться всі наші оголошення:
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Оснащення для верстатів](https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov)
+[Регулятори висоти різака THC](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Ріжучий інструмент](https://cncprom.ua/ua/g51015677-rezhuschij-instrument)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Системи охолодження і вентиляції](https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+
+Характеристики:
+Тип модуля: Відображення графічної інформації
+Довжина: 138 мм
+Ширина: 96 мм
+Висота: 15.5 мм
+Вага: 135 г

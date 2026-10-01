@@ -1,0 +1,65 @@
+167-067 Шків HTD5M-45з-20ш із посадковим отвором 10 мм
+https://cncprom.ua/ua/p2331588273-shkiv-htd5m-45z.html
+
+Шків HTD5M-45з-20ш із посадковим отвором 10 мм
+HTD5M-45з-20ш — це колесо, на поверхні обода якого є 45 поперечних зубів із кроком 5 мм. Ці зуби забезпечують чіпке зчеплення з зубчастим ременем, якому передається рух від шківа. Кріплення колеса здійснюється двома гвинтами M5.
+Характеристики:
+Модель: HTD5M-45з-20ш, d=10
+Тип фланця: подвійний
+Кількість зубів: 45
+Крок зубців: 5 мм
+Тип відповідного ременя: HTD5M шириною 20 мм
+Зовнішній діаметр: 75 мм
+Посадковий отвір: 10 мм
+Загальна висота: 40 мм
+Різьба отворів під кріплення: М5
+Матеріал: алюмінієвий сплав
+Колір: сріблястий
+Вага: 315 г
+Габаритні розміри:
+![](https://i.ibb.co/sHtD0dW/3.jpg)
+Комплект постачання
+- Шків HTD5M-45з-20ш з посадковим отвором 10 мм (1 шт.)
+До цього шківу в нас можна придбати
+Зубчастий ремінь відкритого типу HTD5M-OP 20 мм
+![](https://images.ua.prom.st/35285484_w1081_h473_htd5mbeltopen.jpg)
+Зубчасті ремни замкнутого типу HTD5M ширина 20 мм
+![](https://images.ua.prom.st/1826834431_w358_h473_zubchatyj-remen-htd.jpg)
+Дивіться всі наші оголошення, у нас є:
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Вершки зі ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Вага: 315
+Кількість зубців: 45
+Матеріал: Алюмінієвий сплав
+Мoдель: HTD5M-45з-20ш, d=10
+Зовнішній діаметр: 75 мм.
+Загальна висота: 40 мм
+Посадковий отвір: 10 мм
+Різь отворів під кріплення: M5
+Тип відповідного ременя: HTD5M завширшки 20 мм
+Тип фланця: подвійний
+Крок зуб'їв: 5 мм
+Діаметр: 10
+Ширина, мм: 20

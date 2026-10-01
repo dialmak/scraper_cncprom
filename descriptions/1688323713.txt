@@ -1,0 +1,55 @@
+03-040 Шлейф для передачі даних з роз'ємами IDC-26F 0.3 м, плоский кабель з роз'ємами 26 pin "мама"
+https://cncprom.ua/ua/p1688323713-shlejf-dlya-peredachi.html
+
+Шлейф для передачі даних з роз'ємами IDC-26F (тип "мама") довжиною 0.3 м, плоский сполучний кабель з роз'ємами 26 pin розетками (під шлейф 2.54)
+Плоский з'єднувальний кабель з роз'ємами IDC-26F (FC-26P тип "мама"), який застосовується для передачі даних між пристроями (материнська плата-периферія, контролер-плата розширення тощо). Шлейф має відмінні електричні та діелектричні властивості, а також хорошу стійкість до пошкоджень при згинанні та крученні.
+Довжина шлейфу разом із роз'ємами становить 30 см.
+Технічні характеристики:
+Тип роз'єму 1: IDC-26F (2 ряди по 13 контактів, крок між контактами 2.54 мм)
+Тип роз'єму 2: IDC-26F (2 ряди по 13 контактів, крок між контактами 2.54 мм)
+Довжина разом із роз'ємами: 0.3 м
+Маркування провідників: 28AWG
+Матеріал провідників: луджена мідь
+Матеріал ізоляції: ПВХ
+Максимальна робоча температура: +105 °С
+Вага нетто: 23 г
+Стан: новий
+![](https://images.prom.ua/4020574661_w640_h2048_ploskij_kabel.jpg?fresh=1&PIMAGE_ID=4020574661)
+Увага!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект поставки
+Шлейф для передачі даних з роз'ємами IDC-26F довжиною 0.3 м
+До цього шлейфу у нас можна придбати
+Контролери
+![](https://images.prom.ua/3106035650_w640_h640_3106035650.jpg)
+[КУПИТИ](https://cnc.prom.ua/g1022485-kontrollery)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Верстати](https://cnc.prom.ua/g1261329-stanki)
+[Оснащення для верстатів](https://cnc.prom.ua/g92857157-osnastka-dlya-stankov)
+[Системи охолодження та вентиляції](https://cnc.prom.ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Електричні двигуни](https://cnc.prom.ua/g1022553-elektrodvigateli)
+[Драйвери крокових двигун](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[і](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[в](http://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Пульти ручного керування](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[Лінійні напрямні та підшипники](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie-podshipniki)
+[Пере](https://cnc.prom.ua/g96553590-peredachi)[дачі](http://cnc.prom.ua/g96553590-peredachi)
+[Системи змащення напрямних та передач](https://cnc.prom.ua/g71921739-sistemy-smazki-napravlyayuschih)
+[Механіка](https://cnc.prom.ua/g100126570-mehanika)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Фрези](https://cnc.prom.ua/g51015677-frezy-dlya-stankov)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Пневматика](https://cnc.prom.ua/g106846694-pnevmatika)
+
+Характеристики:
+Виробник: CNCPROM
+Країна виробник: Китай

@@ -1,0 +1,57 @@
+22-027 Опора регульована RO-M10x50-D50, гвинтова верстатна віброопора М10, опорна ніжка
+https://cncprom.ua/ua/p1668684629-opora-reguliruemaya-m10x50.html
+
+Регульована різьбова віброгасна опора RO-M10x50-D50, верстатна різьбова віброопора М10, промислова опорна ніжка
+RO-M10x50-D50- високоміцна опора зі сталевим різьбовим стрижнем (різьба М10, довжина 50 мм) і круглою нейлоновою основою діаметром 50 мм, яка застосовується для регулювання висоти верстатів та інших конструкцій при виставленні їх за рівнем на нерівних поверхнях. За рахунок своїх конструктивних особливостей ніжка здатна мінімізувати ковзання обладнання.
+Максимальне допустиме статичне навантаження становить ~70 кг.
+Для монтажу ніжки в торець верстатного профілю необхідно додатково придбати [торцеву пластину](http://cnc.prom.ua/g96028208-vibroopory-upory-ogranichiteli) з різьбою М10х1.5. Розмір такої пластини підбирається виходячи з серії та перерізу профілю.
+Технічні характеристики
+Модель: RO-M10x51-D50
+Довжина різьбової частини:50 мм
+Різьба стрижня: М10х1.5
+Діаметр основи: 50 мм
+Можливість нахилу стрижня: ні
+Матеріал стрижня: сталь
+Матеріал основи: нейлон
+Максимальне статичне навантаження: ~70 кг
+Вага: 90 г
+Стан: новий
+Креслення виробу:
+![](https://i.ibb.co/MxDj1TS6/2.jpg)
+Увага!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якості, без попереднього повідомлення покупця. Інформація на сайті є актуальною на момент її публікації
+Комплект постачання
+Опора регульована RO-M10x51-D51 (1 шт.)
+До цієї опори у нас можна придбати
+Торцеві пластини для опор
+![](https://images.ua.prom.st/3479212824_w347_h473_tortsevaya-plastina-plita.jpg)
+Алюмінієві профілі
+![](https://images.ua.prom.st/3450169010_w539_h473_profil-alyuminievyj-stanochnyj.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Верстати](https://cnc.prom.ua/g1261329-stanki)
+[Оснащення для верстатів](https://cnc.prom.ua/g92857157-osnastka-dlya-stankov)
+[Системи охолодження та вентиляції](https://cnc.prom.ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Електричні двигуни](https://cnc.prom.ua/g1022553-elektrodvigateli)
+[Драйвери крокових двигун](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[і](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[в](http://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Пульти ручного керування](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[Лінійні напрямні та підшипники](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie-podshipniki)
+[Пере](https://cnc.prom.ua/g96553590-peredachi)[дачі](http://cnc.prom.ua/g96553590-peredachi)
+[Системи змащення напрямних та передач](https://cnc.prom.ua/g71921739-sistemy-smazki-napravlyayuschih)
+[Механіка](https://cnc.prom.ua/g100126570-mehanika)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Фрези](https://cnc.prom.ua/g51015677-frezy-dlya-stankov)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Пневматика](https://cnc.prom.ua/g106846694-pnevmatika)
+
+Характеристики:
+Виробник: CNCPROM
+Країна виробник: Китай

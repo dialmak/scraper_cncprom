@@ -1,0 +1,69 @@
+05-201 Генератор імпульсів (регулятор оборотів) PG-5
+https://cncprom.ua/ua/p1096205059-generator-impulsov-regulyator.html
+
+![](https://images.prom.ua/2119787177_2119787177.jpg?PIMAGE_ID=2119787177)
+Генератор імпульсів (регулятор оборотів) крокового двигуна PG-5
+PG-5 - компактний генератор імпульсів, який використовується для плавного регулювання обертів крокового двигуна шляхом зміни частоти, якою користувач може керувати за допомогою потенціометра. Електроживлення генератора здійснюється за допомогою батареї "Крона".
+Особливості PG-5:
+Компактність
+Висока точність
+Низьке енергоспоживання
+Легкість у використанні
+Тривалий термін служби
+Зверніть увагу! Цей генератор імпульсів призначений для використання тільки в поєднанні з драйвером двигуна, його не можна використовувати для безпосереднього управління кроковим двигуном.
+ТЕХНІЧНІ ХАРАКТЕРИСТИКИ
+Модель: PG-5
+Вхідна напруга: 5~12 V DC
+Вихідна напруга: 5 V
+Вихідний струм: 10 mA
+Вихідна частота: 0~20 kHz
+Матеріал корпусу: пластик
+Світлодіодна індикація: присутній
+Кількість проводів: 2
+Габаритні розміри: 57.5х55.5х29.5 мм
+Вага: 74 г
+Габаритні розміри:
+![](https://images.prom.ua/4371913498_w640_h2048_screenshot_25.png?fresh=1&PIMAGE_ID=4371913498)
+Схема підключення:
+![](https://images.prom.ua/4371915265_w640_h2048_screenshot_26.png?fresh=1&PIMAGE_ID=4371915265)
+Комплект постачання
+Генератор імпульсів (регулятор оборотів) PG-5 (1 шт)
+Батарея "Крона" 6F22ND 9V (1 шт.)
+До цього регулятору у нас можна придбати
+Драйвери крокового двигуна
+![](https://images.ua.prom.st/1533861837_w528_h473_tsifrovoj-drajver-dm556.jpg)
+Дивіться всі наші оголошення
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальник)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+[Каталог товарів](https://cnc.prom.ua/product_list)
+
+Характеристики:
+Країна виробник: Китай
+Одиниці виміру частоти: кГц
+Максимальний діапазон частот: 20
+Стан: Новий
+Вага: 0.074 кг
+Висота: 29.5 мм
+Довжина: 57.5 мм
+Напруга: 5 В
+Ширина: 55.5 мм

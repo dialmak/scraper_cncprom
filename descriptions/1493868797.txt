@@ -1,0 +1,56 @@
+03-054 Кнопка перемикач миттєвої дії LA38-11 (Чорний)
+https://cncprom.ua/ua/p1493868797-knopka-pereklyuchatel-mgnovennogo.html
+
+В нормальному стані пара контактів №1 перебувати в розімкнутому стані, №2 - замкнутому.
+При натисканні: №1 - замкнений стан, №2 - розімкнений стан.
+Ui AC660V
+Ith 10A
+AC-DC 15-13
+![](https://images.prom.ua/4382359463_w640_h2048_screenshot_3.jpg?fresh=1&PIMAGE_ID=4382359463)
+![](https://images.prom.ua/4382359989_w640_h2048_1.jpg?fresh=1&PIMAGE_ID=4382359989)
+Важливо!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект постачання
+Кнопка перемикач миттєвої дії LA38-11 (Чорний) - 1шт
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Країна виробник: Китай
+Кількість кнопок: 1 шт.
+Матеріал корпусу: Пластик
+Механічна зносостійкість: 3000000 циклів
+Номінальна сила струму: 10 А
+Підсвічування: Ні
+Покриття контакту: Срібло
+Тип монтажу: На корпус
+Фіксація положення: Ні
+Форма кнопки: Циліндрична
+Колір кнопки: Чорний
+Висота: 66 мм
+Діаметр: 29 мм
+Ширина: 41 мм

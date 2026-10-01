@@ -1,0 +1,53 @@
+88-001 Кронштейн (тримач) гайки КГП 1605, 1610 DSG16H
+https://cncprom.ua/ua/p15605969-kronshtejn-derzhatel-gajki.html
+
+Кронштейн (тримач) гайки КГП 1605, 1610 DSG16H
+Цей пристрій використовується для сполучення гайки КГП із рухомим вузлом. DSG16H підходить для всіх гайок 16 мм з фланцем DIN 69051 B (ISO 3408). На корпусі кронштейна передбачені різьбові отвори для кріплення до площини та для кріплення гайки КГП. В якості матеріалу використовується алюмінієвий сплав (метод виготовлення — лиття).
+ТЕХНІЧНІ ХАРАКТЕРИСТИКИ
+Модель: DSG16H
+Типорозмір відповідних гайок: 1605, 1610 (з фланцем DIN 69051 B (ISO 3408))
+Матеріал: алюмінієвий сплав
+Кількість отворів для кріплення гайки: 6
+Вага: 133 г
+![](https://images.prom.ua/3946743977_w640_h2048_gabaritnye_razmery.jpg?fresh=1&PIMAGE_ID=3946743977)
+Комплект постачання
+Кронштейн (тримач) гайки КГП DSG16H (1 шт.)
+До цього кронштейна в нас можна придбати
+Гайка для КГП SFU 1605
+![](https://images.ua.prom.st/1628621161_w358_h473_gajka-dlya-shvp.jpg)
+Гайка для КГП SFU 1610
+![](https://images.ua.prom.st/1628621161_w358_h473_gajka-dlya-shvp.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Вага: 133 г
+Кількість в упаковці: 1 шт.
+Стан: Новий
+Кількість отворів для кріплення гайки: 6
+Матеріал: Алюмінієвий сплав
+Мoдель: DSG16H
+Тип комплектуючого: Кронштейн
+Типорозмір відповідних гайок: 1610 (з фланцем DIN 69051 B (ISO 3408))

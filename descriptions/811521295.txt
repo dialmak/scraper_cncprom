@@ -1,0 +1,61 @@
+08-003 Система контролю висоти різака (THC) SH-HC31
+https://cncprom.ua/ua/p811521295-sistema-kontrolya-vysoty.html
+
+SH-HC31 - система контролю на основі електронного керування і механічного підіймання, яка розроблена спеціально для верстатів плазмового або газового різання з ЧПК для підтримки оптимальної висоти робочого інструмента над листом. Вимірювання висоти відбувається або за напругою дуги (у разі повітряно-плазмового різання), або за допомогою індукційного датчика (за газокисневої різки). Ця модель є оновленою версією SH-HC30.
+Технічні характеристики:
+Виробник: Beijing Flourishing Start Control Technology
+Модель: SH-HC31
+Процесор: промисловий чип ARM
+Тип датчика: місткість і напруга дуги
+Дисплей: 4-бітний цифровий
+Максимальна величина ходу: 100 мм
+Діапазон автоматичного регулювання висоти: 2-30 мм
+Точність регулювання висоти: ±0.5 мм
+Максимальна швидкість автоматичного регулювання висоти: 3000 мм/хв (нахил 30 градусів)
+Електроживлення: DC 24 V, 3A
+Робоча температура: 0...+40 ℃
+Температура зберігання: -40...+60 ℃
+Вага: 1.9 кг
+Розміри:
+![](https://images.prom.ua/1403722221_1403722221.jpg?PIMAGE_ID=1403722221)
+Схема під'єднання:
+![](https://images.prom.ua/4383200314_w640_h2048_pipikp.png?fresh=1&PIMAGE_ID=4383200314)
+Докладніше інструкцію з експлуатації дивіться у вкладці "Специфікації"
+Комплект постачання
+Комплект SH-HC31 (див. фотографії)
+До цього контролера в нас можна придбати
+Блок живлення
+![](https://images.ua.prom.st/2063737461_w358_h473_impulsnyj-blok-pitaniya.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Виробник: MicroStep
+Максимальна робоча температура навколишнього середовища: 40 град.
+Вага апарату: 1.9 кг
+Висота: 72.5 мм
+Довжина: 194.5 мм
+Ширина: 87 мм
+Стан: Нове

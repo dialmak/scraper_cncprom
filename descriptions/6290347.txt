@@ -1,0 +1,18 @@
+01-004 Пульт ручного управління з енкодером для Mach3 (USB COM)
+https://cncprom.ua/ua/p6290347-pult-ruchnogo-upravleniya.html
+
+Пульт ручного управління для Mach3 з інтерфейсом USB + COM
+Функції:
+1. Emergency Stop
+2. X, Y, Z and A Directional Motion Controls
+3. Feed Rate Control
+4. Jog Rate Control
+5. Spindle Speed Control
+6. Spindle On/Off
+7. Cycle Start (G Code)
+8. Stop(G Code)
+9. Original Point
+10. Motion Step
+11. MPG Select
+Довжина кабелю 3 метри
+Програмне забезпечення для пульта можна завантажити за [посиланням](https://drive.google.com/file/d/1h1Ng6jgD1vMNP1TOn0crXLrPEXkeB1md/view?usp=sharing)

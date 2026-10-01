@@ -1,0 +1,68 @@
+01-013 Потенціометр WTH118-2W B10K (10 кОм)
+https://cncprom.ua/ua/p1114195161-potentsiometr-wth118-b10k.html
+
+Потенціометр WTH118-2W B10K
+WTH118-2W B10K - змінний поворотний резистор з номінальний опір 10 кОм, який використовується для зміни величин сили струму або напруги в електричних ланцюгах допомогою зміни опору. Дану модель можна підключати в електричний ланцюг як послідовно, так і паралельно. WTH118-2W B10K відрізняється своєю точністю, плавністю регулювання і тривалим терміном служби.
+Технічні характеристики
+Модель: WTH118-2W B10K
+Тип резистора: вуглецевий
+Номінальний опір: 10 кОм
+Похибка опору: ±20%
+Розсіюється потужність: 2 Вт
+Максимальна робоча напруга: 400 В
+Тривалість життя: 15000 обертів
+Число оборотів: 1
+Кут повороту: 270 °
+Матеріал осі: метал
+Ступінь захисту: IP40
+Робоча температура: -10°C ... +85°C
+Вага: 27.55 г
+![](https://images.prom.ua/4371057636_w640_h2048_2169225102_2169225102.jpg?fresh=1&PIMAGE_ID=4371057636)
+![](https://images.prom.ua/4371057944_w640_h2048_2169247485_2169247485.jpg?fresh=1&PIMAGE_ID=4371057944)
+Комплект постачання
+- Потенціометр WTH118-2W B10K (1 шт.)
+До цього потенціометру у нас можна придбати
+Контролери руху (генератори імпульсів)
+![](https://images.ua.prom.st/2127181570_w358_h473_kontroller-dvizheniya-generator.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальника)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Вага: 27.55 г
+Максимальна робоча напруга: 400 В
+Стан: Новий
+Тривалість життя: 15000 вращений
+Кількість в пакованні: 1 шт. шт.
+Матеріал осі: метал
+Мoдель: WTH118-2W B10K
+Номінальний опір: 10 кОм
+Похибка опору: ±20%
+Робоча температура: -10°C … +85°C
+Розсіювана потужність: 2 Вт
+Ступінь захисту: IP40
+Тип комплектуючого: Потенціометр
+Тип резистора: вуглецевий
+Кут повороту: 270 °
+Число обертів: 1

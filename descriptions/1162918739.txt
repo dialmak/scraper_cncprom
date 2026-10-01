@@ -1,0 +1,57 @@
+09-104 Кабелі енкодера для серводвигунів 40ST-90ST, 7 м
+https://cncprom.ua/ua/p1162918739-kabeli-enkodera-dlya.html
+
+Кабелі енкодера для серводвигунів 40ST-90ST, 7 м
+Даний комплект складається з сигнального та силового кабелів, які використовуються в системах автоматизації для з'єднання серводвигуна з серводрайвером. Для підключення драйвера до комп'ютера використовується 25 контактний роз'єм LPT DB25 типу "тато" (входив в комплект). Кабелі сумісні з серводвигунами і серводрайверами серій 40ST, 60ST, 80ST, 90ST.
+ХАРАКТЕРИСТИКИ
+Довжина кабелю: 7 м
+Сумісні серводвигуни і серводрайвера: 40ST, 60ST, 80ST, 90ST
+Стандарт IEC: 53
+Вага: 1.3 кг
+Комплект постачання
+Сигнальний кабель енкодера (7 м)
+Силовий кабель (7 м)
+Роз'єм DB25 (1 шт.)
+До цього комплекту кабелів у нас можна придбати
+Серводвигун, серводрайвер 60ST-M01330, 400W, 1.27 Nm
+![](https://images.ua.prom.st/2217682047_w528_h473_servomotor-servodrajver-60st-m01330.jpg)
+Серводвигун, серводрайвер 60ST-M01930, 600W, 1.91 Nm
+![](https://images.ua.prom.st/2217700785_w528_h473_servomotor-servodrajver-60st-m01930.jpg)
+Серводвигун, серводрайвер 80ST-M02430, 750W, 2.39 Nm
+![](https://images.ua.prom.st/1348342716_w528_h473_servomotor-servodrajver-80st-m02430.jpg)
+Серводвигун, серводрайвер 90ST-M02430, 750W, 2.4 Nm
+![](https://images.ua.prom.st/1882964623_w528_h473_servomotor-servodrajver-90st-m02430.jpg)
+Серводвигун, серводрайвер 90ST-M04025, 1000W, 4 Nm
+![](https://images.ua.prom.st/2217731627_w528_h473_servomotor-servodrajver-90st-m04025.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальника)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Вага: 1300 г
+Стан: Новий
+Довжина:: 7000
+Сумісні сервомотори та серводрайвера: 40ST, 60ST, 80ST, 90ST
+Стандарт IEC: 53
+Тип комплектуючого: Кабель

@@ -1,0 +1,63 @@
+03-047 Шлейф із високопрофільною планкою для виведення паралельного порту (LPT) на корпус IDC-26F-DB25F (HP) 0.3 м
+https://cncprom.ua/ua/p1688325071-shlejf-vysokoprofilnoj-plankoj.html
+
+Шлейф з високопрофільною планкою для виведення паралельного порту (LPT) на корпус IDC-26F-DB25F (HP) (тип "мама"-"мама") довжиною 0.3 м, плоский кабель перехідник з роз'єму розетки IDC-26 (під шлейф 2.54) роз'єм розетку DB25
+Плоский кабель (шлейф) перехідник з роз'єму IDC-26F на роз'єм DB25F, який застосовується для виведення паралельного порту (LPT) на корпус обладнання. Високо профільна планка забезпечує швидкий і зручний монтаж конектора DB25F, а також надає естетичного вигляду задній панелі комп'ютера або іншого пристрою.
+Сторона з IDC-26F підключається до керуючої плати, а до сторони з DB25F можна підключати інтерфейсні плати верстатів, принтери тощо.
+Довжина шлейфу разом із роз'ємами становить 30 см.
+Технічні характеристики:
+Інтерфейс: паралельний порт (LPT)
+Тип конектора 1: IDC-26F (крок між контактами 2.54 мм)
+Тип конектора 2: DB25F
+Тип планки: високопрофільна (HP)
+Довжина разом із роз'ємами: 0.3 м
+Маркування провідників: 28AWG
+Матеріал провідників: луджена мідь
+Матеріал ізоляції: ПВХ
+Матеріал планки: метал
+Максимальна робоча температура: +105 °С
+Вага нетто: 43 г
+Стан: новий
+![](https://i.ibb.co/tq6ktqW/image.jpg)
+![](https://i.ibb.co/Fws4YqW/image.jpg)
+Увага!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект поставки
+Шлейф із високопрофільною планкою для виведення паралельного порту (LPT) на корпус IDC-26F-DB25F (HP) довжиною 0.3 м
+До цього шлейфу у нас можна придбати
+Контролери
+![](https://images.prom.ua/3106035650_w640_h640_3106035650.jpg)
+[КУПИТИ](https://cnc.prom.ua/g1022485-kontrollery)
+Закінчені кабелі
+![](https://images.prom.ua/746232955_w381_h275_lpt-kabel-dlinoj.jpg)
+[КУПИТИ](https://cnc.prom.ua/g111003226-okontsovannye-kabeli-shlejfy)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Верстати](https://cnc.prom.ua/g1261329-stanki)
+[Оснащення для верстатів](https://cnc.prom.ua/g92857157-osnastka-dlya-stankov)
+[Системи охолодження та вентиляції](https://cnc.prom.ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Електричні двигуни](https://cnc.prom.ua/g1022553-elektrodvigateli)
+[Драйвери крокових двигун](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[і](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)[в](http://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Пульти ручного керування](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[Лінійні напрямні та підшипники](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie-podshipniki)
+[Пере](https://cnc.prom.ua/g96553590-peredachi)[дачі](http://cnc.prom.ua/g96553590-peredachi)
+[Системи змащення напрямних та передач](https://cnc.prom.ua/g71921739-sistemy-smazki-napravlyayuschih)
+[Механіка](https://cnc.prom.ua/g100126570-mehanika)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Фрези](https://cnc.prom.ua/g51015677-frezy-dlya-stankov)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Пневматика](https://cnc.prom.ua/g106846694-pnevmatika)
+
+Характеристики:
+Виробник: CNCPROM
+Країна виробник: Китай

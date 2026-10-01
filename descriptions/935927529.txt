@@ -1,0 +1,70 @@
+03-105 Фільтр живлення EMI CW2B-10A-T(001) (роз'єм IEC)
+https://cncprom.ua/ua/p935927529-filtr-pitaniya-emi.html
+
+Фільтр живлення CW2B-10A-T(001) (роз'єм IEC)
+CW2B-10A-T(001) - це синфазно фільтр загального призначення, завданням якого є придушення шуму і перешкод вздовж лінії, які створюються оточуючими силовими пристроями.
+Принцип роботи: придушення високочастотного коливання відбувається після пропускання фільтром напруги з частотою 50-60 Гц.
+Особливості:
+Розроблений для стандартного роз'єму IEC
+Швидка і проста установка
+Висока економічність
+З одним запобіжником типу F 5x20 мм
+Застосування: верстати з ЧПК, IT, телекомунікаційне обладнання, вимірювальне обладнання тощо.
+Технічні характеристики:
+Виробник: OMNICOM
+Модель: EMI CW2B-10A-T(001)
+Номінальна напруга: 115/250VAC
+Робоча частота: 50/60Hz
+Номінальний струм: 1~10A
+Струм витоку: <0.6 mA
+Сокет: IEC
+Випробувальна напруга: 1500 В постійного струму, 3S (лінія-лінія); 1500VAC, 3S (лінія-земля)
+Температурна категорія: 25/85/21 (-25 ℃/+ 85℃ Тест на вологість протягом 21 дня)
+Вага: 47 г
+Схема підключення фільтра:
+![](https://images.prom.ua/1694502564_1694502564.jpg?PIMAGE_ID=1694502564)
+Габаритні розміри:
+![](https://images.prom.ua/1694502781_1694502781.jpg?PIMAGE_ID=1694502781)
+Комплект постачання
+- Фільтр живлення EMI CW2B-10A-T(001) (1 шт.)
+До цього фільтра у нас можна придбати
+Контролери
+![](https://images.ua.prom.st/1118018837_w800_h640_892650027_w640_h640_foto_1_kkkk_rjgbz_kopiya.jpg)
+Блоки живлення
+![](https://images.ua.prom.st/1118066997_w800_h640_779806234_w640_h640_2475_kopiya.jpg)
+Дивіться всі наші оголошення:
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальника)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Виробник: Omnicomm
+Стан: Новий
+Вага: 47
+Кількість в пакованні: 1 шт.
+Мoдель: EMI CW2B-10A-T(001)
+Номінальна напруга: 115/250VAC
+Номінальний струм: 1~10A
+Робоча частота: 50/60Hz
+Сікет: IEC
+Тип комплектуючого: Фільтр живлення
+Струм витоку: <0.6mA

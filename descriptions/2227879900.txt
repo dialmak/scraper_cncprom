@@ -1,0 +1,49 @@
+HP06-010 50-ти контактний РК-модуль TFT – LCD 8 дюймів (800*480), 7DD1+1 - FPC
+https://cncprom.ua/ua/p2227879900-kontaktnyj-zhk-modul.html
+
+РК-модуль TFT – LCD 8 дюймів (800*480)
+7DD1+1 - FPC – кольоровий РК-модуль з активною матрицею, що містить аморфний кремнієвий TFT (тонкоплівковий транзистор). Область відображення модуля містить 800*480 пікселів і може відображати до 16 млн. кольорів.
+Характеристики:
+Тип: TFT
+Перспектива: 140 °
+Розмір дисплея: 8 дюймів
+Роздільна здатність: 800*480
+Розмір виробу: 192.8x116.9x6.4 мм
+Активна зона: 176.64 x 99.36 мм
+Яскравість: 400 CD/m2
+Кольори: 16 млн
+Тип інтерфейсу: RGB
+Кількість контактів: 50
+Вага: 200 г
+Комплект постачання
+РК-модуль TFT – LCD 8 дюймів (800*480), 7DD1+1 - FPC - 1 шт
+Дивіться всі наші оголошення
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022485-kontrollery)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022485-kontrollery)
+[Блоки живлення](https://cnc.prom.ua/g1022485-kontrollery)
+[Шпинделі](https://cnc.prom.ua/g1022485-kontrollery)
+[Інвертори](https://cnc.prom.ua/g1022485-kontrollery)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g1022485-kontrollery)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g1022485-kontrollery)
+[Верстати з ЧПК](https://cnc.prom.ua/g1022485-kontrollery)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022485-kontrollery)
+[КГП](https://cnc.prom.ua/g1022485-kontrollery)
+[Лінійні направляючі](https://cnc.prom.ua/g1022485-kontrollery)
+[Лінійні підшипники](https://cnc.prom.ua/g1022485-kontrollery)
+[Гнучкі муфти](https://cnc.prom.ua/g1022485-kontrollery)
+[Гнучкий кабель канал (кабелеукладач)](https://cnc.prom.ua/g1022485-kontrollery)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1022485-kontrollery)
+[Поворотні осі](https://cnc.prom.ua/g1022485-kontrollery)
+[Алюмінієвий профіль](https://cnc.prom.ua/g1022485-kontrollery)
+[Ремінний привід](https://cnc.prom.ua/g1022485-kontrollery)
+[Рейковий привід](https://cnc.prom.ua/g1022485-kontrollery)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g1022485-kontrollery)
+
+Характеристики:
+Країна виробник: Китай
+Стан: Новий
+Кількість контактів: 50
+Тип: Дисплей
+Діагональ екрана: 8

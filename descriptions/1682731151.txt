@@ -1,0 +1,53 @@
+03-064 Світлозвуковий сигналізатор AD16-22SM 12В
+https://cncprom.ua/ua/p1682731151-svetozvukovoj-signalizator-ad16.html
+
+Світлозвуковий сигналізатор AD16-22SM використовується в електричних ланцюгах верстатів та інших пристроях промислового призначення для візуально-слухового контролю.
+Сигналізатор монтується в отвір панелі діаметром 22 мм і завтовшки до 7 мм. Для під'єднання сигналізатора, з торця корпусу встановлені гвинтові клеми.
+Характеристики:
+Назва продукту: сигналізатор світлозвуковий (зумер);
+Модель: AD16-22SM;
+Бренд: CHLI;
+Струм: 20 мА;
+Напруга: AC DC 12V;
+Тип монтажу: панельний;
+Діаметр монтажного отвору: 22 мм;
+Термін експлуатації: 30000 ч.;
+Рівень звуку: 88 dB;
+Частота звуку: 2.5 kHz;
+Тип звучання: переривчастий;
+Світло індикація: так;
+Колір: червоний;
+Габаритні розміри: 64х28 мм;
+Вага: 0.005 кг.
+Габаритні розміри:
+![](https://i.ibb.co/n1wMWbQ/image.jpg)
+Важливо!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект постачання
+Світлозвуковий сигналізатор AD16-22SM 12В - 1шт
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)

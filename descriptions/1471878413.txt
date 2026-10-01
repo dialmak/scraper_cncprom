@@ -1,0 +1,73 @@
+12-408 Кронштейн двигуна серій 57 і 60 LJZ-DS45/60-57/60 для лінійних модулів TBD45 і TBD60
+https://cncprom.ua/ua/p1471878413-kronshtejn-dvigatelya-serij.html
+
+Кронштейн крокового двигуна серії 57 і серводвигуна серії 60 LJZ-DS45/60-57/60
+LJZ-DS45/60-57/60 - універсальний кронштейн (перехідний фланець), який призначений для сполучення модуля лінійного переміщення і крокового/серводвигуна (з'єднання через перехідну гнучку муфту в одну конструкцію вала двигуна та вала модуля). Один бік такого тримача відповідає фланцю крокового двигуна серії 57 і серводвигуна серії 60, а інша оброблена під монтаж на модулі TBD45 і TBD60 (або аналогії). LJZ-DS45/60-57/60 стійкий до дії агресивною середовища, позаяк має повністю пофарбований корпус.
+Увага! Довжина вихідного вала модуля, вала двигуна, а також діаметр муфти мають бути сумісні з габаритними розмірами кронштейна.
+Особливості:
+Надійність
+Ударостійкість
+Литий алюмінієвий корпус
+Корозійна стійкість
+Простота в монтажі
+Характеристики:
+Модель: LJZ-DS45/60-57/60
+Тип відповідного двигуна: серія 57/60
+Тип відповідного модуля: TBD45 і TBD60 або інша модель з аналогічним розташуванням кріпильних отворів
+Матеріал: алюмінієвий сплав
+Вага: 137 г
+![](https://images.prom.ua/4369456901_w640_h2048_1.jpg?fresh=1&PIMAGE_ID=4369456901)
+![](https://images.prom.ua/4369457572_w640_h2048_2.jpg?fresh=1&PIMAGE_ID=4369457572)
+Комплект постачання
+Кронштейн LJZ-DS45/60-57/60 (1 шт.)
+До цього кронштейна в нас можна придбати
+Модуль лінійного переміщення
+![](https://images.ua.prom.st/2102480683_w358_h473_modul-linejnogo-peremescheniya.jpg)
+Кроковий двигун
+![](https://images.ua.prom.st/1120931289_w528_h473_shagovyj-dvigatel-23hs6403b.jpg)
+Драйвер і кроковий двигун з енкодером
+![](https://images.ua.prom.st/2080429656_w640_h640_2080429656.jpg)
+Сервомотори
+![](https://images.ua.prom.st/2217682047_w528_h473_servomotor-servodrajver-60st-m01330.jpg)
+Перехідний фланець для крокового двигуна серії 86 LJP-DS45M75-86
+![](https://images.ua.prom.st/2476954155_w539_h473_perehodnoj-flanets-dlya.jpg)
+Гвинти та гайки
+![](https://images.ua.prom.st/1872240104_w1081_h473_vint-s-tsilindricheskoj.jpg)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Виробник: CNCPROM
+Країна виробник: Китай
+Вага: 137 г
+Кількість в упаковці: 1 шт.
+Стан: Новий
+Колір: Чорний
+Материл: алюмінієвий сплав
+Мoдель: LJZ-DS45/60-57/60
+Тип комплектуючого: Кронштейн
+Тип відповідного двигуна: серія 57/60
+Тип відповідного модуля: TBD45 і TBD60 або аналог
+Тип фланця: 60 мм | NEMA 23 (57 мм)

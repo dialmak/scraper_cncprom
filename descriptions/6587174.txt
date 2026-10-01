@@ -1,0 +1,79 @@
+58-003 Каретка SBR20UU (SME20GUU)
+https://cncprom.ua/ua/p6587174-karetka-sbr20uu-sme20guu.html
+
+Каретка SBR20UU (SME20GUU)
+Каретка SBR20UU призначена для рейкових напрямних типу SBR. Опорний модуль виготовлений на базі кулькової втулки типу LM OP (відкритого типу) у спеціальному алюмінієвому корпусі. Застосовується у різному устаткуванні, де необхідні точні лінійні переміщення: верстати, координатні столи, устаткування автоматизації тощо.
+Особливості:
+Висока точність
+Висока вантажність
+Висока допустима швидкість
+Низький рівень шуму
+Легкість монтажу та демонтажу
+Практично не вимагає технічного обслуговування
+Компактні розміри
+Довгий термін служби
+Основні характеристики
+Модель: SBR20LUU
+Внутрішній діаметр: 20 мм
+Ущільнення на підшипнику обидві сторони
+Матеріал сепаратора: пластик
+Матеріал корпусу: алюмінієвий сплав
+Розмір бокового отвору: М6х1.0
+Вантажність динамічна: 88 кгс
+Вантажність статична: 140 кгс
+Розміри: 48х50х39 мм
+Вага: 200 г
+Робоча температура: -20... +80 °C
+![](https://i.ibb.co/FqpHhKm/SBR.jpg)
+До цього підшипнику у нас можна придбати:
+Регульована нарізна ручка BM6*50*16
+![](https://images.ua.prom.st/1674856537_w347_h473_reguliruemaya-rezbovaya-ruchka.jpg)
+Вал на опорі SBR20
+![](https://images.prom.ua/824233008_824233008.jpg?PIMAGE_ID=824233008)
+Вал на опорі SBR20 500 мм
+![](https://images.prom.ua/824233339_824233339.jpg?PIMAGE_ID=824233339)
+Вал на опорі SBR20 1000 мм
+![](https://images.prom.ua/824233339_824233339.jpg?PIMAGE_ID=824233339)
+Вал на опорі SBR20 1500 мм
+![](https://images.prom.ua/824235426_824235426.jpg?PIMAGE_ID=824235426)
+Вал на опорі SBR20 2000 мм
+![](https://images.prom.ua/824236168_824236168.jpg?PIMAGE_ID=824236168)
+Вал на опорі SBR20 2500 мм
+![](https://images.prom.ua/824237624_824237624.jpg?PIMAGE_ID=824237624)
+Вал на опорі SBR20 3000 мм
+![](https://images.prom.ua/824237261_824237261.jpg?PIMAGE_ID=824237261)
+Важливо!
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою
+Інформація на сайті є актуальною на момент її опублікування!
+Комплект постачання
+Каретка SBR20UU (SME20GUU) - 1шт
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Для вала на опорі SBR: 20 мм
+Тип підшипника: Лінійний
+Діаметр: 20

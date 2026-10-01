@@ -1,0 +1,55 @@
+50-009 Закритий лінійний підшипник в подовженому корпусі SCS 08LUU (SMA08LUU)
+https://cncprom.ua/ua/p23542052-zakrytyj-linejnyj-podshipnik.html
+
+Закритий лінійний підшипник в корпусі SCS08LUU, під вал 8 мм
+SCS08LUU - лінійний підшипник в подовженому алюмінієвому корпусі, призначений для лінійних валів діаметром 8 мм і широко використовується у верстатобудуванні.
+Вузол виконаний в алюмінієвому корпусі, а всередині корпусу знаходиться лінійний підшипник LM8UU. Алюмінієвий корпус служить захистом обладнання від бруду і брудних частинок, що продовжує його термін служби.
+Підшипник SCS08LUU забезпечує плавне високоточне переміщення вала та може використовуватись при високих навантаженнях та широкому діапазоні температур.
+Технічні характеристики:
+Країна виробник: Китай
+Модель: SCS08LUU
+Вид: лінійний підшипник кочення
+Корпус: алюмінієвий
+Посадковий діаметр: 8 мм
+Модель підшипника: LM8UU
+Різьба бокового отвору: М6х1.0
+Вантажність динамічна: 274 N
+Вантажність статична: 392 N
+Розміри: 34х58х22 мм
+Вага: 100 г
+Креслення:
+![](https://i.ibb.co/jZj5Wwnq/50-012.jpg)
+Комплект постачання
+Закритий лінійний підшипник в укороченому корпусі SCS08LUU, під вал 8 мм - 1 шт
+До цього підшипника у нас можна придбати:
+Вали без опори WCS 8
+![](https://images.prom.ua/563015545_563015545.jpg?PIMAGE_ID=563015545)
+Дивіться всі наші оголошення
+[Каталог товарів](https://cnc.prom.ua/product_list)
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни з серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери і крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПУ](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного управління і DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[ШВП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні направляючі](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель канал (кабелеукладальника)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різака THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Внутрішній діаметр.: 8 мм
+Довжина:: 58 мм
+Діаметр: 8

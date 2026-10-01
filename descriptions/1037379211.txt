@@ -1,0 +1,84 @@
+61-202 Профільна рейкова напрямна HIWIN EGR20RH, лінійна рейка
+https://cncprom.ua/ua/p1037379211-profilnaya-relsovaya-napravlyayuschaya.html
+
+![](https://images.prom.ua/2326727521_2326727521.jpg?PIMAGE_ID=2326727521)
+Рельса EGR20RH HIWIN
+EGR20RH — це оригінальна низькопрофільна рейкова напрямна серії EG типорозміру 20 від великої тайванської компанії HIWIN, яка використовується для високоточного лінійного переміщення. Конструкція цієї моделі пропонує високе допустиме навантаження і жорсткість системи, а також забезпечує як високу вантажність у всіх напрямках, так і самовирівнювання (компенсує похибки під час встановлення).
+Особливості:
+Висока точність
+Висока жорсткість
+Висока вантажність
+Низьке тертя
+Плавність переміщення
+Самовирівнювання
+Тривалий термін експлуатації
+Розшифрування маркування рейки EGR20RH :
+EG - серія рейки (EG)
+R - взаємозамінна напрямна
+20 - типорозмір
+R - тип кріплення рейки (верхнє)
+Н - клас точності ("Н")
+Застосування: токарні, шліфувальні, точні фрезерні верстати; обладнання з високою точністю позиціювання; транспортне, вимірювальне обладнання й багато іншого
+Характеристики:
+Виробник: HIWIN
+![](https://images.prom.ua/1944622869_1944622869.jpg?PIMAGE_ID=1944622869)
+Модель: EGR20RH
+Серія: EG
+Типорозмір: 20
+Тип кріплення: верхнє
+Клас точності: Н
+Вага: 2.08 кг/м
+Габаритні розміри:
+![](https://images.prom.ua/4369027601_w640_h2048_3.jpg?fresh=1&PIMAGE_ID=4369027601)
+Компанія CNCPROM пропонує стандартну довжину напрямної під потреби клієнта. Для нестандартної довжини "Е" рекомендований розмір не має перевищувати 1/2 розміру кроку "Р". Це запобігає нестабільності кінця напрямної.
+Конструкція рейки та каретки серії EG:
+![](https://images.prom.ua/4369027948_w640_h2048_2.jpg?fresh=1&PIMAGE_ID=4369027948)
+Докладніше інформацію про продукт дивіться в каталозі HIWIN [(](https://drive.google.com/open?id=1LlalTog0AVV09MX05FoaZfk5Bn1fVwz8)[завантажити](https://drive.google.com/open?id=1LlalTog0AVV09MX05FoaZfk5Bn1fVwz8)[)](https://drive.google.com/open?id=1LlalTog0AVV09MX05FoaZfk5Bn1fVwz8)
+Комплект постачання
+- Рельса EGR20RH HIWIN
+- Заглушки HIWIN
+Каретки до комплекту постачання не входять!
+Наша компанія постачає лінійні напрямні завдовжки від 100 мм до 4000 мм, кратність 100 мм
+До цієї рейки в нас можна придбати
+Каретка EGH20CAZAC HIWIN
+![](https://images.ua.prom.st/1429756194_w528_h473_karetka-egh20cazac-hiwin.jpg)
+Каретка EGW20CCZAC HIWIN
+![](https://images.ua.prom.st/1944742696_w358_h473_karetka-egw20cczac-hiwin.jpg)
+Олія (змазування) для напрямних і передач помірної в'язкості (1 л)
+![](https://images.ua.prom.st/1890288260_w1081_h473_maslo-smazka-dlya.jpg)
+Заглушки для рейкових напрямних HIWIN С5, 9.5 мм
+![](https://images.ua.prom.st/3298750808_w640_h2048_1.jpg?fresh=1&PIMAGE_ID=3298750808)
+Дивіться всі наші оголошення:
+[Контролери](https://cnc.prom.ua/g1022485-kontrollery)
+[Крокові двигуни](https://cnc.prom.ua/g1022553-shagovye-dvigateli)
+[Драйвери крокового двигуна](https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya)
+[Блоки живлення](https://cnc.prom.ua/g1022952-bloki-pitaniya)
+[Шпинделі](http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu)
+[Інвертори](http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory)
+[Серводвигуни із серводрайверами](https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami)
+[Драйвери та крокові двигуни з енкодером](https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli)
+[Верстати з ЧПК](https://cnc.prom.ua/g1261329-stanki-chpu)
+[Пульти ручного керування та DSP контролери](https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya)
+[Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри](https://cnc.prom.ua/g1022907-datchiki-knopki-razemy)
+[КГП](https://cnc.prom.ua/g1292282-shvp)
+[Лінійні напрямні](https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie)
+[Лінійні підшипники](https://cnc.prom.ua/g16759716-linejnye-podshipniki)
+[Гнучкі муфти](https://cnc.prom.ua/g1270337-gibkie-mufty)
+[Гнучкий кабель-канал (кабелеукладач)](https://cnc.prom.ua/g1372753-gibkij-kabel-kanal)
+[Затискні цанги, гайки ER](https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki)
+[Поворотні осі](https://cnc.prom.ua/g1481716-povorotnye-osi)
+[Алюмінієвий профіль](https://cnc.prom.ua/g2432613-alyuminievyj-profil)
+[Ремінний привід](https://cnc.prom.ua/g2488264-remennyj-privod)
+[Рейковий привід](https://cnc.prom.ua/g2488426-reechnyj-privod)
+[Регулятори висоти різання THC (torch height control)](https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka)
+
+Характеристики:
+Виробник: Hiwin
+Вага: 2.08 кг/м
+Клас точності: Н
+Мoдель: EGR20RH
+Серія: EG
+Стан: Нове
+Тип комплектуючого: Рельса
+Тип кріплення: верхнее
+Типорозмір: 20"
