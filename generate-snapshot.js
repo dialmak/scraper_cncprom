@@ -85,7 +85,12 @@ function trimProducts(products) {
 function descriptionText(p) {
   const attrs = (p.attrs || []).map(([n, v]) => `${n}: ${v}`).join('\n');
   const specs = (p.specs || []).map(([n, u]) => `${n}: ${u}`).join('\n');
-  return (p.description || '') + (attrs ? `\n\nХарактеристики:\n${attrs}` : '') +
+  // Комплект і список супутніх вийнято з опису (lib/desc-dom.js) — в історії вони поруч.
+  const kit = (p.kit || []).join('\n');
+  const xsell = (p.xsell || []).map(([n, u]) => n + (u ? `: ${u}` : '')).filter(Boolean).join('\n');
+  return (p.description || '') + (kit ? `\n\nКомплект постачання:\n${kit}` : '') +
+    (xsell ? `\n\nЗ цим товаром також замовляють (з опису):\n${xsell}` : '') +
+    (attrs ? `\n\nХарактеристики:\n${attrs}` : '') +
     (specs ? `\n\nСпецифікації:\n${specs}` : '');
 }
 function descHash(text) {

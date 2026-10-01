@@ -15,7 +15,7 @@ const { ICONS } = require('./lib/icons');
 const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
-const { hasDescription, descriptionJson } = require('./lib/desc');
+const { hasDescription, descriptionJson, descIndex } = require('./lib/desc');
 const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
 
@@ -336,18 +336,17 @@ function readSearchEntries(id) {
 // «Опис» у таблицях товарів завантажує його лише при кліку. Разом описи
 // ~20–25 МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
 // Пишуться після всіх мап: «З цим товаром також замовляють» посилається на товари
-// інших розділів, тож спершу потрібні товари всіх каталогів (byId).
+// інших розділів, тож спершу потрібен покажчик усіх каталогів (descIndex).
 // Повертає кількість записаних файлів.
 function writeDescriptions(ids) {
   const catalogs = ids.map(id => {
     try { return JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8')); } catch (e) { return null; }
   }).filter(Boolean);
-  const byId = new Map();
-  catalogs.forEach(c => (c.products || []).forEach(p => byId.set(String(p.productId), p)));
+  const idx = descIndex(catalogs);
   let n = 0;
   catalogs.forEach(c => (c.products || []).filter(hasDescription).forEach(p => {
     if (!n) fs.mkdirSync(DESC_DIR, { recursive: true });
-    fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, byId), 'utf-8');
+    fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, idx), 'utf-8');
     n++;
   }));
   return n;

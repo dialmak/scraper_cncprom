@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
 const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
-const { cleanDescription } = require('./lib/desc');
+const { stripShopListing, splitDescription } = require('./lib/desc');
 const { readDescription } = require('./lib/desc-dom');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -508,6 +508,8 @@ async function extractProductData(page, url, assignment, silent = false) {
 
   // Видимий опис: текст для історії й очищений HTML для показу (lib/desc-dom.js).
   const desc = await page.evaluate(readDescription).catch(() => null);
+  // Блоку опису немає — запас з JSON-LD, тим самим розбором, але на тексті (lib/desc.js).
+  const fallback = desc ? null : splitDescription(stripShopListing(data.ldDescription || ''));
 
   return {
     productId,
@@ -523,11 +525,15 @@ async function extractProductData(page, url, assignment, silent = false) {
     // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
     // Шаблон «Дивіться всі наші оголошення» зі списком розділів вирізає вже
     // readDescription; cleanDescription — запас для тексту з JSON-LD (lib/desc.js).
-    description: cleanDescription(desc ? desc.text : (data.ldDescription || '')),
+    description: desc ? desc.text : fallback.text,
     // Очищений HTML опису — лише для показу у вікні «Опис» (таблиці, заголовки).
     descriptionHtml: desc ? desc.html : '',
     attrs: data.attrs,
     specs: data.specs,
+    // «Комплект постачання» (рядки) і список з опису «До цього … у нас можна придбати»
+    // ([назва, посилання, картинка]) — вийняті з опису в окремі вкладки вікна.
+    kit: desc ? desc.kit : fallback.kit,
+    xsell: desc ? desc.xsell : fallback.xsell,
     // Для вікна «Опис»: фото (адреси без розміру), ціна й «З цим товаром також
     // замовляють» (id товарів; null — не прочитано).
     photos: data.photos,

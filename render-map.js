@@ -519,7 +519,10 @@ table.search-table .col-cat { width: 28%; }
 .desc-card img { width: 100%; height: 130px; object-fit: contain; background: #fff; border-radius: 4px; }
 .desc-card-name { font-size: 0.8rem; line-height: 1.35; color: var(--text-link); text-decoration: none;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.desc-card-name:hover { text-decoration: underline; }
+a.desc-card-name:hover { text-decoration: underline; }
+.desc-card-name.plain { color: var(--text-main); }
+.desc-card-kind { color: var(--text-subtle); }
+.desc-kit { margin: 0; padding-left: 22px; font-size: 0.88rem; line-height: 1.7; color: var(--text-main); }
 .desc-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.76rem; color: var(--text-subtle); }
 .desc-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; font-size: 0.84rem; font-weight: 600; color: var(--text-main); }
 /* Фото на весь екран, поверх вікна «Опис» (z-index вікна — у .help-overlay). */
@@ -1043,8 +1046,8 @@ function descBtnHtml(p) {
 function descBodyHtml(d, back) {
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   // Фото зберігаються без розміру (images.prom.ua/<id>_<slug>.jpg); розмір Prom
-  // підставляє за вставкою _wN_hN_ після id.
-  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_/i, '$1_' + s + '_'); }
+  // підставляє за вставкою _wN_hN_ після id. Картинку з опису (вже з розміром чи з ?…) не чіпаємо.
+  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_(?!w\d+_h\d+_)(?=[^?]*$)/i, '$1_' + s + '_'); }
   function price(v, cur) {
     if (v == null) return '';
     var n = Math.round(v * 100) / 100;
@@ -1065,6 +1068,7 @@ function descBodyHtml(d, back) {
   var attrs = d.attrs || [];
   var specs = d.specs || [];
   var acc = d.acc || [];
+  var kit = d.kit || [];
   var photos = d.photos || [];
   // Є очищений HTML (каталоги з 01.10.2026) — порожнє місце, яке заповнить descFillHtml.
   var tabs = [['text', 'Опис', d.html
@@ -1079,11 +1083,28 @@ function descBodyHtml(d, back) {
     tabs.push(['specs', 'Специфікація', '<ul class="desc-specs">' +
       specs.map(function (s) { return '<li><a href="' + esc(s[1]) + '" target="_blank" rel="noopener">📎 ' + esc(s[0]) + ' ↗</a></li>'; }).join('') + '</ul>']);
   }
+  if (kit.length) {
+    // Рядки комплекту з опису; тире й маркери на початку — зайві, це вже список.
+    tabs.push(['kit', 'Комплект постачання', '<ul class="desc-kit">' +
+      kit.map(function (s) { return '<li>' + esc(String(s).replace(/^[\s—–\-•·*]+/, '')) + '</li>'; }).join('') + '</ul>']);
+  }
   if (acc.length) {
+    // Три види карток (lib/desc.js, descriptionJson): товар (є id) — наші код, наявність,
+    // ціна й «📄 Опис»; розділ (є cat) — посилання на мапу; решта — назва з картинкою.
     tabs.push(['acc', 'З цим товаром також замовляють', '<div class="desc-cards">' + acc.map(function (q) {
+      var img = q.photo ? '<img loading="lazy" alt="" src="' + esc(sized(q.photo, 'w200_h200')) + '">' : '';
+      if (q.cat) {
+        return '<div class="desc-card">' + img +
+          '<a class="desc-card-name" href="' + esc(q.map) + '" data-desc-go>' + esc(q.name) + '</a>' +
+          '<div class="desc-card-meta"><span class="desc-card-kind">📁 розділ мапи</span></div></div>';
+      }
+      if (!q.id) {
+        return '<div class="desc-card">' + img + (q.url
+          ? '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + ' ↗</a>'
+          : '<span class="desc-card-name plain">' + esc(q.name) + '</span>') + '</div>';
+      }
       var pr = price(q.price, q.currency);
-      return '<div class="desc-card">' +
-        (q.photo ? '<img loading="lazy" alt="" src="' + esc(sized(q.photo, 'w200_h200')) + '">' : '') +
+      return '<div class="desc-card">' + img +
         '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + '</a>' +
         '<div class="desc-card-meta"><span class="desc-card-code">' + esc(q.code) + '</span>' + badge(q.avail) + '</div>' +
         '<div class="desc-card-foot"><span class="desc-card-price">' + pr + '</span>' +
@@ -1091,7 +1112,7 @@ function descBodyHtml(d, back) {
     }).join('') + '</div>']);
   }
   var tabsHtml = '<div class="desc-tabs" role="tablist">' + tabs.map(function (t, i) {
-    var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'acc' ? acc.length : 0;
+    var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'kit' ? kit.length : t[0] === 'acc' ? acc.length : 0;
     return '<button type="button" role="tab" class="desc-tab' + (i ? '' : ' on') + '" data-desc-tab="' + t[0] + '" aria-selected="' + (i ? 'false' : 'true') + '">' +
       t[1] + (n ? ' <span class="desc-tab-n">' + n + '</span>' : '') + '</button>';
   }).join('') + '</div>';
@@ -1203,7 +1224,7 @@ function initDescriptions() {
   var stack = [];
   var photos = [];
   var pi = 0;
-  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_/i, '$1_' + s + '_'); }
+  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_(?!w\d+_h\d+_)(?=[^?]*$)/i, '$1_' + s + '_'); }
   function showPhoto(i) {
     if (!photos.length) return;
     pi = (i + photos.length) % photos.length;
@@ -1252,6 +1273,8 @@ function initDescriptions() {
     var g = e.target.closest('[data-gal-i], [data-gal-step]');
     if (g) { showPhoto(g.hasAttribute('data-gal-i') ? +g.getAttribute('data-gal-i') : pi + +g.getAttribute('data-gal-step')); return; }
     if (e.target.closest('[data-gal-open]')) { openLightbox(); return; }
+    // Картка розділу веде на мапу: вікно закривається, щоб було видно вузол.
+    if (e.target.closest('[data-desc-go]')) { overlay.classList.remove('open'); return; }
     if (e.target.closest('[data-desc-back]')) { var prev = stack.pop(); if (prev) show(prev); }
   });
   function show(id) {
