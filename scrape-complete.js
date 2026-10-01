@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { nowStr, logEvent } = require('./lib/log');
 const { sleep, BLOCKED_RESOURCE_TYPES } = require('./lib/browser');
-const { stripShopListing } = require('./lib/desc');
+const { cleanDescription } = require('./lib/desc');
 const { readDescription } = require('./lib/desc-dom');
 
 // ==================== НАЛАШТУВАННЯ ====================
@@ -391,15 +391,39 @@ function readProductPage(page) {
     // Опис зі сторінки — у readDescription (lib/desc-dom.js), окремим evaluate.
     // Тут лише запас: JSON-LD Product.description, коли видимого блоку опису немає
     // (у ньому немає тексту посилань і розмітки). null — опису немає взагалі.
-    let ldDescription = null;
+    let ldDescription = null, ldImage = '', price = null, currency = '';
     for (const el of document.querySelectorAll('script[type="application/ld+json"]')) {
       try {
         const data = JSON.parse(el.textContent);
         const items = Array.isArray(data) ? data : (data['@graph'] || [data]);
         const product = items.find(it => it && it['@type'] === 'Product');
-        if (product) { ldDescription = String(product.description || '').trim(); break; }
+        if (product) {
+          ldDescription = String(product.description || '').trim();
+          ldImage = String([].concat(product.image || '')[0] || '');
+          // Ціна — лише для показу у вікні «Опис» (Prom перераховує її з долара щодня).
+          const offer = [].concat(product.offers || {})[0] || {};
+          const v = parseFloat(offer.price != null ? offer.price : offer.lowPrice);
+          if (isFinite(v)) { price = v; currency = String(offer.priceCurrency || ''); }
+          break;
+        }
       } catch (e) { /* побитий JSON-LD — опису немає */ }
     }
+
+    // Фото товару — галерея над назвою (.cs-pictures: великі клітинки й мініатюри).
+    // Адреса без розміру (images.prom.ua/<id>_<slug>.jpg): потрібний розмір сайт
+    // підставляє сам (_w100_h100 мініатюра, _w640_h640 велике). Головне фото (JSON-LD)
+    // першим, повтори за id картинки відкидаються.
+    const photoBase = u => String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_w\d+_h\d+_/i, '$1_');
+    const photoId = u => (String(u).match(/images\.prom\.ua\/(\d+)_/i) || [])[1];
+    const photos = [];
+    const seen = new Set();
+    [ldImage, ...[...document.querySelectorAll('[data-qaid="product-info"] .cs-pictures img')]
+      .map(i => i.getAttribute('data-src') || i.getAttribute('src'))].forEach(u => {
+      const id = photoId(u);
+      if (!id || seen.has(id)) return;
+      seen.add(id);
+      photos.push(photoBase(u));
+    });
 
     // Специфікації — окрема вкладка сторінки товару: прикріплені файли (посібники,
     // креслення, PDF), пари [назва, адреса]. Описи часто відсилають до них
@@ -422,9 +446,33 @@ function readProductPage(page) {
       crumbs,
       ldDescription,
       attrs,
-      specs
+      specs,
+      photos,
+      price,
+      currency
     };
-  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], ldDescription: null, attrs: [], specs: [] }));
+  }).catch(() => ({ productName: "", sku: "", availabilityStatus: "", crumbs: [], ldDescription: null, attrs: [], specs: [], photos: [], price: null, currency: '' }));
+}
+
+// «З цим товаром також замовляють» — карусель над описом, яку підбирає магазин.
+// Сторінка дотягує її окремим запитом після завантаження (і не завжди встигає),
+// тож скрапер питає той самий адрес сам, звичайним fetch, паралельно з відкриттям
+// сторінки товару. Повертає id товарів; null — не вдалося прочитати (≠ [] — порожньо).
+// «Подібні товари компанії» (related_slider_block_html) Prom добирає сам — не беремо.
+async function fetchAccessories(productId) {
+  if (!productId) return null;
+  try {
+    const res = await fetch(`${BASE}/ua/accessory_slider_block_html?product_id=${productId}&page_type=cs_product_view`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(20000) });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const ids = html.split('data-qaid="product_block"').slice(1)
+      .map(b => (b.match(/\/p(\d+)-/) || [])[1])
+      .filter(id => id && id !== String(productId));
+    return [...new Set(ids)];
+  } catch (e) {
+    return null;
+  }
 }
 
 // Назва, код і статус товару приходять у HTML одразу з сервером (виміряно:
@@ -436,6 +484,9 @@ function readProductPage(page) {
 // піде в повторний прохід наприкінці ЕТАПУ 2).
 // silent: true — перший прохід, невдача ще не рахується помилкою прогону.
 async function extractProductData(page, url, assignment, silent = false) {
+  const idMatch = url.match(/\/p(\d+)-/);
+  const productId = idMatch ? idMatch[1] : "";
+  const accessoriesP = fetchAccessories(productId);
   let data = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
     const ok = await gotoWithRetry(page, url, { silent });
@@ -455,8 +506,6 @@ async function extractProductData(page, url, assignment, silent = false) {
     return null;
   }
 
-  const idMatch = url.match(/\/p(\d+)-/);
-  const productId = idMatch ? idMatch[1] : "";
   // Видимий опис: текст для історії й очищений HTML для показу (lib/desc-dom.js).
   const desc = await page.evaluate(readDescription).catch(() => null);
 
@@ -473,12 +522,18 @@ async function extractProductData(page, url, assignment, silent = false) {
     // '' — опису на сторінці немає; поля немає зовсім — каталог зібрано до
     // 30.09.2026, опис тоді не читався (generate-snapshot.js їх розрізняє).
     // Шаблон «Дивіться всі наші оголошення» зі списком розділів вирізає вже
-    // readDescription; stripShopListing — запас для тексту з JSON-LD (lib/desc.js).
-    description: stripShopListing(desc ? desc.text : (data.ldDescription || '')),
+    // readDescription; cleanDescription — запас для тексту з JSON-LD (lib/desc.js).
+    description: cleanDescription(desc ? desc.text : (data.ldDescription || '')),
     // Очищений HTML опису — лише для показу у вікні «Опис» (таблиці, заголовки).
     descriptionHtml: desc ? desc.html : '',
     attrs: data.attrs,
-    specs: data.specs
+    specs: data.specs,
+    // Для вікна «Опис»: фото (адреси без розміру), ціна й «З цим товаром також
+    // замовляють» (id товарів; null — не прочитано).
+    photos: data.photos,
+    price: data.price,
+    currency: data.currency,
+    accessories: await accessoriesP
   };
 }
 

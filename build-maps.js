@@ -335,15 +335,22 @@ function readSearchEntries(id) {
 // Опис кожного товару — окремим файлом desc/<productId>.json (~7 КБ): кнопка
 // «Опис» у таблицях товарів завантажує його лише при кліку. Разом описи
 // ~20–25 МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
+// Пишуться після всіх мап: «З цим товаром також замовляють» посилається на товари
+// інших розділів, тож спершу потрібні товари всіх каталогів (byId).
 // Повертає кількість записаних файлів.
-function writeDescriptions(id) {
-  let catalog;
-  try { catalog = JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8')); } catch (e) { return 0; }
-  const withDesc = (catalog.products || []).filter(hasDescription);
-  if (!withDesc.length) return 0;
-  fs.mkdirSync(DESC_DIR, { recursive: true });
-  withDesc.forEach(p => fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p), 'utf-8'));
-  return withDesc.length;
+function writeDescriptions(ids) {
+  const catalogs = ids.map(id => {
+    try { return JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8')); } catch (e) { return null; }
+  }).filter(Boolean);
+  const byId = new Map();
+  catalogs.forEach(c => (c.products || []).forEach(p => byId.set(String(p.productId), p)));
+  let n = 0;
+  catalogs.forEach(c => (c.products || []).filter(hasDescription).forEach(p => {
+    if (!n) fs.mkdirSync(DESC_DIR, { recursive: true });
+    fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, byId), 'utf-8');
+    n++;
+  }));
+  return n;
 }
 
 // <id>_failed_urls.json пише scrape-complete.js лише коли після повторного
@@ -1011,7 +1018,7 @@ function writeRedirect(file, target) {
   let renderFailures = 0;
   // desc/ збирається заново щоразу: файл товару, що зник з каталогу, не лишається.
   fs.rmSync(DESC_DIR, { recursive: true, force: true });
-  let descFiles = 0;
+  const builtIds = [];
 
   // Результат buildRealMap() перевіряється: інакше впалий render-map.js давав
   // категорію 'ok' із зеленою ✅, а readSummary() підтягував цифри з
@@ -1021,7 +1028,7 @@ function writeRedirect(file, target) {
     if (buildRealMap(id)) {
       entries.push({ id, name, url, status: 'ok', ...readSummary(id), failed_urls: readFailedUrls(id) });
       searchEntries.push(...readSearchEntries(id));
-      descFiles += writeDescriptions(id);
+      builtIds.push(id);
       return;
     }
     renderFailures++;
@@ -1053,6 +1060,7 @@ function writeRedirect(file, target) {
   // Компактно (без відступів) — цей файл лише fetch-иться клієнтським JS,
   // людям його не читати; ~1.8 МБ на весь сайт.
   fs.writeFileSync(path.join(DIR, "search-index.json"), JSON.stringify(searchEntries), "utf-8");
+  const descFiles = writeDescriptions(builtIds);
   if (descFiles) console.log(`Описів товарів (desc/): ${descFiles}`);
 
   // Експорт мапи категорій (без товарів) — кнопка "Експорт" на map.html.

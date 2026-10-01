@@ -479,10 +479,66 @@ table.search-table .col-cat { width: 28%; }
 .help-overlay.desc-overlay { padding: 4vh 0; align-items: flex-start; }
 .help-panel.desc-panel { width: 90vw; max-width: none; }
 .desc-body { max-height: calc(92vh - 58px); overflow-y: auto; padding: 16px 22px 22px; }
-.desc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 36px; align-items: start; }
-.desc-grid.no-side { grid-template-columns: minmax(0, 1fr); }
+.desc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 32px; align-items: start; }
 .desc-side { position: sticky; top: 0; }
-.desc-links { display: flex; gap: 20px; font-size: 0.8rem; margin-bottom: 14px; }
+.desc-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8rem; margin-top: 14px; }
+.desc-back { border: none; background: none; padding: 0; margin: 0 0 10px; font: 500 0.82rem var(--font-sans); color: var(--text-link); cursor: pointer; }
+.desc-back:hover { text-decoration: underline; }
+/* Вкладки ліворуч: «Опис», «Характеристики», «Специфікація», «З цим товаром також замовляють». */
+.desc-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--border-active); margin-bottom: 14px; }
+.desc-tab { border: 1px solid var(--border-color); border-bottom: none; border-radius: 5px 5px 0 0; background: var(--bg-subtle);
+  color: var(--text-main); padding: 7px 14px; font: 500 0.82rem var(--font-sans); cursor: pointer; }
+.desc-tab:hover { background: var(--bg-hover); border-color: var(--border-dark); }
+.desc-tab.on { background: var(--border-active); border-color: var(--border-active); color: #fff; }
+.desc-tab-n { font-weight: 600; color: var(--text-subtle); margin-left: 2px; }
+.desc-tab.on .desc-tab-n { color: #fff; }
+.desc-tab:focus-visible { outline: 2px solid var(--border-active); outline-offset: 2px; }
+/* Фото товару праворуч: велике, стрілки, мініатюри; клік — на весь екран. Тло біле в
+   обох темах: фото Prom на білому, на темному тлі виходили б «вікна». */
+.desc-gal-main { position: relative; border: 1px solid var(--border-color); border-radius: 6px; background: #fff; }
+.desc-gal-open { display: block; width: 100%; border: none; padding: 0; background: none; cursor: zoom-in; }
+.desc-gal-open img { display: block; width: 100%; height: 300px; object-fit: contain; }
+.desc-gal-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid #cbd5e1; background: rgba(255, 255, 255, 0.92); color: #1e293b; font-size: 1.3rem; line-height: 1; cursor: pointer; z-index: 1; }
+.desc-gal-arrow:hover { background: #fff; border-color: #64748b; color: #000; }
+.desc-gal-arrow.prev { left: 6px; }
+.desc-gal-arrow.next { right: 6px; }
+.desc-gal-thumbs { display: flex; gap: 5px; margin-top: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.desc-gal-thumb { flex: none; width: 44px; height: 44px; padding: 2px; border: 2px solid var(--border-color); border-radius: 5px; background: #fff; cursor: pointer; }
+.desc-gal-thumb:hover { border-color: var(--border-dark); }
+.desc-gal-thumb.on { border-color: var(--border-active); }
+.desc-gal-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.desc-facts { border-collapse: collapse; width: 100%; font-size: 0.84rem; margin-top: 14px; }
+.desc-facts td { padding: 5px 0; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
+.desc-facts td:first-child { width: 40%; color: var(--text-muted); }
+.desc-price { font-weight: 600; font-size: 1rem; }
+/* Картки «З цим товаром також замовляють». */
+.desc-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.desc-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
+.desc-card img { width: 100%; height: 130px; object-fit: contain; background: #fff; border-radius: 4px; }
+.desc-card-name { font-size: 0.8rem; line-height: 1.35; color: var(--text-link); text-decoration: none;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.desc-card-name:hover { text-decoration: underline; }
+.desc-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.76rem; color: var(--text-subtle); }
+.desc-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; font-size: 0.84rem; font-weight: 600; color: var(--text-main); }
+/* Фото на весь екран, поверх вікна «Опис» (z-index вікна — у .help-overlay). */
+.desc-lightbox { position: fixed; inset: 0; z-index: 1100; display: none; grid-template-columns: 96px 1fr; gap: 16px;
+  padding: 24px 64px 24px 24px; background: rgba(15, 23, 42, 0.92); }
+.desc-lightbox.open { display: grid; }
+.desc-lightbox.single { grid-template-columns: 1fr; }
+.desc-lb-thumbs { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.desc-lb-thumbs button { width: 80px; height: 80px; flex: none; padding: 3px; border: 2px solid transparent; border-radius: 6px; background: #fff; cursor: pointer; opacity: 0.7; }
+.desc-lb-thumbs button:hover { opacity: 1; }
+.desc-lb-thumbs button.on { border-color: #f59e0b; opacity: 1; }
+.desc-lb-thumbs img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.desc-lb-stage { position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; background: #fff; border-radius: 8px; }
+.desc-lb-stage img { max-width: calc(100% - 100px); max-height: calc(100vh - 48px); object-fit: contain; }
+.desc-lightbox.single .desc-gal-arrow { display: none; }
+.desc-lb-count { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 3px 10px; border-radius: 12px;
+  background: rgba(15, 23, 42, 0.75); color: #fff; font-size: 0.8rem; }
+.desc-lightbox.single .desc-lb-count { display: none; }
+.desc-lb-close { position: fixed; top: 16px; right: 16px; width: 36px; height: 36px; font-size: 1.3rem; color: #fff; background: rgba(255, 255, 255, 0.14); }
+.desc-lb-close:hover { background: rgba(255, 255, 255, 0.3); color: #fff; }
 .desc-links a, .desc-text a { color: var(--text-link); text-decoration: none; }
 .desc-links a:hover, .desc-text a:hover { text-decoration: underline; }
 .desc-text { font-size: 0.86rem; line-height: 1.6; color: var(--text-main); overflow-wrap: anywhere; }
@@ -952,13 +1008,28 @@ function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
 // desc/<id>.json (build-maps.js); немає опису — немає й кнопки.
 function descBtnHtml(p) {
   return p.desc ? '<button type="button" class="desc-btn" data-desc="' + escapeAttr(p.desc) +
-    '" data-tip="Опис товару: текст, схеми й характеристики">📄 Опис</button>' : '';
+    '" data-tip="Опис товару: текст, схеми, характеристики, фото й ціна">📄 Опис</button>' : '';
 }
 
-// Позначки опису (scrape-complete.js): рядок ![](адреса) — картинка на своєму
-// місці, [текст](адреса) — посилання. Решта — звичайний текст, рядок за рядком.
-function descBodyHtml(d) {
+// Вікно «Опис» (користувач 01.10.2026): ліворуч вкладки «Опис», «Характеристики»,
+// «Специфікація», «З цим товаром також замовляють» (порожня вкладка не показується);
+// праворуч фото товару (як карусель на cncprom.ua: велике, стрілки, мініатюри; клік
+// — на весь екран), під ними код, ціна й наявність, посилання. back — показати
+// «← Назад» (відкрито з вкладки «З цим товаром також замовляють»).
+// Позначки опису без HTML (каталоги до 01.10.2026): рядок ![](адреса) — картинка на
+// своєму місці, [текст](адреса) — посилання; решта — текст рядок за рядком.
+function descBodyHtml(d, back) {
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  // Фото зберігаються без розміру (images.prom.ua/<id>_<slug>.jpg); розмір Prom
+  // підставляє за вставкою _wN_hN_ після id.
+  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_/i, '$1_' + s + '_'); }
+  function price(v, cur) {
+    if (v == null) return '';
+    var n = Math.round(v * 100) / 100;
+    var s = (n % 1 ? n.toFixed(2) : String(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return s + ' ' + (cur === 'UAH' || !cur ? '₴' : cur);
+  }
+  function badge(a) { return '<span class="stock-badge ' + (/готово/i.test(a || '') ? 'yes' : 'no') + '">' + esc(a || 'н/д') + '</span>'; }
   var text = String(d.description || '').split('\n').map(function (line) {
     var im = line.match(/^!\[\]\((https?:\/\/[^)\s]+)\)$/);
     if (im) {
@@ -971,29 +1042,63 @@ function descBodyHtml(d) {
   }).join('');
   var attrs = d.attrs || [];
   var specs = d.specs || [];
-  // Специфікації — файли з вкладки «Специфікації» сторінки товару (посібники, PDF).
-  var specsHtml = specs.length
-    ? '<div class="desc-h">Специфікації</div><ul class="desc-specs">' +
-      specs.map(function (s) { return '<li><a href="' + esc(s[1]) + '" target="_blank" rel="noopener">📎 ' + esc(s[0]) + ' ↗</a></li>'; }).join('') +
-      '</ul>'
+  var acc = d.acc || [];
+  var photos = d.photos || [];
+  // Є очищений HTML (каталоги з 01.10.2026) — порожнє місце, яке заповнить descFillHtml.
+  var tabs = [['text', 'Опис', d.html
+    ? '<div class="desc-text desc-html" data-desc-html></div>'
+    : '<div class="desc-text">' + (d.description ? text : '<span class="empty-note">Опису на сайті немає.</span>') + '</div>']];
+  if (attrs.length) {
+    tabs.push(['attrs', 'Характеристики', '<table class="desc-attrs">' +
+      attrs.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td>' + esc(a[1]) + '</td></tr>'; }).join('') + '</table>']);
+  }
+  if (specs.length) {
+    // Файли з вкладки «Специфікація» сторінки товару (посібники, PDF).
+    tabs.push(['specs', 'Специфікація', '<ul class="desc-specs">' +
+      specs.map(function (s) { return '<li><a href="' + esc(s[1]) + '" target="_blank" rel="noopener">📎 ' + esc(s[0]) + ' ↗</a></li>'; }).join('') + '</ul>']);
+  }
+  if (acc.length) {
+    tabs.push(['acc', 'З цим товаром також замовляють', '<div class="desc-cards">' + acc.map(function (q) {
+      var pr = price(q.price, q.currency);
+      return '<div class="desc-card">' +
+        (q.photo ? '<img loading="lazy" alt="" src="' + esc(sized(q.photo, 'w200_h200')) + '">' : '') +
+        '<a class="desc-card-name" href="' + esc(q.url) + '" target="_blank" rel="noopener">' + esc(q.name) + '</a>' +
+        '<div class="desc-card-meta"><span class="desc-card-code">' + esc(q.code) + '</span>' + badge(q.avail) + '</div>' +
+        '<div class="desc-card-foot"><span class="desc-card-price">' + pr + '</span>' +
+        (q.desc ? '<button type="button" class="desc-btn" data-desc="' + esc(q.id) + '">📄 Опис</button>' : '') + '</div></div>';
+    }).join('') + '</div>']);
+  }
+  var tabsHtml = '<div class="desc-tabs" role="tablist">' + tabs.map(function (t, i) {
+    var n = t[0] === 'attrs' ? attrs.length : t[0] === 'specs' ? specs.length : t[0] === 'acc' ? acc.length : 0;
+    return '<button type="button" role="tab" class="desc-tab' + (i ? '' : ' on') + '" data-desc-tab="' + t[0] + '" aria-selected="' + (i ? 'false' : 'true') + '">' +
+      t[1] + (n ? ' <span class="desc-tab-n">' + n + '</span>' : '') + '</button>';
+  }).join('') + '</div>';
+  var panes = tabs.map(function (t, i) { return '<div class="desc-pane" data-desc-pane="' + t[0] + '"' + (i ? ' hidden' : '') + '>' + t[2] + '</div>'; }).join('');
+  var gallery = photos.length
+    ? '<div class="desc-gal">' +
+      '<div class="desc-gal-main">' +
+      (photos.length > 1 ? '<button type="button" class="desc-gal-arrow prev" data-gal-step="-1" aria-label="Попереднє фото">‹</button>' : '') +
+      '<button type="button" class="desc-gal-open" data-gal-open aria-label="Фото на весь екран"><img alt="" src="' + esc(sized(photos[0], 'w640_h640')) + '"></button>' +
+      (photos.length > 1 ? '<button type="button" class="desc-gal-arrow next" data-gal-step="1" aria-label="Наступне фото">›</button>' : '') +
+      '</div>' +
+      (photos.length > 1 ? '<div class="desc-gal-thumbs">' + photos.map(function (u, i) {
+        return '<button type="button" class="desc-gal-thumb' + (i ? '' : ' on') + '" data-gal-i="' + i + '" aria-label="Фото ' + (i + 1) + '"><img loading="lazy" alt="" src="' + esc(sized(u, 'w100_h100')) + '"></button>';
+      }).join('') + '</div>' : '') +
+      '</div>'
     : '';
-  var attrsHtml = attrs.length
-    ? '<div class="desc-h">Характеристики</div><table class="desc-attrs">' +
-      attrs.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td>' + esc(a[1]) + '</td></tr>'; }).join('') +
-      '</table>'
-    : '';
-  var side = specsHtml || attrsHtml ? '<aside class="desc-side">' + specsHtml + attrsHtml + '</aside>' : '';
+  var facts = '<table class="desc-facts">' +
+    '<tr><td>Код</td><td>' + esc(d.code || 'н/д') + '</td></tr>' +
+    (d.price != null ? '<tr><td>Ціна</td><td class="desc-price">' + price(d.price, d.currency) + '</td></tr>' : '') +
+    (d.avail ? '<tr><td>Наявність</td><td>' + badge(d.avail) + '</td></tr>' : '') +
+    '</table>';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
     '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/descriptions/' + esc(d.id) + '.txt" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
     '</div>';
-  // Є очищений HTML (каталоги з 01.10.2026) — порожнє місце, яке заповнить
-  // descFillHtml; інакше — текст з позначками, як вище.
-  var main = d.html
-    ? '<div class="desc-text desc-html" data-desc-html></div>'
-    : '<div class="desc-text">' + (d.description ? text : '<span class="empty-note">Опису на сайті немає.</span>') + '</div>';
-  return '<div class="desc-grid' + (side ? '' : ' no-side') + '"><div class="desc-main">' + links +
-    main + '</div>' + side + '</div>';
+  return '<div class="desc-grid"><div class="desc-main">' +
+    (back ? '<button type="button" class="desc-back" data-desc-back>← Назад</button>' : '') +
+    tabsHtml + panes + '</div>' +
+    '<aside class="desc-side">' + gallery + facts + links + '</aside></div>';
 }
 
 // Очищений HTML опису (lib/desc-dom.js: таблиці з об'єднаними клітинками,
@@ -1041,6 +1146,10 @@ function descFillHtml(slot, html) {
 // Одне вікно на сторінку; клік по будь-якій кнопці «Опис» (делеговано: таблиці
 // перемальовуються) завантажує desc/<id>.json і показує його. Закриття ✕, Esc і
 // клік поза вікном — setupModalOverlay. Top-level: потрібне й map.html.
+// «📄 Опис» у вкладці «З цим товаром також замовляють» відкриває той товар у цьому ж
+// вікні, «← Назад» повертає (стек скидається, коли вікно відкривають заново).
+// Фото на весь екран — свій шар поверх вікна: Esc і клік поза фото закривають лише
+// його (слухач у фазі захоплення, раніше за Esc вікна), ← → гортають.
 function initDescriptions() {
   var overlay = document.createElement('div');
   overlay.id = 'desc-overlay';
@@ -1051,22 +1160,77 @@ function initDescriptions() {
     '<div class="desc-body" id="desc-body"></div></div>';
   document.body.appendChild(overlay);
   setupModalOverlay('desc-overlay', null, 'desc-close');
+  var lb = document.createElement('div');
+  lb.id = 'desc-lightbox';
+  lb.className = 'desc-lightbox';
+  lb.innerHTML = '<div class="desc-lb-thumbs"></div>' +
+    '<div class="desc-lb-stage"><button type="button" class="desc-gal-arrow prev" data-lb-step="-1" aria-label="Попереднє фото">‹</button>' +
+    '<img alt=""><button type="button" class="desc-gal-arrow next" data-lb-step="1" aria-label="Наступне фото">›</button></div>' +
+    '<div class="desc-lb-count"></div>' +
+    '<button type="button" class="btn-help-close desc-lb-close" aria-label="Закрити фото">✕</button>';
+  document.body.appendChild(lb);
   var title = document.getElementById('desc-title');
   var body = document.getElementById('desc-body');
   var cache = {};
   var current = null;
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-desc]');
-    if (!btn) return;
-    e.preventDefault();
-    var id = btn.getAttribute('data-desc');
+  var stack = [];
+  var photos = [];
+  var pi = 0;
+  function sized(u, s) { return String(u || '').replace(/^(https?:\/\/images\.prom\.ua\/\d+)_/i, '$1_' + s + '_'); }
+  function showPhoto(i) {
+    if (!photos.length) return;
+    pi = (i + photos.length) % photos.length;
+    var main = body.querySelector('.desc-gal-open img');
+    if (main) main.src = sized(photos[pi], 'w640_h640');
+    body.querySelectorAll('.desc-gal-thumb').forEach(function (t, k) { t.classList.toggle('on', k === pi); });
+    if (lb.classList.contains('open')) {
+      lb.querySelector('.desc-lb-stage img').src = sized(photos[pi], 'w1280_h1280');
+      lb.querySelectorAll('.desc-lb-thumbs button').forEach(function (t, k) { t.classList.toggle('on', k === pi); });
+      lb.querySelector('.desc-lb-count').textContent = 'Фото ' + (pi + 1) + ' з ' + photos.length;
+    }
+  }
+  function openLightbox() {
+    lb.querySelector('.desc-lb-thumbs').innerHTML = photos.length > 1 ? photos.map(function (u, k) {
+      return '<button type="button" data-lb-i="' + k + '" aria-label="Фото ' + (k + 1) + '"><img alt="" src="' + escapeAttr(sized(u, 'w100_h100')) + '"></button>';
+    }).join('') : '';
+    lb.classList.toggle('single', photos.length < 2);
+    lb.classList.add('open');
+    showPhoto(pi);
+    lb.querySelector('.desc-lb-close').focus();
+  }
+  function closeLightbox() { lb.classList.remove('open'); }
+  window.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.stopImmediatePropagation(); e.preventDefault(); closeLightbox(); }
+    else if (e.key === 'ArrowLeft') showPhoto(pi - 1);
+    else if (e.key === 'ArrowRight') showPhoto(pi + 1);
+  }, true);
+  lb.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-lb-i], [data-lb-step]');
+    if (t) { showPhoto(t.hasAttribute('data-lb-i') ? +t.getAttribute('data-lb-i') : pi + +t.getAttribute('data-lb-step')); return; }
+    if (e.target.closest('.desc-lb-close') || !e.target.closest('img')) closeLightbox();
+  });
+  body.addEventListener('click', function (e) {
+    var tab = e.target.closest('[data-desc-tab]');
+    if (tab) {
+      var name = tab.getAttribute('data-desc-tab');
+      body.querySelectorAll('[data-desc-tab]').forEach(function (b) {
+        var on = b === tab;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      body.querySelectorAll('[data-desc-pane]').forEach(function (p) { p.hidden = p.getAttribute('data-desc-pane') !== name; });
+      return;
+    }
+    var g = e.target.closest('[data-gal-i], [data-gal-step]');
+    if (g) { showPhoto(g.hasAttribute('data-gal-i') ? +g.getAttribute('data-gal-i') : pi + +g.getAttribute('data-gal-step')); return; }
+    if (e.target.closest('[data-gal-open]')) { openLightbox(); return; }
+    if (e.target.closest('[data-desc-back]')) { var prev = stack.pop(); if (prev) show(prev); }
+  });
+  function show(id) {
     current = id;
-    var tip = document.getElementById('custom-tooltip');
-    if (tip) tip.classList.remove('visible');
     title.textContent = 'Опис товару';
     body.innerHTML = '<div class="empty-note">Завантаження опису…</div>';
-    overlay.classList.add('open');
-    document.getElementById('desc-close').focus();
     if (!cache[id]) {
       cache[id] = fetch('desc/' + encodeURIComponent(id) + '.json').then(function (r) {
         if (!r.ok) throw new Error(r.status);
@@ -1076,7 +1240,9 @@ function initDescriptions() {
     cache[id].then(function (d) {
       if (current !== id) return;
       title.textContent = (d.code ? d.code + ' ' : '') + d.name;
-      body.innerHTML = descBodyHtml(d);
+      photos = d.photos || [];
+      pi = 0;
+      body.innerHTML = descBodyHtml(d, stack.length > 0);
       var slot = body.querySelector('[data-desc-html]');
       if (slot) descFillHtml(slot, d.html);
       body.scrollTop = 0;
@@ -1084,6 +1250,22 @@ function initDescriptions() {
       delete cache[id];
       if (current === id) body.innerHTML = '<div class="empty-note">Не вдалося завантажити опис. Спробуйте ще раз.</div>';
     });
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-desc]');
+    if (!btn) return;
+    e.preventDefault();
+    var id = btn.getAttribute('data-desc');
+    var tip = document.getElementById('custom-tooltip');
+    if (tip) tip.classList.remove('visible');
+    if (overlay.classList.contains('open') && overlay.contains(btn)) {
+      if (current && current !== id) stack.push(current);
+    } else {
+      stack = [];
+      overlay.classList.add('open');
+      document.getElementById('desc-close').focus();
+    }
+    show(id);
   });
 }
 
