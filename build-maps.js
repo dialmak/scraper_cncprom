@@ -992,6 +992,14 @@ initDescriptions();
   // давав 404. Переадресації зі старих адрес з /site/ (до 22.09.2026) прибрано
   // 26.09.2026 на прохання користувача.
   writeRedirect(path.join(DIR, 'index.html'), 'map.html');
+
+  // Готові сторінки й файли, які не будуються з даних скрапера (тека static/ в
+  // репозиторії: банери CNCPROM_bot, користувач 02.10.2026), — у корінь сайту як є.
+  // Збій копіювання сайт не зупиняє.
+  try {
+    const STATIC_DIR = path.join(ROOT_DIR, 'static');
+    if (fs.existsSync(STATIC_DIR)) fs.cpSync(STATIC_DIR, DIR, { recursive: true });
+  } catch (e) { console.warn(`Теку static/ не скопійовано: ${e.message}`); }
 }
 
 // JS переносить ?query і #hash (meta-refresh їх губить), meta лишається запасним
