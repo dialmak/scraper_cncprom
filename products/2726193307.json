@@ -1,0 +1,30 @@
+{
+  "id": "2726193307",
+  "name": "BMS JK-BD6A24S-8Р, 80A, для LiFePO4/Li-ion/LTO (8S-24S), 0.6A активного балансування",
+  "sku": "05-340",
+  "url": "https://cncprom.ua/ua/p2726193307-bms-bd6a24s-80a.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.37 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Кількість комірок", "8s-24s"],
+    ["Активний збалансований струм", "0.6 A"],
+    ["Струм заряду/розряду", "80 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3119275_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798294102_bms-jk-bd6a24s-8r-80a.jpg",
+    "https://images.prom.ua/6798294185_bms-jk-bd6a24s-8r-80a.jpg",
+    "https://images.prom.ua/6798294103_bms-jk-bd6a24s-8r-80a.jpg",
+    "https://images.prom.ua/6883747805_bms-jk-bd6a24s-8r-80a.jpg"
+  ],
+  "accessories": []
+}

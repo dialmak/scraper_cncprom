@@ -1,0 +1,29 @@
+{
+  "id": "3163737183",
+  "name": "3D-принтер QIDI Q2C Combo, 270×270×256 мм, 600 мм/с, CoreXY, QIDI Box",
+  "sku": "10-264",
+  "url": "https://cncprom.ua/ua/p3163737183-printer-qidi-q2c.html",
+  "attrs": [
+    ["Виробник", "QIDI"],
+    ["Метод друку", "Моделювання методом наплавлення (FDM)"]
+  ],
+  "specs": [
+    ["Посібник користувача Q2C .pdf", "https://storage.ua.prom.st/3437942_posibnik_koristuvacha_q2c_.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7664865007_3d-printer-qidi-q2c.jpg",
+    "https://images.prom.ua/7664865353_3d-printer-qidi-q2c.jpg"
+  ],
+  "accessories": [
+    "1162780220",
+    "1162780223",
+    "1162780225",
+    "1200332697",
+    "1200332698",
+    "1162780221",
+    "1200332699",
+    "1162780224",
+    "1200343891",
+    "1200332703"
+  ]
+}

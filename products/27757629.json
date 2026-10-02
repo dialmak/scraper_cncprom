@@ -1,0 +1,25 @@
+{
+  "id": "27757629",
+  "name": "Профільна рейкова напрямна HIWIN HGR30H, лінійна рейка",
+  "sku": "61-004",
+  "url": "https://cncprom.ua/ua/p27757629-profilnaya-relsovaya-napravlyayuschaya.html",
+  "attrs": [
+    ["Виробник", "Hiwin"],
+    ["Країна виробник", "Тайвань"],
+    ["Тип комплектуючого", "Направляюча верстата"],
+    ["Назва", "HGR30"],
+    ["Серія", "HG"],
+    ["Типорозмір", "30"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6599160594_profilna-rejkova-napryamna.jpg",
+    "https://images.prom.ua/6599160606_profilna-rejkova-napryamna.jpg",
+    "https://images.prom.ua/6858749747_profilna-rejkova-napryamna.jpg"
+  ],
+  "accessories": [
+    "27757747",
+    "27757826",
+    "1465659300"
+  ]
+}

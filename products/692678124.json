@@ -1,0 +1,24 @@
+{
+  "id": "692678124",
+  "name": "Драйвер Leadshine DM556, 5.6 А, 20—50 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-102",
+  "url": "https://cncprom.ua/ua/p692678124-drajver-leadshine-dm556.html",
+  "attrs": [
+    ["Вага", "280г"],
+    ["Габаритні розміри", "118х75х34 мм"],
+    ["Мікрокрок", "16 режимів ділення кроку, від 1:2 до 1:512"],
+    ["Напруга живлення", "20-50В"],
+    ["Ток", "від 2,1 до 5,6 А"],
+    ["Ток (A)", "5.6"],
+    ["Частота(Гц)", "до 200 кГц"],
+    ["Струм, А", "5.6"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3049825693_drajver-leadshine-dm556.jpg",
+    "https://images.prom.ua/3049825827_drajver-leadshine-dm556.jpg",
+    "https://images.prom.ua/3049826149_drajver-leadshine-dm556.jpg",
+    "https://images.prom.ua/3049826414_drajver-leadshine-dm556.jpg"
+  ],
+  "accessories": []
+}

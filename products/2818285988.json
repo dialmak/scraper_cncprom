@@ -1,0 +1,21 @@
+{
+  "id": "2818285988",
+  "name": "Ультразвуковий датчик UB500-18GM75-E5-V15, циліндричний М18, PNP, 30-500 мм",
+  "sku": "03-271",
+  "url": "https://cncprom.ua/ua/p2818285988-ultrazvukovoj-datchik-ub500.html",
+  "attrs": [
+    ["Максимальна робоча відстань", "500 мм"],
+    ["Мінімальна робоча відстань", "30 мм"],
+    ["Захист обладнання від води та пилу IP", "IP65"]
+  ],
+  "specs": [
+    ["UB500-18GM75-E5-V15.pdf", "https://storage.ua.prom.st/3146782_ub500_18gm75_e5_v15.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6940833127_ultrazvukovij-datchik-ub500-18gm75-e5-v15.jpg",
+    "https://images.prom.ua/6940833268_ultrazvukovij-datchik-ub500-18gm75-e5-v15.jpg",
+    "https://images.prom.ua/6940833356_ultrazvukovij-datchik-ub500-18gm75-e5-v15.jpg",
+    "https://images.prom.ua/6940833403_ultrazvukovij-datchik-ub500-18gm75-e5-v15.jpg"
+  ],
+  "accessories": []
+}

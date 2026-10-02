@@ -1,0 +1,21 @@
+{
+  "id": "2600976799",
+  "name": "Перетворювач напруги в частоту MESA THCAD2",
+  "sku": "05-121",
+  "url": "https://cncprom.ua/ua/p2600976799-preobrazovatel-napryazhenie-chastotu.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "Китай"],
+    ["Висота", "43 мм"]
+  ],
+  "specs": [
+    ["Посібник користувача thcad2 (англ.).pdf", "https://storage.ua.prom.st/3003765_posibnik_koristuvacha_thcad2_angl..pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6677391382_peretvoryuvach-naprugi-v.jpg",
+    "https://images.prom.ua/6677391504_peretvoryuvach-naprugi-v.jpg",
+    "https://images.prom.ua/6677391725_peretvoryuvach-naprugi-v.jpg",
+    "https://images.prom.ua/6677393530_peretvoryuvach-naprugi-v.jpg"
+  ],
+  "accessories": []
+}

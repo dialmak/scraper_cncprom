@@ -1,0 +1,29 @@
+{
+  "id": "823833451",
+  "name": "Джойстик для управління контролером CHC-1048-M4",
+  "sku": "01-009",
+  "url": "https://cncprom.ua/ua/p823833451-dzhojstik-dlya-upravleniya.html",
+  "attrs": [
+    ["Вага", "60 г"],
+    ["Висота", "66 мм"],
+    ["Довжина", "40.4 мм"],
+    ["Кількість в упаковці", "1 шт."],
+    ["Стан", "Новий"],
+    ["Ширина", "40.4 мм"],
+    ["Діаметр важеля", "12 мм"],
+    ["Робоча температура", "-10 °C...+80 °C"],
+    ["Опір", "10 кОм"],
+    ["Середній термін експлуатації", "500000 вращений"],
+    ["Тип комплектуючого", "Джойстик"],
+    ["Кут повороту", "±25°- 30°"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1431567458_dzhojstik-dlya-upravlinnya.jpg",
+    "https://images.prom.ua/1431567590_dzhojstik-dlya-upravlinnya.jpg",
+    "https://images.prom.ua/1431567613_dzhojstik-dlya-upravlinnya.jpg",
+    "https://images.prom.ua/1431567614_dzhojstik-dlya-upravlinnya.jpg",
+    "https://images.prom.ua/1431567645_dzhojstik-dlya-upravlinnya.jpg"
+  ],
+  "accessories": []
+}

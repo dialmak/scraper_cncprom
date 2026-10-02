@@ -1,0 +1,22 @@
+{
+  "id": "45083956",
+  "name": "Гнучка кулачкова муфта 6х6,35М (L30, D25)",
+  "sku": "33-014",
+  "url": "https://cncprom.ua/ua/p45083956-gibkaya-kulachkovaya-mufta.html",
+  "attrs": [
+    ["Діаметр муфти", "25 мм"],
+    ["Довжина муфти", "30 мм"],
+    ["Максимальне обертання", "10000об./хв"],
+    ["Максимальний крутний момент", "5N.m"],
+    ["Номінальний крутний момент", "3N.m"],
+    ["Діаметр", "6"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5969039897_gnuchka-kulachkova-mufta.jpg",
+    "https://images.prom.ua/5965617953_gnuchka-kulachkova-mufta.jpg",
+    "https://images.prom.ua/6346756311_gnuchka-kulachkova-mufta.jpg",
+    "https://images.prom.ua/6346756314_gnuchka-kulachkova-mufta.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,24 @@
+{
+  "id": "2150552881",
+  "name": "Кнопка аварійної зупинки LA36.LA38 без фіксатора (зелена)",
+  "sku": "03-139",
+  "url": "https://cncprom.ua/ua/p2150552881-knopka-avarijnoj-ostanovki.html",
+  "attrs": [
+    ["Висота", "73 мм"],
+    ["Діаметр", "40 мм"],
+    ["Ширина", "40 мм"],
+    ["Підсвічування", "Ні"],
+    ["Ступінь захисту IP", "40"],
+    ["Фіксація положення", "Ні"],
+    ["Форма кнопки", "Грибоподібна"],
+    ["Колір кнопки", "Зелений"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5605972631_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/5605972839_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/5605972973_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/5605973209_knopka-avarijnoyi-zupinki.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "555429711",
+  "name": "Шпиндельний  драйвер NVBDL +",
+  "sku": "14-008",
+  "url": "https://cncprom.ua/ua/p555429711-shpindelnyj-drajver-nvbdl.html",
+  "attrs": [
+    ["Вхідна напруга (В)", "48"],
+    ["Габаритні розміри", "118×76×33 мм"],
+    ["Діапазон напруги", "24VDC-60VDC"],
+    ["Максимальна вихідна потужність драйвера", "600W"],
+    ["Потужність, Вт", "600 Вт"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/837796552_shpindelnij-drajver-nvbdl.jpg",
+    "https://images.prom.ua/767879202_shpindelnij-drajver-nvbdl.jpg",
+    "https://images.prom.ua/767879115_shpindelnij-drajver-nvbdl.jpg",
+    "https://images.prom.ua/767879123_shpindelnij-drajver-nvbdl.jpg",
+    "https://images.prom.ua/767879187_shpindelnij-drajver-nvbdl.jpg",
+    "https://images.prom.ua/767879210_shpindelnij-drajver-nvbdl.jpg"
+  ],
+  "accessories": []
+}

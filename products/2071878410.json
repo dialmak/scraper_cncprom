@@ -1,0 +1,27 @@
+{
+  "id": "2071878410",
+  "name": "Літій-залізо-фосфатний акумулятор 12V/500 Ah (6400 W*h) із вбудованою BMS-платою",
+  "sku": "94-005",
+  "url": "https://cncprom.ua/ua/p2071878410-litij-zhelezo-fosfatnyj.html",
+  "attrs": [
+    ["Ємність акумулятору", "500 А. г"],
+    ["Максимальна робоча температура", "60 град."],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Напрацювання", "4000 циклів заряду"],
+    ["Стан", "Новий"],
+    ["Струм заряду", "120 А"],
+    ["Напруга", "12"],
+    ["Колір корпусу", "Чорний"],
+    ["Тип акумулятора", "LiFePO4"]
+  ],
+  "specs": [
+    ["Правила використання батарей.pdf", "https://storage.ua.prom.st/2731564_pravila_vikoristannya_batarej.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/5935528360_litij-zalizo-fosfatnij-akumulyator-12v500.jpg",
+    "https://images.prom.ua/5935528460_litij-zalizo-fosfatnij-akumulyator-12v500.jpg",
+    "https://images.prom.ua/5935528589_litij-zalizo-fosfatnij-akumulyator-12v500.jpg",
+    "https://images.prom.ua/5936274002_litij-zalizo-fosfatnij-akumulyator-12v500.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "699937026",
+  "name": "DSP Контролер лазерного верстата Anywells AWC708C Plus",
+  "sku": "05-025",
+  "url": "https://cncprom.ua/ua/p699937026-dsp-kontroller-lazernogo.html",
+  "attrs": [
+    ["Виробник", "КНР"],
+    ["Країна виробник", "Китай"],
+    ["Тип монтажу", "На корпус"],
+    ["Тип управління", "Автоматичне/Ручне"],
+    ["Діагональ екрану", "4.3 дюйм"],
+    ["Роздільна здатність екрану", "1024×576"],
+    ["Відтворення кольорів РК дисплею", "Кольорова"],
+    ["Вага", "300"]
+  ],
+  "specs": [
+    ["DSP контролер Anywells AWC708C Plus. Посібник користувача (eng).pdf", "https://storage.ua.prom.st/2359074_dsp_kontroler_anywells_aw__bnik_koristuvacha_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1155708402_dsp-kontroler-lazernogo.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "1466900234",
+  "name": "Плата розширення для Arduino NANO V3.0",
+  "sku": "05-066",
+  "url": "https://cncprom.ua/ua/p1466900234-plata-racshireniya-dlya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "20 г"],
+    ["Висота", "12.1 мм"],
+    ["Довжина", "54 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Шілд"],
+    ["Ширина", "42 мм"],
+    ["Аналогові вхідні контакти", "8"],
+    ["Вхідна напруга (В)", "7-12В"],
+    ["Вхідна напруга (ліміти)", "6-20 В"],
+    ["Робоча напруга", "5V В"],
+    ["Цифрові висновки введення/виведення", "14"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3293294714_plata-rozshirennya-dlya.jpg",
+    "https://images.prom.ua/3293294846_plata-rozshirennya-dlya.jpg",
+    "https://images.prom.ua/3293295121_plata-rozshirennya-dlya.jpg",
+    "https://images.prom.ua/3293295312_plata-rozshirennya-dlya.jpg",
+    "https://images.prom.ua/3293295357_plata-rozshirennya-dlya.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "406643288",
+  "name": "Кроковий двигун SOYO 130BYG350B 5А 50N.m",
+  "sku": "12-023",
+  "url": "https://cncprom.ua/ua/p406643288-shagovyj-dvigatel-soyo.html",
+  "attrs": [
+    ["Довжина", "280 мм"],
+    ["Кількість фаз", "3"],
+    ["Максимальний крутний момент", "50 Н*м"],
+    ["Матеріал корпусу", "Метал"],
+    ["Споживаний струм", "5 А"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Водонепроникність", "Да"],
+    ["Крутний момент (Нм)", "50"],
+    ["Максимальна робоча температура", "80"],
+    ["Ток (A)", "5"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1120950258_krokovij-dvigun-soyo.jpg",
+    "https://images.prom.ua/575661220_krokovij-dvigun-soyo.jpg",
+    "https://images.prom.ua/574584380_krokovij-dvigun-soyo.jpg",
+    "https://images.prom.ua/575662548_krokovij-dvigun-soyo.jpg",
+    "https://images.prom.ua/575663911_krokovij-dvigun-soyo.jpg"
+  ],
+  "accessories": [
+    "406571759",
+    "4057846",
+    "4877348",
+    "19908569",
+    "530947827",
+    "4057832"
+  ]
+}

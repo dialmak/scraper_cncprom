@@ -1,0 +1,33 @@
+{
+  "id": "794901008",
+  "name": "Шпиндель повітряне охолодження GDZ125x125-6 (6 кВт, 380 В, 10 А, ER32)",
+  "sku": "17-012",
+  "url": "https://cncprom.ua/ua/p794901008-shpindel-vozdushnoe-ohlazhdenie.html",
+  "attrs": [
+    ["Висота", "126 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "122 мм"],
+    ["Биття (мм)", "0.01"],
+    ["Вага", "19.4 кг"],
+    ["Вхідна напруга (В)", "380"],
+    ["Кількість підшипників", "4 шт."],
+    ["Корпус", "квадратний"],
+    ["Потужність", "6 кВт"],
+    ["Потужність, Вт", "6000 Вт"],
+    ["Загальна довжина", "375 мм"],
+    ["Подшипники", "С7008 (2шт) С7004 (2шт)"],
+    ["Робоча напруга", "380 В"],
+    ["Швидкість обертання", "18000 об./хв."],
+    ["Цанга", "ER32"],
+    ["Цанговий патрон", "ER32"],
+    ["Частота", "300 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2962782131_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2962782133_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2962782327_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2962782194_shpindel-povitryane-oholodzhennya.jpg"
+  ],
+  "accessories": []
+}

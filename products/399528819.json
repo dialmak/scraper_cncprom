@@ -1,0 +1,30 @@
+{
+  "id": "399528819",
+  "name": "Лінійний підшипник відкритий LM16UUOP",
+  "sku": "59-012",
+  "url": "https://cncprom.ua/ua/p399528819-linejnyj-podshipnik-otkrytyj.html",
+  "attrs": [
+    ["Матеріал виробу", "Сталь"],
+    ["Тип підшипника ковзання", "Лінійний"],
+    ["Ущільнювач", "Так"],
+    ["Внутрішній діаметр.", "16"],
+    ["Довжина:", "37"],
+    ["Зовнішній діаметр", "28 мм."],
+    ["Діаметр", "16"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/906725450_linijnij-pidshipnik-vidkritij.jpg",
+    "https://images.prom.ua/906725080_linijnij-pidshipnik-vidkritij.jpg",
+    "https://images.prom.ua/906725082_linijnij-pidshipnik-vidkritij.jpg",
+    "https://images.prom.ua/906725084_linijnij-pidshipnik-vidkritij.jpg",
+    "https://images.prom.ua/4368761544_linijnij-pidshipnik-vidkritij.jpg"
+  ],
+  "accessories": [
+    "46299355",
+    "46300716",
+    "6586899",
+    "46300730",
+    "46300757"
+  ]
+}

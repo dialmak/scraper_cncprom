@@ -1,0 +1,25 @@
+{
+  "id": "27757826",
+  "name": "Каретка HIWIN HGW30CCZAC для профільної рейкової напрямної",
+  "sku": "60-009",
+  "url": "https://cncprom.ua/ua/p27757826-karetka-hiwin-hgw30cczac.html",
+  "attrs": [
+    ["Виробник", "Hiwin"],
+    ["Країна виробник", "Тайвань"],
+    ["Діаметр", "30 мм"],
+    ["Наявність фланця", "наявний"],
+    ["Серія", "HG"],
+    ["Тип каретки", "HGW"],
+    ["Типорозмір", "30"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5320543697_karetka-hiwin-hgw30cczac.jpg",
+    "https://images.prom.ua/5320538313_karetka-hiwin-hgw30cczac.jpg",
+    "https://images.prom.ua/5320538314_karetka-hiwin-hgw30cczac.jpg",
+    "https://images.prom.ua/5320538315_karetka-hiwin-hgw30cczac.jpg"
+  ],
+  "accessories": [
+    "27757629"
+  ]
+}

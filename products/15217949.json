@@ -1,0 +1,21 @@
+{
+  "id": "15217949",
+  "name": "Вал на опорі SBR30 500 мм (SA30)",
+  "sku": "57-001",
+  "url": "https://cncprom.ua/ua/p15217949-val-opore-sbr30.html",
+  "attrs": [
+    ["Діаметр", "30 мм"],
+    ["Довжина", "500 мм"],
+    ["Діаметр вала SBR", "30 мм"],
+    ["Довжина вала SBR", "500 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/4830436026_val-na-opori.jpg",
+    "https://images.prom.ua/6555693414_val-na-opori.jpg"
+  ],
+  "accessories": [
+    "15218105",
+    "399569368"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "580369673",
+  "name": "Інвертор (VFD) HY03D043B, 3KW 8А 380V три фази",
+  "sku": "14-011",
+  "url": "https://cncprom.ua/ua/p580369673-invertor-vfd-hy03d043b.html",
+  "attrs": [
+    ["Вага", "1.887 кг"],
+    ["Вхід фаз", "3"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "380±15%"],
+    ["Вхідна напруга (В)", "380"],
+    ["Вихід фаз", "3"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "380VAC"],
+    ["Потужність, Вт", "3000 Вт"],
+    ["Ток", "8А"],
+    ["Частота (Гц)", "400"]
+  ],
+  "specs": [
+    ["HY03D043B inverter manual.pdf", "https://storage.ua.prom.st/2370506_hy03d043b_inverter_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/898460244_invertor-vfd-hy03d043b.jpg",
+    "https://images.prom.ua/898460319_invertor-vfd-hy03d043b.jpg",
+    "https://images.prom.ua/848522100_invertor-vfd-hy03d043b.jpg",
+    "https://images.prom.ua/898460388_invertor-vfd-hy03d043b.jpg",
+    "https://images.prom.ua/848522167_invertor-vfd-hy03d043b.jpg",
+    "https://images.prom.ua/2613124676_invertor-vfd-hy03d043b.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "1086449362",
+  "name": "Контролер MESA 7I76D",
+  "sku": "05-052",
+  "url": "https://cncprom.ua/ua/p1086449362-kontroller-mesa-7i76d.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Висота", "23.5 мм"],
+    ["Довжина", "127 мм"],
+    ["Ширина", "101.5 мм"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Вага (г)", "185"],
+    ["Інтерфейс під'єднання контролера", "25 пін"],
+    ["Мoдель", "7I76D"],
+    ["Підтримувані операційні системи", "Windows"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["mesa_7i76d. Посібник користувача(eng).pdf", "https://storage.ua.prom.st/2359090_mesa_7i76d._posibnik_koristuvachaeng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3091945147_kontroler-mesa-7i76d.jpg",
+    "https://images.prom.ua/3091945599_kontroler-mesa-7i76d.jpg",
+    "https://images.prom.ua/3091946101_kontroler-mesa-7i76d.jpg",
+    "https://images.prom.ua/3091946346_kontroler-mesa-7i76d.jpg",
+    "https://images.prom.ua/3091946974_kontroler-mesa-7i76d.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

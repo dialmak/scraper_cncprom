@@ -1,0 +1,28 @@
+{
+  "id": "2826948641",
+  "name": "Мініатюрний прецизійний модуль кулькового гвинта 100 мм, кроковий двигун NEMA 11, GX28-T6*12-100",
+  "sku": "12-320",
+  "url": "https://cncprom.ua/ua/p2826948641-miniatyurnyj-pretsizionnyj-modul.html",
+  "attrs": [
+    ["Тип деталі", "Кулькові рейкові напрямні"],
+    ["Мoдель", "28TO612-100"],
+    ["Вага", "330 г"],
+    ["Швидкість", "0~40 мм/с"],
+    ["Кут кроку:", "1,8 градуса"],
+    ["Максимальний рівень горизонтального навантаження:", "3 кг"],
+    ["Хід", "100 мм"],
+    ["Крок гвинта", "12 мм"],
+    ["Точність гвинта:", "0,1 мм"],
+    ["Струм двигуна:", "0,6 А"],
+    ["Крутний момент:", "0,07 Нм"],
+    ["Максимальне вертикальне навантаження:", "1 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6940831761_miniatyurnij-pretsizijnij-modul.jpg",
+    "https://images.prom.ua/6944454914_miniatyurnij-pretsizijnij-modul.jpg",
+    "https://images.prom.ua/6944454912_miniatyurnij-pretsizijnij-modul.jpg",
+    "https://images.prom.ua/6942352704_miniatyurnij-pretsizijnij-modul.jpg"
+  ],
+  "accessories": []
+}

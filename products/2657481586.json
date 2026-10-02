@@ -1,0 +1,29 @@
+{
+  "id": "2657481586",
+  "name": "Контролер MESA 7I76U",
+  "sku": "05-123",
+  "url": "https://cncprom.ua/ua/p2657481586-kontroler-mesa-7i76u.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Вага", "0.18 кг"],
+    ["Стан", "Новий"],
+    ["Напруга", "5 В"],
+    ["Мінімальна робоча температура", "0 град."],
+    ["Максимальна робоча температура", "70 град."],
+    ["Довжина", "136 мм"],
+    ["Ширина", "102 мм"],
+    ["Висота", "25 мм"]
+  ],
+  "specs": [
+    ["Посібник для MESA 7I76U.pdf", "https://storage.ua.prom.st/3029589_posibnik_dlya_mesa_7i76u.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6725441902_kontroler-mesa-7i76u.jpg",
+    "https://images.prom.ua/6725442023_kontroler-mesa-7i76u.jpg",
+    "https://images.prom.ua/6725442111_kontroler-mesa-7i76u.jpg",
+    "https://images.prom.ua/6725442185_kontroler-mesa-7i76u.jpg",
+    "https://images.prom.ua/6725442245_kontroler-mesa-7i76u.jpg"
+  ],
+  "accessories": []
+}

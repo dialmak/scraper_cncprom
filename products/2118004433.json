@@ -1,0 +1,24 @@
+{
+  "id": "2118004433",
+  "name": "Пневморозподільник електромагнітний 4V210-08/DC24V",
+  "sku": "08-142",
+  "url": "https://cncprom.ua/ua/p2118004433-pnevmoraspredelitel-elektromagnitnyj-4v210.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.2 кг"],
+    ["Час спрацьовування", "0.005 сек"],
+    ["Довжина", "119 мм"],
+    ["Максимальний робочий тиск", "0.78 МПа"],
+    ["Мінімальний робочий тиск", "0.15 МПа"],
+    ["Тип", "Пневморозподілювач"],
+    ["Ширина", "22 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5486430936_pnevmorozpodilnik-elektromagnitnij-4v210-08dc24v.jpg",
+    "https://images.prom.ua/5486431041_pnevmorozpodilnik-elektromagnitnij-4v210-08dc24v.jpg",
+    "https://images.prom.ua/5486431171_pnevmorozpodilnik-elektromagnitnij-4v210-08dc24v.jpg",
+    "https://images.prom.ua/5486431346_pnevmorozpodilnik-elektromagnitnij-4v210-08dc24v.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "4057846",
+  "name": "Контролер ЧПК на 4 осі 3.5 А CNC RED",
+  "sku": "05-005",
+  "url": "https://cncprom.ua/ua/p4057846-kontroller-chpu-osi.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Кількість координат", "4 шт"],
+    ["Максимальний струм на виході", "3.5 А"],
+    ["Наявність опторозв'язування", "Да"],
+    ["Тип під'єднуваного датчика", "NPN"]
+  ],
+  "specs": [
+    ["4 AXIS DRIVER TB6560HQT 4V3.pdf", "https://storage.ua.prom.st/2353884_4_axis_driver_tb6560hqt_4v3.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6601063287_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/892653527_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/891668374_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/891668408_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/891668410_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/4408675495_kontroler-chpk-na.jpg"
+  ],
+  "accessories": [
+    "6349268",
+    "6896760",
+    "25422762",
+    "6896754",
+    "6349187"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "2611843247",
+  "name": "Ручний генератор iмпульсiв MPG100, на 6 координат, кнопка E-stop (пульт управлiння) для верстатів з ЧПК",
+  "sku": "01-032",
+  "url": "https://cncprom.ua/ua/p2611843247-ruchnoj-generator-impulsov.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Одиниці виміру частоти", "кГц"],
+    ["Максимальний діапазон частот", "10"],
+    ["Стан", "Новий"],
+    ["Вага", "0.715 кг"],
+    ["Висота", "29.5 мм"],
+    ["Довжина", "160 мм"],
+    ["Максимальна робоча температура", "80 °С"],
+    ["Мінімальна робоча температура", "-25 °С"],
+    ["Напруга", "5 В"],
+    ["Ширина", "74 мм"],
+    ["Кнопка E-Stop", "Да"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6682815375_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6682815480_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6682815530_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6682815594_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6683357894_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6683358692_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/6683423030_ruchnij-generator-impulsiv.jpg"
+  ],
+  "accessories": [
+    "1060933404"
+  ]
+}

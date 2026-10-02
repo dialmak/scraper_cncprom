@@ -1,0 +1,28 @@
+{
+  "id": "2850294698",
+  "name": "Лінійний модульний ковзаючий механізм GX60 (хід 300 мм) з кульковим підшипником SFU1610",
+  "sku": "12-322",
+  "url": "https://cncprom.ua/ua/p2850294698-linejnyj-modulnyj-skolzyaschij.html",
+  "attrs": [
+    ["Вага", "2.520 кг"],
+    ["Вертикальне навантаження:", "15 кг (макс.)"],
+    ["Габаритні розміри:", "486х80х88 мм"],
+    ["Горизонтальне навантаження:", "40 кг (макс.)"],
+    ["Діаметр гвинта", "16 мм"],
+    ["Крок гвинта", "5 мм"],
+    ["Максимальна швидкість", "500 мм/с"],
+    ["Модель глина:", "SFU1610"],
+    ["Розмір мобільної панелі:", "80 мм x 50 мм"],
+    ["Точність гвинта:", "C7"],
+    ["Точність повторюваного позиціонування:", "0,05 мм"],
+    ["Хід", "300 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6973601151_linijnij-modulnij-kovzayuchij.jpg",
+    "https://images.prom.ua/6974735794_linijnij-modulnij-kovzayuchij.jpg",
+    "https://images.prom.ua/6974735797_linijnij-modulnij-kovzayuchij.jpg",
+    "https://images.prom.ua/6974967323_linijnij-modulnij-kovzayuchij.jpg"
+  ],
+  "accessories": []
+}

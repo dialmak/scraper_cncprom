@@ -1,0 +1,27 @@
+{
+  "id": "2819446305",
+  "name": "Цифрове реле часу DH48S-2Z з дисплеєм, AC/DC12V",
+  "sku": "03-163",
+  "url": "https://cncprom.ua/ua/p2819446305-tsifrovoe-rele-vremeni.html",
+  "attrs": [
+    ["Висота", "57 мм"],
+    ["Довжина", "90 мм"],
+    ["Ширина", "50.5 мм"],
+    ["Маса", "92.5 г"],
+    ["Діапазон часу:", "0,1 см — 99 рік — 99 хв"],
+    ["Контактна ємність:", "5 А, 250 VAC"],
+    ["Кількість клем:", "8 контактів"],
+    ["Робоча напруга AC/DC", "12 В"],
+    ["Температура навколишнього середовища:", "-10 ~ 50 ℃"],
+    ["Точність керування:", "≤ 0,3% ± 0,05 секунди"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6931021903_tsifrove-rele-chasu.jpg",
+    "https://images.prom.ua/6931651005_tsifrove-rele-chasu.jpg",
+    "https://images.prom.ua/6931651008_tsifrove-rele-chasu.jpg",
+    "https://images.prom.ua/6931651012_tsifrove-rele-chasu.jpg",
+    "https://images.prom.ua/6939446907_tsifrove-rele-chasu.jpg"
+  ],
+  "accessories": []
+}

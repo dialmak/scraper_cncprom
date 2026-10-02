@@ -1,0 +1,27 @@
+{
+  "id": "2796763084",
+  "name": "Джойстик-маніпулятор HKC-612, двопозиційний з фіксацією",
+  "sku": "01-034",
+  "url": "https://cncprom.ua/ua/p2796763084-dzhojstik-manipulyator-hkc.html",
+  "attrs": [
+    ["Вага", "0.071 г"],
+    ["Висота", "128 мм"],
+    ["Довжина", "46 мм"],
+    ["Максимальна робоча температура", "45 град."],
+    ["Мінімальна робоча температура", "-25 град."],
+    ["Ширина", "43 мм"],
+    ["Номінальний струм", "10 А"],
+    ["Тип контактів", "Немає"],
+    ["Механічний термін служби", "50 000"],
+    ["Максимальна напруга використання", "600 V"],
+    ["Положення", "2"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6891096525_dzhojstik-manipulyator-hkc-612-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6892138853_dzhojstik-manipulyator-hkc-612-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6891992300_dzhojstik-manipulyator-hkc-612-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6892138919_dzhojstik-manipulyator-hkc-612-dvopozitsijnij.jpg"
+  ],
+  "accessories": []
+}

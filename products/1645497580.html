@@ -1,0 +1,237 @@
+<h2><strong>Автономний контролер крокового або серводвигуна CNCPROM OCSM-1B, генератор імпульсів, генератор імпульсних сигналів для верстата з ЧПК</strong></h2>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><u><strong>OCSM-1B</strong></u> - автономний контролер з максимальною частотою вихідного сигналу 20 кГц, який призначений для керування траєкторією, швидкістю, плавністю зупинки і часом затримки обертання крокового або серводвигуна в системах автоматизації.</span></p>
+<p><span style="font-size:18px">Вибір одного з 4-х режимів траєкторії, одного з 2-х режимів управління швидкістю і одного з 2-х режимів плавності зупинки здійснюється за допомогою відповідних DIP-перемикачів. Контролер обладнаний двома вбудованими потенціометрами: першим (VR1) регулюється час затримки при зміні напрямку обертання двигуна в діапазоні 0.2-6 с, другим (VR2) – швидкість. Також здійснювати налаштування швидкості можна шляхом підключення зовнішнього потенціометра з опором ≤10 кОм.</span></p>
+<p><span style="font-size:18px">Модель побудована на базі високошвидкісного інтелектуального чіпа, тому відрізняється своєю стабільністю роботи та простотою у використанні. Діапазон вхідної напруги становить 6-32 В постійного струму (рекомендується використовувати блок на 24 В).</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"></span></span></span></span></span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Основні особливості та функції контролера</span><span style="font-size:18px">:&nbsp;</span></strong></p>
+<p><span style="font-size:18px"></span></p>
+<ul>
+<li>
+<p><span style="font-size:18px">Не вимагає підключення до комп'ютера</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">4 режими керування траєкторією</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Регулювання швидкості</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Регулювання часу затримки при зміні напрямку обертання</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">S-подібний (плавний) профіль розгону двигуна з різкою або плавною зупинкою</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Функція повернення двигуна в початкове положення</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Усі входи оптопари ізольовані</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Широкий діапазон вхідної напруги</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Оснащений захистом від переполюсування живлення, перенапруги і перевантаження по струму</span></p>
+</li>
+</ul>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span></span>
+<div><strong><span style="font-size:18px"><u>Поради!</u> </span></strong></div>
+<ul>
+<li>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">Зовнішній потенціометр необхідно підключати до OCSM-1B перед включенням живлення. В іншому випадку потенціометр може бути не впізнаний</span></p>
+<p><span style="font-size:18px">Після регулювання&nbsp;DIP-перемикачів необхідно перезапустити контролер для його коректної роботи</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><strong><span class="ck-alert__title"></span><u>Зверніть увагу!</u></strong>&nbsp;Контролер призначений для використання тільки в поєднанні з драйвером двигуна, його не можна використовувати для безпосереднього керування двигуном<span class="ck-alert__title"></span></span></div>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><strong><span style="font-size:18px">Вибір режиму траєкторії здійснюється за допомогою DIP-перемикачів SW3 і SW4:</span></strong></p>
+<p><u><strong><span style="font-size:18px">Циклічний режим</span></strong></u></p>
+<p><span style="font-size:18px">Цей режим може реалізувати циклічне (безперервне) обертання двигуна між двома точками А і B (мають бути встановлені кінцеві вимикачі). Коли тригерний перемикач "Пуск" замикається, двигун починає обертатися вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун перемикається на обертання назад. У момент появи сигналу на задньому кінцевому вимикачі - двигун перемикається на обертання вперед. Коли замикається тригерний перемикач "Пауза" - двигун призупиняє своє обертання і зможе продовжити роботу тільки після отримання наступного сигналу запуску.</span></p>
+<p><span style="font-size:18px">У цьому режимі за допомогою потенціометра VR1 можна встановити час затримки обертання двигуна під час зміни напрямку в діапазоні 0.2-6 с.</span></p>
+<p><span style="font-size:18px">Також у цьому режимі працює функція повернення двигуна в початкове положення.</span></p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px">Режим одиночного запуску</span></strong></u></p>
+<p><span style="font-size:18px">У цьому режимі двигун може послідовно обертатися від А до В і від В до А (мають бути встановлені кінцеві вимикачі). Коли тригерний перемикач "Пуск" замикається, двигун починає обертатися вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун зупиняється. При повторному замиканні тригерного перемикача "Пуск" - двигун обертається назад. У момент появи сигналу на задньому кінцевому вимикачі двигун зупиняється. Коли замикається тригерний перемикач "Пауза" - двигун призупиняє своє обертання і зможе продовжити роботу тільки після отримання наступного сигналу запуску.</span></p>
+<p><span style="font-size:18px">У цьому режимі працює функція повернення двигуна в початкове положення.</span></p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px">Режим одиночного обертання в обидва кінці</span></strong></u></p>
+<p><span style="font-size:18px">У цьому режимі двигун може здійснити обертання від А до В і автоматично повернеться від В до А (мають бути встановлені кінцеві вимикачі). Коли тригерний перемикач "Пуск" замикається, двигун починає обертатися вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун перемикається на обертання назад. У момент появи сигналу на задньому кінцевому вимикачі двигун зупиняється. Коли замикається тригерний перемикач "Пауза" - двигун призупиняє своє обертання і зможе продовжити роботу тільки після отримання наступного сигналу запуску.</span></p>
+<p><span style="font-size:18px">У цьому режимі за допомогою потенціометра VR1 можна встановити час затримки обертання двигуна під час зміни напрямку в діапазоні 0.2-6 с.</span></p>
+<p><span style="font-size:18px">Також у цьому режимі працює функція повернення двигуна в початкове положення.</span></p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px">Ручний режим</span></strong></u></p>
+<p><span style="font-size:18px">У цьому режимі можна вручну керувати траєкторією обертання двигуна. Якщо контакт перемикача "Обертання вперед" замкнено і на передньому кінцевому вимикачі (у разі його встановлення) немає сигналу - двигун обертається вперед. При розмиканні контакту - двигун не обертається. Якщо контакт перемикача "Обертання назад" замкнений і на задньому кінцевому вимикачі (у разі його встановлення) немає сигналу - двигун обертається назад. При розмиканні контакту - двигун не обертається.</span></p>
+<p><span style="font-size:18px">У цьому режимі функція повернення до початкового положення не працює.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"></span></span></span></p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px"></span><span style="font-size:18px">DIP-перемикач вгорі – 1, внизу – 0</span><span style="font-size:18px"></span></strong></u></p>
+<table align="left" border="1">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>SW3</strong></span></th>
+<th><span style="font-size:18px"><strong>SW4</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px">Циклічний режим</span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px">Режим одиночного запуску</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Режим одиночного обертання&nbsp;в обидва&nbsp;кінці</span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px">Ручний режим&nbsp;</span></span></td>
+</tr>
+</tbody></table>
+<p><span style="font-size:18px"><u><strong>Примітка:</strong></u> Напруга управляючого сигналу, становить 0-24 В. Тривалість вхідного сигналу повинна бути не менше 2.5 мкс.<span style="font-size:18px"></span><span style="font-size:18px"></span></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><strong><span style="font-size:18px">Вибір режиму керування швидкістю здійснюється за допомогою DIP-перемикача SW2:</span></strong></p>
+<p><span style="font-size:18px"><strong>Одношвидкісний режим:</strong> керування швидкістю може здійснюватись як вбудованим, так і зовнішнім потенціометрами. Якщо зовнішній потенціометр не підключений або величина опору становить ≥10 кОм, регулювання проводиться вбудованим потенціометром VR2. У разі підключення зовнішнього потенціометра з величиною опору&nbsp;≤10 кОм,&nbsp;плата автоматично визначить його як&nbsp;пристрій керування швидкістю за замовчуванням.</span></p>
+<p><span style="font-size:18px"><strong>Двошвидкісний режим:</strong> зовнішній потенціометр керує швидкістю обертання вперед, а вбудований потенціометр VR2 керує швидкістю обертання назад.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<table align="left" border="1">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>SW2</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Одно швидкісний режим</span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Двошвидкісний режим</span></span></span></span></span></td>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><strong><span style="font-size:18px">Вибір режиму управління плавністю зупинки здійснюється за допомогою DIP-перемикача SW1 (працює у всіх режимах управління траєкторією):</span></strong></p>
+<p><span style="font-size:18px"><strong>Різка зупинка:</strong> після отримання сигналу від кінцевого вимикача або кнопки управління, двигун здійснює різку зупинку.</span></p>
+<p><span style="font-size:18px"><strong>Плавна зупинка:</strong> після отримання сигналу від кінцевого вимикача або кнопки управління&nbsp;<span style="font-size:18px">двигун </span> здійснює плавне зниження швидкості з подальшою зупинкою.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<table align="left" border="1">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>SW1</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">0</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Різка&nbsp;зупинка</span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Плавна&nbsp;зупинка</span></span></span></span></span></span></span></td>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Функція повернення у початкове положення:</strong> при першому включенні (подачі живлення) контролера двигун здатний автоматично повертається до початкового положення. Для цього необхідно встановити кінцевий вимикач початкового положення після заднього вимикача або встановити перемичку між контактами "Початкове положення" і "Задній кінцевий вимикач", а потім замкнути контакт "Пуск / Обертання вперед".</span></p>
+<p><span style="font-size:18px">Якщо ця функція не потрібна, необхідно замкнути між собою контакти "Початкове положення" та "COM"</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Технічні характеристики:</span></strong></p>
+<p><span style="font-size:18px">Модель: OCSM-1B</span></p>
+<p><span style="font-size:18px">Напруга живлення: 6-32 В постійний струм (DC)</span></p>
+<p><span style="font-size:18px">Рекомендована напруга блоку живлення: 24 В постійний струм (DC)</span></p>
+<p><span style="font-size:18px">Максимальна частота вихідного сигналу: 20 кГц</span></p>
+<p><span style="font-size:18px">Тип відповідного двигуна: кроковий або серводвигун (розмір фланця значення не має)</span></p>
+<p><span style="font-size:18px">Тип виходу відповідного кінцевого вимикача: NPN NO (нормально відкритий)</span></p>
+<p><span style="font-size:18px">Кількість режимів траєкторії:&nbsp;4</span></p>
+<p><span style="font-size:18px">Кількість режимів керування швидкістю: 2</span></p>
+<p><span style="font-size:18px">Кількість режимів керування плавністю зупинки: 2</span></p>
+<p><span style="font-size:18px">Функція повернення до початкового положення: так</span></p>
+<p><span style="font-size:18px">Можливість підключення зовнішнього потенціометра регулювання швидкості: так</span></p>
+<p><span style="font-size:18px">Опір відповідного зовнішнього потенціометра: ≤10 кОм</span></p>
+<p><span style="font-size:18px">Діапазон робочої температури: -20 ...+55 ° С</span></p>
+<p><span style="font-size:18px">Габаритні розміри: 115.5х90х40.5 мм</span></p>
+<p><span style="font-size:18px">Вага: 114 г</span></p>
+<p><span style="font-size:18px">Стан: новий</span></p>
+<p><span style="font-size:18px">Гарантійний термін: 3 місяці</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Габаритні розміри:</span></strong></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p><img alt="" src="https://images.prom.ua/3875193520_w640_h2048_generator_impulsnyh_signalov.jpg?fresh=1&amp;PIMAGE_ID=3875193520" style="width:640px;height:360px"></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Схема підключення:</span><span style="font-size:18px"></span></strong></p>
+<p><img alt="" src="https://i.ibb.co/pzXgYJq/image.jpg" style="width:900px;height:523px"></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">В якості перемикачів використовуються двопровідні нормально розімкнені кнопкові механічні вимикачі. Один контакт підключається до відповідної клеми - "Пуск", "Пауза", "Обертання вперед" або "Обертання назад". Другий контакт підключається до спільної клеми COM.</span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">В якості</span> кінцевих вимикачів використовуються три провідні безконтактні нормально розімкнені датчики типу NPN з напругою живлення 24 В. Два контакти є проводами живлення, тому безпосередньо підключаються до БП контролера. Ще один контакт (сигнальний) підключається до відповідної клеми - "Передній кінцевий вимикач", "Задній кінцевий вимикач" або "Кінцевий вимикач початкового положення".</span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">В якості</span> зовнішнього регулятора швидкості використовується потенціометр зі значенням опору ≤10 кОм. Електроживлення для нього не потрібне. Середній контакт підключається до клеми контролера "Потенціометр", другий&nbsp;контакт підключається до загальної клеми COM.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"><span style="font-size:18px"></span></span></p>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><span class="ck-alert__title">Увага!</span>&nbsp;</span>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця. Інформація на сайті є актуальною на момент її публікації</span></p>
+<p><span style="font-size:18px">Зовнішній вигляд товару може відрізнятись від фотографій на сайті. Розбіжність зовнішнього вигляду та комплектності реального товару з фотографіями на сайті не є показником неналежної якості виробу</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong>Комплект постачання&nbsp;</strong><span class="fa fa-truck" style="font-size:24px;color:#000000"></span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><strong>Автономний контролер крокового двигуна&nbsp;OCSM-1B</strong><span style="font-size:18px"></span></span></li>
+</ul>
+<div class="ck-alert ck-alert_theme_blue">
+<div><span style="font-size:18px"><strong>До цього контролера у нас можна придбати</strong>&nbsp;<span class="fa fa-shopping-cart" style="font-size:24px;color:#000000"></span></span></div>
+</div>
+<h1><strong><span style="font-size:18px">Потенціометри&nbsp;<a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank"><img alt="Потенциометр WTH118-2W B10K (10 кОм), фото 2" src="https://images.prom.ua/2169106055_w539_h473_potentsiometr-wth118-2w-b10k.jpg" style="width:120px;height:121px"></a>&nbsp;<a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></h1>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px"></span><span style="font-size:18px">Датчики визначення положення об'єктів</span><span style="font-size:18px"><a href="https://cnc.prom.ua/g60641972-datchiki-opredeleniya-polozheniya" target="_blank"><img alt="Индуктивный датчик Autonics PR12-2DN NPN NO (открытый), бесконтактный концевой датчик приближения М12, фото 2" src="https://images.prom.ua/3736380250_w358_h473_induktivnyj-datchik-autonics.jpg" style="width:120px;height:120px"></a><a href="https://cnc.prom.ua/g60641972-datchiki-opredeleniya-polozheniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p><strong><span style="font-size:18px">Кнопки<a href="https://cnc.prom.ua/p1493868799-knopka-pereklyuchatel-mgnovennogo.html" target="_blank"><img alt="Кнопка переключатель мгновенного действия LA38-11 (Зеленый), фото 2" src="https://images.prom.ua/3382316674_w528_h473_knopka-pereklyuchatel-mgnovennogo.jpg" style="width:120px;height:120px"></a></span><span style="font-size:18px"></span><span style="font-size:18px"><a href="https://cnc.prom.ua/p1493868799-knopka-pereklyuchatel-mgnovennogo.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p><strong><span style="font-size:18px"></span></strong></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Драйвери крокового двигуна</span><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank"><img alt="Драйвер микрошаговый Lichuan MC542 4.2 А для двухфазного шагового двигателя, фото 2" src="https://images.prom.ua/3501701416_w358_h473_drajver-mikroshagovyj-lichuan.jpg" style="width:120px;height:120px"></a>&nbsp;</span><span style="font-size:18px"></span><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Блоки живлення</span><span style="font-size:18px"></span></strong><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank"><img alt="Блок питания импульсный S-400-12, 12 В, 33 A, 400 Вт, фото 2" src="https://images.prom.ua/2821277293_w539_h473_blok-pitaniya-impulsnyj.jpg" style="width:120px;height:120px"></a><strong><span style="font-size:18px">&nbsp;</span><span style="font-size:18px"></span><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p><span style="font-size:16px"></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Дивіться всі наші оголошення</strong></span></p>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Каталог товарів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Верстати</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи охолодження та вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Електродвигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Серводвигуни із серводрайверами</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Блоки харчування</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Шпинделі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Пульти ручного керування та DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Лінійні напрямні та підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Передачі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи мастила напрямних та передач</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Механіка</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкий кабель канал (кабелеукладач)</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Фрези</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g106846694-pnevmatika" target="_blank">Пневматика</a></span><span style="font-size:18px"></span></li>
+</ul>
+<div style=""><span></span></div>

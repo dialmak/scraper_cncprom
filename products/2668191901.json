@@ -1,0 +1,27 @@
+{
+  "id": "2668191901",
+  "name": "Електродвигун до токарного верстата 1,1кВт",
+  "sku": "12-093",
+  "url": "https://cncprom.ua/ua/p2668191901-elektrodvigatel-tokarnogo-stanka.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "2 кг"],
+    ["Габаритні розміри", "195х90х96"],
+    ["Довжина осі", "52"],
+    ["Діаметр осі", "М14"],
+    ["Кількість фаз", "3"],
+    ["Термін", "88/123 мм"],
+    ["Напруга", "220 V"],
+    ["Отвір", "М5"],
+    ["Швидкість обертання", "3000-4000 об/хв об./хв."],
+    ["Шпонковий паз вала", "35х5 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6741687317_elektrodvigun-do-tokarnogo.jpg",
+    "https://images.prom.ua/6741687410_elektrodvigun-do-tokarnogo.jpg",
+    "https://images.prom.ua/6741690066_elektrodvigun-do-tokarnogo.jpg",
+    "https://images.prom.ua/6974841961_elektrodvigun-do-tokarnogo.jpg"
+  ],
+  "accessories": []
+}

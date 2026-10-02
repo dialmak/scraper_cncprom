@@ -1,0 +1,25 @@
+{
+  "id": "1073491437",
+  "name": "Кутовий кронштейн для серводвигуна RH60, фланець 60 мм",
+  "sku": "09-201",
+  "url": "https://cncprom.ua/ua/p1073491437-uglovoj-kronshtejn-dlya.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Вага", "105 г"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Материл", "алюмінієвий сплав"],
+    ["Мoдель", "RH60"],
+    ["Тип комплектуючого", "Кронштейн"],
+    ["Тип відповідного мотора", "серводвигун з фланцем 60 мм"],
+    ["Тип фланця", "60 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2060633157_kutovij-kronshtejn-dlya.jpg",
+    "https://images.prom.ua/2060633154_kutovij-kronshtejn-dlya.jpg",
+    "https://images.prom.ua/2060633158_kutovij-kronshtejn-dlya.jpg"
+  ],
+  "accessories": [
+    "1073229432"
+  ]
+}

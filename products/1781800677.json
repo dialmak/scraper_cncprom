@@ -1,0 +1,30 @@
+{
+  "id": "1781800677",
+  "name": "Гелева (GEL) акумуляторна батарея NPP 12V 38Ah (456W*h)",
+  "sku": "90-003",
+  "url": "https://cncprom.ua/ua/p1781800677-gelevaya-gel-akkumulyatornaya.html",
+  "attrs": [
+    ["Виробник", "NPP"],
+    ["Країна виробник", "Китай"],
+    ["Ємність акумулятору", "38 А. г"],
+    ["Номінальна робоча напруга", "12 В"],
+    ["Струм заряду", "3.8 А"],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Максимальна робоча температура", "50 град."],
+    ["Стан", "Новий"],
+    ["Кількість циклів заряду", "1000–2000 циклів"],
+    ["Довжина", "195 мм"],
+    ["Ширина", "165 мм"],
+    ["Висота", "170 мм"],
+    ["Вага", "10.9 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/2378811_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4346877818_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4448466787_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4472115191_geleva-gel-akumulyatorna.jpg"
+  ],
+  "accessories": []
+}

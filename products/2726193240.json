@@ -1,0 +1,30 @@
+{
+  "id": "2726193240",
+  "name": "BMS JK-B2A8S-30Р, 300A, для LiFePO4/Li-ion/LTO (4S-8S), 2A активного балансування",
+  "sku": "05-344",
+  "url": "https://cncprom.ua/ua/p2726193240-bms-b2a8s-30r.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.47 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Кількість комірок", "4s-8s"],
+    ["Активний збалансований струм", "2 A"],
+    ["Струм заряду/розряду", "300 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3119324_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798270038_bms-jk-b2a8s-30r-300a.jpg",
+    "https://images.prom.ua/6798270216_bms-jk-b2a8s-30r-300a.jpg",
+    "https://images.prom.ua/6798270072_bms-jk-b2a8s-30r-300a.jpg",
+    "https://images.prom.ua/6798270013_bms-jk-b2a8s-30r-300a.jpg"
+  ],
+  "accessories": []
+}

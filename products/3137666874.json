@@ -1,0 +1,25 @@
+{
+  "id": "3137666874",
+  "name": "Філамент Bambu Lab PLA Basic Jade White, 1.75 мм, 1 кг, на котушці, пластик для 3D-принтера",
+  "sku": "10-251",
+  "url": "https://cncprom.ua/ua/p3137666874-filament-bambu-lab.html",
+  "attrs": [
+    ["Виробник", "Bambu Lab"],
+    ["Метод друку", "Моделювання методом наплавлення (FDM)"],
+    ["Колір", "Білий"],
+    ["Діаметр нитки", "1.75 мм"],
+    ["Вага", "1 кг"],
+    ["Матеріал", "PLA"],
+    ["Вид пластику для 3D-принтера", "PLA"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7595198255_filament-bambu-lab.jpg",
+    "https://images.prom.ua/7595198294_filament-bambu-lab.jpg",
+    "https://images.prom.ua/7595198386_filament-bambu-lab.jpg"
+  ],
+  "accessories": [
+    "2015052483",
+    "3020496118"
+  ]
+}

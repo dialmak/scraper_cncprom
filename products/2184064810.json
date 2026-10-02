@@ -1,0 +1,27 @@
+{
+  "id": "2184064810",
+  "name": "Зарядний пристрій HP (4.5x3.0), блок живлення для ноутбуків, адаптер змінного струму (19.5V 2.31A 45W) + мережевий кабель",
+  "sku": "HP02-015",
+  "url": "https://cncprom.ua/ua/p2184064810-zaryadnoe-ustrojstvo-dlya.html",
+  "attrs": [
+    ["Виробник", "Chicony"],
+    ["Країна виробник", "Китай"],
+    ["Вихідна потужність", "45 Вт"],
+    ["Вихідна напруга (output)", "19.5 В"],
+    ["Індикатор роботи", "Ні"],
+    ["Призначення", "Для ноутбука"],
+    ["Сила вихідного струму", "2 - А 2.9"],
+    ["Сумісність з брендом", "HP (Hewlett Packard)"],
+    ["Стан", "Новий"],
+    ["Тип роз'єму", "4.5x3.0 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5717464188_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464190_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464193_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464194_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464195_zaryadnij-pristrij-hp.jpg"
+  ],
+  "accessories": []
+}

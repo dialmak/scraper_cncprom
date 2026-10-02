@@ -1,0 +1,27 @@
+{
+  "id": "2913183304",
+  "name": "Пневматичний швидкоз'ємний роз'єм SP10 з різьбою 1/8\" та отвором для трубки 6х4 мм (фітинг типу C)",
+  "sku": "08-247",
+  "url": "https://cncprom.ua/ua/p2913183304-pnevmaticheskij-bystrosemnyj-razem.html",
+  "attrs": [
+    ["Вага", "0.067 кг"],
+    ["Довжина", "48 мм"],
+    ["Ширина", "23.5 мм"],
+    ["Мoдель", "SP10"],
+    ["Робоче середовище", "стиснене повітря"],
+    ["Робочий тиск", "0-0,9 МПа"],
+    ["Спосіб під'єднання", "швидкоз’ємне з фіксацією"],
+    ["Температура навколишнього середовища:", "0~60℃"],
+    ["Тип", "пневматичний роз’єм типу С"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7067012842_pnevmatichnij-shvidkozyemnij-rozyem.jpg",
+    "https://images.prom.ua/7067011213_pnevmatichnij-shvidkozyemnij-rozyem.jpg",
+    "https://images.prom.ua/7067011426_pnevmatichnij-shvidkozyemnij-rozyem.jpg",
+    "https://images.prom.ua/7068598037_pnevmatichnij-shvidkozyemnij-rozyem.jpg"
+  ],
+  "accessories": [
+    "1634490133"
+  ]
+}

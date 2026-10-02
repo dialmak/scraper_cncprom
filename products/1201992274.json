@@ -1,0 +1,26 @@
+{
+  "id": "1201992274",
+  "name": "Блок пилозахисту HIWIN HG15KK",
+  "sku": "61-110",
+  "url": "https://cncprom.ua/ua/p1201992274-blok-pylezaschity-hiwin.html",
+  "attrs": [
+    ["Виробник", "Hiwin"],
+    ["Країна виробник", "Тайвань"],
+    ["Водостійкість", "Так"],
+    ["Колір", "Чорний"],
+    ["Вага", "45 г"],
+    ["Мoдель", "HG15KK"],
+    ["Серія", "КК"],
+    ["Типорозмір", "15\""],
+    ["Товщина скребка", "1.5 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2441732559_blok-pilozahistu-hiwin.jpg",
+    "https://images.prom.ua/2441732805_blok-pilozahistu-hiwin.jpg"
+  ],
+  "accessories": [
+    "6897779",
+    "6587232"
+  ]
+}

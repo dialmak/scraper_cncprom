@@ -1,0 +1,35 @@
+{
+  "id": "810784969",
+  "name": "Фільтр живлення EMI CW4L2-20A-S",
+  "sku": "03-101",
+  "url": "https://cncprom.ua/ua/p810784969-filtr-pitaniya-emi.html",
+  "attrs": [
+    ["Висота", "29 мм"],
+    ["Довжина", "95 мм"],
+    ["Ширина", "51 мм"],
+    ["Вага", "186 г"],
+    ["Напруга", "115/250 В"],
+    ["Робоча температура", "-25...+85 °C"],
+    ["Ток", "20 A"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1401719355_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401719003_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401719037_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401719482_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401734088_filtr-zhivlennya-emi.jpg"
+  ],
+  "accessories": [
+    "6896741",
+    "4058027",
+    "4057846",
+    "4877348",
+    "5702429",
+    "4696280",
+    "6896670",
+    "4057832",
+    "4058051",
+    "6475293"
+  ]
+}

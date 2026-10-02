@@ -1,0 +1,37 @@
+{
+  "id": "404197000",
+  "name": "Кроковий двигун 12N.m 34HS5802В 5.0 А NEMA34 (вал на дві сторони)",
+  "sku": "12-020",
+  "url": "https://cncprom.ua/ua/p404197000-shagovyj-dvigatel-12nm.html",
+  "attrs": [
+    ["Кількість фаз", "2"],
+    ["Споживаний струм", "5 А"],
+    ["Тип двигуна", "Безколекторний"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Крутний момент (Нм)", "12"],
+    ["Максимальна робоча температура", "80"],
+    ["Маса", "5.12 кг"],
+    ["Опір ізоляції", "100MΩ, 500VDC"],
+    ["Тип фланця", "NEMA 34 (86 мм)"],
+    ["Ток (A)", "5"],
+    ["Угол шага", "1,8 °"],
+    ["Діаметр вала", "14"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1120946182_krokovij-dvigun-12nm.jpg",
+    "https://images.prom.ua/856552649_krokovij-dvigun-12nm.jpg",
+    "https://images.prom.ua/856579341_krokovij-dvigun-12nm.jpg",
+    "https://images.prom.ua/856579352_krokovij-dvigun-12nm.jpg",
+    "https://images.prom.ua/856584787_krokovij-dvigun-12nm.jpg",
+    "https://images.prom.ua/856579365_krokovij-dvigun-12nm.jpg"
+  ],
+  "accessories": [
+    "4057846",
+    "4877348",
+    "19908569",
+    "530947827",
+    "736056342",
+    "4057832"
+  ]
+}

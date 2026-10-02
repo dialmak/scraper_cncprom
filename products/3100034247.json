@@ -1,0 +1,23 @@
+{
+  "id": "3100034247",
+  "name": "Гальмівний резистор 500 Вт, 40 Ом, RXLG500W40RJ в алюмінієвому корпусі",
+  "sku": "01-044",
+  "url": "https://cncprom.ua/ua/p3100034247-tormoznoj-rezistor-500.html",
+  "attrs": [
+    ["Тип резистора", "Резистор постійний"],
+    ["Опір", "40 Ом"],
+    ["Мінімальний допуск опору", "5 %"],
+    ["Номінальна потужність", "500 Вт"],
+    ["Матеріал корпусу", "Алюміній"],
+    ["Стан", "Новий"],
+    ["Потужність", "500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7511655033_galmivnij-rezistor-500.jpg",
+    "https://images.prom.ua/7508705054_galmivnij-rezistor-500.jpg",
+    "https://images.prom.ua/7508705069_galmivnij-rezistor-500.jpg",
+    "https://images.prom.ua/7511682098_galmivnij-rezistor-500.jpg"
+  ],
+  "accessories": []
+}

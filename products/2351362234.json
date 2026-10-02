@@ -1,0 +1,27 @@
+{
+  "id": "2351362234",
+  "name": "Трьохконтактний мережевий роз'єм AC-04 C14, тип \"тато\"",
+  "sku": "03-151",
+  "url": "https://cncprom.ua/ua/p2351362234-trehkontaktnyj-setevoj-razem.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Країна виробник", "Китай"],
+    ["Вид", "Роз'єм"],
+    ["Матеріал", "Нейлон"],
+    ["Стан", "Новий"],
+    ["Вага", "10"],
+    ["Мoдель", "AC-04"],
+    ["Робоча температура", "-25 °C ...+70 °C"],
+    ["Робоча напруга", "250 В"],
+    ["Розмір", "49.5x22.5x29.5 мм"],
+    ["Тип роз'єму", "Папа"],
+    ["Ток", "10A"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6274121258_trohkontaktnij-merezhevij-rozyem.jpg",
+    "https://images.prom.ua/6274121261_trohkontaktnij-merezhevij-rozyem.jpg",
+    "https://images.prom.ua/6274121278_trohkontaktnij-merezhevij-rozyem.jpg"
+  ],
+  "accessories": []
+}

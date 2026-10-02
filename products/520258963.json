@@ -1,0 +1,27 @@
+{
+  "id": "520258963",
+  "name": "Кутовий кронштейн КД типу NEMA17",
+  "sku": "12-003",
+  "url": "https://cncprom.ua/ua/p520258963-uglovoj-kronshtejn-shd.html",
+  "attrs": [
+    ["Матеріал", "Сталь"],
+    ["Розміри кронштейна", "50x52x52 мм"],
+    ["Тип фланця", "NEMA 17 (42 мм)"],
+    ["Колір", "Чорний"]
+  ],
+  "specs": [
+    ["Кутовий кронштейн ШД типу NEMA17.pdf", "https://storage.ua.prom.st/2354776_kutovij_kronshtejn_shd_tipu_nema17.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/766526263_kutovij-kronshtejn-kd.jpg",
+    "https://images.prom.ua/766526270_kutovij-kronshtejn-kd.jpg",
+    "https://images.prom.ua/766526273_kutovij-kronshtejn-kd.jpg",
+    "https://images.prom.ua/766526276_kutovij-kronshtejn-kd.jpg"
+  ],
+  "accessories": [
+    "442384149",
+    "35093502",
+    "468588624",
+    "442128379"
+  ]
+}

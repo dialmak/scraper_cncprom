@@ -1,0 +1,44 @@
+{
+  "id": "959200026",
+  "name": "Інвертор GT-011G-4, 11KW 25A 380V",
+  "sku": "14-018",
+  "url": "https://cncprom.ua/ua/p959200026-invertor-011g-11kw.html",
+  "attrs": [
+    ["Вага", "6.72 кг"],
+    ["Висота", "300 мм"],
+    ["Довжина", "235 мм"],
+    ["Ширина", "215 мм"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Вхідна напруга", "380 V ±20%"],
+    ["Вихідна частота", "0.5-400 Hz"],
+    ["Мoдель", "HY0D7543B"],
+    ["Вихідний струм", "25 A"],
+    ["Вхідна частота", "50Hz/60Hz ± 5Hz"],
+    ["Частота (Гц)", "400"],
+    ["Вхідна напруга (В)", "380"],
+    ["Тип комплектуючого", "Інвертор"],
+    ["Потужність, Вт", "11000 Вт"],
+    ["Робоча температура", "-10 °C...+40 °C"],
+    ["Метод керування", "V/F + векторне (без датчика)"],
+    ["Кількість фаз на вході", "3"],
+    ["Кількість фаз на виході", "3"],
+    ["Комутаційний порт", "RS485"],
+    ["Вихідна напруга", "0~380 V AC"]
+  ],
+  "specs": [
+    ["Інструкція з експлуатації інвертора серії GT .pdf", "https://storage.ua.prom.st/3453958_nstruktsiya_z_ekspluatats___invertora_seriyi_gt_.pdf"],
+    ["GT Series посібник користувача англійською.pdf", "https://storage.ua.prom.st/3453957_gt_series_posibnik_koristuvacha_anglijskoyu.pdf"],
+    ["Налаштування інвертора серії GT для шпинделів та асинхронних двигунів 50 HZ.pdf", "https://storage.ua.prom.st/3453956_nalashtuvannya_invertora___ronnih_dviguniv_50_hz.pdf"],
+    ["GT Series посібник користувача анг.pdf", "https://storage.ua.prom.st/3453955_gt_series_posibnik_koristuvacha_ang.pdf"],
+    ["Налаштування інвертора GT для шпинделів 400 HZ.pdf", "https://storage.ua.prom.st/3453954_nalashtuvannya_invertora___lya_shpindeliv_400_hz.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1757151047_invertor-gt-011g-4-11kw.jpg",
+    "https://images.prom.ua/1757151528_invertor-gt-011g-4-11kw.jpg",
+    "https://images.prom.ua/1757151470_invertor-gt-011g-4-11kw.jpg",
+    "https://images.prom.ua/1757151531_invertor-gt-011g-4-11kw.jpg",
+    "https://images.prom.ua/1757151533_invertor-gt-011g-4-11kw.jpg"
+  ],
+  "accessories": []
+}

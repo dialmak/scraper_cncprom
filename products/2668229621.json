@@ -1,0 +1,27 @@
+{
+  "id": "2668229621",
+  "name": "Генератор імпульсів для крокового двигуна  8V-24V",
+  "sku": "05-126",
+  "url": "https://cncprom.ua/ua/p2668229621-generator-impulsov-dlya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Одиниці виміру частоти", "кГц"],
+    ["Максимальний діапазон частот", "160"],
+    ["Мінімальний діапазон частот", "0.08"],
+    ["Стан", "Новий"],
+    ["Вага", "0.02 кг"],
+    ["Висота", "1.5 мм"],
+    ["Довжина", "58 мм"],
+    ["Напруга", "24 В"],
+    ["Ширина", "40 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6739968515_generator-impulsiv-dlya.jpg",
+    "https://images.prom.ua/6739968848_generator-impulsiv-dlya.jpg",
+    "https://images.prom.ua/6739969123_generator-impulsiv-dlya.jpg",
+    "https://images.prom.ua/6739969315_generator-impulsiv-dlya.jpg",
+    "https://images.prom.ua/6740054260_generator-impulsiv-dlya.jpg"
+  ],
+  "accessories": []
+}

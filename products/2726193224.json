@@ -1,0 +1,27 @@
+{
+  "id": "2726193224",
+  "name": "BMS JK-BD6A8S-10Р, 100A, для LiFePO4/Li-ion/LTO (4S-8S), 0.6A активного балансування",
+  "sku": "05-345",
+  "url": "https://cncprom.ua/ua/p2726193224-bms-bd6a8s-10r.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Стан", "Новий"],
+    ["Довжина", "122 мм"],
+    ["Ширина", "93 мм"],
+    ["Висота", "18 мм"],
+    ["Вага", "0.24 г"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3131538_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798259973_bms-jk-bd6a8s-10r-100a.jpg",
+    "https://images.prom.ua/6798260333_bms-jk-bd6a8s-10r-100a.jpg",
+    "https://images.prom.ua/7156821393_bms-jk-bd6a8s-10r-100a.jpg",
+    "https://images.prom.ua/6798260174_bms-jk-bd6a8s-10r-100a.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "2782685340",
+  "name": "Верстат з ЧПК C-9060, 1,5 kW, фрезерно-гравірувальний",
+  "sku": "10-310",
+  "url": "https://cncprom.ua/ua/p2782685340-stanok-chpu-9060.html",
+  "attrs": [
+    ["Подача заготовки", "Автоматична"],
+    ["Споживана потужність", "1.5 кВт"],
+    ["Стан", "Новий"],
+    ["Тип верстата", "Фрезерно-гравірувальний верстат"],
+    ["ЧПУ", "Так"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації українською.pdf", "https://storage.ua.prom.st/3114847_posibnik_z_ekspluatatsiyi_ukrayinskoyu.pdf"],
+    ["Посібник користувача англійською.pdf", "https://storage.ua.prom.st/3114849_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6875990138_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6875990137_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6875990104_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6876001479_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6882081777_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6993483965_verstat-z-chpk.jpg"
+  ],
+  "accessories": []
+}

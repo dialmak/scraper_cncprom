@@ -1,0 +1,29 @@
+{
+  "id": "420769681",
+  "name": "Генератор iмпульсiв крокового двигуна HCMODU0062",
+  "sku": "05-006",
+  "url": "https://cncprom.ua/ua/p420769681-generator-impulsiv-krokovogo.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Напруга живлення", "15-160 В / 5-12 В"],
+    ["Частота", "висока: 5.8 кГц-127 кГц, середня: 590 Гц-15.8 кГц, низька: 82 Гц-2.3 кГц (приведені цифри є приблизними та можуть незначно відрізнятися) Гц"]
+  ],
+  "specs": [
+    ["Генератор імпульсів крокового двигуна HCMODU0062.pdf", "https://storage.ua.prom.st/2359050_generator_impulsiv_krokovogo_dviguna_hcmodu0062.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3081798201_generator-impulsiv-krokovogo.jpg",
+    "https://images.prom.ua/3081798276_generator-impulsiv-krokovogo.jpg",
+    "https://images.prom.ua/3081798892_generator-impulsiv-krokovogo.jpg",
+    "https://images.prom.ua/3081799518_generator-impulsiv-krokovogo.jpg",
+    "https://images.prom.ua/3081799600_generator-impulsiv-krokovogo.jpg"
+  ],
+  "accessories": [
+    "4348106",
+    "4084782",
+    "468496587",
+    "4056281",
+    "10037183",
+    "442128379"
+  ]
+}

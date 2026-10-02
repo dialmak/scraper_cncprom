@@ -1,0 +1,29 @@
+{
+  "id": "554669717",
+  "name": "Поворотна вісь 100мм 4:1 К11 Nema34 3-кулачковий патрон, на ремені",
+  "sku": "07-007",
+  "url": "https://cncprom.ua/ua/p554669717-povorotnaya-100mm-k11.html",
+  "attrs": [
+    ["Двигун", "NEMA 34"],
+    ["Діаметр патрона", "100 мм."],
+    ["Крутний момент", "18 кг/см"],
+    ["Редукція", "4:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип патрона", "3"],
+    ["Тип редуктора", "ремінний"],
+    ["Ток", "4 А"],
+    ["Токарний патрон", "К11 100 мм (3-кулачковий)"]
+  ],
+  "specs": [
+    ["Схематичне креслення.pdf", "https://storage.ua.prom.st/2358794_shematichne_kreslennya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/849058996_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/849058993_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/849058994_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/849058995_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/849058998_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/849058992_povorotna-vis-100mm.jpg"
+  ],
+  "accessories": []
+}

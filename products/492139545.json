@@ -1,0 +1,32 @@
+{
+  "id": "492139545",
+  "name": "Драйвер 2DM2280, 8.2 А, 80—240 VАC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-008",
+  "url": "https://cncprom.ua/ua/p492139545-drajver-2dm2280-240.html",
+  "attrs": [
+    ["Вхідна напруга", "80 ~ 240 В"],
+    ["Мікрокрок", "2/128 (16 режимів робіт)"],
+    ["Ток", "8 А"],
+    ["Ток (A)", "8"],
+    ["Струм, А", "8"]
+  ],
+  "specs": [
+    ["Цифровий драйвер 2DM2280. Інструкція.pdf", "https://storage.ua.prom.st/2369990_tsifrovij_drajver_2dm2280._nstruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3055187544_drajver-2dm2280-82.jpg",
+    "https://images.prom.ua/3055188194_drajver-2dm2280-82.jpg",
+    "https://images.prom.ua/3055188511_drajver-2dm2280-82.jpg",
+    "https://images.prom.ua/3055188608_drajver-2dm2280-82.jpg"
+  ],
+  "accessories": [
+    "4057586",
+    "4348106",
+    "4084800",
+    "4057846",
+    "4084782",
+    "468496587",
+    "4057612",
+    "4057832"
+  ]
+}

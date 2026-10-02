@@ -1,0 +1,36 @@
+{
+  "id": "454362988",
+  "name": "Кроковий двигун з енкодером, замкнутого типу NEMA23 57HSE2N-D25 з гібридним серводрайвером HSS57",
+  "sku": "04-001",
+  "url": "https://cncprom.ua/ua/p454362988-shagovyj-dvigatel-enkoderom.html",
+  "attrs": [
+    ["Кількість фаз", "2"],
+    ["Максимальний струм", "6 А"],
+    ["Вхідний струм", "7 ~20mA"],
+    ["Діаметр вала двигуна", "8 мм"],
+    ["Довжина двигуна", "76 мм"],
+    ["Крутний момент (Нм)", "2"],
+    ["Максимально крутний момент:", "2 N.m"],
+    ["Мікрокрок", "16, максимум 51200 імпульсів/об"],
+    ["Напруга", "DC24V ~ 50V"],
+    ["Робочий діапазон температур", "від -20 °C до +50 °C"],
+    ["Роздільна здатність енкодера", "1000 PRR"],
+    ["Тип фланця", "NEMA 23 (57 мм)"],
+    ["Струм фази", "4.2 А"],
+    ["Угол шага", "1,8° (точність: ± 5%)"]
+  ],
+  "specs": [
+    ["Посібник користувача HSS57 Hybrid Stepper Servo Driver.pdf", "https://storage.ua.prom.st/2370028_posibnik_koristuvacha_hss___stepper_servo_driver.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1120997008_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/648364660_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646712607_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646500962_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646497033_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646713573_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646503049_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646503242_krokovij-dvigun-z.jpg"
+  ],
+  "accessories": []
+}

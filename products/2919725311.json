@@ -1,0 +1,29 @@
+{
+  "id": "2919725311",
+  "name": "Магнітний безконтактний датчик положення DMSG-P020, PNP",
+  "sku": "08-351",
+  "url": "https://cncprom.ua/ua/p2919725311-magnitnyj-beskontaktnyj-datchik.html",
+  "attrs": [
+    ["Вага", "0.024 кг"],
+    ["Довжина кабелю", "2 м."],
+    ["Максимальна потужність", "6.0 Вт"],
+    ["Мoдель", "DMSG-P020"],
+    ["Падіння напруги:", "0.7 В макс."],
+    ["Робоча напруга", "5 В ~ 30 В DC В"],
+    ["Робоча температура", "-10°C до +70°C"],
+    ["Струм перемикання:", "200 мА макс."],
+    ["Струм споживання", "5 мА макс."],
+    ["Ступінь захисту", "IP64"],
+    ["Тип виходу", "PNP"],
+    ["Тип підключення", "трьохпровідний"],
+    ["Частота перемикання:", "1000 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7079883982_magnitnij-bezkontaktnij-datchik.jpg",
+    "https://images.prom.ua/7080818903_magnitnij-bezkontaktnij-datchik.jpg",
+    "https://images.prom.ua/7080819798_magnitnij-bezkontaktnij-datchik.jpg",
+    "https://images.prom.ua/7080809765_magnitnij-bezkontaktnij-datchik.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "2395285900",
+  "name": "Колекторний електродвигун MY1016Z 24V 250W короткий вал без ніжок із зіркою + пластина для кріплення",
+  "sku": "12-910",
+  "url": "https://cncprom.ua/ua/p2395285900-kollektornyj-elektrodvigatel-my1016z.html",
+  "attrs": [
+    ["Діаметр вала", "11 мм"],
+    ["Маса", "2.6 г"],
+    ["ККД, не менше", "78 %"],
+    ["Напруга", "24 В"],
+    ["Споживаний струм", "14 А"],
+    ["Тип збудження", "Від постійних магнітів"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6395734622_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395730183_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6341400879_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6317732882_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395735097_kolektornij-elektrodvigun-my1016z.jpg"
+  ],
+  "accessories": []
+}

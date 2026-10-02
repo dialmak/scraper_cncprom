@@ -1,0 +1,31 @@
+{
+  "id": "2071878408",
+  "name": "Літій-залізо-фосфатний акумулятор 12V/200AH (2560W*h) із вбудованою BMS-платою",
+  "sku": "94-003",
+  "url": "https://cncprom.ua/ua/p2071878408-litij-zhelezo-fosfatnyj.html",
+  "attrs": [
+    ["Вага", "21.9 кг"],
+    ["Висота", "220 мм"],
+    ["Довжина", "524 мм"],
+    ["Ширина", "244 мм"],
+    ["Час заряду акумулятора", "2 годин"],
+    ["Ємність акумулятору", "200 А. г"],
+    ["Максимальна робоча температура", "60 град."],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Напрацювання", "4000 циклів заряду"],
+    ["Номінальна робоча напруга", "12.8 В"],
+    ["Стан", "Новий"],
+    ["Тип тягового акумулятора", "LiFePO4"],
+    ["Струм заряду", "50 А"],
+    ["Колір", "Чорний"]
+  ],
+  "specs": [
+    ["Правила використання батарей.pdf", "https://storage.ua.prom.st/2731561_pravila_vikoristannya_batarej.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/5935312639_litij-zalizo-fosfatnij-akumulyator-12v200ah.jpg",
+    "https://images.prom.ua/5935312963_litij-zalizo-fosfatnij-akumulyator-12v200ah.jpg",
+    "https://images.prom.ua/5935313027_litij-zalizo-fosfatnij-akumulyator-12v200ah.jpg"
+  ],
+  "accessories": []
+}

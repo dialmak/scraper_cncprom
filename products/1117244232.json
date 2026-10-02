@@ -1,0 +1,30 @@
+{
+  "id": "1117244232",
+  "name": "Контролер MESA 7I70",
+  "sku": "05-054",
+  "url": "https://cncprom.ua/ua/p1117244232-kontroller-mesa-7i70.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Вага", "98.45 г"],
+    ["Вхідний імпеданс", "10 кОм"],
+    ["Габаритні розміри", "101.5х86х25.5 мм"],
+    ["Інтерфейс під'єднання", "RS-422"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Кількість входів", "48"],
+    ["Мoдель", "7I70"],
+    ["Наявність світлодіодних індикаторів на вході", "наявні"],
+    ["Напруги живлення", "5~35 VDC"],
+    ["Тип комплектуючого", "Контролер"]
+  ],
+  "specs": [
+    ["mesa_7i71. Посібник користувача (eng).pdf", "https://storage.ua.prom.st/2359098_mesa_7i71._posibnik_koristuvacha_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3091807921_kontroler-mesa-7i70.jpg",
+    "https://images.prom.ua/3091808161_kontroler-mesa-7i70.jpg",
+    "https://images.prom.ua/3091808536_kontroler-mesa-7i70.jpg",
+    "https://images.prom.ua/3091808911_kontroler-mesa-7i70.jpg",
+    "https://images.prom.ua/3091808999_kontroler-mesa-7i70.jpg"
+  ],
+  "accessories": []
+}

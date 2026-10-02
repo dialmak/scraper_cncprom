@@ -1,0 +1,23 @@
+{
+  "id": "2343086275",
+  "name": "Одноканальний модуль оптоелектронної розв'язки з PNP-виходом 3.3-5V",
+  "sku": "05-247",
+  "url": "https://cncprom.ua/ua/p2343086275-odnokanalnyj-modul-optoelektronnoj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Висота", "18 мм"],
+    ["Довжина", "72 мм"],
+    ["Ширина", "19.5 мм"],
+    ["Індикація", "вхід, вихід"],
+    ["Напруга сигналу", "3.3-5V"],
+    ["Тип вихідного сигналу", "PNP"],
+    ["Енергоспоживання модуля", "<100mA"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6263481148_odnokanalnij-modul-optoelektronnoyi.jpg",
+    "https://images.prom.ua/6263481146_odnokanalnij-modul-optoelektronnoyi.jpg",
+    "https://images.prom.ua/6263481155_odnokanalnij-modul-optoelektronnoyi.jpg"
+  ],
+  "accessories": []
+}

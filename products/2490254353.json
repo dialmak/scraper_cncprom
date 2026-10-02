@@ -1,0 +1,35 @@
+{
+  "id": "2490254353",
+  "name": "Джерело безперебійного живлення SD-500S (ДБЖ(UPS)) 300W під зовнішні акумуляторні батареї",
+  "sku": "HP08-007",
+  "url": "https://cncprom.ua/ua/p2490254353-istochnik-besperebojnogo-pitaniya.html",
+  "attrs": [
+    ["Вага", "4.2 кг"],
+    ["Висота", "150 мм"],
+    ["Довжина", "330 мм"],
+    ["Ширина", "110 мм"],
+    ["Час перемикання", "6 мс"],
+    ["Максимальна потужність", "300 Вт"],
+    ["Максимальна вхідна напруга", "280 В"],
+    ["Мінімальна вхідна напруга", "140 В"],
+    ["Частота струму", "50 Гц"],
+    ["Додатковий акумулятор", "Так"],
+    ["Індикація", "Цифрова"],
+    ["Кількість вихідних розеток", "2 шт."],
+    ["Матеріал корпусу", "Метал і пластик"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "Підлоговий"],
+    ["Колір корпусу", "Чорний"],
+    ["Захист від короткого замикання", "Так"],
+    ["Захист від перевантаження", "Так"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5147078052_dzherelo-bezperebijnogo-zhivlennya.jpg",
+    "https://images.prom.ua/5147078200_dzherelo-bezperebijnogo-zhivlennya.jpg",
+    "https://images.prom.ua/5147078369_dzherelo-bezperebijnogo-zhivlennya.jpg",
+    "https://images.prom.ua/5147144060_dzherelo-bezperebijnogo-zhivlennya.jpg",
+    "https://images.prom.ua/5147144240_dzherelo-bezperebijnogo-zhivlennya.jpg"
+  ],
+  "accessories": []
+}

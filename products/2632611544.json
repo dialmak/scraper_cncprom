@@ -1,0 +1,27 @@
+{
+  "id": "2632611544",
+  "name": "Панель керування Ruida RDC6445S(ЕС) для CO₂ лазерного верстата — 4 осі",
+  "sku": "05-120",
+  "url": "https://cncprom.ua/ua/p2632611544-panel-upravleniya-ruida.html",
+  "attrs": [
+    ["Виробник", "Ruida Mechanics"],
+    ["Дисплей", "Так"],
+    ["Напруга живильної мережі", "24 В"],
+    ["Споживаний струм", "3 А"],
+    ["Стан", "Новий"],
+    ["Вага", "1.2 кг"]
+  ],
+  "specs": [
+    ["User's Manual of RDC6445G (S) Control System V1.5.pdf", "https://storage.ua.prom.st/3017196_users_manual_of_rdc6445g_s_control_system_v1.5.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6686196350_panel-keruvannya-ruida.jpg",
+    "https://images.prom.ua/6686196457_panel-keruvannya-ruida.jpg",
+    "https://images.prom.ua/6686196513_panel-keruvannya-ruida.jpg",
+    "https://images.prom.ua/6686196705_panel-keruvannya-ruida.jpg",
+    "https://images.prom.ua/6686196726_panel-keruvannya-ruida.jpg"
+  ],
+  "accessories": [
+    "1210272450"
+  ]
+}

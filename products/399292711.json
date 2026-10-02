@@ -1,0 +1,28 @@
+{
+  "id": "399292711",
+  "name": "Підшипник лінійний закритий  діаметр 12 мм з пластиковим сепаратором LM12UU",
+  "sku": "59-003",
+  "url": "https://cncprom.ua/ua/p399292711-podshipnik-linejnyj-zakrytyj.html",
+  "attrs": [
+    ["Матеріал виробу", "Сталь"],
+    ["Тип підшипника ковзання", "Лінійний"],
+    ["Ущільнювач", "Так"],
+    ["Внутрішній діаметр.", "12"],
+    ["Довжина:", "30"],
+    ["Зовнішній діаметр", "21 мм."],
+    ["Діаметр", "12"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5372061312_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372061619_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372065696_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5362506549_pidshipnik-linijnij-zakritij.jpg"
+  ],
+  "accessories": [
+    "46330824",
+    "18982557",
+    "46330879",
+    "46332389"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "1524259529",
+  "name": "Плата Arduino Nano v3.0, контролер ЧПК",
+  "sku": "03-409",
+  "url": "https://cncprom.ua/ua/p1524259529-plata-arduino-nano.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "6 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "45 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Контролер"],
+    ["Ширина", "18 мм"],
+    ["EEPROM", "1 Кб"],
+    ["Flash memory", "32 Кб"],
+    ["SRAM", "2 Кб"],
+    ["Аналогові входи", "8"],
+    ["Максимально допустимий струм виведення", "40 мА"],
+    ["Мікроконтролер", "ATmega328P"],
+    ["Гранично допустимий потенціал напруги на вході VIN", "7-12V"],
+    ["Робоча напруга", "5 V В"],
+    ["Цифрові входи/виходи", "14"]
+  ],
+  "specs": [
+    ["ARDUINO NANO V3.0.PDF", "https://storage.ua.prom.st/1966758_arduino_nano_v3.0.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3478780040_plata-arduino-nano.jpg",
+    "https://images.prom.ua/3478780156_plata-arduino-nano.jpg",
+    "https://images.prom.ua/3478780387_plata-arduino-nano.jpg",
+    "https://images.prom.ua/3478780676_plata-arduino-nano.jpg",
+    "https://images.prom.ua/3478780772_plata-arduino-nano.jpg"
+  ],
+  "accessories": [
+    "1466900234"
+  ]
+}

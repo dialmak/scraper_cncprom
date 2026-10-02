@@ -1,0 +1,38 @@
+{
+  "id": "2393143551",
+  "name": "Двопоршневий пневмоциліндр двосторонньої дії TN10x200, хід 200 мм",
+  "sku": "08-311",
+  "url": "https://cncprom.ua/ua/p2393143551-dvuhporshnevoj-pnevmotsilindr-dvostoronnego.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.44 кг"],
+    ["Довжина", "260 мм"],
+    ["Максимальна робоча температура", "70 град."],
+    ["Максимальний робочий тиск", "0.7 МПа"],
+    ["Матеріал виробу", "Алюміній"],
+    ["Мінімальна робоча температура", "-5 град."],
+    ["Мінімальний робочий тиск", "0.1 МПа"],
+    ["З'єднання", "Різьбове"],
+    ["Тип", "Пневмоциліндр"],
+    ["Тип з'єднання", "Цангові"],
+    ["Хід поршня", "200 мм"],
+    ["Ширина", "42 мм"],
+    ["Діаметр поршня", "10 мм"],
+    ["Кріплення для фітинга", "M5x0.8"],
+    ["Наявність магніту", "Да"],
+    ["Принцип дії", "двухсторонний"],
+    ["Робоче середовище", "Повітря"],
+    ["Швидкість ходу", "<500 мм/с"],
+    ["Тип демпфера", "регульований"],
+    ["Тяговое усилие", "6 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6339875731_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/6339875730_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/6339875772_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/6339875824_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/6339875978_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg"
+  ],
+  "accessories": []
+}

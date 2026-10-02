@@ -1,0 +1,33 @@
+{
+  "id": "2396433807",
+  "name": "Кутовий планетарний редуктор (1:10) для крокового двигуна 57 мм",
+  "sku": "12-126",
+  "url": "https://cncprom.ua/ua/p2396433807-uglovoj-planetarnyj-reduktor.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "1.47"],
+    ["Вхідний фланець", "57 мм"],
+    ["Діаметр отвору під вхідний вал", "8 мм"],
+    ["Діаметр переднього вала", "14 мм мм"],
+    ["Кількість робочих ступенів", "2"],
+    ["Матеріал корпусу", "Сталь"],
+    ["Мoдель", "PX57N010S0H"],
+    ["Номінальне передавальне число", "10"],
+    ["Передавальне відношення (коефіцієнт зменшення)", "1:10"],
+    ["Серія", "PXW"],
+    ["Стан", "Нове"],
+    ["Тип", "Редуктор"],
+    ["Тип редуктора", "Планетарний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7084112996_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/7084112995_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/7084112997_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6348926540_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6348926530_kutovij-planetarnij-reduktor.jpg"
+  ],
+  "accessories": [
+    "792330451"
+  ]
+}

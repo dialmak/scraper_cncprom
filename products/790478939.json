@@ -1,0 +1,30 @@
+{
+  "id": "790478939",
+  "name": "Комплект радіально-упорних дуплексних підшипників H7007C 2RZ P4 DTA",
+  "sku": "20-012",
+  "url": "https://cncprom.ua/ua/p790478939-komplekt-radialno-upornyh.html",
+  "attrs": [
+    ["Внутрішній діаметр", "35 мм"],
+    ["Висота", "14 мм"],
+    ["Зовнішній діаметр", "62 мм"],
+    ["Матеріал сепаратора", "Текстоліт"],
+    ["Форма тіла кочення", "Кулька"],
+    ["Вага", "309 г"],
+    ["Динамічна вантажність", "9.2 кН"],
+    ["Клас точності", "P4"],
+    ["Максимальні оберти", "30000 об./хв"],
+    ["Робоча температура", "120 °C"],
+    ["Статична вантажність", "7.8 кН"],
+    ["Угол контакта", "15"],
+    ["Тип навантаження", "Упорно-радіальна"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1354831974_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354831662_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354831485_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354827266_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354827317_komplekt-radialno-upornih-dupleksnih.jpg"
+  ],
+  "accessories": []
+}

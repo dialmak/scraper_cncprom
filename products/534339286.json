@@ -1,0 +1,31 @@
+{
+  "id": "534339286",
+  "name": "Шпиндельний радіально - упорний кульковий підшипник 7002С P4",
+  "sku": "20-002",
+  "url": "https://cncprom.ua/ua/p534339286-shpindelnyj-radialno-upornyj.html",
+  "attrs": [
+    ["Вага", "0.035 кг"],
+    ["Вид навантаження", "Упорна"],
+    ["Динамічне навантаження", "5.3 Н"],
+    ["Матеріал виробу", "Сталь"],
+    ["Статичне навантаження", "3.3 Н"],
+    ["Тип підшипника кочення", "Кульковий"],
+    ["Внутрішній діаметр", "15 мм"],
+    ["Висота", "9 мм"],
+    ["Зовнішній діаметр", "32 мм"],
+    ["Клас точності", "4.0"],
+    ["Матеріал сепаратора", "Текстоліт"],
+    ["Сепаратор", "Так"],
+    ["Кут контакту", "15 град."]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/789886149_shpindelnij-radialno-.jpg",
+    "https://images.prom.ua/789886160_shpindelnij-radialno-.jpg",
+    "https://images.prom.ua/789886184_shpindelnij-radialno-.jpg",
+    "https://images.prom.ua/789886162_shpindelnij-radialno-.jpg",
+    "https://images.prom.ua/789755859_shpindelnij-radialno-.jpg",
+    "https://images.prom.ua/789755835_shpindelnij-radialno-.jpg"
+  ],
+  "accessories": []
+}

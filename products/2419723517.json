@@ -1,0 +1,27 @@
+{
+  "id": "2419723517",
+  "name": "Колекторний електродвигун MY1016Z 24V 350W з редуктором короткий вал без ніжок із зіркою на 9 зубців",
+  "sku": "12-916",
+  "url": "https://cncprom.ua/ua/p2419723517-kollektornyj-elektrodvigatel-my1016z.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Напруга", "24 В"],
+    ["Споживаний струм", "14 А"],
+    ["Тип збудження", "Від постійних магнітів"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"],
+    ["Діаметр вала", "11 мм"],
+    ["Маса", "2.8 г"],
+    ["ККД, не менше", "78 %"],
+    ["Потужність", "350"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6395730183_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395730206_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395825430_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395825504_kolektornij-elektrodvigun-my1016z.jpg",
+    "https://images.prom.ua/6395732428_kolektornij-elektrodvigun-my1016z.jpg"
+  ],
+  "accessories": []
+}

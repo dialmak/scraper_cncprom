@@ -1,0 +1,17 @@
+{
+  "id": "1717744121",
+  "name": "Плата Arduino Mega R3, контролер ЧПК + USB",
+  "sku": "03-412",
+  "url": "https://cncprom.ua/ua/p1717744121-plata-arduino-mega.html",
+  "attrs": [],
+  "specs": [
+    ["arduino-mega2560_R3-sch.pdf", "https://storage.ua.prom.st/2231091_arduino_mega2560_r3_sch.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4108755194_plata-arduino-mega.jpg",
+    "https://images.prom.ua/4108755245_plata-arduino-mega.jpg",
+    "https://images.prom.ua/4108755308_plata-arduino-mega.jpg",
+    "https://images.prom.ua/4108755367_plata-arduino-mega.jpg"
+  ],
+  "accessories": []
+}

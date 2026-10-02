@@ -1,0 +1,33 @@
+{
+  "id": "5080111",
+  "name": "Інвертор ЧПК HY02D223B (VFD) 2.2 KW 11A 220-250V",
+  "sku": "14-002",
+  "url": "https://cncprom.ua/ua/p5080111-invertor-chpu-hy02d223b.html",
+  "attrs": [
+    ["Вхід фаз", "1 або 3"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "220±15%"],
+    ["Вхідна напруга (В)", "220"],
+    ["Вихід фаз", "3"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "208-240VAC"],
+    ["Потужність, Вт", "2200 Вт"],
+    ["Ток", "11А"],
+    ["Частота (Гц)", "400"],
+    ["Потужність", "2200"]
+  ],
+  "specs": [
+    ["Huanyang VFD Inverter Manual (ENG).pdf", "https://storage.ua.prom.st/2370563_huanyang_vfd_inverter_manual_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/854947907_invertor-chpk-hy02d223b.jpg",
+    "https://images.prom.ua/854947917_invertor-chpk-hy02d223b.jpg",
+    "https://images.prom.ua/848421984_invertor-chpk-hy02d223b.jpg",
+    "https://images.prom.ua/854947978_invertor-chpk-hy02d223b.jpg",
+    "https://images.prom.ua/848421996_invertor-chpk-hy02d223b.jpg",
+    "https://images.prom.ua/2613124676_invertor-chpk-hy02d223b.jpg"
+  ],
+  "accessories": [
+    "12387200"
+  ]
+}

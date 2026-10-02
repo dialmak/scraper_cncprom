@@ -1,0 +1,29 @@
+{
+  "id": "2393161020",
+  "name": "Світлозвуковий сигналізатор AD16-22SM AC/DC 48V, червоний",
+  "sku": "03-146",
+  "url": "https://cncprom.ua/ua/p2393161020-svetozvukovoj-signalizator-ad16.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Колір", "Червоний"],
+    ["Габаритні розміри", "65х30 мм"],
+    ["Діаметр монтажного отвору", "22 мм"],
+    ["Індикація", "Світлова/Звукова"],
+    ["Мoдель", "AD16-22SM"],
+    ["Напруга", "AC/DC 48V"],
+    ["Індикація", "Да"],
+    ["Термін експлуатації", "30000 год"],
+    ["Тип звучання", "переривчастий"],
+    ["Ток", "20 мА"],
+    ["Рівень звуку", "88 dB"],
+    ["Частота звука", "2.5 kHz"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6336800223_svitlozvukovij-signalizator-ad16-22sm.jpg",
+    "https://images.prom.ua/6336800224_svitlozvukovij-signalizator-ad16-22sm.jpg",
+    "https://images.prom.ua/6336800219_svitlozvukovij-signalizator-ad16-22sm.jpg"
+  ],
+  "accessories": []
+}

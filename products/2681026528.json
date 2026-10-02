@@ -1,0 +1,39 @@
+{
+  "id": "2681026528",
+  "name": "Драйвер Leadshine MА860С, 7.2 А, 30–100 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-118",
+  "url": "https://cncprom.ua/ua/p2681026528-drajver-leadshine-ma860s.html",
+  "attrs": [
+    ["Виробник", "Leadshine"],
+    ["Країна виробник", "Китай"],
+    ["Опір ізоляції", "≥50 МОм"],
+    ["Керування", "STEP\\DIR"],
+    ["Мікрокрок", "16 режимів (400 кроків/оберт— 51 200 кроків/оберт)"],
+    ["Частота кроку імпульсу", "0-200 кГц"],
+    ["Напруга живлення AC", "18-80 V"],
+    ["Тип відповідного двигуна", "NEMA 17 - 43"],
+    ["Напруга живлення DC", "30-100V"],
+    ["Діапазон вихідного струму (пікові значення)", "2.4-7.2 А"],
+    ["Струм, А", "7.2"]
+  ],
+  "specs": [
+    ["мануал.ma860c.pdf", "https://storage.ua.prom.st/3048797_manual.ma860c.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6753334110_drajver-leadshine-ma860s.jpg",
+    "https://images.prom.ua/7005719162_drajver-leadshine-ma860s.jpg",
+    "https://images.prom.ua/6760975118_drajver-leadshine-ma860s.jpg",
+    "https://images.prom.ua/6760975472_drajver-leadshine-ma860s.jpg",
+    "https://images.prom.ua/6760933125_drajver-leadshine-ma860s.jpg",
+    "https://images.prom.ua/6760975998_drajver-leadshine-ma860s.jpg"
+  ],
+  "accessories": [
+    "1335778613",
+    "971494225",
+    "1335824095",
+    "404207577",
+    "1335793183",
+    "404197000",
+    "1323736765"
+  ]
+}

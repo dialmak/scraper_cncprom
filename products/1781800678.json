@@ -1,0 +1,30 @@
+{
+  "id": "1781800678",
+  "name": "Гелева (GEL) акумуляторна батарея NPP 12V 65Ah (780W*h)",
+  "sku": "90-004",
+  "url": "https://cncprom.ua/ua/p1781800678-gelevaya-gel-akkumulyatornaya.html",
+  "attrs": [
+    ["Виробник", "NPP"],
+    ["Країна виробник", "Китай"],
+    ["Ємність акумулятору", "65 А. г"],
+    ["Номінальна робоча напруга", "12 В"],
+    ["Струм заряду", "6.5 А"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Максимальна робоча температура", "50 град."],
+    ["Стан", "Новий"],
+    ["Кількість циклів заряду", "1000–2000 циклів"],
+    ["Довжина", "350 мм"],
+    ["Ширина", "170 мм"],
+    ["Висота", "180 мм"],
+    ["Вага", "18.6 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/2379656_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4346976707_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4448845117_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4474702176_geleva-gel-akumulyatorna.jpg"
+  ],
+  "accessories": []
+}

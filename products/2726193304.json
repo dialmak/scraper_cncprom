@@ -1,0 +1,30 @@
+{
+  "id": "2726193304",
+  "name": "BMS JK-BD4A24S-12Р, 120A, для LiFePO4/Li-ion/LTO (8S-24S), 0.4A активного балансування",
+  "sku": "05-349",
+  "url": "https://cncprom.ua/ua/p2726193304-bms-bd4a24s-12r.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.36 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Активний збалансований струм", "0.4 A"],
+    ["Кількість комірок", "8s-24s"],
+    ["Струм заряду/розряду", "120 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3135354_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798289265_bms-jk-bd4a24s-12r-120a.jpg",
+    "https://images.prom.ua/7030514741_bms-jk-bd4a24s-12r-120a.jpg",
+    "https://images.prom.ua/6913345255_bms-jk-bd4a24s-12r-120a.jpg",
+    "https://images.prom.ua/6798289261_bms-jk-bd4a24s-12r-120a.jpg"
+  ],
+  "accessories": []
+}

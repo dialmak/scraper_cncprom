@@ -1,0 +1,25 @@
+{
+  "id": "791418033",
+  "name": "4-та поворотна вісь ПБ80-65 50:1, К11-80 на японському безлюфтовому гармонічному (хвильовому) редукторі",
+  "sku": "07-001",
+  "url": "https://cncprom.ua/ua/p791418033-taya-povorotnaya-pb80.html",
+  "attrs": [
+    ["Двигун", "NEMA 23"],
+    ["Діаметр патрона", "80 мм."],
+    ["Діаметр патрона (мм)", "100"],
+    ["Загальна висота поворотної осі", "100 мм"],
+    ["Патрон", "80 мм,3-вулачковий"],
+    ["Редукція", "50:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип патрона", "3"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1356980261_4-ta-povorotna-vis.jpg",
+    "https://images.prom.ua/1356980375_4-ta-povorotna-vis.jpg",
+    "https://images.prom.ua/1356980384_4-ta-povorotna-vis.jpg",
+    "https://images.prom.ua/1356980409_4-ta-povorotna-vis.jpg",
+    "https://images.prom.ua/1356980447_4-ta-povorotna-vis.jpg"
+  ],
+  "accessories": []
+}

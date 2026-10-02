@@ -1,0 +1,32 @@
+{
+  "id": "1865765399",
+  "name": "Кроковий сервопривід з енкодером і гальмом 2.2 Нм 57EBP105ALC-TF0B + кроковий драйвер DL57D",
+  "sku": "12-614",
+  "url": "https://cncprom.ua/ua/p1865765399-shagovyj-servoprivod-enkoderom.html",
+  "attrs": [
+    ["Країна виробник", "Китай"]
+  ],
+  "specs": [
+    ["Посібник користувача для драйвера DL57D.pdf", "https://storage.ua.prom.st/2413568_posibnik_koristuvacha_dlya_drajvera_dl57d.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4583662660_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/4583652440_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/5156119117_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/4583867207_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/4583867205_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/4583867206_krokovij-servoprivid-z.jpg"
+  ],
+  "accessories": [
+    "920937083",
+    "556013022",
+    "1036731088",
+    "1021846602",
+    "1067270338",
+    "4696280",
+    "920273800",
+    "403988022",
+    "409945678",
+    "6475293"
+  ]
+}

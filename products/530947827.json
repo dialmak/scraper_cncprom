@@ -1,0 +1,30 @@
+{
+  "id": "530947827",
+  "name": "ЧПК контролер Mach3 USB ST-USB STB4100 на 4 координати",
+  "sku": "05-001",
+  "url": "https://cncprom.ua/ua/p530947827-chpu-kontroller-mach3.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "USB"],
+    ["Кількість координат", "4 шт"],
+    ["Напруга живлення", "12-24В"],
+    ["Тип під'єднуваного датчика", "NPN"]
+  ],
+  "specs": [
+    ["motion_card_st__4_axis_cnc.pdf", "https://storage.ua.prom.st/2353041_motion_card_st__4_axis_cnc.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3092628532_chpk-kontroler-mach3.jpg",
+    "https://images.prom.ua/3092628617_chpk-kontroler-mach3.jpg",
+    "https://images.prom.ua/782306708_chpk-kontroler-mach3.jpg",
+    "https://images.prom.ua/4129231666_chpk-kontroler-mach3.jpg"
+  ],
+  "accessories": [
+    "4348106",
+    "6896741",
+    "6349268",
+    "6896760",
+    "35093502",
+    "6896754",
+    "6349187"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "1107441327",
+  "name": "Контролер MESA 7I92H",
+  "sku": "05-053",
+  "url": "https://cncprom.ua/ua/p1107441327-kontroller-mesa-7i92h.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Вага", "46 г"],
+    ["Вторинний роз'єм введення/виведення", "HDR26"],
+    ["Габаритні розміри", "85.5х63.5х29.5 мм"],
+    ["Інтерфейс під'єднання", "Ethernet"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Мoдель", "7I92H"],
+    ["Модель мікросхеми", "XILINX SPARTAN-6 XC6SLX9"],
+    ["Напруги живлення", "5V"],
+    ["Первинний роз'єм введення/виведення", "HDR26"],
+    ["Підтримувані операційні системи", "Windows і Linux"],
+    ["Тип комплектуючого", "Контролер"]
+  ],
+  "specs": [
+    ["Посібник користувача mesa_7i92h (eng).pdf", "https://storage.ua.prom.st/2359093_posibnik_koristuvacha_mesa_7i92h_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3092528188_kontroler-mesa-7i92h.jpg",
+    "https://images.prom.ua/3092528274_kontroler-mesa-7i92h.jpg",
+    "https://images.prom.ua/3092528437_kontroler-mesa-7i92h.jpg",
+    "https://images.prom.ua/3092528566_kontroler-mesa-7i92h.jpg",
+    "https://images.prom.ua/3092528644_kontroler-mesa-7i92h.jpg"
+  ],
+  "accessories": []
+}

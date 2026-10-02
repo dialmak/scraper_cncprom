@@ -1,0 +1,34 @@
+{
+  "id": "3044135730",
+  "name": "Багатофункціональний цифровий модуль затримки YF-79 (DC 5V), NPN / PNP",
+  "sku": "03-166",
+  "url": "https://cncprom.ua/ua/p3044135730-mnogofunktsionalnyj-tsifrovoj-modul.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Мoдель", "YF-79"],
+    ["Вага", "0.027 кг"],
+    ["Діапазон часу:", "від 0.1 секунди до 9999 секунд"],
+    ["Тип вхідного сигналу:", "NPN/PNP/сухий контакт"],
+    ["Живлення DC:", "5 В"],
+    ["Відображення:", "4-розрядний LED-дисплей"],
+    ["Робочий струм:", "70 мА"],
+    ["Навантаження реле:", "10A 277 VAC"],
+    ["Кількість режимів:", "32"],
+    ["Розміри плати:", "66×41×19 мм"],
+    ["Номінальний струм реле:", "10 А"],
+    ["Струм споживання в режимі очікування:", "10 мА"],
+    ["Ресурс роботи:", "близько 300 000 циклів"],
+    ["Тип реле:", "YEYY-1C5"]
+  ],
+  "specs": [
+    ["Посібник користувача англійською (2).pdf", "https://storage.ua.prom.st/3334352_posibnik_koristuvacha_anglijskoyu_2.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7392093377_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392064703_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392065528_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392064705_bagatofunktsionalnij-tsifrovij-modul.jpg"
+  ],
+  "accessories": []
+}

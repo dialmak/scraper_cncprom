@@ -1,0 +1,30 @@
+{
+  "id": "2726193250",
+  "name": "BMS JK-BD6A17S-6Р, 60A, для LiFePO4/Li-ion/LTO (8S-17S), 0.6A активного балансування",
+  "sku": "05-335",
+  "url": "https://cncprom.ua/ua/p2726193250-bms-bd6a17s-60a.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.22 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Активний збалансований струм", "0.6 A"],
+    ["Кількість комірок", "8s-17s"],
+    ["Струм заряду/розряду", "60 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3131553_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798274319_bms-jk-bd6a17s-6r-60a.jpg",
+    "https://images.prom.ua/6798274343_bms-jk-bd6a17s-6r-60a.jpg",
+    "https://images.prom.ua/6798274320_bms-jk-bd6a17s-6r-60a.jpg",
+    "https://images.prom.ua/6798274312_bms-jk-bd6a17s-6r-60a.jpg"
+  ],
+  "accessories": []
+}

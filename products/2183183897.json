@@ -1,0 +1,42 @@
+{
+  "id": "2183183897",
+  "name": "Рубильник-перемикач трипозиційний I-0-II GCQ4-125/4P",
+  "sku": "HP09-007",
+  "url": "https://cncprom.ua/ua/p2183183897-rubilnik-pereklyuchatel-trehpozitsionnyj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Кількість полюсів", "4 шт."],
+    ["Номінальний струм", "63 А"],
+    ["Частота струму", "50 Гц"],
+    ["Кількість контактів", "12"],
+    ["Приєднання рукоятки", "Спереду з можливістю повороту"],
+    ["Тип рукоятки", "Знімна"],
+    ["Конструктивне виконання", "Закрите"],
+    ["Конструктивне виготовлення", "Закрите"],
+    ["Приєднання ручки", "Попереду з можливістю повороту"],
+    ["Тип ручки", "Знімна"],
+    ["Висота", "175 мм"],
+    ["Довжина", "250 мм"],
+    ["Ширина", "120 мм"],
+    ["Витримувана імпульсна напруга", "12kV"],
+    ["Категорія використання", "AC-33B"],
+    ["Мoдель", "GCQ4-125/4P"],
+    ["Номінальна напруга ізоляції", "1000V"],
+    ["Номінальна робоча напруга", "440"],
+    ["Номінальна напруга", "220V,110V AC; 24 V, 48V DC"],
+    ["Номінальний короткочасно , що витримується ток", "50kA"],
+    ["Швидкість перемикання", "≤1.25 с"],
+    ["Тип", "I-0-II"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5714237624_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237625_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237626_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237627_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237628_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237629_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg",
+    "https://images.prom.ua/5714237632_rubilnik-peremikach-tripozitsijnij-i-0-ii.jpg"
+  ],
+  "accessories": []
+}

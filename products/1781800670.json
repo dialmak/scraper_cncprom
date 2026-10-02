@@ -1,0 +1,30 @@
+{
+  "id": "1781800670",
+  "name": "Гелева (GEL) акумуляторна батарея NPP 12V 100Ah (1200W*h)",
+  "sku": "90-005",
+  "url": "https://cncprom.ua/ua/p1781800670-gelevaya-gel-akkumulyatornaya.html",
+  "attrs": [
+    ["Виробник", "NPP"],
+    ["Країна виробник", "Китай"],
+    ["Тип тягового акумулятора", "GEL"],
+    ["Ємність акумулятору", "100 А. г"],
+    ["Номінальна робоча напруга", "12 В"],
+    ["Струм заряду", "10 А"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Максимальна робоча температура", "50 град."],
+    ["Стан", "Новий"],
+    ["Довжина", "405 мм"],
+    ["Ширина", "170 мм"],
+    ["Висота", "235 мм"],
+    ["Вага", "29.5 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/2382827_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4348057314_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4450336547_geleva-gel-akumulyatorna.jpg",
+    "https://images.prom.ua/4483356854_geleva-gel-akumulyatorna.jpg"
+  ],
+  "accessories": []
+}

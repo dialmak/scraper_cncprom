@@ -1,0 +1,33 @@
+{
+  "id": "496267840",
+  "name": "Контролер ЧПК на 4 осі RMHV3.1",
+  "sku": "05-008",
+  "url": "https://cncprom.ua/ua/p496267840-kontroller-chpu-osi.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "USB"],
+    ["Кількість координат", "4 шт"],
+    ["Живлення", "18-32 V"],
+    ["Тип під'єднуваного датчика", "NPN"]
+  ],
+  "specs": [
+    ["kontroller_rmhv3.1_instruktsiya.pdf", "https://storage.ua.prom.st/1600826_kontroller_rmhv3.1_instruktsiya.pdf"],
+    ["Контролер RMHV2.1 (інструкція).pdf", "https://storage.ua.prom.st/2358282_kontroler_rmhv2.1_instruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1379388360_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/1379388368_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/1379388367_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/612850858_kontroler-chpk-na.jpg"
+  ],
+  "accessories": [
+    "406571759",
+    "6349347",
+    "492139545",
+    "420752309",
+    "6896760",
+    "445157486",
+    "445191653",
+    "6349302",
+    "6896754"
+  ]
+}

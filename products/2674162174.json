@@ -1,0 +1,29 @@
+{
+  "id": "2674162174",
+  "name": "Кроковий сервопривід з енкодером (зворотний зв'язок) 86EBP111ALC-TKО + ZDM-2HA860AJWL, 4.5 Nm",
+  "sku": "12-616",
+  "url": "https://cncprom.ua/ua/p2674162174-shagovyj-servoprivod-enkoderom.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Кількість фаз", "2"],
+    ["Тип зворотного зв'язку", "Енкодер"],
+    ["Номінальна частота обертання валу", "1000 об/хв"],
+    ["Максимальна частота обертання валу", "2000 об/хв"],
+    ["Номінальний струм", "6 А"],
+    ["Стан", "Новий"],
+    ["Вага", "3.16 кг"],
+    ["Захист від перевантажень", "Так"],
+    ["Захист від перегріву", "Так"],
+    ["Захист від перегрівання", "Так"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6743692282_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/6743692504_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/6743692704_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/6715187740_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/6715187585_krokovij-servoprivid-z.jpg",
+    "https://images.prom.ua/6715187865_krokovij-servoprivid-z.jpg"
+  ],
+  "accessories": []
+}

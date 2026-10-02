@@ -1,0 +1,21 @@
+{
+  "id": "1692410184",
+  "name": "Інтерфейсна плата на 5 осей Mesa 7I96S для верстата з ЧПК, комутаційна плата контролер керування LinuxCNC",
+  "sku": "05-072",
+  "url": "https://cncprom.ua/ua/p1692410184-interfejsnaya-plata-osej.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/4029489986_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/4029490100_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/4029489951_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/4029489654_interfejsna-plata-na.jpg"
+  ],
+  "accessories": [
+    "1688325070",
+    "1688323715"
+  ]
+}

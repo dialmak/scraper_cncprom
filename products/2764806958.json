@@ -1,0 +1,24 @@
+{
+  "id": "2764806958",
+  "name": "Кабель живлення змінного струму 250 V, 10 A",
+  "sku": "НР02-023",
+  "url": "https://cncprom.ua/ua/p2764806958-kabel-pitaniya-peremennogo.html",
+  "attrs": [
+    ["Висота", "38 мм"],
+    ["Маса", "0.15 кг"],
+    ["Ширина", "38 мм"],
+    ["Напруга зарядки", "250 В"],
+    ["Напруга живильної мережі", "220 В"],
+    ["Стан", "Новий"],
+    ["Струм заряду", "10 А"],
+    ["Колір", "Чорний"],
+    ["Довжина:", "150 см"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6845694465_kabel-zhivlennya-zminnogo.jpg",
+    "https://images.prom.ua/6845725804_kabel-zhivlennya-zminnogo.jpg",
+    "https://images.prom.ua/6845726166_kabel-zhivlennya-zminnogo.jpg"
+  ],
+  "accessories": []
+}

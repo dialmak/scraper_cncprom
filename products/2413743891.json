@@ -1,0 +1,28 @@
+{
+  "id": "2413743891",
+  "name": "Колекторний електродвигун 1300W 60V 20A",
+  "sku": "12-962",
+  "url": "https://cncprom.ua/ua/p2413743891-kollektornyj-elektrodvigatel-1300w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Ступінь захисту IP", "0"],
+    ["Матеріал корпусу", "Метал"],
+    ["Тип двигуна", "Колекторний"],
+    ["Потужність", "1.3 кВт"],
+    ["Споживаний струм", "20.0"],
+    ["Висота", "190 мм"],
+    ["Довжина:", "380.0"],
+    ["Діаметр вала", "22"],
+    ["Маса", "20 кг"],
+    ["Напруга", "60"],
+    ["Частота обертання", "3500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6372387769_kolektornij-elektrodvigun-1300w.jpg",
+    "https://images.prom.ua/6372387771_kolektornij-elektrodvigun-1300w.jpg",
+    "https://images.prom.ua/6372387768_kolektornij-elektrodvigun-1300w.jpg",
+    "https://images.prom.ua/6372387779_kolektornij-elektrodvigun-1300w.jpg"
+  ],
+  "accessories": []
+}

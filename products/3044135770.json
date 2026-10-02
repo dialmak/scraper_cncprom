@@ -1,0 +1,25 @@
+{
+  "id": "3044135770",
+  "name": "Вимикач кінцевий CHINT YBLX-ME/8108, (важільний, з роликом)",
+  "sku": "03-170",
+  "url": "https://cncprom.ua/ua/p3044135770-vyklyuchatel-konechnyj-chint.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.153 кг"],
+    ["Конструктивне виконання приводу", "Важіль з роликом"],
+    ["Механічна зносостійкість", "600000 циклів"],
+    ["Ступінь захисту IP", "62"],
+    ["Висота", "50 мм"],
+    ["Довжина", "124 мм"],
+    ["Ширина", "28 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7384552870_vimikach-kintsevij-chint.jpg",
+    "https://images.prom.ua/7384552869_vimikach-kintsevij-chint.jpg",
+    "https://images.prom.ua/7384552868_vimikach-kintsevij-chint.jpg",
+    "https://images.prom.ua/7384552871_vimikach-kintsevij-chint.jpg",
+    "https://images.prom.ua/7384552890_vimikach-kintsevij-chint.jpg"
+  ],
+  "accessories": []
+}

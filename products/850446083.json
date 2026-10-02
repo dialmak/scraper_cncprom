@@ -1,0 +1,35 @@
+{
+  "id": "850446083",
+  "name": "Радіатор зі штуцерами під вентилятор 120х120",
+  "sku": "19-101",
+  "url": "https://cncprom.ua/ua/p850446083-radiator-shtutserami-pod.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Колір", "Чорний"],
+    ["Висота (мм)", "32"],
+    ["Діаметр отворів трубок (мм)", "7"],
+    ["Діаметр трубок (мм)", "9.5"],
+    ["Довжина (мм)", "160 мм"],
+    ["Кількість в пакованні", "1 шт."],
+    ["Конструкція радіатора", "Трубчаста"],
+    ["Матеріал", "Алюміній"],
+    ["Тип комплектуючого", "Радіатор"],
+    ["Ширина (мм)", "120"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1494338357_radiator-zi-shtutserami.jpg",
+    "https://images.prom.ua/1494338692_radiator-zi-shtutserami.jpg",
+    "https://images.prom.ua/1494338679_radiator-zi-shtutserami.jpg",
+    "https://images.prom.ua/1494338878_radiator-zi-shtutserami.jpg",
+    "https://images.prom.ua/1494477335_radiator-zi-shtutserami.jpg"
+  ],
+  "accessories": [
+    "829824502",
+    "6224530",
+    "801033671",
+    "802436097",
+    "469871279",
+    "476134370"
+  ]
+}

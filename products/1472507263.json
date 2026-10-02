@@ -1,0 +1,31 @@
+{
+  "id": "1472507263",
+  "name": "Регулятор обертів двигуна 2000W на симісторі BTA16-600B (Дімер)",
+  "sku": "03-051",
+  "url": "https://cncprom.ua/ua/p1472507263-regulyator-oborotov-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "39 кг"],
+    ["Стан", "Новий"],
+    ["Тип під'єднання", "гвинтові клеми"],
+    ["Вхідна напруга", "АС 110-220V"],
+    ["Діапазон регулювання напруги", "50-220 V"],
+    ["Максимальна потужність", "2000 В"],
+    ["Охолодження", "Повітряне"],
+    ["Робоча частота", "50 Гц"],
+    ["Розмір", "60x48x28 (мм)"],
+    ["Тип охолодження", "радіатор пасивний"],
+    ["Тип тиристора", "Семістор"],
+    ["Тип керування", "ручний (повернення резистора)"]
+  ],
+  "specs": [
+    ["BTA16-600B.pdf", "https://storage.ua.prom.st/1888727_bta16_600b.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3311502847_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/3311503962_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/3311504257_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/3311504351_regulyator-obertiv-dviguna.jpg"
+  ],
+  "accessories": []
+}

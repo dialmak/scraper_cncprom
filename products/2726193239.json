@@ -1,0 +1,30 @@
+{
+  "id": "2726193239",
+  "name": "BMS JK-B2A8S-20Р, 200A, для LiFePO4/Li-ion/LTO (4S-8S), 2A активного балансування",
+  "sku": "05-343",
+  "url": "https://cncprom.ua/ua/p2726193239-bms-b2a8s-20r.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.42 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Активний збалансований струм", "2 A"],
+    ["Кількість комірок", "4s-8s"],
+    ["Струм заряду/розряду", "200 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3131527_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6798268124_bms-jk-b2a8s-20r-200a.jpg",
+    "https://images.prom.ua/6798268054_bms-jk-b2a8s-20r-200a.jpg",
+    "https://images.prom.ua/7156819384_bms-jk-b2a8s-20r-200a.jpg",
+    "https://images.prom.ua/6798268110_bms-jk-b2a8s-20r-200a.jpg"
+  ],
+  "accessories": []
+}

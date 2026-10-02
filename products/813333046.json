@@ -1,0 +1,29 @@
+{
+  "id": "813333046",
+  "name": "Бездротовий пульт керування з енкодером WHB03B для NcStudio",
+  "sku": "01-006",
+  "url": "https://cncprom.ua/ua/p813333046-besprovodnoj-pult-upravleniya.html",
+  "attrs": [
+    ["Вага", "365 г"],
+    ["Висота", "35 мм"],
+    ["Довжина", "200 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "85 мм"],
+    ["Живлення", "1.5-3 В"],
+    ["Тип комплектуючого", "Бездротовий пульт керування для верстата з ЧПК"],
+    ["Керувальна програма", "NcStudio"],
+    ["Енкодер із ручним керуванням", "100 імпульсів/перевертень"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації пульта управління з енкодером.pdf", "https://storage.ua.prom.st/2370135_posibnik_z_ekspluatatsiyi__ravlinnya_z_enkoderom.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1407567110_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1407567379_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1407567310_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1407567291_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1407566878_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1407567132_bezdrotovij-pult-keruvannya.jpg"
+  ],
+  "accessories": []
+}

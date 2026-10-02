@@ -1,0 +1,28 @@
+{
+  "id": "690312738",
+  "name": "Інвертор HY0D7523B (VFD) 0.75KW 3.4A 220-250V",
+  "sku": "14-012",
+  "url": "https://cncprom.ua/ua/p690312738-invertor-hy0d7523b-vfd.html",
+  "attrs": [
+    ["Вхід фаз", "1 або 3"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "220±15%"],
+    ["Вхідна напруга (В)", "220"],
+    ["Вихід фаз", "3"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "208-240VAC"],
+    ["Потужність, Вт", "750 Вт"],
+    ["Ток", "3.4А"],
+    ["Частота (Гц)", "400"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/854947907_invertor-hy0d7523b-vfd.jpg",
+    "https://images.prom.ua/854947917_invertor-hy0d7523b-vfd.jpg",
+    "https://images.prom.ua/848421984_invertor-hy0d7523b-vfd.jpg",
+    "https://images.prom.ua/854947978_invertor-hy0d7523b-vfd.jpg",
+    "https://images.prom.ua/848421996_invertor-hy0d7523b-vfd.jpg",
+    "https://images.prom.ua/2613124676_invertor-hy0d7523b-vfd.jpg"
+  ],
+  "accessories": []
+}

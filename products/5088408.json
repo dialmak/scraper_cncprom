@@ -1,0 +1,31 @@
+{
+  "id": "5088408",
+  "name": "600х400, верстат із ЧПК, з LPT, КГП + VFD, 0.8 кВт, на 3 осі, фрезерно-гравірувальний з водяним охолодженням",
+  "sku": "10-004",
+  "url": "https://cncprom.ua/ua/p5088408-600h400-stanok-chpu.html",
+  "attrs": [
+    ["Довжина столу", "745 мм"],
+    ["Тип системи ЧПУ верстата", "трьох-координатна"],
+    ["Ширина столу", "480 мм"],
+    ["Кількість шпинделів", "1 шт."],
+    ["Стан", "Новий"],
+    ["Тип верстата", "Фрезерно-гравірувальний верстат"],
+    ["ЧПУ", "Так"],
+    ["Інтерфейс під'єднання", "LPT"],
+    ["Кількість осей", "3"],
+    ["Потужність, Вт", "800 Вт"]
+  ],
+  "specs": [
+    ["Настройка программы Mach3 для 3-х и 4-х осевых фрезерно-гравировальных станков 4030Z и 6040Z (LPT).pdf", "https://storage.ua.prom.st/3271702_nastrojka_programmy_mach3__kov_4030z_i_6040z_lpt.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/881860286_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860272_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860289_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860308_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860315_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860229_600h400-verstat-iz.jpg",
+    "https://images.prom.ua/881860231_600h400-verstat-iz.jpg"
+  ],
+  "accessories": []
+}

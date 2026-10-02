@@ -1,0 +1,22 @@
+{
+  "id": "2395285898",
+  "name": "Електричний колекторний двигун MY1016Z 24V 250W з редуктором,з ніжками, довгий вал + роз'єм",
+  "sku": "12-907",
+  "url": "https://cncprom.ua/ua/p2395285898-elektricheskij-kollektornyj-dvigatel.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Потужність", "0.25 кВт"],
+    ["Напруга", "24 В"],
+    ["Тип збудження", "Від постійних магнітів"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"],
+    ["ККД, не менше", "78 %"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6346718094_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6335203793_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6346718266_elektrichnij-kolektornij-dvigun.jpg"
+  ],
+  "accessories": []
+}

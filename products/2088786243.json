@@ -1,0 +1,24 @@
+{
+  "id": "2088786243",
+  "name": "Контролер MESA 7I95T",
+  "sku": "05-093",
+  "url": "https://cncprom.ua/ua/p2088786243-kontroller-mesa-7i95t.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Тип монтажу", "На DIN рейку"],
+    ["Інтерфейс для підключення зовнішніх пристроїв", "RS485, RS422"],
+    ["Підключення модулів розширення", "Так"],
+    ["Вага", "0.27 кг"],
+    ["Стан", "Новий"],
+    ["Напруга", "5 В"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5358571739_kontroler-mesa-7i95t.jpg",
+    "https://images.prom.ua/5358571749_kontroler-mesa-7i95t.jpg",
+    "https://images.prom.ua/5358571795_kontroler-mesa-7i95t.jpg",
+    "https://images.prom.ua/5358571812_kontroler-mesa-7i95t.jpg"
+  ],
+  "accessories": []
+}

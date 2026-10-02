@@ -1,0 +1,30 @@
+{
+  "id": "2396433806",
+  "name": "Кутовий планетарний редуктор (1:10) для крокового двигуна 110 мм",
+  "sku": "12-122",
+  "url": "https://cncprom.ua/ua/p2396433806-uglovoj-planetarnyj-reduktor.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Матеріал корпусу", "Сталь"],
+    ["Стан", "Нове"],
+    ["Тип", "Редуктор"],
+    ["Тип редуктора", "Планетарний"],
+    ["Вага", "8.65"],
+    ["Вхідний фланець", "110 мм"],
+    ["Діаметр отвору під вхідний вал", "19 мм"],
+    ["Діаметр переднього вала", "19 мм мм"],
+    ["Клас захисту", "IP65"],
+    ["Мoдель", "PX110N010S0H"],
+    ["Передавальне відношення (коефіцієнт зменшення)", "1:10"],
+    ["Серія", "PXW"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6364534732_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6364534765_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6364534743_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6364534766_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6364534748_kutovij-planetarnij-reduktor.jpg"
+  ],
+  "accessories": []
+}

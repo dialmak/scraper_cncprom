@@ -1,0 +1,24 @@
+{
+  "id": "2381092036",
+  "name": "Контролер безколекторного двигуна 48-60V 800W",
+  "sku": "02-410",
+  "url": "https://cncprom.ua/ua/p2381092036-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Тип", "Контролер"],
+    ["Вага", "580"],
+    ["Потужність", "0.8 кВт"],
+    ["Робоча температура", "-20~50°C"],
+    ["Розміри", "210x85x50 мм"],
+    ["Максимальний струм", "35A"],
+    ["Робоча напруга контролера", "48-60V"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6328978879_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6328939636_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6327485414_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

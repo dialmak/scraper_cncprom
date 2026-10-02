@@ -1,0 +1,35 @@
+{
+  "id": "2054086523",
+  "name": "Лінійний нейлоновий підшипник в корпусі J-SCS12",
+  "sku": "59-701",
+  "url": "https://cncprom.ua/ua/p2054086523-linejnyj-nejlonovyj-podshipnik.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.076 кг"],
+    ["Внутрішній діаметр", "12 мм"],
+    ["Висота", "28 мм"],
+    ["Тип", "закритий, у корпусі"],
+    ["Діапазон робочих температур", "-50°С...+90°С"],
+    ["Довжина:", "36"],
+    ["Мoдель", "J-SCS12"],
+    ["Граничне динамічне навантаження", "1125N"],
+    ["Граничне статичне навантаження", "8064N"],
+    ["Тип підшипника ковзання", "Лінійний"],
+    ["Ширина", "42 мм"],
+    ["Діаметр", "12"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5257634151_linijnij-nejlonovij-pidshipnik.jpg",
+    "https://images.prom.ua/5257634152_linijnij-nejlonovij-pidshipnik.jpg",
+    "https://images.prom.ua/5257634142_linijnij-nejlonovij-pidshipnik.jpg",
+    "https://images.prom.ua/5257634159_linijnij-nejlonovij-pidshipnik.jpg"
+  ],
+  "accessories": [
+    "46330824",
+    "18982557",
+    "46330879",
+    "46332389"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "1060933404",
+  "name": "Автономний контролер DDCS V3.1, 4 осі керування",
+  "sku": "05-015",
+  "url": "https://cncprom.ua/ua/p1060933404-avtonomnyj-kontroller-ddcs.html",
+  "attrs": [
+    ["Вага", "750 г"],
+    ["Внутрішня операційна система", "заснована на Linux"],
+    ["Габаритні розміри", "191х128х37 мм"],
+    ["Інтерфейси під'єднання", "USB, MPG порт, основний порт і зовнішній інтерфейс «Start/Pause/Estop»"],
+    ["Кількість вбудованої пам'яті", "1 Гб"],
+    ["Кількість входів", "16"],
+    ["Кількість виходів", "3"],
+    ["Кількість кнопок керування", "17"],
+    ["Кількість осей керування", "4"],
+    ["Максимальна частота імпульсів", "500 кГц"],
+    ["Мoдель", "DDCS V3.1"],
+    ["Наявність російської мови", "наявний"],
+    ["Основний алгоритм керування", "FPGA"],
+    ["Період контролю кожного місця перебування", "4 мс"],
+    ["Виробник", "Digital Dream Automation Technology Co., Ltd."],
+    ["Процесор", "ARM9"],
+    ["Тип під'єднуваних датчиків", "NPN"],
+    ["Тип роботи", "автономний"],
+    ["Функція керування швидкістю шпинделя", "наявний"],
+    ["Екран", "5 дюймів TFT, роздільна здатність 480*272"],
+    ["Електроживлення", "24 V DC (мінімальний струм 0.5 A)"]
+  ],
+  "specs": [
+    ["інструкція до контролера DDCS_V3.1 2.pdf", "https://storage.ua.prom.st/2932193_instruktsiya_do_kontrolera_ddcs_v3.1_2.pdf"],
+    ["DDCS V31 MANUAL V3.pdf", "https://storage.ua.prom.st/1605263_ddcs_v31_manual_v3.pdf"],
+    ["Інструкція до контролера DDCS V1.1 (rus).pdf", "https://storage.ua.prom.st/2359059_nstruktsiya_do_kontrolera_ddcs_v1.1_rus.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3092638728_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/3092638820_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/3092638745_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/3092638822_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/3092638879_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/3092638959_avtonomnij-kontroler-ddcs.jpg"
+  ],
+  "accessories": [
+    "566146926",
+    "6349268",
+    "6349187"
+  ]
+}

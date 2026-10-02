@@ -1,0 +1,26 @@
+{
+  "id": "1018952022",
+  "name": "Генератор прямокутних імпульсів на базі мікросхеми NE555",
+  "sku": "05-044",
+  "url": "https://cncprom.ua/ua/p1018952022-generator-pryamokutnih-impulsiv.html",
+  "attrs": [
+    ["Вага", "6.3 г"],
+    ["Вихідний струм", "35 мА"],
+    ["Габаритні розміри", "31х22х14 мм"],
+    ["Діапазон регулювання частоти", "1 Hz – 200 kHz"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Напруга живлення", "5 - 15 VDC"],
+    ["Робоча температура", "0...+70°C"],
+    ["Регулювання скваності", "50 - 100 %"],
+    ["Стан", "Нове"],
+    ["Тип комплектуючого", "Генератор імпульсів"],
+    ["Форма імпульсів", "прямокутна"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3083563564_generator-pryamokutnih-impulsiv.jpg",
+    "https://images.prom.ua/3083562930_generator-pryamokutnih-impulsiv.jpg",
+    "https://images.prom.ua/3083563602_generator-pryamokutnih-impulsiv.jpg"
+  ],
+  "accessories": []
+}

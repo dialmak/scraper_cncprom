@@ -1,0 +1,33 @@
+{
+  "id": "1331850941",
+  "name": "Лінійний підшипник (каретка) SBR16LUU подовжений",
+  "sku": "58-006",
+  "url": "https://cncprom.ua/ua/p1331850941-linejnyj-podshipnik-karetka.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Країна виробник", "Китай"],
+    ["Тип підшипника кочення", "Кульковий"],
+    ["Форма тіла кочення", "Кулька"],
+    ["Динамічне навантаження", "15181 Н"],
+    ["Статичне навантаження", "23144.0"],
+    ["Внутрішній діаметр", "16 мм."],
+    ["Діаметр", "16"],
+    ["Стопорне кільце", "Да"],
+    ["Сепаратор", "Да"],
+    ["Матеріал сепаратора", "Полімер"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6592552412_linijnij-pidshipnik-karetka.jpg",
+    "https://images.prom.ua/2849134826_linijnij-pidshipnik-karetka.jpg",
+    "https://images.prom.ua/2849134827_linijnij-pidshipnik-karetka.jpg",
+    "https://images.prom.ua/2849134828_linijnij-pidshipnik-karetka.jpg"
+  ],
+  "accessories": [
+    "46300716",
+    "981067471",
+    "6586899",
+    "46300730",
+    "46300757"
+  ]
+}

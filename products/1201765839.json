@@ -1,0 +1,26 @@
+{
+  "id": "1201765839",
+  "name": "Блок пилозахисту HIWIN HG20ZZ",
+  "sku": "61-111",
+  "url": "https://cncprom.ua/ua/p1201765839-blok-pylezaschity-hiwin.html",
+  "attrs": [
+    ["Виробник", "Hiwin"],
+    ["Країна виробник", "Тайвань"],
+    ["Водостійкість", "Так"],
+    ["Колір", "Чорний"],
+    ["Вага", "27 г"],
+    ["Мoдель", "HG20ZZ"],
+    ["Серія", "ZZ"],
+    ["Типорозмір", "20\""],
+    ["Товщина скребка", "1.5 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2441229591_blok-pilozahistu-hiwin.jpg",
+    "https://images.prom.ua/2441344226_blok-pilozahistu-hiwin.jpg"
+  ],
+  "accessories": [
+    "6897785",
+    "6587244"
+  ]
+}

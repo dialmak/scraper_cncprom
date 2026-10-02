@@ -1,0 +1,26 @@
+{
+  "id": "935927529",
+  "name": "Фільтр живлення EMI CW2B-10A-T(001) (роз'єм IEC)",
+  "sku": "03-105",
+  "url": "https://cncprom.ua/ua/p935927529-filtr-pitaniya-emi.html",
+  "attrs": [
+    ["Виробник", "Omnicomm"],
+    ["Стан", "Новий"],
+    ["Вага", "47"],
+    ["Кількість в пакованні", "1 шт."],
+    ["Мoдель", "EMI CW2B-10A-T(001)"],
+    ["Номінальна напруга", "115/250VAC"],
+    ["Номінальний струм", "1~10A"],
+    ["Робоча частота", "50/60Hz"],
+    ["Сікет", "IEC"],
+    ["Тип комплектуючого", "Фільтр живлення"],
+    ["Струм витоку", "<0.6mA"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6248049468_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/6248049465_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/6248049463_filtr-zhivlennya-emi.jpg"
+  ],
+  "accessories": []
+}

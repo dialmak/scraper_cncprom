@@ -1,0 +1,25 @@
+{
+  "id": "2381092031",
+  "name": "Контролер безколекторного двигуна 48-60V 500W",
+  "sku": "02-409",
+  "url": "https://cncprom.ua/ua/p2381092031-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Тип", "Контролер"],
+    ["Вага", "480"],
+    ["Потужність", "0.5 кВт"],
+    ["Робоча температура", "-20~50°C"],
+    ["Розміри", "178x85x50 мм"],
+    ["Максимальний струм", "30A"],
+    ["Робоча напруга контролера", "48-60V"],
+    ["Потужність", "500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6328974383_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6327485391_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6327485414_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

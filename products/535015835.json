@@ -1,0 +1,31 @@
+{
+  "id": "535015835",
+  "name": "Шпиндельний радіально-упорний кульковий підшипник 7005С P4",
+  "sku": "20-004",
+  "url": "https://cncprom.ua/ua/p535015835-shpindelnyj-radialno-upornyj.html",
+  "attrs": [
+    ["Вид навантаження", "Упорна"],
+    ["Динамічне навантаження", "12.9 Н"],
+    ["Матеріал виробу", "Сталь"],
+    ["Статичне навантаження", "8.7 Н"],
+    ["Тип підшипника кочення", "Кульковий"],
+    ["Внутрішній діаметр", "25 мм"],
+    ["Висота", "15 мм"],
+    ["Зовнішній діаметр", "47 мм"],
+    ["Клас точності", "4.0"],
+    ["Матеріал сепаратора", "Текстоліт"],
+    ["Сепаратор", "Так"],
+    ["Вага", "0.093"],
+    ["Угол контакта", "15"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/789886149_shpindelnij-radialno-upornij-kulkovij.jpg",
+    "https://images.prom.ua/789886160_shpindelnij-radialno-upornij-kulkovij.jpg",
+    "https://images.prom.ua/789886184_shpindelnij-radialno-upornij-kulkovij.jpg",
+    "https://images.prom.ua/789886162_shpindelnij-radialno-upornij-kulkovij.jpg",
+    "https://images.prom.ua/789755859_shpindelnij-radialno-upornij-kulkovij.jpg",
+    "https://images.prom.ua/789755835_shpindelnij-radialno-upornij-kulkovij.jpg"
+  ],
+  "accessories": []
+}

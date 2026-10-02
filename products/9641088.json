@@ -1,0 +1,34 @@
+{
+  "id": "9641088",
+  "name": "Шпиндель для ЧПК 1,5 kw з повітряним охолодженням, діаметр 65 мм ER11",
+  "sku": "17-002",
+  "url": "https://cncprom.ua/ua/p9641088-shpindel-dlya-chpu.html",
+  "attrs": [
+    ["Діаметр", "65 мм"],
+    ["Стан", "Новий"],
+    ["Биття", "0.05"],
+    ["Вхідна напруга (В)", "220"],
+    ["Кількість підшипників", "4 шт."],
+    ["Корпус", "круглий"],
+    ["Потужність", "1.5 кВт"],
+    ["Потужність, Вт", "1500 Вт"],
+    ["Подшипники", "2X7002, 2X7002"],
+    ["Робоча напруга", "220 В"],
+    ["Швидкість обертання", "24000 об./хв."],
+    ["Цанга", "ER11"],
+    ["Цанговий патрон", "ER11"],
+    ["Частота", "400 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/677184800_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/677182724_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/677182986_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/820015124_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/7025970117_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/812744346_shpindel-dlya-chpk.jpg"
+  ],
+  "accessories": [
+    "6013137"
+  ]
+}

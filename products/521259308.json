@@ -1,0 +1,23 @@
+{
+  "id": "521259308",
+  "name": "USB - LPT адаптер NC200 для ЧПК",
+  "sku": "05-009",
+  "url": "https://cncprom.ua/ua/p521259308-usb-lpt-adapter.html",
+  "attrs": [
+    ["Тип", "Перехідник"],
+    ["Габаритні розміри", "57 х 54 х 22 мм"],
+    ["Інтерфейс", "USB, LPT, MPG"],
+    ["Сумісність з ОС", "Windows XP, 7, 8, 10"]
+  ],
+  "specs": [
+    ["MACH3 LPT Port USB Card NVUM LPT (English version).pdf", "https://storage.ua.prom.st/967614_mach3_lpt_port__sh_version.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/760726501_usb-lpt.jpg",
+    "https://images.prom.ua/760726492_usb-lpt.jpg",
+    "https://images.prom.ua/760726495_usb-lpt.jpg",
+    "https://images.prom.ua/760726520_usb-lpt.jpg",
+    "https://images.prom.ua/760726577_usb-lpt.jpg"
+  ],
+  "accessories": []
+}

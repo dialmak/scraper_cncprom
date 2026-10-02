@@ -1,0 +1,43 @@
+{
+  "id": "988560238",
+  "name": "Система управління RuiDa RDC6442S-B(EC), 4 осі управління",
+  "sku": "05-035",
+  "url": "https://cncprom.ua/ua/p988560238-sistema-upravleniya-ruida.html",
+  "attrs": [
+    ["Вага", "1.1 кг"],
+    ["Стан", "Новий"],
+    ["Вхідний порт", "4 канали"],
+    ["Вихідний порт", "4 канали"],
+    ["Діапазон робочих температур", "+15 °C...+35 °C"],
+    ["Дисплей", "3.5\" кольоровий TFT LCD"],
+    ["Інтерфейс під'єднання", "USB, Ethernet, Wi-Fi"],
+    ["Кількість можливих під'єднуваних лазерних трубок", "2 шт."],
+    ["Кількість кінцевих датчиків", "4 шт."],
+    ["Кількість координат керування", "4 шт."],
+    ["Кількість світлодіодних індикаторів", "15 шт."],
+    ["Мoдель", "DC6442S-B(EC)"],
+    ["Обсяг пам'яті", "128 Мб"],
+    ["Операційна система ПК", "Windows XP/7/8/10 (x32/x64)"],
+    ["Відносна вологість", "<80%"],
+    ["Підтримуване програмне забезпечення", "CorelDraw, AutoCAD, LaserWork"],
+    ["Підтримувані графічні формати", "CDR, AI, PLT, DXF, DWG, DST, BMP, JPG, PNG, GIF"],
+    ["Регулювання потужності лазера", "апаратна, програмна"],
+    ["Тип комплектуючого", "Контролер"],
+    ["Тип кінцевих датчиків", "індуктивні, механічні"],
+    ["Частота ШИМ", "2-50 кГц"],
+    ["Частота сигналов STEP", "500 кГц"],
+    ["Електроживлення", "DC 24 В, 3 A"]
+  ],
+  "specs": [
+    ["Руководство пользователя RuiDa RDC6442S-B(EC).pdf", "https://storage.ua.prom.st/1343865_rukovodstvo_polzovatelya_ruida_rdc6442s_bec.pdf"],
+    ["Руководство пользователя ПО RDWorks.pdf", "https://storage.ua.prom.st/1343872_rukovodstvo_polzovatelya_po_rdworks.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1837617306_sistema-upravlinnya-ruida.jpg",
+    "https://images.prom.ua/1837617183_sistema-upravlinnya-ruida.jpg",
+    "https://images.prom.ua/1837617902_sistema-upravlinnya-ruida.jpg",
+    "https://images.prom.ua/1837617847_sistema-upravlinnya-ruida.jpg",
+    "https://images.prom.ua/1837617850_sistema-upravlinnya-ruida.jpg"
+  ],
+  "accessories": []
+}

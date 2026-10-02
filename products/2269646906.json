@@ -1,0 +1,26 @@
+{
+  "id": "2269646906",
+  "name": "Кроковий двигун 57BYG250C-C з циліндричним редуктором 1:10 2GN-10K",
+  "sku": "12-037",
+  "url": "https://cncprom.ua/ua/p2269646906-shagovyj-dvigatel-57byg250c.html",
+  "attrs": [
+    ["Висота", "60 мм"],
+    ["Довжина", "137 мм"],
+    ["Ширина", "60 мм"],
+    ["Кількість фаз", "2"],
+    ["Номінальний струм", "3 А"],
+    ["Мінімальна робоча температура", "0 град."],
+    ["Діаметр вала", "8"],
+    ["Максимальна робоча температура", "80"],
+    ["Маса", "1.3 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6072639904_krokovij-dvigun-57byg250c-c.jpg",
+    "https://images.prom.ua/6072640002_krokovij-dvigun-57byg250c-c.jpg",
+    "https://images.prom.ua/6072640063_krokovij-dvigun-57byg250c-c.jpg",
+    "https://images.prom.ua/6072640151_krokovij-dvigun-57byg250c-c.jpg",
+    "https://images.prom.ua/6072640170_krokovij-dvigun-57byg250c-c.jpg"
+  ],
+  "accessories": []
+}

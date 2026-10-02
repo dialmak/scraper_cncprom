@@ -1,0 +1,30 @@
+{
+  "id": "933524510",
+  "name": "Драйвер CW5045, 4.5 А, 20–50 VDC, для крокового двигуна",
+  "sku": "06-001",
+  "url": "https://cncprom.ua/ua/p933524510-drajver-cw5045-45a.html",
+  "attrs": [
+    ["Напруга живлення", "24-50 В"],
+    ["Ток", "1,3 до 4.5А"],
+    ["Ток (A)", "4.5"],
+    ["Струм, А", "4.5"]
+  ],
+  "specs": [
+    ["Посібник користувача, драйвер ЧПУ CW5045 CNC 4.5A.pdf", "https://storage.ua.prom.st/2369971_posibnik_koristuvacha_dra___chpu_cw5045_cnc_4.5a.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3052383978_drajver-cw5045-45.jpg",
+    "https://images.prom.ua/3043125376_drajver-cw5045-45.jpg",
+    "https://images.prom.ua/3043125916_drajver-cw5045-45.jpg",
+    "https://images.prom.ua/3043126216_drajver-cw5045-45.jpg"
+  ],
+  "accessories": [
+    "4057586",
+    "4348106",
+    "6896760",
+    "35093502",
+    "25422762",
+    "4696280",
+    "6896754"
+  ]
+}

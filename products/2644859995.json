@@ -1,0 +1,29 @@
+{
+  "id": "2644859995",
+  "name": "Контролер руху (генератор імпульсів) PG-6X (кріплення на DIN-рейку 35 мм)",
+  "sku": "05-239",
+  "url": "https://cncprom.ua/ua/p2644859995-kontroller-dvizheniya-generator.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Одиниці виміру частоти", "Гц, кГц"],
+    ["Максимальний діапазон частот", "40000"],
+    ["Мінімальний діапазон частот", "300"],
+    ["Стан", "Новий"],
+    ["Вага", "0.075 кг"],
+    ["Висота", "32.5 мм"],
+    ["Довжина", "105.5 мм"],
+    ["Максимальна робоча температура", "50 °С"],
+    ["Мінімальна робоча температура", "-30 °С"],
+    ["Напруга", "25 В"],
+    ["Ширина", "54 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6709038722_kontroler-ruhu-generator.jpg",
+    "https://images.prom.ua/6709038932_kontroler-ruhu-generator.jpg",
+    "https://images.prom.ua/6709039287_kontroler-ruhu-generator.jpg",
+    "https://images.prom.ua/6709039667_kontroler-ruhu-generator.jpg",
+    "https://images.prom.ua/6710855424_kontroler-ruhu-generator.jpg"
+  ],
+  "accessories": []
+}

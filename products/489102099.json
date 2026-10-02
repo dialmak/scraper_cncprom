@@ -1,0 +1,27 @@
+{
+  "id": "489102099",
+  "name": "Ручний генератор імпульсів MPG100 (пульт керування) для верстатів з ЧПК (ЧПУ)",
+  "sku": "01-001",
+  "url": "https://cncprom.ua/ua/p489102099-ruchnoj-generator-impulsov.html",
+  "attrs": [
+    ["Вага", "0.56 кг"],
+    ["Висота", "61 мм"],
+    ["Довжина", "134 мм"],
+    ["Максимальна робоча температура", "75 °С"],
+    ["Напруга", "5 В"],
+    ["Ширина", "69 мм"],
+    ["Одиниці виміру частоти", "кГц"],
+    ["Максимальний діапазон частот", "10"],
+    ["Стан", "Новий"]
+  ],
+  "specs": [
+    ["Мануал MPG100 (ENG).pdf", "https://storage.ua.prom.st/2370141_manual_mpg100_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/690528688_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/690528797_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/690528831_ruchnij-generator-impulsiv.jpg",
+    "https://images.prom.ua/690528900_ruchnij-generator-impulsiv.jpg"
+  ],
+  "accessories": []
+}

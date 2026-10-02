@@ -1,0 +1,30 @@
+{
+  "id": "577154433",
+  "name": "Інтерфейсна плата LPT на 5 координат BL-MACH-V1.1",
+  "sku": "05-002",
+  "url": "https://cncprom.ua/ua/p577154433-interfejsnaya-plata-lpt.html",
+  "attrs": [
+    ["Живлення", "USB"],
+    ["Вхідна напруга", "от +12 до +24В"],
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Клас захисту", "IP20"],
+    ["Кількість координат", "5 шт"],
+    ["Максимальний споживаний струм цифрової частини", "500mA"],
+    ["Тип під'єднуваного датчика", "NPN"]
+  ],
+  "specs": [
+    ["Інтерфейсна плата LPT на 5 координат BL-MACH-V1.1.pdf", "https://storage.ua.prom.st/2359039_nterfejsna_plata_lpt_na_5_koordinat_bl_mach_v1.1.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1118014598_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434784_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434797_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434808_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434785_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434829_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434830_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891434833_interfejsna-plata-lpt.jpg",
+    "https://images.prom.ua/891441593_interfejsna-plata-lpt.jpg"
+  ],
+  "accessories": []
+}

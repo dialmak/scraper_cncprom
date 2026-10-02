@@ -1,0 +1,48 @@
+{
+  "id": "1552379449",
+  "name": "Токарний верстат для металу CZ1440A 1.5 кВт, металообробний настільний токарно-гвинторізний верстат (К2)",
+  "sku": "10-412",
+  "url": "https://cncprom.ua/ua/p1552379449-tokarnyj-stanok-metallu.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Діаметр обробки над станиною", "350 мм"],
+    ["Діаметр обточування над супортом", "220 мм"],
+    ["Діаметр отвору шпинделя", "51 мм"],
+    ["Діаметр пінолі", "32 мм"],
+    ["Кількість шпинделів", "1 шт."],
+    ["Потужність двигуна подачі", "1.5 кВт"],
+    ["Подача заготовки", "Автоматична, Ручна"],
+    ["Споживана потужність", "1.5 кВт"],
+    ["Відстань між центрами", "1000 мм"],
+    ["Стан", "Новий"],
+    ["Тип електродвигуна верстата", "асинхронний"],
+    ["Хід пінолі", "100 мм"],
+    ["ЧПУ", "Ні"],
+    ["Кількість обертів холостого ходу", "1850 об/хв"],
+    ["Кількість швидкостей шпинделя", "8 шт."],
+    ["Вага", "505 кг"],
+    ["Висота", "650 мм"],
+    ["Довжина", "1780 мм"],
+    ["Ширина", "680 мм"],
+    ["Довжина заготівлі", "1000 мм"],
+    ["Конус задньої бабки", "Морзе №3 (MT3)"],
+    ["Напруга", "380 В"],
+    ["Комплектація", "З підставкою під верстат (К2)"]
+  ],
+  "specs": [
+    ["Діапазон затиску токарних патронів.pdf", "https://storage.ua.prom.st/2367260_diapazon_zatisku_tokarnih_patroniv.pdf"],
+    ["Загальні правила і вказівки при роботі на верстаті.pdf", "https://storage.ua.prom.st/2371477_zagalni_pravila_i_vkazivk__ri_roboti_na_verstati.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3571772303_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3571770139_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3568801290_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/4363517525_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3568801310_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3566999839_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3568801356_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3571770048_tokarnij-verstat-dlya.jpg",
+    "https://images.prom.ua/3570093027_tokarnij-verstat-dlya.jpg"
+  ],
+  "accessories": []
+}

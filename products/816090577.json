@@ -1,0 +1,33 @@
+{
+  "id": "816090577",
+  "name": "Водяний насос занурювальний DK-5000, 105W 220AC для охолодження шпинделя",
+  "sku": "18-004",
+  "url": "https://cncprom.ua/ua/p816090577-pogruzhnoj-vodyanoj-nasos.html",
+  "attrs": [
+    ["Вага", "2.34 кг"],
+    ["Кількість швидкостей", "1 шт."],
+    ["Напруга мережі", "220~240 В"],
+    ["Частота струму", "50 Гц"],
+    ["Висота", "150 мм"],
+    ["Довжина", "175 мм"],
+    ["Ширина", "100 мм"],
+    ["Потужність, Вт", "105 Вт"],
+    ["Продуктивність", "5000 літрів/год"],
+    ["Стан", "Нове"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1413963213_vodyanij-nasos-zanuryuvalnij.jpg",
+    "https://images.prom.ua/1413963380_vodyanij-nasos-zanuryuvalnij.jpg",
+    "https://images.prom.ua/1413963343_vodyanij-nasos-zanuryuvalnij.jpg",
+    "https://images.prom.ua/1413963385_vodyanij-nasos-zanuryuvalnij.jpg",
+    "https://images.prom.ua/1413963382_vodyanij-nasos-zanuryuvalnij.jpg"
+  ],
+  "accessories": [
+    "6224530",
+    "801033671",
+    "802436097",
+    "469871279",
+    "812333521"
+  ]
+}

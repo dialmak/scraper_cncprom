@@ -1,0 +1,26 @@
+{
+  "id": "2797470581",
+  "name": "Трикоординатний прецизійний зонд CF-38, 3D-тригерний центрошукач, цифровий сенсорний детектор країв, Type-C",
+  "sku": "10-089",
+  "url": "https://cncprom.ua/ua/p2797470581-trehkoordinatnyj-pretsizionnyj-zond.html",
+  "attrs": [
+    ["Вага", "155 г"],
+    ["Висота", "105 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "38 мм"],
+    ["Джерело живлення", "кнопкова батарейка CR1632, 3 V"],
+    ["Точність позиціювання", "≥ 0,005"],
+    ["Довжина кабелю Туре-С", "194 см"],
+    ["Захисний хід зонда", "площина X.Y ± 20°, напрямок Z + 2,5 мм"],
+    ["Термін служби тригера", "≤ 3 мільйони разів"],
+    ["Напрямок зонда", "± X ± Y + Z"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6899193648_trikoordinatnij-pretsizijnij-zond.jpg",
+    "https://images.prom.ua/6895747908_trikoordinatnij-pretsizijnij-zond.jpg",
+    "https://images.prom.ua/6899209334_trikoordinatnij-pretsizijnij-zond.jpg",
+    "https://images.prom.ua/6900639623_trikoordinatnij-pretsizijnij-zond.jpg"
+  ],
+  "accessories": []
+}

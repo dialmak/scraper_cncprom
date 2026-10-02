@@ -1,0 +1,27 @@
+{
+  "id": "2782685341",
+  "name": "Верстат з ЧПК C-6040, 2.2 kW, фрезерно-гравірувальний  з водяним охолодженням",
+  "sku": "10-311",
+  "url": "https://cncprom.ua/ua/p2782685341-stanok-chpu-6040.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Тип верстата", "Фрезерно-гравірувальний верстат"],
+    ["ЧПУ", "Так"],
+    ["Споживана потужність", "2.2 кВт"],
+    ["Кількість шпинделів", "1 шт."],
+    ["Подача заготовки", "Автоматична"],
+    ["Потужність", "2200"]
+  ],
+  "specs": [
+    ["Інструкція користувача - фрезерно-гравірувальний станок (1).pdf", "https://storage.ua.prom.st/3120348_nstruktsiya_koristuvacha___raviruvalnij_stanok_1.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6876478627_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6879989372_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6880025627_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6882081533_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6882090280_verstat-z-chpk.jpg",
+    "https://images.prom.ua/6915634489_verstat-z-chpk.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "2826946908",
+  "name": "Кроковий двигун Makerbase Servo42D 485, NEMA17 із замкнутим циклом",
+  "sku": "12-096",
+  "url": "https://cncprom.ua/ua/p2826946908-shagovyj-dvigatel-makerbase.html",
+  "attrs": [],
+  "specs": [
+    ["Схема SERVO42D(1).pdf", "https://storage.ua.prom.st/3151148_shema_servo42d1.pdf"],
+    ["MKS SERVO42D Manual.pdf", "https://storage.ua.prom.st/3147411_mks_servo42d_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6940833095_krokovij-dvigun-makerbase.jpg",
+    "https://images.prom.ua/6944454831_krokovij-dvigun-makerbase.jpg",
+    "https://images.prom.ua/6944454833_krokovij-dvigun-makerbase.jpg",
+    "https://images.prom.ua/6944454835_krokovij-dvigun-makerbase.jpg",
+    "https://images.prom.ua/6942446441_krokovij-dvigun-makerbase.jpg",
+    "https://images.prom.ua/6992761611_krokovij-dvigun-makerbase.jpg"
+  ],
+  "accessories": []
+}

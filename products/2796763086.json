@@ -1,0 +1,28 @@
+{
+  "id": "2796763086",
+  "name": "Джойстик-маніпулятор HKC-622, двопозиційний",
+  "sku": "01-036",
+  "url": "https://cncprom.ua/ua/p2796763086-dzhojstik-manipulyator-hkc.html",
+  "attrs": [
+    ["Вага", "0.071 г"],
+    ["Висота", "128 мм"],
+    ["Довжина", "46 мм"],
+    ["Максимальна робоча температура", "45 град."],
+    ["Мінімальна робоча температура", "-25 град."],
+    ["Ширина", "43 мм"],
+    ["Номінальний струм", "10 А"],
+    ["Робоча температура", "-25°C... 45°C"],
+    ["Тип контактів", "Немає"],
+    ["Механічний термін служби", "50 000"],
+    ["Максимальна напруга використання", "600 V"],
+    ["Положення", "2"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6891121311_dzhojstik-manipulyator-hkc-622-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6892138853_dzhojstik-manipulyator-hkc-622-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6892009623_dzhojstik-manipulyator-hkc-622-dvopozitsijnij.jpg",
+    "https://images.prom.ua/6892140272_dzhojstik-manipulyator-hkc-622-dvopozitsijnij.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "17665214",
+  "name": "Інвертор (частотник) GT-4R0G-4, 4KW 380V три фази",
+  "sku": "14-005",
+  "url": "https://cncprom.ua/ua/p17665214-invertor-chastotnik-4r0g.html",
+  "attrs": [
+    ["Вхід фаз", "3 фази"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "380±15%"],
+    ["Вхідна напруга (В)", "380"],
+    ["Вихід фаз", "3 фази"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "380VAC"],
+    ["Вихідний струм", "9.0 А"],
+    ["Потужність, Вт", "4000 Вт"],
+    ["Частота (Гц)", "400"]
+  ],
+  "specs": [
+    ["Інструкція з експлуатації інвертора серії GT .pdf", "https://storage.ua.prom.st/3453942_nstruktsiya_z_ekspluatats___invertora_seriyi_gt_.pdf"],
+    ["GT Series посібник користувача англійською.pdf", "https://storage.ua.prom.st/3453941_gt_series_posibnik_koristuvacha_anglijskoyu.pdf"],
+    ["GT Series посібник користувача анг.pdf", "https://storage.ua.prom.st/3453940_gt_series_posibnik_koristuvacha_ang.pdf"],
+    ["Налаштування інвертора GT для шпинделів 400 HZ.pdf", "https://storage.ua.prom.st/3453938_nalashtuvannya_invertora___lya_shpindeliv_400_hz.pdf"],
+    ["Налаштування інвертора серії GT для шпинделів та асинхронних двигунів 50 HZ.pdf", "https://storage.ua.prom.st/3453937_nalashtuvannya_invertora___ronnih_dviguniv_50_hz.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/830135636_invertor-chastotnik-gt-4r0g-4.jpg",
+    "https://images.prom.ua/830135701_invertor-chastotnik-gt-4r0g-4.jpg",
+    "https://images.prom.ua/830135703_invertor-chastotnik-gt-4r0g-4.jpg",
+    "https://images.prom.ua/830135738_invertor-chastotnik-gt-4r0g-4.jpg",
+    "https://images.prom.ua/830135762_invertor-chastotnik-gt-4r0g-4.jpg",
+    "https://images.prom.ua/830354140_invertor-chastotnik-gt-4r0g-4.jpg"
+  ],
+  "accessories": [
+    "5082644"
+  ]
+}

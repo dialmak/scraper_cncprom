@@ -1,0 +1,25 @@
+{
+  "id": "2381092034",
+  "name": "Контролер безколекторного двигуна 48-60V 2500W",
+  "sku": "02-402",
+  "url": "https://cncprom.ua/ua/p2381092034-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Тип", "Контролер"],
+    ["Вага", "2800"],
+    ["Потужність", "2.5 кВт"],
+    ["Робоча температура", "-20~50°C"],
+    ["Розміри", "340x140x80 мм"],
+    ["Максимальний струм", "100A"],
+    ["Робоча напруга контролера", "48-60V"],
+    ["Потужність", "2500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6317545470_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6317545472_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6319262252_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "1482498378",
+  "name": "PLC промисловий контрольний модуль, програмований логічний контрольний модуль FX1N-14MT",
+  "sku": "05-080",
+  "url": "https://cncprom.ua/ua/p1482498378-plc-promyshlennyj-kontrolnyj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.038 кг"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Висота", "18 мм"],
+    ["Довжина", "72 мм"],
+    ["Ширина", "46 мм"]
+  ],
+  "specs": [
+    ["Контролер мануал.pdf", "https://storage.ua.prom.st/3090624_kontroler_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3344696541_plc-promislovij-kontrolnij.jpg",
+    "https://images.prom.ua/3344696600_plc-promislovij-kontrolnij.jpg",
+    "https://images.prom.ua/3344696819_plc-promislovij-kontrolnij.jpg",
+    "https://images.prom.ua/3344697071_plc-promislovij-kontrolnij.jpg",
+    "https://images.prom.ua/3344697380_plc-promislovij-kontrolnij.jpg"
+  ],
+  "accessories": []
+}

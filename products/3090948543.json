@@ -1,0 +1,29 @@
+{
+  "id": "3090948543",
+  "name": "Електричний кроковий лінійний привід 50 мм/с, 24 В, хід 300 мм, тяга 70 Н (до 7 кг), актуатор BTXL",
+  "sku": "12-341",
+  "url": "https://cncprom.ua/ua/p3090948543-elektricheskij-shagovyj-linejnyj.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Довжина", "480 мм"],
+    ["Ширина", "40 мм"],
+    ["Висота", "75 мм"],
+    ["Вага", "1080 г"],
+    ["Модель:", "BTXL"],
+    ["Тип приводу:", "лінійний актуатор з кроковим двигуном"],
+    ["Номінальна потужність:", "30 Вт"],
+    ["Робоча напруга:", "DC 24 В"],
+    ["Хід штоку:", "300 мм"],
+    ["Швидкість:", "50 мм/с"],
+    ["Рівень захисту:", "IP54"],
+    ["Рівень шуму:", "≤42 дБ"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7496111374_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496107703_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496229245_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496645977_elektrichnij-krokovij-linijnij.jpg"
+  ],
+  "accessories": []
+}

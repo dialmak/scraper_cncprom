@@ -1,0 +1,35 @@
+{
+  "id": "1474607953",
+  "name": "Підвищувальний перетворювач DC-DC на XL6009E1",
+  "sku": "05-068",
+  "url": "https://cncprom.ua/ua/p1474607953-povyshayuschij-preobrazovatel-xl6009e1.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.1 г"],
+    ["Висота", "15 мм"],
+    ["Довжина", "45 мм"],
+    ["Ширина", "21 мм"],
+    ["Вихідна напруга", "35"],
+    ["Вихідний струм, не більш ніж", "4"],
+    ["Захист від перегрівання", "Да"],
+    ["Захист від переполюсування", "Немає"],
+    ["ККД, не менш ніж", "94"],
+    ["Максимальна робоча температура", "85"],
+    ["Максимальна вхідна напруга", "35"],
+    ["Мінімальна вхідна напруга", "3"],
+    ["Номінальна потужність", "0.01"],
+    ["Обмеження робочого струму", "Да"],
+    ["Тип стабілізатора", "Імпульсний"],
+    ["Частота тока", "4"]
+  ],
+  "specs": [
+    ["XL6009E1 DC-DC. Інструкція (ENG).pdf", "https://storage.ua.prom.st/2370673_xl6009e1_dc_dc._nstruktsiya_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3318240259_pidvischuvalnij-peretvoryuvach-dc-dc.jpg",
+    "https://images.prom.ua/3318240331_pidvischuvalnij-peretvoryuvach-dc-dc.jpg",
+    "https://images.prom.ua/3318240350_pidvischuvalnij-peretvoryuvach-dc-dc.jpg",
+    "https://images.prom.ua/3318240564_pidvischuvalnij-peretvoryuvach-dc-dc.jpg"
+  ],
+  "accessories": []
+}

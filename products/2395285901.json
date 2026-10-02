@@ -1,0 +1,24 @@
+{
+  "id": "2395285901",
+  "name": "Електричний колекторний двигун MY1016Z 24V 250W з редуктором без ніжок, короткий вал, із зіркою на 9 зубів",
+  "sku": "12-909",
+  "url": "https://cncprom.ua/ua/p2395285901-elektricheskij-kollektornyj-dvigatel.html",
+  "attrs": [
+    ["Діаметр вала", "11 мм"],
+    ["Маса", "2.3 г"],
+    ["ККД, не менше", "78 %"],
+    ["Матеріал корпусу", "Метал"],
+    ["Напруга", "24 В"],
+    ["Споживаний струм", "14 А"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6395730183_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6395730206_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6317732882_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6395732428_elektrichnij-kolektornij-dvigun.jpg"
+  ],
+  "accessories": []
+}

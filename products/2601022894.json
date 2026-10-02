@@ -1,0 +1,29 @@
+{
+  "id": "2601022894",
+  "name": "Плата керування з портом USB BJJCZ FBL1-B-LV4 для волоконного лазерного верстата під EzCAD2,без підтримки поворотної осі",
+  "sku": "05-250",
+  "url": "https://cncprom.ua/ua/p2601022894-plata-upravleniya-bjjcz.html",
+  "attrs": [
+    ["Вага", "0.19 кг"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Висота", "17 мм"],
+    ["Довжина", "125 мм"],
+    ["Ширина", "85 мм"],
+    ["Максимальна робоча температура", "35 град."],
+    ["Напруга", "5 В"],
+    ["Номінальна сила струму", "3 А"],
+    ["Максимальна температура зберігання", "60 град."],
+    ["Мінімальна температура зберігання", "-20 град."]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6694151843_plata-keruvannya-z.jpg",
+    "https://images.prom.ua/6694152125_plata-keruvannya-z.jpg",
+    "https://images.prom.ua/6694152169_plata-keruvannya-z.jpg",
+    "https://images.prom.ua/6694152249_plata-keruvannya-z.jpg",
+    "https://images.prom.ua/6694152410_plata-keruvannya-z.jpg",
+    "https://images.prom.ua/4095638756_plata-keruvannya-z.jpg"
+  ],
+  "accessories": []
+}

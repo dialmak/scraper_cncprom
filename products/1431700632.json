@@ -1,0 +1,29 @@
+{
+  "id": "1431700632",
+  "name": "Контролер Mesa Electronics 7I87 ізольована плата віддаленого аналогового вводу",
+  "sku": "05-074",
+  "url": "https://cncprom.ua/ua/p1431700632-kontroller-mesa-electronics.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Інтерфейс для підключення зовнішніх пристроїв", "RS422"],
+    ["Підключення модулів розширення", "Так"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Мoдель", "7I87"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["7i87.pdf", "https://storage.ua.prom.st/1819865_7i87.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3174290704_kontroler-mesa-electronics.jpg",
+    "https://images.prom.ua/3174290698_kontroler-mesa-electronics.jpg",
+    "https://images.prom.ua/3174290768_kontroler-mesa-electronics.jpg"
+  ],
+  "accessories": []
+}

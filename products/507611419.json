@@ -1,0 +1,23 @@
+{
+  "id": "507611419",
+  "name": "Шпиндель з автоматичною зміною інструменту (водяне охолодження) 1.8 KW",
+  "sku": "13-007",
+  "url": "https://cncprom.ua/ua/p507611419-shpindel-avtomaticheskoj-smenoj.html",
+  "attrs": [
+    ["Діаметр", "80 мм"],
+    ["Стан", "Новий"],
+    ["Вхідна напруга (В)", "220"],
+    ["Корпус", "круглий"],
+    ["Потужність", "1.8kw кВт"],
+    ["Потужність, Вт", "1800 Вт"],
+    ["Робоча напруга", "220 В"],
+    ["Тип патрона", "ISO20"],
+    ["Частота", "400 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/670005921_shpindel-z-avtomatichnoyu.jpg",
+    "https://images.prom.ua/670006317_shpindel-z-avtomatichnoyu.jpg"
+  ],
+  "accessories": []
+}

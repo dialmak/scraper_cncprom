@@ -1,0 +1,26 @@
+{
+  "id": "420688640",
+  "name": "Блок реле relay module 4-канальний 5V",
+  "sku": "03-005",
+  "url": "https://cncprom.ua/ua/p420688640-blok-rele-relay.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Країна виробник", "Китай"],
+    ["Висота", "20 мм"],
+    ["Довжина", "75 мм"],
+    ["Ширина", "55 мм"],
+    ["Номінальна робоча напруга змінного струму", "250 В"],
+    ["Номінальна робоча напруга постійного струму", "30 В"],
+    ["Номінальний струм", "10 А"],
+    ["Індикація", "Світлова"],
+    ["Цвет светодиода", "Червоний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/596062235_blok-rele-relay.jpg",
+    "https://images.prom.ua/596088063_blok-rele-relay.jpg",
+    "https://images.prom.ua/596062521_blok-rele-relay.jpg",
+    "https://images.prom.ua/596062722_blok-rele-relay.jpg"
+  ],
+  "accessories": []
+}

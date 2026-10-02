@@ -1,0 +1,37 @@
+{
+  "id": "1045716062",
+  "name": "Контролер MESA 7I77D",
+  "sku": "05-047",
+  "url": "https://cncprom.ua/ua/p1045716062-kontroller-mesa-7i77d.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "Поверхневий"],
+    ["Висота", "24 мм"],
+    ["Довжина", "175 мм"],
+    ["Ширина", "101.5 мм"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Вага (г)", "230"],
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Мoдель", "7I77D"],
+    ["Підтримувані операційні системи", "Linux, Windows"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["kontroller_mesa_7i77d_eng.pdf", "https://storage.ua.prom.st/2354241_kontroller_mesa_7i77d_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3091945147_kontroler-mesa-7i77d.jpg",
+    "https://images.prom.ua/3091945599_kontroler-mesa-7i77d.jpg",
+    "https://images.prom.ua/3091946101_kontroler-mesa-7i77d.jpg",
+    "https://images.prom.ua/3091946346_kontroler-mesa-7i77d.jpg",
+    "https://images.prom.ua/3092061665_kontroler-mesa-7i77d.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

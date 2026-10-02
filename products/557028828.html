@@ -1,0 +1,54 @@
+<p>Поворотна вісь на ремінному редукторі, редукція 6:1, патрон К11 100мм, 3-х кулачковий</p>
+<p>Поворотна вісь встановлюється на верстат з ЧПК (ЧПУ) і дозволяє обертати заготовку навколо своєї осі. 4D поворотна вісь використовується для обробки дерева, алюмінієвих, кольорових і мідних сплавів, пластика. Поворотна вісь приводиться до руху за допомогою двигуна. Порівняно із звичайною 3х осьовою обробкою 3D моделі, де деталь кріпиться з одного боку до столу верстатах ЧПК (ЧПУ), то 4-х осьова поворотна вісь дозволяє обробляти виріб з усіх сторін без додаткових операцій по перевстановленню виробу на робочому столі, що тим самим дає можливість отримувати вироби складної конструкції. Це можуть бути меблеві елементи (ніжки столів і стільців), ювелірна продукція, виготовлення декоративних візерунків з дерева. Ремінні редуктори відрізняються меншою обертальною жорсткістю, ніж аналогічні за розміром хвильові.</p>
+<p>Характеристики:</p>
+<p>- <a href="/g2488264-remennaya-peredacha" target="_self">ремінна передача</a> (ремінь HTD5M-350)</p>
+<p>- редукція: 6:1</p>
+<p>- токарний патрон: К11 100 мм (3х - кулачковий)</p>
+<p>- максимальна швидкість: 4200r/min</p>
+<p>- двигун: NEMA23 57 мм 3A 2-фазний 4 дроти</p>
+<p>- струм: 3 А</p>
+<p>- обертальний момент: 18 кг/см</p>
+<p>Габаритні розміри поворотної осі: 167 мм × 210 мм × 115 мм</p>
+<p>Загальна висота: 115 мм</p>
+<p>Вага: 12 кг</p>
+<p>&nbsp;</p>
+<div>
+<div class="ck-header">Налаштування Mach3</div>
+<table border="1" class="ck-table-constructor ck-theme-grey ck-table-constructor_type_lite" style="width:100%">
+<tbody><tr class="ck-table-constructor__row ck-table-constructor__row_type_border-bottom ck-table-constructor__row_type_colored">
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="vertical-align:top;text-align:left">
+<p><strong>Кількість імпульсів на 1 градус</strong></p>
+</td>
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="vertical-align:top;text-align:left"><strong>(число імпульсів двигуна на один оборот * дроблення кроку * передатне число) / 360 градусів</strong></td>
+</tr>
+<tr class="ck-table-constructor__row ck-table-constructor__row_type_border-bottom ck-table-constructor__row_type_colored">
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="vertical-align:top;text-align:left">
+<p><strong>Наприклад:</strong></p>
+<p><strong>Біполярний кроковий двигун з кутом кроку 1,8 градуса<br>
+			(360 градусів / 1,8 =200 кроків на оборот)</strong></p>
+<p><strong>Дроблення кроку, виставлене на драйвері: 1/16</strong></p>
+<strong>передатне число понижуючого редуктора: 1/50</strong></td>
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="vertical-align:top;text-align:left"><strong>Якщо використовується кроковий двигун з кутом кроку 1.8 градуси то на один оборот треба 200 імпульсів (360/1,8=200)<br>
+			Якщо ж використовується двигун з кутом кроку 0,9, то 360/0,9=400. Тобто такий двигун треба подати 400 імпульсів, для того, щоб він провернувся на один оборот.<br>
+			Дроблення кроку, виставлене на драйвері, наприклад 1/16, але іноді на драйвері замість 1/16 пише кількість імпульсів на оберт, наприклад 3200 (16*200)<br>
+			Передатне число понижуючого редуктора 1:50 означає що двигун треба провернути 50 раз для того, щоб патрон провернувся один раз. Використання понижуючих редукторів сприяє збільшенню точності обробки. Що особливо важливо при використанні заготовок з великим радіусом.<br>
+			(200×16×50)÷360=444.44444444</strong></td>
+</tr>
+</tbody></table>
+</div>
+<p>&nbsp;</p>
+<p><strong>Токарний патрон: К11 100 мм</strong></p>
+<p>3-х кулачковий токарний патрон має наскрізний отвір для фіксації заготовок необмеженої довжини.</p>
+<p>Матеріал: сталь</p>
+<p>&nbsp;</p>
+<p><strong>Схема підключення:</strong></p>
+<p><img alt="" src="https://images.prom.ua/2028341296_2028341296.jpg?PIMAGE_ID=2028341296"></p>
+<p><img alt="" src="https://s5.postimg.org/mh7do4wo7/image.jpg"></p>
+<p><strong>&nbsp;<span class="fa fa-truck" style="font-size:24px;color:#0808ff"></span> Комплект поставки:</strong></p>
+<p>Поворотна вісь в зборі</p>
+<p>Патрон: К11 100 мм – 1 шт</p>
+<p>Двигун - NEMA23 57 мм 3A 2-фазний 4 дроти (1 шт)</p>
+<p>Затискний ключ - 1 шт</p>
+<p>Комплект зворотних кулачків (3 шт)</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

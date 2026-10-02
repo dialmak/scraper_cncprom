@@ -1,0 +1,28 @@
+{
+  "id": "1437503309",
+  "name": "Контролер Mesa Electronics 7I44 плата керування з восьмиканальним інтерфейсом RS-422/485",
+  "sku": "05-075",
+  "url": "https://cncprom.ua/ua/p1437503309-kontroller-mesa-electronics.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Інтерфейс для підключення зовнішніх пристроїв", "RS422, RS485"],
+    ["Підключення модулів розширення", "Так"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"]
+  ],
+  "specs": [
+    ["7i44.pdf", "https://storage.ua.prom.st/1828508_7i44.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3192919133_kontroler-mesa-electronics.jpg",
+    "https://images.prom.ua/3192918923_kontroler-mesa-electronics.jpg",
+    "https://images.prom.ua/3192918624_kontroler-mesa-electronics.jpg",
+    "https://images.prom.ua/3192972446_kontroler-mesa-electronics.jpg"
+  ],
+  "accessories": []
+}

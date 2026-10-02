@@ -1,0 +1,30 @@
+{
+  "id": "811521295",
+  "name": "Система контролю висоти різака (THC) SH-HC31",
+  "sku": "08-003",
+  "url": "https://cncprom.ua/ua/p811521295-sistema-kontrolya-vysoty.html",
+  "attrs": [
+    ["Виробник", "MicroStep"],
+    ["Максимальна робоча температура навколишнього середовища", "40 град."],
+    ["Вага апарату", "1.9 кг"],
+    ["Висота", "72.5 мм"],
+    ["Довжина", "194.5 мм"],
+    ["Ширина", "87 мм"],
+    ["Стан", "Нове"]
+  ],
+  "specs": [
+    ["Контролер висоти різака (THC) SH-HC31.pdf", "https://storage.ua.prom.st/2353792_kontroler_visoti_rizaka_thc_sh_hc31.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/2608421092_sistema-kontrolyu-visoti.jpg",
+    "https://images.prom.ua/2608639612_sistema-kontrolyu-visoti.jpg",
+    "https://images.prom.ua/2608639848_sistema-kontrolyu-visoti.jpg",
+    "https://images.prom.ua/2608639750_sistema-kontrolyu-visoti.jpg"
+  ],
+  "accessories": [
+    "6896741",
+    "5702429",
+    "6896754",
+    "4058051"
+  ]
+}

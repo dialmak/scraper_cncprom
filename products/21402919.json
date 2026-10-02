@@ -1,0 +1,29 @@
+{
+  "id": "21402919",
+  "name": "Інвертор GT-5R5G-4, 5.5KW 13A 0-400Hz 380V три фази",
+  "sku": "14-006",
+  "url": "https://cncprom.ua/ua/p21402919-invertor-5r5g-55kw.html",
+  "attrs": [
+    ["Вхідна напруга (В)", "380"],
+    ["Потужність, Вт", "5500 Вт"],
+    ["Ток", "13А"],
+    ["Частота (Гц)", "400"]
+  ],
+  "specs": [
+    ["Інструкція з експлуатації інвертора серії GT .pdf", "https://storage.ua.prom.st/3453947_nstruktsiya_z_ekspluatats___invertora_seriyi_gt_.pdf"],
+    ["GT Series посібник користувача англійською.pdf", "https://storage.ua.prom.st/3453946_gt_series_posibnik_koristuvacha_anglijskoyu.pdf"],
+    ["GT Series посібник користувача анг.pdf", "https://storage.ua.prom.st/3453945_gt_series_posibnik_koristuvacha_ang.pdf"],
+    ["Налаштування інвертора GT для шпинделів 400 HZ.pdf", "https://storage.ua.prom.st/3453944_nalashtuvannya_invertora___lya_shpindeliv_400_hz.pdf"],
+    ["Налаштування інвертора серії GT для шпинделів та асинхронних двигунів 50 HZ.pdf", "https://storage.ua.prom.st/3453943_nalashtuvannya_invertora___ronnih_dviguniv_50_hz.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/830346129_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/830135701_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/830135703_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/830135738_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/830346133_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/830135762_invertor-gt-5r5g-4-55kw.jpg",
+    "https://images.prom.ua/12800437_invertor-gt-5r5g-4-55kw.jpg"
+  ],
+  "accessories": []
+}

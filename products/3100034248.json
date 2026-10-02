@@ -1,0 +1,22 @@
+{
+  "id": "3100034248",
+  "name": "Гальмівний резистор 1000 Вт, 40 Ом, RXLG1000W40RJ в алюмінієвому корпусі",
+  "sku": "01-052",
+  "url": "https://cncprom.ua/ua/p3100034248-tormoznoj-rezistor-1000.html",
+  "attrs": [
+    ["Тип резистора", "Резистор постійний"],
+    ["Опір", "40 Ом"],
+    ["Номінальна потужність", "1000 Вт"],
+    ["Матеріал корпусу", "Алюміній"],
+    ["Стан", "Новий"],
+    ["Потужність", "1000"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7508855588_galmivnij-rezistor-1000.jpg",
+    "https://images.prom.ua/7508705054_galmivnij-rezistor-1000.jpg",
+    "https://images.prom.ua/7508705069_galmivnij-rezistor-1000.jpg",
+    "https://images.prom.ua/7508948617_galmivnij-rezistor-1000.jpg"
+  ],
+  "accessories": []
+}

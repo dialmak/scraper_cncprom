@@ -1,0 +1,34 @@
+{
+  "id": "1148298792",
+  "name": "Плата розширення багатофункціональна двопортова C62 Rev5.6 для контролера Smooth Stepper",
+  "sku": "05-059",
+  "url": "https://cncprom.ua/ua/p1148298792-plata-rasshireniya-mnogofunktsionalnaya.html",
+  "attrs": [
+    ["Країна виробник", "США"],
+    ["Вага", "0.21 кг"],
+    ["Підключення модулів розширення", "Ні"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Висота", "23 мм"],
+    ["Довжина", "235 мм"],
+    ["Ширина", "113 мм"],
+    ["Тип живлення", "Мережа 12 В, Мережа 24 В"],
+    ["Кількість входів", "18"],
+    ["Кількість виходів", "16"],
+    ["Кількість підтримуваних осей", "6"],
+    ["Наявність світлодіодів стану", "наявні"],
+    ["Роз'єм для під'єднання частотно-регульованого привода", "RJ45"],
+    ["Роз'єми для під'єднання осей", "RJ45"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3092616254_plata-rozshirennya-bagatofunktsionalna.jpg",
+    "https://images.prom.ua/3092616269_plata-rozshirennya-bagatofunktsionalna.jpg",
+    "https://images.prom.ua/3092616307_plata-rozshirennya-bagatofunktsionalna.jpg",
+    "https://images.prom.ua/3092616340_plata-rozshirennya-bagatofunktsionalna.jpg",
+    "https://images.prom.ua/3092616348_plata-rozshirennya-bagatofunktsionalna.jpg"
+  ],
+  "accessories": [
+    "6896760"
+  ]
+}

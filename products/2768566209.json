@@ -1,0 +1,35 @@
+{
+  "id": "2768566209",
+  "name": "Контролер ZK-SMC02 крокового двигуна з інтегрованим драйвером, DC10-30V 4A",
+  "sku": "05-255",
+  "url": "https://cncprom.ua/ua/p2768566209-kontroller-smc02-shagovogo.html",
+  "attrs": [
+    ["Вага", "0.059 кг"],
+    ["Стан", "Новий"],
+    ["Тип управління", "Ручне"],
+    ["Висота", "43 мм"],
+    ["Довжина", "79 мм"],
+    ["Ширина", "45 мм"],
+    ["Максимальна робоча температура", "60 град."],
+    ["Мінімальна робоча температура", "-5 град."],
+    ["Напруга", "30 В"],
+    ["Номінальна сила струму", "4 А"]
+  ],
+  "specs": [
+    ["Контролер ZK-SMC02 крокового двигуна з інтегрованим драйвером посібник користувача.pdf", "https://storage.ua.prom.st/3101202_kontroler_zk_smc02_krokov__posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6851072224_kontroler-zk-smc02-krokovogo.jpg",
+    "https://images.prom.ua/6851328960_kontroler-zk-smc02-krokovogo.jpg",
+    "https://images.prom.ua/6851401681_kontroler-zk-smc02-krokovogo.jpg",
+    "https://images.prom.ua/6851422753_kontroler-zk-smc02-krokovogo.jpg",
+    "https://images.prom.ua/6851422834_kontroler-zk-smc02-krokovogo.jpg"
+  ],
+  "accessories": [
+    "6896741",
+    "1323729867",
+    "35093502",
+    "4056281",
+    "1323736765"
+  ]
+}

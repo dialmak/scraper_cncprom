@@ -1,0 +1,24 @@
+{
+  "id": "3137667201",
+  "name": "Термометр TPM-10 цифровий, виносний датчик 1 м, -50…+110 °C",
+  "sku": "05-263",
+  "url": "https://cncprom.ua/ua/p3137667201-termometr-tpm-tsifrovoj.html",
+  "attrs": [
+    ["Одиниця виміру", "°С"],
+    ["Мінімальний діапазон вимірювань", "-50"],
+    ["Максимальний діапазон вимірювань", "110"],
+    ["Похибка, +/-", "0.1"],
+    ["Живлення", "Батарейки акумуляторного типу"],
+    ["Довжина", "47 мм"],
+    ["Ширина", "29 мм"],
+    ["Висота", "15 мм"],
+    ["Вага", "25 г"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7601486487_termometr-tpm-10-tsifrovij.jpg",
+    "https://images.prom.ua/7601486863_termometr-tpm-10-tsifrovij.jpg",
+    "https://images.prom.ua/7601486870_termometr-tpm-10-tsifrovij.jpg"
+  ],
+  "accessories": []
+}

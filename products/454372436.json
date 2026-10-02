@@ -1,0 +1,38 @@
+{
+  "id": "454372436",
+  "name": "Кроковий двигун з енкодером, замкнутого типу NEMA34 86HSE4N-B38 з гібридним серводрайвером HSS86",
+  "sku": "04-002",
+  "url": "https://cncprom.ua/ua/p454372436-shagovyj-dvigatel-enkoderom.html",
+  "attrs": [
+    ["Кількість фаз", "2"],
+    ["Максимальний струм", "8 А"],
+    ["Вхідний струм", "7 ~20mA"],
+    ["Діаметр вала двигуна", "14 мм"],
+    ["Довжина двигуна", "82 мм"],
+    ["Крутний момент (Нм)", "4"],
+    ["Максимально крутний момент:", "4,5 N.m"],
+    ["Мікрокрок", "16, максимум 51200 імпульсів/об (1/256)"],
+    ["Напруга", "AC 20V~80V або DC 30V~110V"],
+    ["Робочий діапазон температур", "від -20 °C до +50 °C"],
+    ["Роздільна здатність енкодера", "1000 PRR"],
+    ["Тип фланця", "NEMA 34 (86 мм)"],
+    ["Струм фази", "6 A"],
+    ["Угол шага", "1,8° (точність: ± 5%)"],
+    ["Діаметр вала", "14"]
+  ],
+  "specs": [
+    ["Посібник користувача HSS86 Hybrid Stepper Servo Driver (ENG).pdf", "https://storage.ua.prom.st/2370024_posibnik_koristuvacha_hss__pper_servo_driver_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1120997956_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646720330_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646552280_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646552918_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646554872_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646555288_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646555427_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646556121_krokovij-dvigun-z.jpg",
+    "https://images.prom.ua/646556315_krokovij-dvigun-z.jpg"
+  ],
+  "accessories": []
+}

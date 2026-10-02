@@ -1,0 +1,23 @@
+{
+  "id": "2380445541",
+  "name": "Зарядний пристрій КС-10А для літієвих акумуляторів (12V, 10А)",
+  "sku": "HP02-020",
+  "url": "https://cncprom.ua/ua/p2380445541-umnoe-zaryadnoe-ustrojstvo.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Матеріал корпусу", "Пластик"],
+    ["Стан", "Новий"],
+    ["Висота", "50 мм"],
+    ["Довжина", "115 мм"],
+    ["Ширина", "105 мм"],
+    ["Вага", "0.35"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6340227031_zaryadnij-pristrij-ks-10a.jpg",
+    "https://images.prom.ua/6340227402_zaryadnij-pristrij-ks-10a.jpg",
+    "https://images.prom.ua/6340227464_zaryadnij-pristrij-ks-10a.jpg",
+    "https://images.prom.ua/6340227624_zaryadnij-pristrij-ks-10a.jpg"
+  ],
+  "accessories": []
+}

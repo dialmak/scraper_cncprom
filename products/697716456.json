@@ -1,0 +1,26 @@
+{
+  "id": "697716456",
+  "name": "Драйвер Leadshine 3DM580, 8 А, 50 VDC, цифровий, для трифазного крокового двигуна",
+  "sku": "06-106",
+  "url": "https://cncprom.ua/ua/p697716456-drajver-leadshine-3dm580.html",
+  "attrs": [
+    ["Вага", "270.0"],
+    ["Габаритні розміри", "118х75х34 мм"],
+    ["Мікрокрок", "8 режимів, максимум 10000 імпульсів на оберт"],
+    ["Напруга живлення", "до 50В"],
+    ["Ток", "от 2,5 до 8,0А"],
+    ["Ток (A)", "8"],
+    ["Частота(Гц)", "до 500 кГц"],
+    ["Струм, А", "8"]
+  ],
+  "specs": [
+    ["Цифровий драйвер 3DM580 Leadshine. Інструкція (ENG).pdf", "https://storage.ua.prom.st/2369981_tsifrovij_drajver_3dm580___hine._nstruktsiya_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3052853440_drajver-leadshine-3dm580.jpg",
+    "https://images.prom.ua/3052858168_drajver-leadshine-3dm580.jpg",
+    "https://images.prom.ua/3052858527_drajver-leadshine-3dm580.jpg",
+    "https://images.prom.ua/3052858826_drajver-leadshine-3dm580.jpg"
+  ],
+  "accessories": []
+}

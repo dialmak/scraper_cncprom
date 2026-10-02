@@ -1,0 +1,19 @@
+{
+  "id": "1714865225",
+  "name": "Програмований контролер FX1S-14MT-001 (JY993D86301B)",
+  "sku": "05-086",
+  "url": "https://cncprom.ua/ua/p1714865225-programmiruemyj-kontroller-fx1s.html",
+  "attrs": [
+    ["Виробник", "Mitsubishi Electric"]
+  ],
+  "specs": [
+    ["FX_beginners.pdf", "https://storage.ua.prom.st/2227877_fx_beginners.pdf"],
+    ["FX_manual.pdf", "https://storage.ua.prom.st/2227879_fx_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6835369159_programovanij-kontroler-fx1s-14mt-001.jpg",
+    "https://images.prom.ua/6835369194_programovanij-kontroler-fx1s-14mt-001.jpg",
+    "https://images.prom.ua/4097335791_programovanij-kontroler-fx1s-14mt-001.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "2413743890",
+  "name": "Колекторний електродвигун 1100W 60V 20A",
+  "sku": "12-961",
+  "url": "https://cncprom.ua/ua/p2413743890-kollektornyj-elektrodvigatel-1100w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Тип двигуна", "Колекторний"],
+    ["Потужність", "1.1 кВт"],
+    ["Споживаний струм", "20.0"],
+    ["Висота", "190 мм"],
+    ["Довжина:", "380.0"],
+    ["Діаметр вала", "22"],
+    ["Маса", "20 кг"],
+    ["Напруга", "60"],
+    ["Частота обертання", "3500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6371644411_kolektornij-elektrodvigun-1100w.jpg",
+    "https://images.prom.ua/6371644479_kolektornij-elektrodvigun-1100w.jpg",
+    "https://images.prom.ua/6371644608_kolektornij-elektrodvigun-1100w.jpg",
+    "https://images.prom.ua/6371644636_kolektornij-elektrodvigun-1100w.jpg"
+  ],
+  "accessories": []
+}

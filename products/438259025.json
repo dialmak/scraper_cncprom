@@ -1,0 +1,21 @@
+{
+  "id": "438259025",
+  "name": "Знижувальний стабілізатор напруги DSWY2596",
+  "sku": "03-002",
+  "url": "https://cncprom.ua/ua/p438259025-ponizhayuschij-stabilizator-napryazheniya.html",
+  "attrs": [
+    ["Максимальна робоча температура", "85"],
+    ["Максимальна вхідна напруга", "40"],
+    ["Мінімальна вхідна напруга", "3.2"],
+    ["Пульсація вихідного сигналу", "<30 мв"],
+    ["Частота тока", "65000"],
+    ["Мінімальна робоча температура", "-40.0"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/892814711_znizhuvalnij-stabilizator-naprugi.jpg",
+    "https://images.prom.ua/892813014_znizhuvalnij-stabilizator-naprugi.jpg",
+    "https://images.prom.ua/892813036_znizhuvalnij-stabilizator-naprugi.jpg"
+  ],
+  "accessories": []
+}

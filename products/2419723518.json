@@ -1,0 +1,24 @@
+{
+  "id": "2419723518",
+  "name": "Електричний колекторний двигун MY1016Z 24V 350W з редуктором, з ніжками, короткий вал",
+  "sku": "12-912",
+  "url": "https://cncprom.ua/ua/p2419723518-elektricheskij-kollektornyj-dvigatel.html",
+  "attrs": [
+    ["Діаметр вала", "11 мм"],
+    ["Маса", "2.8 г"],
+    ["ККД, не менше", "78 %"],
+    ["Напруга", "24 В"],
+    ["Споживаний струм", "14 А"],
+    ["Тип збудження", "Від постійних магнітів"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"],
+    ["Потужність", "350"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6335073354_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6335073574_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6335074025_elektrichnij-kolektornij-dvigun.jpg"
+  ],
+  "accessories": []
+}

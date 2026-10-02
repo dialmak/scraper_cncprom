@@ -1,0 +1,32 @@
+{
+  "id": "4877348",
+  "name": "Інтерфейсна плата з повним опторозв'язуванням порту LPT на 5 осей ЧПК",
+  "sku": "05-007",
+  "url": "https://cncprom.ua/ua/p4877348-interfejsnaya-plata-polnoj.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Кількість координат", "5 шт"],
+    ["Наявність опторозв'язування", "Да"],
+    ["Тип під'єднуваного датчика", "PNP"]
+  ],
+  "specs": [
+    ["cnc_mach_break__ser_manual.pdf", "https://storage.ua.prom.st/2353890_cnc_mach_break__ser_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3092636894_interfejsna-plata-z.jpg",
+    "https://images.prom.ua/3092636898_interfejsna-plata-z.jpg",
+    "https://images.prom.ua/3092636927_interfejsna-plata-z.jpg"
+  ],
+  "accessories": [
+    "406571759",
+    "6349347",
+    "492139545",
+    "420752309",
+    "6896760",
+    "445157486",
+    "25422762",
+    "445191653",
+    "6349302",
+    "6896754"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "2371709073",
+  "name": "Літій-залізо-фосфатний акумулятор з вбудованою BMS-платою 51.2V/100AH (5.12kWh)",
+  "sku": "94-009",
+  "url": "https://cncprom.ua/ua/p2371709073-litij-zhelezo-fosfatnyj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Ємність акумулятору", "100 А. г"],
+    ["Максимальна робоча температура", "55 град."],
+    ["Мінімальна робоча температура", "-10 град."],
+    ["Напрацювання", "6000 циклів заряду"],
+    ["Стан", "Новий"],
+    ["Вага", "40 кг"],
+    ["Висота", "160 мм"],
+    ["Довжина", "620 мм"],
+    ["Ширина", "380 мм"],
+    ["Вбудована BMS", "Да"],
+    ["Місткість енергії", "5.12kWh"],
+    ["Інтерфейси під'єднання", "RS485, RS232, CAN"],
+    ["Напруга", "51.2"],
+    ["Робоча напруга акумулятора", "43.2-57.6V"],
+    ["Робочий струм максимальний", "100A"],
+    ["З'єднання комірок", "16S1P"],
+    ["Тип акумулятора", "LiFePO4"],
+    ["Тип комірки", "LFP 3.2V/100Ah"],
+    ["Струм заряду-розряду", "0.5C"],
+    ["Рівень захисту", "IP65"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6304085543_litij-zalizo-fosfatnij-akumulyator-z.jpg",
+    "https://images.prom.ua/6304085654_litij-zalizo-fosfatnij-akumulyator-z.jpg",
+    "https://images.prom.ua/6304085593_litij-zalizo-fosfatnij-akumulyator-z.jpg",
+    "https://images.prom.ua/6305528146_litij-zalizo-fosfatnij-akumulyator-z.jpg",
+    "https://images.prom.ua/6304085578_litij-zalizo-fosfatnij-akumulyator-z.jpg",
+    "https://images.prom.ua/6304085602_litij-zalizo-fosfatnij-akumulyator-z.jpg"
+  ],
+  "accessories": []
+}

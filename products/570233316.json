@@ -1,0 +1,33 @@
+{
+  "id": "570233316",
+  "name": "Шпиндель для ЧПК 2,2 kw, ER25, повітряне охолодження, 4 керамічні підшипники, точність 0,01мм",
+  "sku": "16-001",
+  "url": "https://cncprom.ua/ua/p570233316-shpindel-dlya-chpu.html",
+  "attrs": [
+    ["Довжина", "300 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "120 мм"],
+    ["Биття", "від 0.01...0.02мм"],
+    ["Вхідна напруга (В)", "220"],
+    ["Корпус", "квадратний"],
+    ["Потужність", "2.2 кВт кВт"],
+    ["Потужність, Вт", "2200 Вт"],
+    ["Подшипники", "верхня група підшипників: 2×7002DT; нижня група підшипників: 2×7007DB"],
+    ["Робоча напруга", "220 В/380 В В"],
+    ["Швидкість обертання (об./хв)", "18000"],
+    ["Цанга", "ER25"],
+    ["Цанговий патрон", "ER25"],
+    ["Потужність", "650"]
+  ],
+  "specs": [
+    ["shpindel_dlya___hlazhdenie.pdf", "https://storage.ua.prom.st/2353776_shpindel_dlya___hlazhdenie.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/888001027_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/888000410_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/888000427_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/888000429_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/888000433_shpindel-dlya-chpk.jpg"
+  ],
+  "accessories": []
+}

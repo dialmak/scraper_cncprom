@@ -1,0 +1,31 @@
+{
+  "id": "551570997",
+  "name": "Інсталяційний блок крокового двигуна NEMA23, пластик",
+  "sku": "12-002",
+  "url": "https://cncprom.ua/ua/p551570997-ustanovochnyj-blok-shagovogo.html",
+  "attrs": [
+    ["Габаритні розміри", "57х57х40мм"],
+    ["Матеріал", "Пластик"],
+    ["Тип фланця", "NEMA 23 (57 мм)"],
+    ["Установлювальний блок крокового двигуна", "типу NEMA23"],
+    ["Колір", "Чорний"]
+  ],
+  "specs": [
+    ["Габаритні розміри NEMA23.pdf", "https://storage.ua.prom.st/2354807_gabaritni_rozmiri_nema23.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3185857485_instalyatsijnij-blok-krokovogo.jpg",
+    "https://images.prom.ua/828760127_instalyatsijnij-blok-krokovogo.jpg",
+    "https://images.prom.ua/828760145_instalyatsijnij-blok-krokovogo.jpg",
+    "https://images.prom.ua/828760160_instalyatsijnij-blok-krokovogo.jpg",
+    "https://images.prom.ua/828760213_instalyatsijnij-blok-krokovogo.jpg",
+    "https://images.prom.ua/828760223_instalyatsijnij-blok-krokovogo.jpg"
+  ],
+  "accessories": [
+    "4348106",
+    "5998098",
+    "468496587",
+    "4056281",
+    "10037183"
+  ]
+}

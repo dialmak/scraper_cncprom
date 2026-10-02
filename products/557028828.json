@@ -1,0 +1,28 @@
+{
+  "id": "557028828",
+  "name": "Поворотна вісь 100мм 6:1 К11 Nema23 3-кулачковий патрон, на ремені",
+  "sku": "07-009",
+  "url": "https://cncprom.ua/ua/p557028828-povorotnaya-100mm-k11.html",
+  "attrs": [
+    ["Двигун", "NEMA 23"],
+    ["Діаметр патрона", "100 мм."],
+    ["Крутний момент", "18 кг/см"],
+    ["Редукція", "6:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип патрона", "3"],
+    ["Тип редуктора", "ремінний"],
+    ["Ток", "3 А"],
+    ["Токарний патрон", "К11 100 мм (3-кулачковий)"]
+  ],
+  "specs": [
+    ["Схематичне креслення.pdf", "https://storage.ua.prom.st/2358812_shematichne_kreslennya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/842273349_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/842273373_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/842273402_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/842273416_povorotna-vis-100mm.jpg",
+    "https://images.prom.ua/842273443_povorotna-vis-100mm.jpg"
+  ],
+  "accessories": []
+}

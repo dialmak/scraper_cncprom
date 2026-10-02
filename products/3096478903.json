@@ -1,0 +1,21 @@
+{
+  "id": "3096478903",
+  "name": "Контролер безколекторного двигуна 48-60V 1500W",
+  "sku": "02-414",
+  "url": "https://cncprom.ua/ua/p3096478903-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Тип", "Контролер"],
+    ["Стан", "Новий"],
+    ["Модель:", "24G48V60V60A"],
+    ["Робоча напруга:", "48V — 60 В"],
+    ["Максимальний струм:", "60 A"],
+    ["Потужність:", "1500 Вт"],
+    ["Потужність", "1500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7504509590_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/7505521361_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

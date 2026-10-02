@@ -1,0 +1,28 @@
+{
+  "id": "2930755145",
+  "name": "Еквалайзер MK-B5A16V2C (балансувальний струм 5 А, 16 В), балансир для свинцево-кислотних та літієвих акумуляторів",
+  "sku": "91-150",
+  "url": "https://cncprom.ua/ua/p2930755145-ekvalajzer-b5a16v2c-balansirovochnyj.html",
+  "attrs": [
+    ["Висота", "74 мм"],
+    ["Довжина", "84 мм"],
+    ["Ширина", "29 мм"],
+    ["Індикація", "LCD + LED"],
+    ["Вага", "0.2 кг"],
+    ["Діапазон напруги:", "7-18 В"],
+    ["Кількість батарей на модуль:", "2"],
+    ["Мoдель", "MK-B5A16V2C"],
+    ["Підтримка паралельного підключення:", "Да"],
+    ["Струм балансування:", "0–5A"],
+    ["Точність вимірювання", "±0.1 В"]
+  ],
+  "specs": [
+    ["Посібник користувача англійською.pdf", "https://storage.ua.prom.st/3252016_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7091873101_ekvalajzer-mk-b5a16v2c-balansuvalnij.jpg",
+    "https://images.prom.ua/7091873105_ekvalajzer-mk-b5a16v2c-balansuvalnij.jpg",
+    "https://images.prom.ua/7098600939_ekvalajzer-mk-b5a16v2c-balansuvalnij.jpg"
+  ],
+  "accessories": []
+}

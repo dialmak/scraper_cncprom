@@ -1,0 +1,33 @@
+{
+  "id": "554657255",
+  "name": "Поворотна вісь для верстата з ЧПУ на ремінному редукторі , патрон К11 100мм, редукція 4 - тая 8:1, 5-та 6:1",
+  "sku": "07-005",
+  "url": "https://cncprom.ua/ua/p554657255-povorotnaya-dlya-stanka.html",
+  "attrs": [
+    ["4-та вісь", "передавальне відношення:8:1"],
+    ["5-та вісь", "передавальне відношення: 6:1"],
+    ["Двигун", "NEMA 23"],
+    ["Діаметр патрона", "100 мм."],
+    ["Крутний момент", "18 кг/см"],
+    ["Робочий стіл", "100 мм × 125 мм"],
+    ["Редукція", "8:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип патрона", "3"],
+    ["Тип редуктора", "ремінний"],
+    ["Ток", "3 А"],
+    ["Токарний патрон", "К11 100 мм (3-кулачковий)"]
+  ],
+  "specs": [
+    ["Схематичне креслення.pdf", "https://storage.ua.prom.st/2358790_shematichne_kreslennya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/838020040_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838020045_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838020049_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838020060_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838581988_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838582016_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838020052_povorotna-vis-dlya.jpg"
+  ],
+  "accessories": []
+}

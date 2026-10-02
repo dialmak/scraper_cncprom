@@ -1,0 +1,29 @@
+{
+  "id": "554652737",
+  "name": "Поворотна вісь для верстата з ЧПУ на ремінному редукторі , без патрона, редукція 4 - тая 8:1, 5-та 6:1",
+  "sku": "07-004",
+  "url": "https://cncprom.ua/ua/p554652737-povorotnaya-dlya-stanka.html",
+  "attrs": [
+    ["4-та вісь", "передавальне відношення:8:1"],
+    ["5-та вісь", "передавальне відношення: 6:1"],
+    ["Двигун", "NEMA 23"],
+    ["Крутний момент", "18 кг/см"],
+    ["Робочий стіл", "100 мм × 125 мм"],
+    ["Редукція", "8:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип редуктора", "ремінний"],
+    ["Ток", "3 А"]
+  ],
+  "specs": [
+    ["Схематичне креслення.pdf", "https://storage.ua.prom.st/2358787_shematichne_kreslennya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/838021099_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838021104_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838021110_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838021115_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838021120_povorotna-vis-dlya.jpg",
+    "https://images.prom.ua/838021124_povorotna-vis-dlya.jpg"
+  ],
+  "accessories": []
+}

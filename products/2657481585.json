@@ -1,0 +1,34 @@
+{
+  "id": "2657481585",
+  "name": "Кнопка аварійної зупинки LA38, Ø22 мм, з фіксацією, 440V, металева грибоподібна головка",
+  "sku": "03-147",
+  "url": "https://cncprom.ua/ua/p2657481585-knopka-avarijnoj-ostanovki.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Кількість кнопок", "1 шт."],
+    ["Максимальна робоча температура", "45 град."],
+    ["Механічна зносостійкість", "500000 циклів"],
+    ["Мінімальна робоча температура", "-14 град."],
+    ["Напруга", "440 В"],
+    ["Номінальна сила струму", "10 А"],
+    ["Підсвічування", "Ні"],
+    ["Ступінь захисту IP", "55"],
+    ["Фіксація положення", "Так"],
+    ["Форма кнопки", "Грибоподібна"],
+    ["Колір кнопки", "Червоний"],
+    ["Висота", "73 мм"],
+    ["Діаметр", "22 мм"],
+    ["Довжина", "73 мм"],
+    ["Ширина", "40 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6721072429_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/6721072620_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/6721072723_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/6721072810_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/6721072851_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/6735255952_knopka-avarijnoyi-zupinki.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,24 @@
+{
+  "id": "695644628",
+  "name": "Драйвер Leadshine DM860, 6 А, 24—80 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-104",
+  "url": "https://cncprom.ua/ua/p695644628-drajver-leadshine-dm860.html",
+  "attrs": [
+    ["Вага", "280г"],
+    ["Габаритні розміри", "151х97х48 мм"],
+    ["Мікрокрок", "16 режимів ділення кроку, від 1:2 до 1:512"],
+    ["Ток", "от 2,0 до 6,00А"],
+    ["Ток (A)", "6"],
+    ["Частота(Гц)", "до 200 кГц"]
+  ],
+  "specs": [
+    ["Цифровий драйвер DM860 Leadshine. Інструкція.pdf", "https://storage.ua.prom.st/2371288_tsifrovij_drajver_dm860_leadshine._nstruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3051948591_drajver-leadshine-dm860.jpg",
+    "https://images.prom.ua/3051949051_drajver-leadshine-dm860.jpg",
+    "https://images.prom.ua/3051949096_drajver-leadshine-dm860.jpg",
+    "https://images.prom.ua/3051949692_drajver-leadshine-dm860.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,27 @@
+{
+  "id": "1037859752",
+  "name": "Плата сполучення входів і виходів C25-Smooth Stepper LPT Board Rev. 5",
+  "sku": "05-017",
+  "url": "https://cncprom.ua/ua/p1037859752-plata-sopryazheniya-vhodov.html",
+  "attrs": [
+    ["Країна виробник", "США"],
+    ["Вага", "80 г"],
+    ["Габаритні розміри", "120.5х84.5х20 мм"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Кількість входів і виходів", "34"],
+    ["Кількість портів з'єднання", "2"],
+    ["Мoдель", "C25-Smooth Stepper LPT Board Rev. 5"],
+    ["Стан", "Нове"],
+    ["Тип комплектуючого", "Контролер"]
+  ],
+  "specs": [
+    ["Посібник користувача C25-Smooth Stepper LPT Board Rev. 5 (eng).pdf", "https://storage.ua.prom.st/2359062_posibnik_koristuvacha_c25___lpt_board_rev._5_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3092615611_plata-spoluchennya-vhodiv.jpg",
+    "https://images.prom.ua/3092615461_plata-spoluchennya-vhodiv.jpg",
+    "https://images.prom.ua/3092615493_plata-spoluchennya-vhodiv.jpg",
+    "https://images.prom.ua/3092615581_plata-spoluchennya-vhodiv.jpg"
+  ],
+  "accessories": []
+}

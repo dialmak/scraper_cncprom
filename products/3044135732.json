@@ -1,0 +1,36 @@
+{
+  "id": "3044135732",
+  "name": "Багатофункціональний цифровий модуль затримки YYC-2S (DC 5V ), NPN / PNP",
+  "sku": "03-168",
+  "url": "https://cncprom.ua/ua/p3044135732-mnogofunktsionalnyj-tsifrovoj-modul.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Маса", "28 г"],
+    ["Механічна зносостійкість", "300000 циклів"],
+    ["Тип монтажу", "Гвинтовий"],
+    ["Висота", "20 мм"],
+    ["Довжина", "66 мм"],
+    ["Ширина", "40 мм"],
+    ["Мoдель", "YYC-2S"],
+    ["Тип виходу", "релейний, COM / NO / NC"],
+    ["Робоча температура", "−20 °C … +50 °C"],
+    ["Індикація", "4-розрядний LED-дисплей"],
+    ["Живлення", "DC 5 В"],
+    ["Діапазон часу:", "від 0.01 с до 999 хв"],
+    ["Тип вхідного сигналу:", "NPN/PNP/сухий контакт"],
+    ["Реле:", "YEYY-1C5"],
+    ["Монтажні отвори:", "під гвинт M3"],
+    ["Максимальне навантаження реле:", "10A 277VAC"],
+    ["Споживання струму", "~12 мА у режимі очікування, ~50 мА при роботі"]
+  ],
+  "specs": [
+    ["Посібник користувача англійською (2).pdf", "https://storage.ua.prom.st/3334194_posibnik_koristuvacha_anglijskoyu_2.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7391998052_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7391998062_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7391998077_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7393365939_bagatofunktsionalnij-tsifrovij-modul.jpg"
+  ],
+  "accessories": []
+}

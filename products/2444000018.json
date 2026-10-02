@@ -1,0 +1,26 @@
+{
+  "id": "2444000018",
+  "name": "48V 900W трифазний безщітковий електродвигун постійного струму",
+  "sku": "12-933",
+  "url": "https://cncprom.ua/ua/p2444000018-48v-900w-trehfaznyj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Кількість фаз", "3"],
+    ["Номінальний струм", "23 А"],
+    ["Стан", "Новий"],
+    ["Ступінь захисту IP", "54"],
+    ["ККД, не менше", "82 %"],
+    ["Маса", "4.1 г"],
+    ["Максимальний пусковий момент", "23"],
+    ["Потужність", "700"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6420430270_48v-900w-trifaznij.jpg",
+    "https://images.prom.ua/6405298960_48v-900w-trifaznij.jpg",
+    "https://images.prom.ua/6405299179_48v-900w-trifaznij.jpg",
+    "https://images.prom.ua/6405299576_48v-900w-trifaznij.jpg",
+    "https://images.prom.ua/6420431543_48v-900w-trifaznij.jpg"
+  ],
+  "accessories": []
+}

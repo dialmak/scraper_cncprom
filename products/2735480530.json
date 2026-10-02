@@ -1,0 +1,30 @@
+{
+  "id": "2735480530",
+  "name": "Торцювальний верстат 305 V для різання під кутом 90° і 45° відрізний верстат із пневмопритискачем",
+  "sku": "10-606",
+  "url": "https://cncprom.ua/ua/p2735480530-tortsovochnyj-stanok-305.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Діаметр посадкового отвору", "26 мм"],
+    ["Максимальна кількість обертів", "2800 об/хв"],
+    ["Максимальний діаметр диска", "355 мм"],
+    ["Споживана потужність", "1500 Вт"],
+    ["Стан", "Новий"],
+    ["Висота", "120 см мм"],
+    ["Довжина:", "120 см"],
+    ["Ширина верстата", "61 см"]
+  ],
+  "specs": [
+    ["zagalni_vkazivki_i_pravila_roboti.pdf", "https://storage.ua.prom.st/3078389_zagalni_vkazivki_i_pravila_roboti.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6811477721_tortsyuvalnij-verstat-305.jpg",
+    "https://images.prom.ua/6811450398_tortsyuvalnij-verstat-305.jpg",
+    "https://images.prom.ua/3714207921_tortsyuvalnij-verstat-305.jpg",
+    "https://images.prom.ua/6811479390_tortsyuvalnij-verstat-305.jpg"
+  ],
+  "accessories": [
+    "1394023113",
+    "1388922092"
+  ]
+}

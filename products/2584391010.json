@@ -1,0 +1,42 @@
+{
+  "id": "2584391010",
+  "name": "3D-принтер QIDI TECH PLUS4, 305*305*280 мм - розмір друку , CoreXY",
+  "sku": "10-140",
+  "url": "https://cncprom.ua/ua/p2584391010-printer-qidi-tech.html",
+  "attrs": [
+    ["Виробник", "QIDI"],
+    ["Максимальна швидкість друку", "500 мм/сек"],
+    ["Метод друку", "Моделювання методом наплавлення (FDM)"],
+    ["Стан", "Новий"],
+    ["Висота", "550 мм"],
+    ["Довжина", "505 мм"],
+    ["Ширина", "487 мм"],
+    ["Максимальна робоча висота", "280 мм"],
+    ["Рабочая длина", "305 мм"],
+    ["Робоча ширина", "305 мм"]
+  ],
+  "specs": [
+    ["Посібник користувача PLUS4 .pdf", "https://storage.ua.prom.st/3437923_posibnik_koristuvacha_plus4_.pdf"],
+    ["QIDI-PLUS4-TDS.pdf", "https://storage.ua.prom.st/3197439_qidi_plus4_tds.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6638939623_3d-printer-qidi-tech.jpg",
+    "https://images.prom.ua/6629623222_3d-printer-qidi-tech.jpg",
+    "https://images.prom.ua/6629626095_3d-printer-qidi-tech.jpg",
+    "https://images.prom.ua/6629626162_3d-printer-qidi-tech.jpg",
+    "https://images.prom.ua/6629664818_3d-printer-qidi-tech.jpg",
+    "https://images.prom.ua/6629665173_3d-printer-qidi-tech.jpg"
+  ],
+  "accessories": [
+    "1162780220",
+    "1200332697",
+    "1230559075",
+    "1200332698",
+    "1162780221",
+    "2111285232",
+    "1200332699",
+    "1200343891",
+    "1230576887",
+    "1200332703"
+  ]
+}

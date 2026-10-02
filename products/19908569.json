@@ -1,0 +1,32 @@
+{
+  "id": "19908569",
+  "name": "Інтерфейсна плата V5 (КОНТРОЛЕР) на 5 координат",
+  "sku": "05-010",
+  "url": "https://cncprom.ua/ua/p19908569-interfejsnaya-plata-kontroller.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Кількість координат", "5 шт"],
+    ["Наявність опторозв'язування", "Да"],
+    ["Тип під'єднуваного датчика", "NPN"]
+  ],
+  "specs": [
+    ["Типові налаштування.pdf", "https://storage.ua.prom.st/2359052_tipovi_nalashtuvannya.pdf"],
+    ["Плата управління (eng).pdf", "https://storage.ua.prom.st/2359053_plata_upravlinnya_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7687822393_interfejsna-plata-v5.jpg",
+    "https://images.prom.ua/7687822397_interfejsna-plata-v5.jpg",
+    "https://images.prom.ua/7687842951_interfejsna-plata-v5.jpg",
+    "https://images.prom.ua/7687872258_interfejsna-plata-v5.jpg",
+    "https://images.prom.ua/894575899_interfejsna-plata-v5.jpg"
+  ],
+  "accessories": [
+    "406571759",
+    "492139545",
+    "1229894118",
+    "6349268",
+    "445157486",
+    "445191653",
+    "6349187"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3036181228",
+  "name": "Світлова завіса безпеки ZT1240 24V DC (12 променів, крок 40 мм), інфрачервоний бар’єр захисту оператора",
+  "sku": "03-614",
+  "url": "https://cncprom.ua/ua/p3036181228-svetovaya-zavesa-bezopasnosti.html",
+  "attrs": [
+    ["Висота", "519 мм"],
+    ["Дальність виявлення руху:", "2 м"],
+    ["Захист обладнання від води і пилу IP", "IP65"],
+    ["Максимальна робоча температура", "55 °С"],
+    ["Мінімальна робоча температура", "-10 °С"],
+    ["Потужність", "15 Вт"],
+    ["Напруга", "24 В"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7402536451_svitlova-zavisa-bezpeki.jpg",
+    "https://images.prom.ua/7402136175_svitlova-zavisa-bezpeki.jpg",
+    "https://images.prom.ua/7402529866_svitlova-zavisa-bezpeki.jpg"
+  ],
+  "accessories": []
+}

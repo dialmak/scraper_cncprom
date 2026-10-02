@@ -1,0 +1,32 @@
+{
+  "id": "1071553639",
+  "name": "Провідний пульт управління LHB03B для NCStudio",
+  "sku": "01-012",
+  "url": "https://cncprom.ua/ua/p1071553639-provodnoj-pult-upravleniya.html",
+  "attrs": [
+    ["Вага", "530 г"],
+    ["Кількість в упаковці", "1 шт."],
+    ["Стан", "Новий"],
+    ["Габаритні розміри", "198х85х35 мм"],
+    ["Довжина дроту", "5 м"],
+    ["Інтерфейс під'єднання", "USB"],
+    ["Кількість осей керування", "3"],
+    ["Кількість функційних кнопок", "16"],
+    ["Мoдель", "LHB03B"],
+    ["Живлення", "2 батарейки АА"],
+    ["Програмне забезпечення", "NCStudio 5.x.x и 8.x.x"],
+    ["Виробник", "Chengdu Xinhecheng Technology Co.,Ltd."],
+    ["Роздільна здатність енкодера", "100 PPR"],
+    ["Тип", "Дротовий"],
+    ["Тип комплектуючого", "Пульт керування"]
+  ],
+  "specs": [
+    ["Провідний пульт управління LHB03B. Посібник користувача (eng, chi ).pdf", "https://storage.ua.prom.st/2358864_providnij_pult_upravlinny__koristuvacha_eng_chi_.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/2056212594_providnij-pult-upravlinnya.jpg",
+    "https://images.prom.ua/2056212587_providnij-pult-upravlinnya.jpg",
+    "https://images.prom.ua/2056212588_providnij-pult-upravlinnya.jpg"
+  ],
+  "accessories": []
+}

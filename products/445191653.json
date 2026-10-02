@@ -1,0 +1,24 @@
+{
+  "id": "445191653",
+  "name": "Драйвер крокового двигуна MD430, 3А, 12-24 VDC",
+  "sku": "06-007",
+  "url": "https://cncprom.ua/ua/p445191653-drajver-shagovogo-dvigatelya.html",
+  "attrs": [
+    ["Мікрокрок", "1/2/8/16"],
+    ["Напруга", "12-34V"],
+    ["Робоча температура", "0-50 ℃"],
+    ["Ток", "3 А"],
+    ["Ток (A)", "3"],
+    ["Струм, А", "3"]
+  ],
+  "specs": [
+    ["MD430 Driver-English manual.pdf", "https://storage.ua.prom.st/2369985_md430_driver_english_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3055590701_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3055591295_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3055591782_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3055592332_drajver-krokovogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

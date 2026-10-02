@@ -1,0 +1,33 @@
+{
+  "id": "555427650",
+  "name": "Шпиндель 400W, ER8 з повітряним охолодженням",
+  "sku": "17-007",
+  "url": "https://cncprom.ua/ua/p555427650-shpindel-400w-er8.html",
+  "attrs": [
+    ["Вага", "1"],
+    ["Вхідна напруга (В)", "48"],
+    ["Діаметр двигуна", "57 мм"],
+    ["Корпус", "круглий"],
+    ["Крутний момент", "0,33 N.m"],
+    ["Максимальна швидкість двигуна", "12000 (об/хв)"],
+    ["Модель двигуна", "JK57BLS03-01-X001"],
+    ["Потужність, Вт", "400 Вт"],
+    ["Безперервний струм", "0.9A"],
+    ["Загальна довжина двигуна", "124,4 мм"],
+    ["Тип двигуна", "Безколекторний"],
+    ["Цанга", "ER8"]
+  ],
+  "specs": [
+    ["shpindel_400w___lazhdeniem_page-0001.pdf", "https://storage.ua.prom.st/2353787_shpindel_400w___lazhdeniem_page_0001.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/837752084_shpindel-400w-er8.jpg",
+    "https://images.prom.ua/837752909_shpindel-400w-er8.jpg",
+    "https://images.prom.ua/837763243_shpindel-400w-er8.jpg",
+    "https://images.prom.ua/837752088_shpindel-400w-er8.jpg",
+    "https://images.prom.ua/837752096_shpindel-400w-er8.jpg"
+  ],
+  "accessories": [
+    "555429711"
+  ]
+}

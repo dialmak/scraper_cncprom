@@ -1,0 +1,27 @@
+{
+  "id": "2861527289",
+  "name": "Волоконний лазерний маркер FM-30M-A11-D/R настільний 110x110 30 Вт, підтримка поворотної осі опціонально",
+  "sku": "10-522",
+  "url": "https://cncprom.ua/ua/p2861527289-volokonnyj-lazernyj-marker.html",
+  "attrs": [
+    ["Гарантійний термін", "12 міс"],
+    ["Тип охолодження", "вбудоване повітряне"],
+    ["Мoдель", "FM-30M-A11-D/R"],
+    ["Довжина хвилі лазера", "1064 ±4 нм"],
+    ["Діапазон маркування", "110х110 мм"],
+    ["Якість променя", "М2 <1.4"],
+    ["Інтерфейс керування", "USB"],
+    ["Тип лазера", "волоконний"],
+    ["Виробник лазерного випромінювача", "Maxphotonics"],
+    ["Форм-фактор", "Настільний"]
+  ],
+  "specs": [
+    ["programa_ezcad2.pdf", "https://storage.ua.prom.st/3179315_programa_ezcad2.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3054484946_volokonnij-lazernij-marker.jpg",
+    "https://images.prom.ua/3054484950_volokonnij-lazernij-marker.jpg",
+    "https://images.prom.ua/3054484957_volokonnij-lazernij-marker.jpg"
+  ],
+  "accessories": []
+}

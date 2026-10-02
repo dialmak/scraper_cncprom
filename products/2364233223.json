@@ -1,0 +1,32 @@
+{
+  "id": "2364233223",
+  "name": "Підвищуючий DC-DC перетворювач 400W 15A на TL494",
+  "sku": "03-152",
+  "url": "https://cncprom.ua/ua/p2364233223-povyshayuschij-preobrazovatel-400w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "65 г"],
+    ["Висота", "28 мм"],
+    ["Довжина", "67 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "48.5 мм"],
+    ["Вхідна напруга", "DC 8.5 - 50V"],
+    ["Вхідний струм", "<15А"],
+    ["Вихідна потужність", "<400W"],
+    ["Вихідна напруга", "DC 10 - 60V (регульоване)"],
+    ["Вихідний струм", "0.2 - 12 A (регульований)"],
+    ["Захист від перевантаження за струмом", "Да"],
+    ["ККД", "96%"],
+    ["Робоча температура", "-40 ~ 85 °C"],
+    ["Частота перетворення", "150 кГц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6290245904_pidvischuyuchij-dc-dc-peretvoryuvach.jpg",
+    "https://images.prom.ua/6290245905_pidvischuyuchij-dc-dc-peretvoryuvach.jpg",
+    "https://images.prom.ua/6290250946_pidvischuyuchij-dc-dc-peretvoryuvach.jpg",
+    "https://images.prom.ua/6290250942_pidvischuyuchij-dc-dc-peretvoryuvach.jpg",
+    "https://images.prom.ua/6291156317_pidvischuyuchij-dc-dc-peretvoryuvach.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "736056342",
+  "name": "Драйвер 2DM860, 8.4 А, 24—80 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-012",
+  "url": "https://cncprom.ua/ua/p736056342-drajver-2dm860-vdc.html",
+  "attrs": [
+    ["Виробник", "JMC"],
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Ток (A)", "8.4"],
+    ["Напруга живлення", "24-80V"],
+    ["Ток", "до 8.4А"],
+    ["Струм, А", "8.4"]
+  ],
+  "specs": [
+    ["2DM860-English Manual.pdf", "https://storage.ua.prom.st/1154968_2dm860_english_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3062795413_drajver-2dm860-84.jpg",
+    "https://images.prom.ua/3062795585_drajver-2dm860-84.jpg",
+    "https://images.prom.ua/3062795947_drajver-2dm860-84.jpg",
+    "https://images.prom.ua/3062796073_drajver-2dm860-84.jpg"
+  ],
+  "accessories": []
+}

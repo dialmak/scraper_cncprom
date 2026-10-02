@@ -1,0 +1,338 @@
+<h2><strong>Драйвер контролер крокового двигуна CNCPROM MDC4-1AH 3.6 А, мікрокроковий драйвер із вбудованим генератором імпульсів, плата управління ЧПК (ЧПУ)</strong></h2>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><u><strong>MDC4-1AH</strong></u>&nbsp;- високопродуктивний драйвер з вбудованим генератором імпульсів,&nbsp;призначений&nbsp;для прямого керування двофазним кроковим двигуном з фланцем&nbsp;NEMA 17 (42 мм) або NEMA 23 (57 мм) в системах&nbsp;автоматизації. Модель дозволяє контролювати траєкторію, швидкість, прискорення і плавність зупинки обертання крокового двигуна, а також здійснювати налаштування струму на його обмотках в діапазоні від 1.2 А до 3.6 А (пікові показники).</span></p>
+<p><span style="font-size:18px">Драйвер контролер має 4 режими управління траєкторією, </span><span style="font-size:18px">2 режими вибору діапазону швидкості обертання</span><span style="font-size:18px"> (за замовчуванням у плату вшиті 2 значення мікрокроку 10 000 крок/об і 20 000 крок/об, відповідні діапазони швидкостей двигуна становлять&nbsp;2-600 об/хв і <span style="font-size:18px">1-300 об/хв</span>),&nbsp;2 режими плавності зупинки та 2 режими управління струмом двигуна після його зупинки. У плату впаяно 2&nbsp;потенціометри: першим (AD3) регулюється швидкість обертання, другим (AD4) - прискорення. Також швидкість можна контролювати зовнішнім потенціометром, значення його опору має становити ≤10 кОм.</span></p>
+<p><span style="font-size:18px">Відведення тепла від внутрішніх компонентів драйвер контролера здійснюється за рахунок радіатора.</span></p>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title">Увага!</span>&nbsp;У разі перевищення допустимих робочих температур для пристрою необхідно організувати додаткове охолодження</span></div>
+</div>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">Модель відрізняється своєю стабільністю роботи і простотою у використанні. Діапазон вхідної напруги становить 20-80 В постійного струму (рекомендується використовувати блок на 72 В).</span></p>
+<p><span style="font-size:18px">За рахунок об'єднання в собі функцій і драйвера і генератора імпульсів, MDC4-1AH дозволяє створити компактну і стійку до перешкод систему керування кроковим двигуном.</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Основні особливості та функції:</span></strong></p>
+<ul>
+<li>
+<p><span style="font-size:18px">Драйвер та генератор імпульсів в одному пристрої (2 в 1)</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Не вимагає підключення до комп'ютера</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">8 режимів вибору робочого вихідного струму</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">4 режими керування траєкторією</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">2&nbsp;режим вибору діапазону швидкості обертання </span><span style="font-size:18px">(мікрокрок)</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">2 режими керування струмом двигуна після його зупинки (половина струму, відсутність струму)</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">2 режими плавності зупинки (різка, плавна)</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Регулювання швидкості як вбудованим, так і зовнішнім потенціометрами</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Широкий діапазон вхідної напруги</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Оснащений захистом від перевантаження по струму</span></p>
+</li>
+</ul>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><u><span class="ck-alert__title">Порада!</span></u>&nbsp;Після регулювання DIP-перемикачів необхідно перезапустити пристрій для його коректної роботи</span></div>
+</div>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px"></span><span style="font-size:18px">Налаштування вихідного струму здійснюється за допомогою перемикачів DIP1, DIP2 і DIP3:</span><span style="font-size:18px"></span><span style="font-size:18px"></span><span style="font-size:18px"></span></strong></u></p>
+<table align="left" border="1" style="">
+<tbody><tr>
+<th><span style="font-size:18px">Струм (пікові значення)</span></th>
+<th><span style="font-size:18px">DIP1</span></th>
+<th><span style="font-size:18px">DIP2</span></th>
+<th><span style="font-size:18px">DIP3</span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1.2&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1.5&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">1.8&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">2.2&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">2.4 А</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">2.8&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">3.2&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">3.6&nbsp;А</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px"></span><span style="font-size:18px">Вибір режиму керування діапазоном швидкості обертання здійснюється за допомогою перемикача DIP4:</span><span style="font-size:18px"></span></strong></u></p>
+<table align="left" border="1" style="width:600px">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>DIP4</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px">OFF</span></span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Низька передача, 1-300 об/хв</span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Висока передача, 2-600 об/хв</span></span></span></span></span></span></span></td>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px"></span><span style="font-size:18px">Управління швидкістю та прискоренням обертання (працює у всіх режимах управління траєкторією):</span><span style="font-size:18px"></span></strong></u></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Управління швидкістю обертання</strong> здійснюється як за допомогою вбудованого регулятора AD3, так і за допомогою зовнішнього потенціометра. В якості зовнішнього регулятора використовується потенціометр зі значенням опору ≤10 кОм. Плата автоматично визначить його як&nbsp;пристрій керування швидкістю за замовчуванням (регулятор AD3 у цьому випадку функціонувати не буде).</span></p>
+<p><span style="font-size:18px"><u>Примітка:</u>&nbsp;підключати потенціометр слід перед подачею живлення на MDC4-1AH.</span></p>
+<p><span style="font-size:18px"><strong>Управління прискоренням обертання</strong> здійснюється за допомогою вбудованого регулятора AD4.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><u><span style="font-size:18px"></span><span style="font-size:18px"><strong>Вибір режиму траєкторії здійснюється за допомогою перемикачів DIP5 і DIP6</strong></span><span style="font-size:18px"><strong>:</strong></span></u></p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px"></span></strong></p>
+<p><strong><span style="font-size:18px">Ручний режим</span></strong></p>
+<p><span style="font-size:18px">У цьому режимі можна вручну керувати траєкторією обертання двигуна. Якщо контакт перемикача "Обертання вперед" замкнено і на передньому кінцевому вимикачі (у разі його встановлення) немає сигналу - двигун обертається вперед. При розмиканні контакту - двигун не обертається. Якщо контакт перемикача "Обертання назад" замкнений і на задньому кінцевому вимикачі (у разі його встановлення) немає сигналу - двигун обертається назад. При розмиканні контакту - двигун не обертається.</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Режим одиночного запуску</span></strong></p>
+<p><span style="font-size:18px">У цьому режимі двигун може послідовно обертатися від точки А до точки В і від точки В до точки А (мають бути встановлені кінцеві вимикачі). Коли короткочасно замикається перемикач "Пуск" - двигун починає обертатися вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун зупиняється. При повторному короткочасному замиканні перемикача "Пуск" - двигун обертається назад. У момент появи сигналу на задньому кінцевому вимикачі двигун зупиняється. Коли короткочасно&nbsp;замикається перемикач "Пауза" -&nbsp;двигун зупиняє своє обертання і зможе продовжити роботу тільки після&nbsp;отримання наступного сигналу запуску.</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Циклічний режим</span></strong></p>
+<p><span style="font-size:18px">Цей режим може реалізувати циклічне (безперервне) обертання двигуна між двома точками А і B (мають бути встановлені кінцеві вимикачі). Коли перемикач "Пуск" замкнутий – двигун обертається вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун перемикається на обертання назад. У момент появи сигналу на задньому кінцевому вимикачі - двигун перемикається на обертання вперед. При розмиканні контакту "Пуск" двигун не обертається. Контакт SW2 у цьому режимі не використовується.</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Режим одиночного обертання в обидва кінці</span></strong></p>
+<p><span style="font-size:18px">У цьому режимі двигун може здійснити обертання від точки А до точки В і автоматично повернеться від точки В до точки А (мають бути встановлені кінцеві вимикачі). Коли короткочасно замикається перемикач "Пуск" - двигун починає обертатися вперед. У момент появи сигналу на передньому кінцевому вимикачі - двигун перемикається на обертання назад. У момент появи сигналу на задньому кінцевому вимикачі двигун зупиняється. Коли короткочасно&nbsp;замикається перемикач "Пауза" -&nbsp;двигун зупиняє своє обертання і зможе продовжити роботу тільки після&nbsp;отримання наступного сигналу запуску.</span></p>
+<p><strong><span style="font-size:18px"></span></strong><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"></span></span></span></span></span></span></span></span></span></span></p>
+<table align="left" border="1">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>DIP5</strong></span></th>
+<th><span style="font-size:18px"><strong>DIP6</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+<th><span style="font-size:18px">SW1</span></th>
+<th><span style="font-size:18px">SW2</span></th>
+<th><span style="font-size:18px">SW3</span></th>
+<th><span style="font-size:18px">SW4</span></th>
+</tr>
+<tr>
+<td style="text-align:center"><strong><span style="font-size:18px">ON</span></strong></td>
+<td style="text-align:center"><strong><span style="font-size:18px">ON</span></strong></td>
+<td style="text-align:center"><span style="font-size:18px">Ручний режим</span></td>
+<td style="text-align:center"><span style="font-size:18px">Обертання&nbsp;вперед</span></td>
+<td style="text-align:center"><span style="font-size:18px">Обертання назад</span></td>
+<td colspan="1" rowspan="4" style="text-align:center"><span style="font-size:18px">Передній кінцевий вимикач</span></td>
+<td colspan="1" rowspan="4" style="text-align:center"><span style="font-size:18px"><span style="font-size:18px">Задній кінцевий вимикач</span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><strong><span style="font-size:18px">ON</span></strong></td>
+<td style="text-align:center"><strong><span style="font-size:18px">OFF</span></strong></td>
+<td style="text-align:center"><span style="font-size:18px">Режим одиночного запуску</span></td>
+<td style="text-align:center"><span style="font-size:18px">Пуск</span></td>
+<td style="text-align:center"><span style="font-size:18px">Пауза</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><strong><span style="font-size:18px">OFF</span></strong></td>
+<td style="text-align:center"><strong><span style="font-size:18px">ON</span></strong></td>
+<td style="text-align:center"><span style="font-size:18px">Циклічний режим</span></td>
+<td style="text-align:center"><span style="font-size:18px">Пуск</span></td>
+<td style="text-align:center"><span style="font-size:18px"></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><strong><span style="font-size:18px">OFF</span></strong></td>
+<td style="text-align:center"><strong><span style="font-size:18px">OFF</span></strong></td>
+<td style="text-align:center"><span style="font-size:18px">Режим одиночного обертання в обидва&nbsp;кінці</span></td>
+<td style="text-align:center"><span style="font-size:18px">Пуск</span></td>
+<td style="text-align:center"><span style="font-size:18px">Пауза</span></td>
+</tr>
+</tbody></table>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><u><strong>Примітка:</strong></u> в якості кінцевих вимикачів використовуються як механічні, так і трипровідні безконтактні нормально розімкнуті датчики типу NPN (два контакти є проводами живлення, тому безпосередньо підключаються до БЖ пристрою (повинен відповідати напрузі живлення датчика). Ще один контакт (сигнальний) підключається до відповідної клеми - "Передній кінцевий вимикач" або "Задній&nbsp;<span style="font-size:18px">кінцевий</span> вимикач").</span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">В якості</span> перемикачів використовуються двопровідні нормально розімкнені кнопкові механічні вимикачі (один контакт підключається до відповідної клеми - "Пуск / Обертання вперед" або "Пауза / <span style="font-size:18px">Обертання</span> назад", другий контакт підключається до загальної клеми COM).</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><u><span style="font-size:18px"><span style="font-size:18px"></span></span><span style="font-size:18px"><span style="font-size:18px"><strong>Вибір режиму управління плавністю зупинки обертання здійснюється за допомогою перемикача DIP7 (працює у всіх режимах управління траєкторією)</strong></span></span><span style="font-size:18px"><span style="font-size:18px"></span></span><strong><span style="font-size:18px">:</span></strong></u></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Різка зупинка:</strong> після отримання сигналу від кінцевого вимикача або кнопки управління, двигун здійснює різку зупинку.</span></p>
+<p><span style="font-size:18px"><strong>Плавна зупинка:</strong> після отримання сигналу від кінцевого вимикача або кнопки управління двигун здійснює плавне зниження швидкості з подальшою зупинкою.</span></p>
+<p><span style="font-size:18px"><u>Примітка:</u> рекомендується використовувати плавну зупинку</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<table align="left" border="1" style="width:600px">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>DIP7</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Різка зупинка</span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Плавна&nbsp;<span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">зупинка</span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><strong><span style="font-size:18px"></span><span style="font-size:18px">Вибір режиму управління струмом обмоток двигуна після його зупинки здійснюється за допомогою перемикача DIP8:</span><span style="font-size:18px"></span></strong></u></p>
+<table align="left" border="1" style="">
+<tbody><tr>
+<th><span style="font-size:18px">DIP8</span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center;width:25px"><strong><span style="font-size:18px">ON</span></strong></td>
+<td style="text-align:center;width:558px"><span style="font-size:18px">Після зупинки двигуна, струм на обмотках зменшується вдвічі. Вал перебуває в стані утримання. Двигун має нагрів</span></td>
+</tr>
+<tr>
+<td colspan="1" rowspan="2" style="text-align:center;width:25px"><strong><span style="font-size:18px">OFF</span></strong></td>
+<td colspan="1" rowspan="2" style="text-align:center;width:558px"><span style="font-size:18px">Після зупинки двигуна, струм на обмотках відсутній. Вал перебуває у вільному стані. Двигун не нагрівається</span></td>
+</tr>
+<tr>
+</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px"></span><span style="font-size:18px"></span></strong></p>
+<p><strong><span style="font-size:18px">Технічні характеристики:</span></strong></p>
+<p><span style="font-size:18px">Модель: MDC4-1AH</span></p>
+<p><span style="font-size:18px">Напруга живлення: 20&nbsp;~&nbsp;80 В постійний струм (DC)</span></p>
+<p><span style="font-size:18px">Рекомендована напруга блоку живлення: 72 В постійний струм (DC)</span></p>
+<p><span style="font-size:18px">Діапазон вихідного струму (пікові значення): 1.2 ~ 3.6 А (8 режимів)</span></p>
+<p><span style="font-size:18px">Тип відповідного двигуна: 2-х фазний кроковий двигун з фланцем NEMA 17 (42 мм) та NEMA 23 (57 мм)</span></p>
+<p><span style="font-size:18px">Кількість діапазонів вибору швидкості обертання двигуна: 2 (1-300 об/хв і 2-600 об/хв)</span></p>
+<p><span style="font-size:18px">Мікрокрок:&nbsp;10 000 крок/об та 20 000 крок/об (значення вшиті в плату)</span></p>
+<p><span style="font-size:18px">Кількість режимів траєкторії:&nbsp;4</span></p>
+<p><span style="font-size:18px">Кількість режимів управління струмом двигуна після його зупинки: 2</span></p>
+<p><span style="font-size:18px">Кількість режимів керування плавністю зупинки: 2</span></p>
+<p><span style="font-size:18px">Регулювання прискорення: так</span></p>
+<p><span style="font-size:18px">Можливість підключення зовнішнього потенціометра регулювання швидкості: так</span></p>
+<p><span style="font-size:18px">Опір відповідного зовнішнього потенціометра: ≤10 кОм</span></p>
+<p><span style="font-size:18px">Тип виходу відповідного кінцевого вимикача: NPN NO (нормально відкритий)</span></p>
+<p><span style="font-size:18px">Охолодження: пасивне (радіатор)</span></p>
+<p><span style="font-size:18px">Діапазон робочої температури навколишнього середовища: -20...+55 °С</span></p>
+<p><span style="font-size:18px">Габаритні розміри: 118х76х33 мм</span></p>
+<p><span style="font-size:18px">Вага: 260 г</span></p>
+<p><span style="font-size:18px">Стан: новий</span></p>
+<p><span style="font-size:18px">Гарантійний термін: 3 місяці</span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Габаритні розміри:</span></strong></p>
+<p><img alt="" src="https://i.ibb.co/DpR2YqJ/image.jpg" style="width:700px;height:657px"></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Інтерфейс:</span></strong></p>
+<p><strong><img alt="" src="https://i.ibb.co/0nq4mMy/image.jpg" style="width:800px;height:669px"></strong></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Світлові індикатори:</strong></span></p>
+<p><span style="font-size:18px">Постійне свічення зеленого індикатора - <span style="font-size:18px">оповіщення</span> про наявність живлення</span></p>
+<p><span style="font-size:18px">Миготіння червоного індикатора - оповіщення про нормальний робочий стан</span></p>
+<p><span style="font-size:18px">Постійне свічення червоного індикатора - оповіщення про несправність</span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Схема підключення:</span></strong></p>
+<p><img alt="" src="https://i.ibb.co/b6tD6Fr/image.jpg" style="width:750px;height:713px"></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Методи підключення крокових двигунів:</strong></span></p>
+<p><img alt="" src="https://i.ibb.co/y0jMrLR/image.jpg" style="width:800px;height:574px"></p>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><span class="ck-alert__title">Увага!</span>&nbsp;</span>
+<p><span style="font-size:18px">Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця. Інформація на сайті є актуальною на момент її публікації</span></p>
+<p><span style="font-size:18px">Зовнішній вигляд товару може відрізнятись від фотографій на сайті. Розбіжність зовнішнього вигляду та комплектності реального товару з фотографіями на сайті не є показником неналежної якості виробу</span></p>
+<p><span style="font-size:18px"><strong>При виникненні складнощів з підключенням звертатись до технічного фахівця компанії CNCPROM (контакти вказані на сайті)</strong></span></p>
+<p><span style="font-size:18px"></span></p>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong>Комплект поставки&nbsp;</strong><span class="fa fa-truck" style="font-size:24px;color:#000000"></span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><strong>Драйвер контролер крокового двигуна MDC4-1AH</strong><span style="font-size:18px"></span></span></li>
+</ul>
+<div class="ck-alert ck-alert_theme_blue">
+<div><span style="font-size:18px"><strong>До цього пристрою у нас можна придбати</strong>&nbsp;<span class="fa fa-shopping-cart" style="font-size:24px;color:#000000"></span></span></div>
+</div>
+<h1><span style="font-size:18px"><strong>Блоки живлення</strong><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank"><img alt="Блок питания импульсный S-400-12, 12 В, 33 A, 400 Вт, фото 2" src="https://images.prom.ua/2821277293_w539_h473_blok-pitaniya-impulsnyj.jpg" style="width:120px;height:120px"></a><strong>&nbsp;<a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></strong></span></h1>
+<h1><strong><span style="font-size:18px">Крокові двигуни&nbsp;</span></strong><a href="https://cnc.prom.ua/g1022553-elektrodvigateli" target="_blank"><img alt="Двигатель шаговый 57BYG250B-8 (NEMA 23, 1.2 Нм, 3.0 А, 1.8°), фото 2" src="https://images.prom.ua/2807418335_w539_h473_dvigatel-shagovyj-57byg250b-8.jpg" style="width:120px;height:120px"></a><span style="font-size:18px"><strong><a href="https://cnc.prom.ua/g1022553-elektrodvigateli" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></strong></span><strong><span style="font-size:18px"></span></strong></h1>
+<h1><span style="font-size:18px"><strong>Потенціометри&nbsp;<a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank"><img alt="Потенциометр WTH118-2W B10K (10 кОм), фото 2" src="https://images.prom.ua/2169106055_w539_h473_potentsiometr-wth118-2w-b10k.jpg" style="width:120px;height:121px"></a>&nbsp;<a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></strong></span></h1>
+<p><span style="font-size:18px"><strong>Датчики визначення положення об'єктів<a href="https://cnc.prom.ua/g60641972-datchiki-opredeleniya-polozheniya" target="_blank"><img alt="Индуктивный датчик Autonics PR12-2DN NPN NO (открытый), бесконтактный концевой датчик приближения М12, фото 2" src="https://images.prom.ua/3736380250_w358_h473_induktivnyj-datchik-autonics.jpg" style="width:120px;height:120px"></a>&nbsp;</strong><span style="font-size:18px"><strong><a href="https://cnc.prom.ua/g60641972-datchiki-opredeleniya-polozheniya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></strong></span></span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Перемикачі<a href="https://cnc.prom.ua/p1493868799-knopka-pereklyuchatel-mgnovennogo.html" target="_blank"><img alt="Кнопка переключатель мгновенного действия LA38-11 (Зеленый), фото 2" src="https://images.prom.ua/3382316674_w528_h473_knopka-pereklyuchatel-mgnovennogo.jpg" style="width:120px;height:120px"></a><a href="https://cnc.prom.ua/p1493868799-knopka-pereklyuchatel-mgnovennogo.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Дивіться всі наші оголошення</strong></span></p>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Каталог товарів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Верстати</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи охолодження та вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Електродвигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Серводвигуни із серводрайверами</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Блоки живлення</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Шпинделі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Пульти ручного керування та DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Лінійні напрямні та підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Передачі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи мастила напрямних та передач</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Механіка</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкий кабель канал (кабелеукладач)</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Фрези</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g106846694-pnevmatika" target="_blank">Пневматика</a></span><span style="font-size:18px"></span></li>
+</ul>

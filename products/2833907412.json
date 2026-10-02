@@ -1,0 +1,27 @@
+{
+  "id": "2833907412",
+  "name": "Регульована різьбова опора RO-M12x80-D80, верстатна різьбова віброопора М12, опорна ніжка",
+  "sku": "22-054",
+  "url": "https://cncprom.ua/ua/p2833907412-reguliruemaya-rezbovaya-opora.html",
+  "attrs": [
+    ["Тип комплектуючого", "Виброопора"],
+    ["Стан", "Новий"],
+    ["Довжина", "116 мм"],
+    ["Ширина", "80 мм"],
+    ["Висота", "116 мм"],
+    ["Вага", "178 г"],
+    ["Діаметр основи", "80"],
+    ["Різьба стрижня:", "М12х1.75"],
+    ["Можливість нахилу стрижня:", "Немає"],
+    ["Довжина різьбової частини:", "80 мм"],
+    ["Максимальне статичне навантаження:", "~ 80 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6953503255_regulovana-rizbova-opora.jpg",
+    "https://images.prom.ua/6949695943_regulovana-rizbova-opora.jpg",
+    "https://images.prom.ua/5785935529_regulovana-rizbova-opora.jpg",
+    "https://images.prom.ua/6949702413_regulovana-rizbova-opora.jpg"
+  ],
+  "accessories": []
+}

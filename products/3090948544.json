@@ -1,0 +1,31 @@
+{
+  "id": "3090948544",
+  "name": "Електричний кроковий лінійний привід 12 мм/с, 24 В, хід 400 мм, тяга, 250 Н (до 25 кг), актуатор BJXL",
+  "sku": "12-344",
+  "url": "https://cncprom.ua/ua/p3090948544-elektricheskij-shagovyj-linejnyj.html",
+  "attrs": [
+    ["Вантажопідйомність", "25 кг"],
+    ["Стан", "Новий"],
+    ["Номінальна робоча напруга", "24 В"],
+    ["Привід", "Електричний"],
+    ["Модель:", "BJXL"],
+    ["Тип приводу:", "лінійний актуатор з кроковим двигуном"],
+    ["Номінальна потужність:", "30 Вт"],
+    ["Хід штоку:", "400 мм"],
+    ["Рівень захисту:", "IP54"],
+    ["Рівень шуму:", "≤42 дБ"],
+    ["Струм:", "1.2 А"],
+    ["Довжина", "570 мм"],
+    ["Ширина", "40 мм"],
+    ["Висота", "75 мм"],
+    ["Вага", "1.2 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7496107249_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496107703_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496268997_elektrichnij-krokovij-linijnij.jpg",
+    "https://images.prom.ua/7496666642_elektrichnij-krokovij-linijnij.jpg"
+  ],
+  "accessories": []
+}

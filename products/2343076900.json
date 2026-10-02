@@ -1,0 +1,25 @@
+{
+  "id": "2343076900",
+  "name": "Чотириканальний модуль оптоелектронної розв'язки з NPN-виходом 6-24V",
+  "sku": "05-245",
+  "url": "https://cncprom.ua/ua/p2343076900-chetyrehkanalnyj-modul-optoelektronnoj.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "82 г"],
+    ["Висота", "40 мм"],
+    ["Довжина", "87 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "58 мм"],
+    ["Індикація", "вхід, вихід"],
+    ["Напруга сигналу", "6-24V"],
+    ["Тип вихідного сигналу", "NPN"],
+    ["Енергоспоживання модуля", "<100mA"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6271071260_chotirikanalnij-modul-optoelektronnoyi.jpg",
+    "https://images.prom.ua/6271071272_chotirikanalnij-modul-optoelektronnoyi.jpg",
+    "https://images.prom.ua/6271071264_chotirikanalnij-modul-optoelektronnoyi.jpg"
+  ],
+  "accessories": []
+}

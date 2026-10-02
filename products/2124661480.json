@@ -1,0 +1,31 @@
+{
+  "id": "2124661480",
+  "name": "Двопоршневий пневмоциліндр двосторонньої дії TN20-10-S, хід 10 мм",
+  "sku": "08-307",
+  "url": "https://cncprom.ua/ua/p2124661480-dvuhporshnevoj-pnevmotsilindr-dvostoronnego.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.31 кг"],
+    ["Діаметр", "20 мм"],
+    ["Довжина", "88 мм"],
+    ["Максимальна робоча температура", "70 град."],
+    ["Максимальний робочий тиск", "0.7 МПа"],
+    ["Мінімальна робоча температура", "-5 град."],
+    ["Мінімальний робочий тиск", "0.1 МПа"],
+    ["Тип", "Пневмоциліндр"],
+    ["Хід поршня", "10 мм"],
+    ["Ширина", "62 мм"],
+    ["Принцип дії", "двухсторонний"],
+    ["Розмір фітингу", "M5x0.8"],
+    ["Швидкість ходу", "<500 мм/с"],
+    ["Тип демпфера", "регульований"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5516751178_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/5516751165_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/5516751121_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg",
+    "https://images.prom.ua/6060574888_dvoporshnevij-pnevmotsilindr-dvostoronnoyi.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,52 @@
+<p><span style="font-size:18px">Поворотна вісь на ремінному редукторі, редукція 6:1, патрон К12 80 мм, 4-х кулачковий</span></p>
+<p><span style="font-size:18px">Поворотна вісь встановлюється на верстат з ЧПК (ЧПУ) і дозволяє обертати заготовку навколо своєї осі. 4D поворотна вісь використовується для обробки дерева, алюмінієвих, кольорових і мідних сплавів, пластика. Поворотна вісь приводиться до руху за допомогою двигуна. Порівняно із звичайною 3х осьовою обробкою 3D моделі, де деталь кріпиться з одного боку до столу верстатах ЧПК (ЧПУ) то 4-х осьова поворотна вісь дозволяє обробляти виріб з усіх сторін без додаткових операцій по перевстановленню виробу на робочому столі, що тим самим дає можливість отримувати вироби складної конструкції. Це можуть бути меблеві елементи (ніжки столів і стільців), ювелірна продукція, виготовлення декоративних візерунків з дерева. Ремінні редуктори відрізняються меншою обертальною жорсткістю, ніж аналогічні за розміром хвильові.</span></p>
+<p><span style="font-size:18px">Характеристики:</span></p>
+<p><span style="font-size:18px">- <a href="/g2488264-remennaya-peredacha" target="_self">ремінна передача</a> (ремінь HTD5M-350)</span></p>
+<p><span style="font-size:18px">- редукція: 6:1</span></p>
+<p><span style="font-size:18px">- токарний патрон: К12 80 мм (4-х кулачковий)</span></p>
+<p><span style="font-size:18px">- максимальна швидкість: 4800r/min</span></p>
+<p><span style="font-size:18px">- двигун: NEMA23 57 мм 3A 2-фазний 4 дроти</span></p>
+<p><span style="font-size:18px">- струм: 3 А</span></p>
+<p><span style="font-size:18px">- обертальний момент: 18 кг/см</span></p>
+<p><span style="font-size:18px">- габаритні розміри поворотної осі: 167 мм × 203 мм × 115 мм</span></p>
+<p><span style="font-size:18px">- загальна висота: 115 мм</span></p>
+<p><span style="font-size:18px">- вага: 12 кг</span></p>
+<div>
+<div class="ck-header"><span style="font-size:18px">Налаштування Mach3</span></div>
+<table border="1" class="ck-table-constructor ck-table-constructor_type_lite ck-theme-grey" style="width:100%">
+<tbody><tr class="ck-table-constructor__row ck-table-constructor__row_type_border-bottom ck-table-constructor__row_type_colored">
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="text-align:left;vertical-align:top">
+<p><span style="font-size:18px"><strong>Кількість імпульсів на 1 градус</strong></span></p>
+</td>
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="text-align:left;vertical-align:top"><span style="font-size:18px"><strong>(число імпульсів двигуна на один оборот * дроблення кроку * передатне число) / 360 градусів</strong></span></td>
+</tr>
+<tr class="ck-table-constructor__row ck-table-constructor__row_type_border-bottom ck-table-constructor__row_type_colored">
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="text-align:left;vertical-align:top">
+<p><span style="font-size:18px"><strong>Наприклад:</strong></span></p>
+<p><span style="font-size:18px"><strong>Біполярний кроковий двигун з кутом кроку 1,8 градуса<br>
+			(360 градусів / 1,8 =200 кроків на оборот)</strong></span></p>
+<p><span style="font-size:18px"><strong>Дроблення кроку, виставлене на драйвері: 1/16</strong></span></p>
+<span style="font-size:18px"><strong>Передатне число понижуючого редуктора: 1/50</strong></span></td>
+<td class="ck-table-constructor__cell ck-table-constructor__cell_type_border-right ck-table-constructor__cell_type_colored ck-table-constructor__text" style="text-align:left;vertical-align:top"><span style="font-size:18px"><strong>Якщо використовується кроковий двигун з кутом кроку 1.8 градуси то на один оборот треба 200 імпульсів (360/1,8=200)<br>
+			Якщо ж використовується двигун з кутом кроку 0,9, то 360/0,9=400. Тобто такий двигун треба подати 400 імпульсів, для того, щоб він провернувся на один оборот.<br>
+			Дроблення кроку, виставлене на драйвері, наприклад 1/16, але іноді на драйвері замість 1/16 пише кількість імпульсів на оберт, наприклад 3200 (16*200)<br>
+			Передатне число понижуючого редуктора 1:50 означає що двигун треба провернути 50 раз для того, щоб патрон провернувся один раз. Використання понижуючих редукторів сприяє збільшенню точності обробки. Що особливо важливо при використанні заготовок з великим радіусом.<br>
+			(200×16×50)÷360=444.44444444</strong></span></td>
+</tr>
+</tbody></table>
+</div>
+<p><span style="font-size:18px"><strong>Токарний патрон: К12 80 мм</strong></span></p>
+<p><span style="font-size:18px">4-х кулачковий токарний патрон має наскрізний отвір для фіксації заготовок необмеженої довжини.</span></p>
+<p><span style="font-size:18px">Матеріал: сталь</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Схема підключення:</strong></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://images.prom.ua/2028341296_2028341296.jpg?PIMAGE_ID=2028341296"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>&nbsp;<span class="fa fa-truck" style="color:#0808ff"></span> Комплект поставки:</strong></span></p>
+<p><span style="font-size:18px">Поворотна вісь в зборі</span></p>
+<p><span style="font-size:18px">Патрон: К12 80 мм – 1 шт</span></p>
+<p><span style="font-size:18px">Двигун - NEMA23 57 мм 3A 2-фазний 4 дроти (1 шт)</span></p>
+<p><span style="font-size:18px">Затискний ключ - 1 шт</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>

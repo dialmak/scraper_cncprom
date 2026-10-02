@@ -1,0 +1,26 @@
+{
+  "id": "2644858250",
+  "name": "Гібридний кроковий серводрайвер ZDM-2HA860AJWL, 8.2 А, 24~110VDC, 18~80 VАC для крокового двигуна з енкодером серії 86",
+  "sku": "06-028",
+  "url": "https://cncprom.ua/ua/p2644858250-gibridnyj-shagovyj-servodrajver.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Діапазон струму приводу", "0,4 - 8,2 А/фаза"],
+    ["Змінний струм", "18-80V"],
+    ["Лінія енкодера", "1000 імп/об"],
+    ["Постійний струм", "24-110V"],
+    ["Рівень відгуку", "200 кГц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6715187372_gibridnij-krokovij-servodrajver.jpg",
+    "https://images.prom.ua/6715187585_gibridnij-krokovij-servodrajver.jpg",
+    "https://images.prom.ua/6715187740_gibridnij-krokovij-servodrajver.jpg",
+    "https://images.prom.ua/6715187865_gibridnij-krokovij-servodrajver.jpg",
+    "https://images.prom.ua/6714574965_gibridnij-krokovij-servodrajver.jpg"
+  ],
+  "accessories": [
+    "992174425",
+    "992047892"
+  ]
+}

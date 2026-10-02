@@ -1,0 +1,22 @@
+{
+  "id": "1325655709",
+  "name": "Контролер MESA 7C81",
+  "sku": "05-070",
+  "url": "https://cncprom.ua/ua/p1325655709-kontroller-mesa-7c81.html",
+  "attrs": [
+    ["Країна виробник", "США"],
+    ["Стан", "Новий"],
+    ["Вага", "0.07 кг"],
+    ["Інтерфейс для підключення зовнішніх пристроїв", "RS485, RS422"],
+    ["Тип монтажу", "На DIN рейку"],
+    ["Виробник", "MESA"],
+    ["Напруга", "5 В"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2829555083_kontroler-mesa-7c81.jpg",
+    "https://images.prom.ua/2829555046_kontroler-mesa-7c81.jpg",
+    "https://images.prom.ua/2829555105_kontroler-mesa-7c81.jpg"
+  ],
+  "accessories": []
+}

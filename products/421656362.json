@@ -1,0 +1,29 @@
+{
+  "id": "421656362",
+  "name": "Драйвер крокового двигуна TB6600 4,5А, 12–48 VDC",
+  "sku": "06-006",
+  "url": "https://cncprom.ua/ua/p421656362-drajver-shagovogo-dvigatelya.html",
+  "attrs": [
+    ["Діапазон робочого струму", "0,5-4,5 А"],
+    ["Напруга живлення", "12-48В"],
+    ["Робоча температура", "0 - 70°С"],
+    ["Ток (A)", "4.5"],
+    ["Частота сигнала", "до 200 кГц"],
+    ["Струм, А", "4.5"]
+  ],
+  "specs": [
+    ["Драйвер крокового двигуна ТВ6600. Інструкція.pdf", "https://storage.ua.prom.st/2369983_drajver_krokovogo_dviguna_tv6600._nstruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/597206995_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/597207400_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/745319289_drajver-krokovogo-dviguna.jpg"
+  ],
+  "accessories": [
+    "4057846",
+    "4696280",
+    "403988022",
+    "4057832",
+    "6475293"
+  ]
+}

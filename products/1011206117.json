@@ -1,0 +1,34 @@
+{
+  "id": "1011206117",
+  "name": "Контролер MESA 7I76",
+  "sku": "05-042",
+  "url": "https://cncprom.ua/ua/p1011206117-kontroller-mesa-7i76.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Висота", "23.5 мм"],
+    ["Довжина", "127 мм"],
+    ["Ширина", "101.5 мм"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Вага (г)", "180"],
+    ["Інтерфейс під'єднання контролера", "25 пін"],
+    ["Мoдель", "7I76"],
+    ["Підтримувані операційні системи", "Windows"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["instruktsiya_k_kontrolleru_7i76.pdf", "https://storage.ua.prom.st/2352497_instruktsiya_k_kontrolleru_7i76.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3106692493_kontroler-mesa-7i76.jpg",
+    "https://images.prom.ua/3106692555_kontroler-mesa-7i76.jpg",
+    "https://images.prom.ua/3106692592_kontroler-mesa-7i76.jpg",
+    "https://images.prom.ua/3106692660_kontroler-mesa-7i76.jpg"
+  ],
+  "accessories": []
+}

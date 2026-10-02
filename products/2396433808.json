@@ -1,0 +1,31 @@
+{
+  "id": "2396433808",
+  "name": "Кутовий планетарний редуктор (1:10) для крокового двигуна 86 мм",
+  "sku": "12-123",
+  "url": "https://cncprom.ua/ua/p2396433808-uglovoj-planetarnyj-reduktor.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "2.55"],
+    ["Вхідний фланець", "86 мм"],
+    ["Діаметр отвору під вхідний вал", "14 мм"],
+    ["Діаметр переднього вала", "16 мм мм"],
+    ["Клас захисту", "IP65"],
+    ["Матеріал корпусу", "Сталь"],
+    ["Мoдель", "PX86N010S0H"],
+    ["Передавальне відношення (коефіцієнт зменшення)", "1:10"],
+    ["Серія", "PXW"],
+    ["Стан", "Нове"],
+    ["Тип", "Редуктор"],
+    ["Тип редуктора", "Планетарний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7084112578_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/7084112610_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6353297979_kutovij-planetarnij-reduktor.jpg",
+    "https://images.prom.ua/6353297985_kutovij-planetarnij-reduktor.jpg"
+  ],
+  "accessories": [
+    "792360055"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "3057028436",
+  "name": "Розумний WIFI лічильник електроенергії Atorch GR2PWSL, AC 50–320 V, автомат введення резерву",
+  "sku": "HP09-028",
+  "url": "https://cncprom.ua/ua/p3057028436-umnyj-wifi-schetchik.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.183 кг"],
+    ["Висота", "66 мм"],
+    ["Довжина", "81 мм"],
+    ["Ширина", "35 мм"],
+    ["Частота струму", "50 Гц"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/3349139_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7444156894_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7444156897_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7444156893_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7444156900_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7444660225_rozumnij-wifi-lichilnik.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "2230430418",
+  "name": "Автомобільний зарядний пристрій Qualcomm Quick charge 3.0 4xUSB, 40W",
+  "sku": "HP07-004",
+  "url": "https://cncprom.ua/ua/p2230430418-avtomobilnoe-zaryadnoe-ustrojstvo.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вбудований запобіжник", "Так"],
+    ["Довжина шнура", "1.8 м"],
+    ["Індикатор роботи", "Так"],
+    ["Напруга живлення", "12 В, 24 В"],
+    ["Підключення пристрою", "4 USB роз'єми"],
+    ["Стан", "Новий"],
+    ["Тип пристрою", "Зарядний пристрій"],
+    ["Колір", "Чорний"],
+    ["Вага (кг)", "0.16"],
+    ["Вхідна напруга", "24"],
+    ["Вихідна напруга", "12"],
+    ["Потужність заряджання", "40W"],
+    ["Сумісність", "Універсальна"],
+    ["Технологія заряджання", "Qualcomm Quick Charge 3.0"],
+    ["Типи захисту", "перенапруження, перезаряд, перегрівання, перевантаження за струмом"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5891184261_avtomobilnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5891184262_avtomobilnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5891184263_avtomobilnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5891184264_avtomobilnij-zaryadnij-pristrij.jpg"
+  ],
+  "accessories": []
+}

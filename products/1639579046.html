@@ -1,0 +1,208 @@
+<h2><strong>Автономний контролер руху крокового двигуна CNCPROM PG-1C-AC, генератор імпульсів, контролер верстата з ЧПК</strong></h2>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><u><strong>PG-1C-AC</strong></u>&nbsp;-&nbsp;компактний автономний контролер, який&nbsp;призначений&nbsp;для управління обертанням (траєкторія, швидкість, плавність зупинки) крокового двигуна в системах&nbsp;автоматизації. Перемикачі <strong>DIP1</strong> і&nbsp;<strong>DIP2</strong>&nbsp;служать для вибору одного з чотирьох&nbsp;режимів&nbsp;траєкторії обертання двигуна,&nbsp;<strong>DIP3</strong> -&nbsp;для вибору&nbsp;джерела регулювання швидкості обертання двигуна (керувати швидкістю користувач може за допомогою як вбудованого, так і зовнішнього потенціометрів),&nbsp;<strong>DIP4</strong> - для вибору режиму плавності зупинки обертання двигуна (різка і плавна).</span></p>
+<p><span style="font-size:18px">Частота імпульсів на виході становить від 320 Гц до 40 кГц. Електроживлення такого генератора імпульсів здійснюється від мережі змінного струму 220 В.</span></p>
+<p><span style="font-size:18px">Стежити за наявністю живлення та процесом роботи контролера можна за допомогою світлодіодних індикаторів.</span></p>
+<p><span style="font-size:18px">Модель відрізняється своєю простотою у використанні, стабільністю роботи та низькою вартістю.</span></p>
+<p><span style="font-size:18px"><br>
+<strong>До основних особливостей та функцій контролера відносяться:</strong></span></p>
+<ul>
+<li>
+<p><span style="font-size:18px">Не вимагає підключення до комп'ютера</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">4 режими управління траєкторією обертання двигуна</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">2 режими плавності зупинки</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Можливість регулювання швидкості як вбудованим, так і зовнішнім потенціометрами</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Зовнішнє розміщення потенціометрів та DIP-перемикачів (для зручності перемикання)</span><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+</li>
+</ul>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span></span>
+<div><span style="font-size:18px"><strong><u>Поради!</u></strong> </span></div>
+<ul>
+<li>
+<p><span style="font-size:18px">Зовнішній потенціометр необхідно підключати до PG-1C-AC перед включенням живлення. В іншому випадку потенціометр може бути не розпізнаний</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Після регулювання DIP-перемикачів необхідно перезапустити контролер для його коректної роботи</span></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong><u>Зверніть увагу!</u>&nbsp;Цей генератор імпульсів призначений для використання тільки в поєднанні з драйвером двигуна, його не можна використовувати для безпосереднього управління двигуном</strong><span class="ck-alert__title"></span></span></div>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><strong><span style="font-size:18px">Дана модель має 4 режими управління траєкторією обертання двигуна. Вибір режиму здійснюється за допомогою перемикачів DIP1 і DIP2:</span></strong></p>
+<p><span style="font-size:18px"><strong>Ручний режим:</strong> Якщо контакт перемикача "обертання вперед" замкнутий і на передньому кінцевому вимикачі немає сигналу - двигун обертається вперед. Якщо контакт перемикача "обертання назад" замкнутий і на задньому кінцевому вимикачі немає сигналу - двигун обертається назад. Якщо контакти перемикачів "обертання вперед" і "обертання назад" замкнуті одночасно - двигун не обертається.</span></p>
+<p><span style="font-size:18px"><strong>Режим одиночного запуску:</strong> У цьому режимі двигун може обертатись між двома точками А і В. Тригерний перемикач послідовно запускає двигун від А до В і від В до А. Кінцеві вимикачі повинні бути встановлені в двох точках А і В. Якщо під час роботи двигун отримує сигнал паузи - він зупиняється і зможе продовжити роботу тільки після отримання наступного сигналу запуску.</span></p>
+<p><span style="font-size:18px"><strong>Циклічний режим:</strong> Цей режим може реалізувати циклічне обертання двигуна між двома точками А і B. Кінцеві вимикачі повинні бути встановлені в двох точках А і В. Якщо тригерний перемикач замкнутий - двигун обертається. Якщо тригерний перемикач розімкнуто - двигун зупиняється. Якщо на передньому кінцевому вимикачі є сигнал, двигун перемикається на обертання назад. Якщо на задньому кінцевому вимикачі є сигнал, двигун перемикається на обертання вперед.</span></p>
+<p><span style="font-size:18px"><strong>Режим одиночного обертання в обидва кінці:</strong> Цей режим може здійснювати обертання між двома точками А і В. Тригерний перемикач запускає двигун від А до В, а потім від В до А. Кінцеві вимикачі повинні бути встановлені в двох точках А і В. Якщо під час роботи&nbsp;двигун отримує сигнал паузи - він&nbsp;зупиняється, а після отримання наступного сигналу запуску - двигун продовжить роботу.</span></p>
+<table align="left" border="1">
+<tbody><tr>
+<th><span style="font-size:18px"><strong>DIP1</strong></span></th>
+<th><span style="font-size:18px"><strong>DIP2</strong></span></th>
+<th><span style="font-size:18px"><strong>Режим</strong></span></th>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">Ручний режим</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px"><span style="font-size:18px">Режим одиночного запуску</span></span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">ON</span></td>
+<td style="text-align:center"><span style="font-size:18px">Циклічний режим</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center"><span style="font-size:18px">Режим одиночного обертання в обидва кінці</span></td>
+</tr>
+</tbody></table>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>За допомогою перемикача DIP3 можна вибрати джерело регулювання швидкості обертання двигуна:</strong></span></p>
+<table align="left" border="1" style="width:350px">
+<tbody><tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px"><strong>DIP3</strong></span></td>
+<td style="text-align:center;width:98px"><span style="font-size:18px"><strong>Вперед</strong></span></td>
+<td style="text-align:center;width:166px"><span style="font-size:18px"><strong>Назад</strong></span></td>
+</tr>
+<tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px">ON</span></td>
+<td colspan="2" rowspan="1" style="text-align:center;width:270px"><span style="font-size:18px">AD1 або&nbsp;AD3</span></td>
+</tr>
+<tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px">OFF</span></td>
+<td style="text-align:center;width:98px"><span style="font-size:18px">AD1</span></td>
+<td style="text-align:center;width:166px"><span style="font-size:18px">AD2 або AD3</span></td>
+</tr>
+</tbody></table>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Перемикач DIP4 регулює плавність зупинки обертання двигуна:</strong></span></p>
+<table align="left" border="1" style="width:350px">
+<tbody><tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px"><strong>DIP4</strong></span></td>
+<td colspan="2" rowspan="1" style="text-align:center;width:98px"><span style="font-size:18px"><strong>Режим зупинки</strong></span></td>
+</tr>
+<tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px">ON</span></td>
+<td colspan="2" rowspan="1" style="text-align:center;width:270px"><span style="font-size:18px">Різка</span></td>
+</tr>
+<tr>
+<td style="text-align:center;width:64px"><span style="font-size:18px">OFF</span></td>
+<td colspan="2" rowspan="1" style="text-align:center;width:98px"><span style="font-size:18px">Повільна</span></td>
+</tr>
+</tbody></table>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><span class="ck-alert__title"></span><span class="ck-alert__title"></span></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>ТЕХНІЧНІ ХАРАКТЕРИСТИКИ:</strong></span></p>
+<p><span style="font-size:18px">Модель: PG-1C-AC</span></p>
+<p><span style="font-size:18px">Напруга живлення:&nbsp;220 В змінний струм (AC)</span></p>
+<p><span style="font-size:18px">Частотний діапазон: 320 Гц ~ 40 кГц</span></p>
+<p><span style="font-size:18px">Тип відповідного двигуна:&nbsp;кроковий двигун</span></p>
+<p><span style="font-size:18px">Тип відповідного кінцевого вимикача: NPN NO</span></p>
+<p><span style="font-size:18px">Кількість режимів траєкторії:&nbsp;4</span></p>
+<p><span style="font-size:18px">Кількість режимів плавності зупинки: 2</span></p>
+<p><span style="font-size:18px">Можливість підключення зовнішнього потенціометра регулювання швидкості: так</span></p>
+<p><span style="font-size:18px">Діапазон робочої температури: -20 ... +55 °С</span></p>
+<p><span style="font-size:18px">Габаритні розміри: 115х90х40 мм</span></p>
+<p><span style="font-size:18px">Вага:&nbsp;126 г</span></p>
+<p><span style="font-size:18px">Стан: новий</span></p>
+<p><span style="font-size:18px">Гарантійний термін: 3 місяці</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Габаритні розміри:</span></strong></p>
+<p><img alt="" src="https://images.prom.ua/3856112142_w640_h2048_promyshlennyj_kontroller.jpg?fresh=1&amp;PIMAGE_ID=3856112142" style="width:640px;height:533px"></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Схема підключення:</span></strong></p>
+<p><img alt="" class="" src="https://i.ibb.co/3ytXdQd/image.jpg" style="width:837px;height:552px"></p>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><span class="ck-alert__title">Увага!</span>&nbsp;</span>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця. Інформація на сайті є актуальною на момент її опублікування.</span></p>
+<p><span style="font-size:18px">Зовнішній вигляд товару може відрізнятись від фотографій на сайті. Розбіжність зовнішнього вигляду та комплектності реального товару з фотографіями на сайті не є показником неналежної якості виробу.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong>Комплект постачання&nbsp;</strong><span class="fa fa-truck" style="color:#000000;font-size:24px"></span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><strong>Автономний контролер руху крокового двигуна CNCPROM PG-1C-AC</strong><span style="font-size:18px"></span></span></li>
+</ul>
+<div class="ck-alert ck-alert_theme_blue">
+<div><span style="font-size:18px"><strong>До цього контролера у нас можна придбати&nbsp;</strong><span class="fa fa-shopping-cart" style="color:#000000;font-size:24px"></span></span></div>
+</div>
+<h1><strong><span style="font-size:18px">Потенціометр WTH118-2W B10K (10 кОм)&nbsp;<a href="https://cnc.prom.ua/p1114195161-potentsiometr-wth118-b10k.html" target="_blank"><img alt="Потенциометр WTH118-2W B10K (10 кОм), фото 2" src="https://images.prom.ua/2169106055_w539_h473_potentsiometr-wth118-2w-b10k.jpg" style="width:120px;height:121px"></a>&nbsp;<a href="https://cnc.prom.ua/p1114195161-potentsiometr-wth118-b10k.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></h1>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Потенціометр</span><span style="font-size:18px"> RV24YN20S B103 (10 кОм)&nbsp;<a href="https://cnc.prom.ua/p823988379-potentsiometr-rv24yn20s-b103.html" target="_blank"><img alt="Потенциометр RV24YN20S B103 (10 кОм), фото 2" src="https://images.prom.ua/2169102487_w539_h473_potentsiometr-rv24yn20s-b103.jpg" style="width:140px;height:140px"></a>&nbsp;<a href="https://cnc.prom.ua/p823988379-potentsiometr-rv24yn20s-b103.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Потенціометр</span><span style="font-size:18px"> </span><span style="font-size:18px">багатооборотний</span><span style="font-size:18px"> WXD3-13-2W (10 кОм)&nbsp;<a href="https://cnc.prom.ua/p936103713-potentsiometr-mnogooborotnyj-wxd3.html" target="_blank"><img alt="Потенциометр многооборотный WXD3-13-2W (10 кОм), фото 2" src="https://images.prom.ua/1695004267_w358_h473_potentsiometr-mnogooborotnyj-wxd3-13-2w.jpg" style="width:120px;height:124px"></a>&nbsp;<a href="https://cnc.prom.ua/p936103713-potentsiometr-mnogooborotnyj-wxd3.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span><span style="font-size:18px"></span></strong></p>
+<p><strong><span style="font-size:18px">Кінцевий вимикач<a href="https://cnc.prom.ua/p440543824-kontsevoj-vyklyuchatel.html" target="_blank"><img alt="Концевой выключатель, фото 2" src="https://images.prom.ua/900425775_w539_h473_kontsevoj-vyklyuchatel.jpg" style="width:120px;height:95px"></a></span><span style="font-size:18px"><a href="https://cnc.prom.ua/p440543824-kontsevoj-vyklyuchatel.html" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span><span style="font-size:18px"></span></strong></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px"></span><span style="font-size:18px">Драйвери крокового двигуна</span><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank"><img alt="Драйвер микрошаговый Lichuan MC542 4.2 А для двухфазного шагового двигателя, фото 2" src="https://images.prom.ua/3501701416_w358_h473_drajver-mikroshagovyj-lichuan.jpg" style="width:120px;height:120px"></a>&nbsp;</span><span style="font-size:18px"></span><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank"><img src="/cloud-cgi/static/uaprom-static/js/ckeditor_latest/plugins/insert_button/images/product.png"></a></span></strong></p>
+<p>&nbsp;</p>
+<p><span style="font-size:16px"></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Дивіться всі наші оголошення</strong></span><span style="font-size:18px"></span></p>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Каталог товарів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Верстати</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи охолодження та вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Електродвигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Серводвигуни із серводрайверами</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Блоки харчування</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Шпинделі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Пульти ручного керування та DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Лінійні напрямні та підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Передачі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Системи мастила напрямних та передач</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Механіка</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Гнучкий кабель канал (кабелеукладач)</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Фрези</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g106846694-pnevmatika" target="_blank">Пневматика</a></span><span style="font-size:18px"></span></li>
+</ul>
+<div style=""><span></span></div>
+<div style=""><span style=""></span></div>
+<div style=""><span></span></div>

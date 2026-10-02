@@ -1,0 +1,21 @@
+{
+  "id": "1878403058",
+  "name": "Автономний контролер DDCS V2.1, 4 осі керування",
+  "sku": "05-094",
+  "url": "https://cncprom.ua/ua/p1878403058-avtonomnyj-kontroller-ddcs.html",
+  "attrs": [
+    ["Країна виробник", "Китай"]
+  ],
+  "specs": [
+    ["ddcs_v2.1_посібник користувача_eng.pdf", "https://storage.ua.prom.st/2560697_ddcs_v2.1_posibnik_koristuvacha_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4627156064_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/4627496101_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/4627156065_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/4627156066_avtonomnij-kontroler-ddcs.jpg"
+  ],
+  "accessories": [
+    "566146926"
+  ]
+}

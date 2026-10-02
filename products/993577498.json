@@ -1,0 +1,33 @@
+{
+  "id": "993577498",
+  "name": "Контроллер MESA 7I80DB-16",
+  "sku": "05-037",
+  "url": "https://cncprom.ua/ua/p993577498-kontroller-mesa-7i80db.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На плату"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Інтерфейс для під'єднання зовнішніх пристроїв", "LPT"],
+    ["Інтерфейс під'єднання контролера", "PCIE"],
+    ["Мoдель", "7I80DB-16"],
+    ["Підтримувані операційні системи", "Linux, Windows"],
+    ["Тип плати", "материнська"]
+  ],
+  "specs": [
+    ["mesa_7i80db_16._rukovodstvo_polzovatelya_eng.pdf", "https://storage.ua.prom.st/2352551_mesa_7i80db_16._rukovodstvo_polzovatelya_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3123468035_kontroller-mesa-7i80db-16.jpg",
+    "https://images.prom.ua/3123469119_kontroller-mesa-7i80db-16.jpg",
+    "https://images.prom.ua/3123469667_kontroller-mesa-7i80db-16.jpg",
+    "https://images.prom.ua/3123468445_kontroller-mesa-7i80db-16.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

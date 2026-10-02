@@ -1,0 +1,31 @@
+{
+  "id": "580368181",
+  "name": "Інвертор (VFD) HY02D243B, 2.2KW 5,5A 380V",
+  "sku": "14-010",
+  "url": "https://cncprom.ua/ua/p580368181-invertor-vfd-hy02d243b.html",
+  "attrs": [
+    ["Вага", "1.862 кг"],
+    ["Вхід фаз", "3"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "380±15%"],
+    ["Вхідна напруга (В)", "380"],
+    ["Вихід фаз", "3"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "380VAC"],
+    ["Ток", "5.5А"],
+    ["Частота (Гц)", "400"],
+    ["Потужність", "2200"]
+  ],
+  "specs": [
+    ["HY02D243B inverter manual (eng).pdf", "https://storage.ua.prom.st/2370509_hy02d243b_inverter_manual_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/898457377_invertor-vfd-hy02d243b.jpg",
+    "https://images.prom.ua/898457404_invertor-vfd-hy02d243b.jpg",
+    "https://images.prom.ua/848421984_invertor-vfd-hy02d243b.jpg",
+    "https://images.prom.ua/898457478_invertor-vfd-hy02d243b.jpg",
+    "https://images.prom.ua/848421996_invertor-vfd-hy02d243b.jpg",
+    "https://images.prom.ua/2613124676_invertor-vfd-hy02d243b.jpg"
+  ],
+  "accessories": []
+}

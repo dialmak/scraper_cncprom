@@ -1,0 +1,30 @@
+{
+  "id": "2071473192",
+  "name": "Літій-залізо-фосфатний акумулятор Panasonic LiFePO4 22Ah 3.2V",
+  "sku": "91-010",
+  "url": "https://cncprom.ua/ua/p2071473192-litij-zhelezo-fosfatnyj.html",
+  "attrs": [
+    ["Виробник", "Panasonic"],
+    ["Країна виробник", "Китай"],
+    ["Ємність акумулятору", "22 А. г"],
+    ["Максимальна робоча температура", "60 град."],
+    ["Матеріал виготовлення корпусу", "Метал"],
+    ["Мінімальна робоча температура", "-30 град."],
+    ["Напруга", "3.2 В"],
+    ["Напрацювання", "4000 циклів заряду"],
+    ["Стан", "Новий"],
+    ["Тип акумулятора", "LiFePO4"],
+    ["Колір корпусу", "Чорний"],
+    ["Вага", "0.62 кг"],
+    ["Висота", "90 мм"],
+    ["Довжина", "173 мм"],
+    ["Ширина", "21 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5291608051_litij-zalizo-fosfatnij-akumulyator-panasonic.jpg",
+    "https://images.prom.ua/5291608130_litij-zalizo-fosfatnij-akumulyator-panasonic.jpg",
+    "https://images.prom.ua/5291608171_litij-zalizo-fosfatnij-akumulyator-panasonic.jpg"
+  ],
+  "accessories": []
+}

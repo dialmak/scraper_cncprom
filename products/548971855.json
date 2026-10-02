@@ -1,0 +1,29 @@
+{
+  "id": "548971855",
+  "name": "Контролер ЧПК на 6 координат SmoothStepper (Ethernet) для Mach3",
+  "sku": "05-003",
+  "url": "https://cncprom.ua/ua/p548971855-kontroller-chpu-koordinat.html",
+  "attrs": [
+    ["Інтерфейс під'єднання контролера", "Ethernet"],
+    ["Кількість входів", "15"],
+    ["Кількість виходів", "36"],
+    ["Кількість координат", "6 шт"],
+    ["Живлення", "5B, 300 мА"]
+  ],
+  "specs": [
+    ["Ethernet SmoothStepper (ESS).pdf", "https://storage.ua.prom.st/2353234_ethernet_smoothstepper_ess.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1036055383_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/837813050_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/822492871_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/822492783_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/822492716_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/822492957_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/822492984_kontroler-chpk-na.jpg",
+    "https://images.prom.ua/4406582125_kontroler-chpk-na.jpg"
+  ],
+  "accessories": [
+    "1037859752"
+  ]
+}

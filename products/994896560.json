@@ -1,0 +1,31 @@
+{
+  "id": "994896560",
+  "name": "Контролер MESA 7I78",
+  "sku": "05-039",
+  "url": "https://cncprom.ua/ua/p994896560-kontroller-mesa-7i78.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На плату"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Мoдель", "7I78"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["Руководство користувача mesa_7i78.eng.pdf", "https://storage.ua.prom.st/2367319_rukovodstvo_koristuvacha_mesa_7i78.eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3108362776_kontroler-mesa-7i78.jpg",
+    "https://images.prom.ua/3108363782_kontroler-mesa-7i78.jpg",
+    "https://images.prom.ua/3108363964_kontroler-mesa-7i78.jpg",
+    "https://images.prom.ua/3108363229_kontroler-mesa-7i78.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

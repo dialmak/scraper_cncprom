@@ -1,0 +1,31 @@
+{
+  "id": "993706614",
+  "name": "Контролер MESA 7I75",
+  "sku": "05-038",
+  "url": "https://cncprom.ua/ua/p993706614-kontroller-mesa-7i75.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На плату"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Мoдель", "7I75"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [
+    ["Руководство користувача mesa_7i75._eng.pdf", "https://storage.ua.prom.st/2367311_rukovodstvo_koristuvacha_mesa_7i75._eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3103867369_kontroler-mesa-7i75.jpg",
+    "https://images.prom.ua/3103761244_kontroler-mesa-7i75.jpg",
+    "https://images.prom.ua/3103867933_kontroler-mesa-7i75.jpg",
+    "https://images.prom.ua/3103752698_kontroler-mesa-7i75.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

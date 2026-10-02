@@ -1,0 +1,25 @@
+{
+  "id": "2184064813",
+  "name": "Імпульсний зарядний пристрій для акумулятора RJ Tianye 12V 6A",
+  "sku": "HP02-007",
+  "url": "https://cncprom.ua/ua/p2184064813-impulsnoe-zaryadnoe-ustrojstvo.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Тип зарядного пристрою", "Імпульсні"],
+    ["Напруга зарядки", "12 В"],
+    ["Струм заряду", "6 А"],
+    ["Кількість режимів заряду", "4"],
+    ["Стан", "Новий"],
+    ["Колір", "Жовтий"],
+    ["Довжина", "146 мм"],
+    ["Висота", "60 мм"],
+    ["Ширина", "81 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5723275320_impulsnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275321_impulsnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275322_impulsnij-zaryadnij-pristrij.jpg"
+  ],
+  "accessories": []
+}

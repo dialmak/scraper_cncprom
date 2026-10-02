@@ -1,0 +1,192 @@
+<h1 style="text-align:center"><span style="font-size:18px"><u><strong>Автономний контролер DDCS V4.1, 3 осі управління для ЧПК верстатів</strong></u></span></h1>
+<p><span style="font-size:18px"><strong>DDCS V4.1</strong> — <strong>це автономний контролер для систем числового програмного керування (ЧПК), призначений для керування трьохосьовими фрезерними, гравірувальними та деревообробними верстатами.</strong> Контролер працює без постійного підключення до комп’ютера та підтримує виконання G-code програм напряму з USB-накопичувача або через Ethernet-підключення. Система побудована на базі ARM9 процесора та FPGA-алгоритмів, де ARM відповідає за інтерфейс користувача та аналіз G-коду, а FPGA забезпечує генерацію високоточних імпульсів керування приводами. Така архітектура дозволяє отримати стабільну роботу, точне позиціонування осей та плавний рух навіть при виконанні складних траєкторій із великою кількістю коротких сегментів.</span></p>
+<p><span style="font-size:18px"><strong>Контролер підтримує роботу з кроковими двигунами та сервоприводами через сигнали STEP/DIR у Differential Mode або Double Pulse Mode. </strong>Максимальна частота імпульсного сигналу становить до <strong>500 кГц </strong>на кожну вісь, що дозволяє використовувати DDCS V4.1 у високошвидкісних системах ЧПК. Підтримується лінійна інтерполяція по 2–3 осях та кругова інтерполяція по двох осях. Контролер сумісний зі стандартним Fanuc G-code та підтримує роботу з популярними CAD/CAM програмами, включаючи ArtCam, MasterCam, Fusion 360, Aspire, JDSoft SurfMill та іншими системами підготовки керуючих програм.</span></p>
+<p><span style="font-size:18px"><strong>Контролер оснащений 7-дюймовим TFT-дисплеєм </strong>із роздільною здатністю 1024×600 та 18 функціональними клавішами для керування верстатом без використання зовнішнього ПК. Контролер підтримує функції ручного переміщення осей (Jog), роботу з MPG-пультом, вимірювання довжини інструмента, роботу з датчиками, симуляцію траєкторії, запуск програми з конкретного рядка та відновлення роботи після аварійного вимкнення або втрати живлення. Для підключення периферії та драйверів у комплекті передбачена <strong>плата комутації PORT FOR DDCSV3.1/V4.1</strong> з клемними колодками та DB37 інтерфейсом. <strong>Плата забезпечує зручне підключення драйверів осей, кінцевих датчиків, шпинделя, аварійної зупинки та цифрових входів/виходів.</strong></span></p>
+<p><span style="font-size:18px"><strong>Контролер підтримує два режими керування шпинделем:</strong> аналоговий вихід 0–10V для роботи з частотними перетворювачами VFD та режим Servo Spindle через імпульсне керування. DDCS V4.1 підтримує функції Pause Breakpoint, Power-Cut Recovery Breakpoint та Loaded Breakpoint, що дозволяє продовжити обробку після зупинки або вимкнення живлення. Для підвищення безпеки реалізовано налаштування плавного гальмування при аварійній зупинці ESTOP, що допомагає уникнути втрати позиції та механічних пошкоджень верстата.</span></p>
+<h2><span style="font-size:18px"><strong>Особливості:</strong></span></h2>
+<ul>
+<li><span style="font-size:18px">Автономна робота без комп’ютера</span></li>
+<li><span style="font-size:18px">Підтримка 3 осей управління</span></li>
+<li><span style="font-size:18px">ARM9 + FPGA архітектура</span></li>
+<li><span style="font-size:18px">Linux-based система керування</span></li>
+<li><span style="font-size:18px">Differential Mode та Double Pulse Mode</span></li>
+<li><span style="font-size:18px">Частота імпульсів до 500 кГц</span></li>
+<li><span style="font-size:18px">Підтримка крокових двигунів та сервоприводів</span></li>
+<li><span style="font-size:18px">Лінійна та кругова інтерполяція</span></li>
+<li><span style="font-size:18px">7" TFT дисплей 1024×600</span></li>
+<li><span style="font-size:18px">USB Flash та Ethernet підключення</span></li>
+<li><span style="font-size:18px">Підтримка Fanuc G-code</span></li>
+<li><span style="font-size:18px">Необмежений розмір G-code файлів</span></li>
+<li><span style="font-size:18px">Підтримка MPG-пульта</span></li>
+<li><span style="font-size:18px">Підтримка Probe та Tool Length Measurement</span></li>
+<li><span style="font-size:18px">Симуляція траєкторії обробки</span></li>
+<li><span style="font-size:18px">Запуск із конкретного рядка програми</span></li>
+<li><span style="font-size:18px">Відновлення після втрати живлення</span></li>
+<li><span style="font-size:18px">Аналогове керування шпинделем 0–10V</span></li>
+<li><span style="font-size:18px">Підтримка Servo Spindle</span></li>
+<li><span style="font-size:18px">Ізольовані цифрові входи та виходи</span></li>
+<li><span style="font-size:18px">Багатомовний інтерфейс</span></li>
+<li><span style="font-size:18px">Плата комутації у комплекті</span></li>
+</ul>
+<h2><span style="font-size:18px"></span></h2>
+<p><strong><span style="font-size:18px">Функції керування:</span></strong></p>
+<ul>
+<li><span style="font-size:18px">Ручне переміщення окремих осей</span></li>
+<li><span style="font-size:18px">Спільне переміщення кількох осей</span></li>
+<li><span style="font-size:18px">Переміщення на задану відстань кнопками панелі</span></li>
+<li><span style="font-size:18px">Запуск обробки з вибраного рядка програми</span></li>
+<li><span style="font-size:18px">Пошук найближчої точки виконання</span></li>
+<li><span style="font-size:18px">Підтримка плаваючого та фіксованого встановлення інструмента</span></li>
+<li><span style="font-size:18px">Встановлення кутової точки</span></li>
+<li><span style="font-size:18px">Вимірювання довжини інструмента</span></li>
+<li><span style="font-size:18px">Центрування по осях X та Y</span></li>
+<li><span style="font-size:18px">Режими обробки Масивна обробка деталей</span></li>
+<li><span style="font-size:18px">Послідовна обробка</span></li>
+<li><span style="font-size:18px">Площинне фрезерування</span></li>
+<li><span style="font-size:18px">Циліндричне фрезерування</span></li>
+<li><span style="font-size:18px">Коригування зміщення осей X, Y, Z та A</span></li>
+</ul>
+<p><span style="font-size:18px"><strong>Робота з пам’яттю та файлами:</strong> </span></p>
+<ul>
+<li><span style="font-size:18px">Вбудована пам’ять: 1 ГБ</span></li>
+<li><span style="font-size:18px">Підтримка завантаження G-коду з USB-накопичувача</span></li>
+<li><span style="font-size:18px">Підтримка великих файлів без обмеження розміру</span></li>
+<li><span style="font-size:18px">Передавання файлів через мережевий порт Ethernet</span></li>
+</ul>
+<p><span style="font-size:18px"><strong>Відновлення роботи:</strong> </span></p>
+<ul>
+<li><span style="font-size:18px">Відновлення після паузи</span></li>
+<li><span style="font-size:18px">Відновлення після вимкнення живлення</span></li>
+<li><span style="font-size:18px">Відновлення після перезапуску програми</span></li>
+<li><span style="font-size:18px">Підтримка кількох нульових точок деталі</span></li>
+<li><span style="font-size:18px">Збереження та завантаження координат нульової точки</span></li>
+</ul>
+<p><span style="font-size:18px"><strong>Моделювання обробки:</strong> </span></p>
+<ul>
+<li><span style="font-size:18px">Попередній перегляд траєкторії руху</span></li>
+<li><span style="font-size:18px">Масштабування траєкторії під час перегляду</span></li>
+<li><span style="font-size:18px">Перевірка програмних обмежень</span></li>
+<li><span style="font-size:18px">Можливість паузи під час моделювання</span></li>
+<li><span style="font-size:18px">Продовження роботи з місця зупинки</span></li>
+</ul>
+<p><span style="font-size:18px"><strong>Додаткові особливості:</strong> </span></p>
+<ul>
+<li><span style="font-size:18px">Покращений алгоритм планування руху для плавнішої роботи на дрібних сегментах</span></li>
+<li><span style="font-size:18px">Налаштовувана похибка контуру для точнішої траєкторії</span></li>
+<li><span style="font-size:18px">Підтримка міжнародного кодування мов</span></li>
+<li><span style="font-size:18px">Можливість використання практично будь-якої мови інтерфейсу</span></li>
+<li><span style="font-size:18px">Підтримка лише кінцевих вимикачів типу NPN</span></li>
+</ul>
+<h2><span style="font-size:18px"><strong>Сфери застосування:</strong></span></h2>
+<ul>
+<li><span style="font-size:18px">Фрезерні ЧПК верстати</span></li>
+<li><span style="font-size:18px">Гравірувальні верстати</span></li>
+<li><span style="font-size:18px">CNC Router системи</span></li>
+<li><span style="font-size:18px">Деревообробні верстати</span></li>
+<li><span style="font-size:18px">Верстати для пластику та композитів</span></li>
+<li><span style="font-size:18px">Верстати для обробки алюмінію</span></li>
+<li><span style="font-size:18px">Саморобні CNC системи</span></li>
+<li><span style="font-size:18px">Модернізація верстатів Mach3</span></li>
+<li><span style="font-size:18px">Навчальні ЧПК комплекси</span></li>
+<li><span style="font-size:18px">Промислові CNC системи</span></li>
+</ul>
+<p><span style="font-size:18px"><strong>Технічні характеристики:</strong></span></p>
+<p><span style="font-size:18px"><em>Модель:</em> DDCS V4.1</span></p>
+<p><span style="font-size:18px"><em>Кількість осей:</em> 3</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><em>Основний процесор: </em>ARM9</span></p>
+<p><span style="font-size:18px"><em>Алгоритмічний процесор:</em> FPGA</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><em>Операційна система:</em> Linux</span></p>
+<p><span style="font-size:18px"><em>Мінімальний струм живлення:</em> 0,5 А</span></p>
+<p><span style="font-size:18px"><em>Тип приводів:</em> кроковий / сервопривід</span></p>
+<p><span style="font-size:18px"><em>Тип виходів:</em> диференціальний / подвійний імпульс</span></p>
+<p><span style="font-size:18px"><em>Частота імпульсів: </em>до 500 кГц</span></p>
+<p><span style="font-size:18px"><em>Дисплей:</em> 7" TFT</span></p>
+<p><span style="font-size:18px"><em>Роздільна здатність: </em>1024×600</span></p>
+<p><span style="font-size:18px"><em>Пам'ять контролера:</em> 1 ГБ</span></p>
+<p><span style="font-size:18px"><em>Входи: </em>18 ізольованих</span></p>
+<p><span style="font-size:18px"><em>Виходи:</em> 3 ізольовані</span></p>
+<p><span style="font-size:18px"><em>Аналоговий вихід керування шпинделем:&nbsp;</em>0–10 В&nbsp;</span></p>
+<p><span style="font-size:18px"><em>Інтерфейси: </em>USB, Ethernet</span></p>
+<p><span style="font-size:18px"><em>Підтримка MPG:</em> Так</span></p>
+<p><span style="font-size:18px"><em>Підтримка Probe:</em> Так</span></p>
+<p><span style="font-size:18px"><em>Формат файлів: </em>Fanuc G-code</span></p>
+<p><span style="font-size:18px"><em>Живлення системи: </em>24 В (DC)</span></p>
+<p><span style="font-size:18px"><em>Живлення IO:</em> 24 В (DC)</span></p>
+<p><span style="font-size:18px"><em>Тип кінцевих датчиків: </em>NPN</span></p>
+<p><span style="font-size:18px"><em>Монтаж плати DIN-рейка: </em>C45</span></p>
+<p><span style="font-size:18px"><em>Габаритні розміри контролера: </em>237х154х48 мм</span></p>
+<p><span style="font-size:18px"><em>Вага комплекту: </em>1,8 кг</span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/5XrfXVWp/image.jpg" style="width:636px;height:900px"></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/pjgX05BW/image.jpg" style="width:1096px;height:900px"></span></p>
+<p><img alt="" src="https://i.ibb.co/CsD0V05B/image.jpg" style="width:675px;height:655px"></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_red">
+<div>
+<p><span style="font-size:18px"><strong>Важливо!</strong><br>
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця.<br>
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою.<br>
+<strong>Інформація на сайті є актуальною на момент її опублікування!<br>
+Обов'язково</strong> перевіряйте цілісність і стан товару при отриманні (на пошті або з кур’єром). Претензії щодо механічних пошкоджень після підписання накладної не приймаються.<span class="ck-alert__title"></span></span></p>
+</div>
+</div>
+<p><span style="font-size:18px">&nbsp;<img alt="" src="https://i.ibb.co/v4sPdVct/image.jpg" style="width:470px;height:112px"></span></p>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong><span class="ck-alert__title"></span>Комплект постачання:</strong><span class="fa fa-car" style="color:#000000">&nbsp;</span></span></div>
+</div>
+<ul>
+<li>
+<p><span style="font-size:18px"><strong>Контролер DDCS V4.1&nbsp;(1 шт.)</strong></span></p>
+</li>
+<li>
+<p><span style="font-size:18px"><strong>Плата комутації PORT FOR DDCSV3.1/V4.1&nbsp;(1 шт.)</strong></span></p>
+</li>
+<li>
+<p><span style="font-size:18px"><strong>Кабель DB37&nbsp;(1 шт.)</strong></span></p>
+</li>
+<li>
+<p><span style="font-size:18px"><strong>USB-подовжувач&nbsp;(1 шт.)</strong></span></p>
+</li>
+<li>
+<p><span style="font-size:18px"><strong>USB Flash накопичувач&nbsp;(1 шт.)</strong></span></p>
+</li>
+<li>
+<p><span style="font-size:18px"><strong>Монтажні елементи&nbsp;</strong></span></p>
+</li>
+</ul>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong>Дивіться всі наші оголошення:</strong></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2432613-alyuminievyj-profil" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank">Блоки живлення</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1270337-gibkie-mufty" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1372753-gibkij-kabel-kanal" target="_blank">Гнучкий кабель канал&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1261329-stanki-chpu" target="_blank">Верстати з ЧПК</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022907-datchiki-knopki-razemy" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki" target="_blank">Затискні цанги, гайки ER</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1292282-shvp" target="_blank">КГП</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022485-kontrollery" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022553-shagovye-dvigateli" target="_blank">Крокові двигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie" target="_blank">Лінійні направляючі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g16759716-linejnye-podshipniki" target="_blank">Лінійні підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka" target="_blank">Регулятори висоти різака THC&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488426-reechnyj-privod" target="_blank">Рейковий привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488264-remennyj-privod" target="_blank">Ремінний привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g51015677-rezhuschij-instrument" target="_blank">Ріжучий інструмент</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1481716-povorotnye-osi" target="_blank">Поворотні осі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank">Пульти ручного управління і DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami" target="_blank">Серводвигуни з серводрайверами</a>&nbsp;</span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" target="_blank">Системи охолодження і вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu" target="_blank">Шпинделі</a></span></li>
+</ul>
+<p>&nbsp;</p>
+<div style=""><span></span></div>

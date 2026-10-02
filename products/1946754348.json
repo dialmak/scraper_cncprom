@@ -1,0 +1,32 @@
+{
+  "id": "1946754348",
+  "name": "Індикатор заряду акумулятора, вольтметр DC 8V-100V",
+  "sku": "03-133",
+  "url": "https://cncprom.ua/ua/p1946754348-indikator-zaryada-akkumulyatora.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Тип", "Цифровий"],
+    ["Тип вимірюваної напруги", "DC"],
+    ["Колір", "Чорний"],
+    ["Монітор", "РК"],
+    ["Відтворення кольорів", "Монохромна"],
+    ["Колір фону", "Білий"],
+    ["Колір символів", "Чорний"],
+    ["Кількість рядків", "2 шт."],
+    ["Підсвічування дисплея", "Так"],
+    ["Довжина", "60 мм"],
+    ["Ширина", "33 мм"],
+    ["Висота", "15 мм"],
+    ["Вага", "0.02 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/4872327774_indikator-zaryadu-akumulyatora.jpg",
+    "https://images.prom.ua/4872328841_indikator-zaryadu-akumulyatora.jpg",
+    "https://images.prom.ua/4872329580_indikator-zaryadu-akumulyatora.jpg",
+    "https://images.prom.ua/4872329865_indikator-zaryadu-akumulyatora.jpg",
+    "https://images.prom.ua/4872329957_indikator-zaryadu-akumulyatora.jpg"
+  ],
+  "accessories": []
+}

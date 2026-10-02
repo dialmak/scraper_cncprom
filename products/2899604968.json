@@ -1,0 +1,26 @@
+{
+  "id": "2899604968",
+  "name": "Сенсорний CD JK-7 дисплей 4.3″, екран для JK-BMS серії PB для контролю акумулятора",
+  "sku": "05-360",
+  "url": "https://cncprom.ua/ua/p2899604968-sensornyj-displej-ekran.html",
+  "attrs": [
+    ["Тип модуля", "Відображення графічної інформації"],
+    ["Довжина", "138 мм"],
+    ["Ширина", "96 мм"],
+    ["Висота", "15.5 мм"],
+    ["Вага", "135 г"]
+  ],
+  "specs": [
+    ["Посібник користувача CD JK-7.pdf", "https://storage.ua.prom.st/3229109_posibnik_koristuvacha_cd_jk_7.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7049513860_sensornij-cd-jk-7.jpg",
+    "https://images.prom.ua/7050971031_sensornij-cd-jk-7.jpg",
+    "https://images.prom.ua/7051693327_sensornij-cd-jk-7.jpg",
+    "https://images.prom.ua/7051693725_sensornij-cd-jk-7.jpg"
+  ],
+  "accessories": [
+    "2726193278",
+    "2726193307"
+  ]
+}

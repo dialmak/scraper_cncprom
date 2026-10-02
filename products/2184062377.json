@@ -1,0 +1,25 @@
+{
+  "id": "2184062377",
+  "name": "Адаптер живлення 7.2V 1A, високоякісний блок живлення",
+  "sku": "HP02-010",
+  "url": "https://cncprom.ua/ua/p2184062377-adapter-pitaniya-72v.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "72"],
+    ["Тип", "Адаптер"],
+    ["Вхідний струм", "0.3А"],
+    ["Вихідна напруга", "7.5V"],
+    ["Вихідний струм", "1А"],
+    ["Діаметр штекера", "5.5х2.1"],
+    ["Мoдель", "К-750100"],
+    ["Номінальна вхідна напруга", "АС 100-240V 50-60 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5717464110_adapter-zhivlennya-72v.jpg",
+    "https://images.prom.ua/5717464111_adapter-zhivlennya-72v.jpg",
+    "https://images.prom.ua/5717464113_adapter-zhivlennya-72v.jpg",
+    "https://images.prom.ua/6883797326_adapter-zhivlennya-72v.jpg"
+  ],
+  "accessories": []
+}

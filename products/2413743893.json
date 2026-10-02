@@ -1,0 +1,28 @@
+{
+  "id": "2413743893",
+  "name": "Колекторний електродвигун 2000W 60V 25A",
+  "sku": "12-964",
+  "url": "https://cncprom.ua/ua/p2413743893-kollektornyj-elektrodvigatel-2000w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Матеріал корпусу", "Метал"],
+    ["Потужність", "2 кВт"],
+    ["Споживаний струм", "25 А"],
+    ["Ступінь захисту IP", "0"],
+    ["Тип двигуна", "Колекторний"],
+    ["Висота", "210 мм"],
+    ["Довжина", "380 мм"],
+    ["Діаметр вала", "22"],
+    ["Маса", "25 кг"],
+    ["Напруга", "60"],
+    ["Частота обертання", "3500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6374709009_kolektornij-elektrodvigun-2000w.jpg",
+    "https://images.prom.ua/6374709004_kolektornij-elektrodvigun-2000w.jpg",
+    "https://images.prom.ua/6374709010_kolektornij-elektrodvigun-2000w.jpg",
+    "https://images.prom.ua/6374709006_kolektornij-elektrodvigun-2000w.jpg"
+  ],
+  "accessories": []
+}

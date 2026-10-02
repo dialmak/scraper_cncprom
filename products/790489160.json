@@ -1,0 +1,30 @@
+{
+  "id": "790489160",
+  "name": "Комплект радіально-упорних дуплексних підшипників H7009CTA P4 DT",
+  "sku": "20-014",
+  "url": "https://cncprom.ua/ua/p790489160-komplekt-radialno-upornyh.html",
+  "attrs": [
+    ["Вид навантаження", "Упорно-радіальна"],
+    ["Форма тіла кочення", "Кулька"],
+    ["Внутрішній діаметр", "45 мм"],
+    ["Висота", "16 мм"],
+    ["Зовнішній діаметр", "75 мм"],
+    ["Матеріал сепаратора", "Текстоліт"],
+    ["Кут контакту", "15 град."],
+    ["Вага", "479 г"],
+    ["Динамічна вантажність", "12.5 кН"],
+    ["Клас точності", "P4"],
+    ["Максимальні оберти", "23000 об/хв"],
+    ["Робоча температура", "120 °C"],
+    ["Статична вантажність", "11.4 кН"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1354848084_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354847949_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354847672_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354844894_komplekt-radialno-upornih-dupleksnih.jpg",
+    "https://images.prom.ua/1354844913_komplekt-radialno-upornih-dupleksnih.jpg"
+  ],
+  "accessories": []
+}

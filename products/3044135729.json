@@ -1,0 +1,26 @@
+{
+  "id": "3044135729",
+  "name": "Багатофункціональний цифровий модуль затримки YF-79 (DC 12V), NPN / PNP",
+  "sku": "03-167",
+  "url": "https://cncprom.ua/ua/p3044135729-mnogofunktsionalnyj-tsifrovoj-modul.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Максимальна температура зберігання", "50 град."],
+    ["Маса", "27 г"],
+    ["Механічна зносостійкість", "300000 циклів"],
+    ["Мінімальна температура зберігання", "-20 град."],
+    ["Висота", "20 мм"],
+    ["Довжина", "66 мм"],
+    ["Ширина", "40 мм"]
+  ],
+  "specs": [
+    ["Посібник користувача англійською (2).pdf", "https://storage.ua.prom.st/3334409_posibnik_koristuvacha_anglijskoyu_2.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7394026561_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392097847_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392097849_bagatofunktsionalnij-tsifrovij-modul.jpg",
+    "https://images.prom.ua/7392097848_bagatofunktsionalnij-tsifrovij-modul.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "2726193280",
+  "name": "BMS JK-BD4A20S-10Р, 100A, для LiFePO4/Li-ion/LTO (8S-20S), 0.4A активного балансування",
+  "sku": "05-346",
+  "url": "https://cncprom.ua/ua/p2726193280-bms-bd4a20s-10r.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.34 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Ширина", "93 мм"],
+    ["Активний збалансований струм", "0.4 A"],
+    ["Кількість комірок", "8s-20s"],
+    ["Струм заряду/розряду", "100 A"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3119343_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6913311736_bms-jk-bd4a20s-10r-100a.jpg",
+    "https://images.prom.ua/6913319616_bms-jk-bd4a20s-10r-100a.jpg",
+    "https://images.prom.ua/7030291068_bms-jk-bd4a20s-10r-100a.jpg",
+    "https://images.prom.ua/6798285746_bms-jk-bd4a20s-10r-100a.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "476134370",
+  "name": "Шпиндель з водяним охолодженням RTM100-24/2.2 (2.2 кВт, 220 В, 8.4 А, ER20) та збільшеним крутним моментом",
+  "sku": "13-005",
+  "url": "https://cncprom.ua/ua/p476134370-shpindel-vodyanym-ohlazhdeniem.html",
+  "attrs": [
+    ["Діаметр", "100 мм"],
+    ["Вхідна напруга (В)", "220"],
+    ["Корпус", "круглий"],
+    ["Потужність (kw)", "2,2"],
+    ["Потужність, Вт", "2200 Вт"],
+    ["Робоча напруга (В)", "220"],
+    ["Швидкість обертання (об./хв)", "24000"],
+    ["Цанга", "ER20"],
+    ["Цанговий патрон", "ER20"],
+    ["Потужність", "2200"]
+  ],
+  "specs": [
+    ["shpindel_2.2_k__m_momentom.pdf", "https://storage.ua.prom.st/2353677_shpindel_2.2_k__m_momentom.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/678642323_shpindel-z-vodyanim.jpg",
+    "https://images.prom.ua/678663372_shpindel-z-vodyanim.jpg",
+    "https://images.prom.ua/678555158_shpindel-z-vodyanim.jpg",
+    "https://images.prom.ua/678642943_shpindel-z-vodyanim.jpg"
+  ],
+  "accessories": []
+}

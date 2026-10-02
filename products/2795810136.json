@@ -1,0 +1,31 @@
+{
+  "id": "2795810136",
+  "name": "Зварювач філаменту SUNLU FC01, пристрій для з’єднання ниток PLA, ABS, PETG, TPU",
+  "sku": "10-195",
+  "url": "https://cncprom.ua/ua/p2795810136-svarschik-filamenta-sunlu.html",
+  "attrs": [
+    ["Виробник", "Sunlu"],
+    ["Вага", "0.255 кг"],
+    ["Діаметр нитки", "1.75 мм"],
+    ["Метод друку", "Моделювання методом наплавлення (FDM)"],
+    ["Колір", "Чорний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6893969856_zvaryuvach-filamentu-sunlu.jpg",
+    "https://images.prom.ua/6893970169_zvaryuvach-filamentu-sunlu.jpg",
+    "https://images.prom.ua/6893972508_zvaryuvach-filamentu-sunlu.jpg"
+  ],
+  "accessories": [
+    "2620719390",
+    "2111285228",
+    "2620719388",
+    "2624271713",
+    "2624271711",
+    "2624271716",
+    "2655635719",
+    "2665697999",
+    "1162780224",
+    "1230551592"
+  ]
+}

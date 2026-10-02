@@ -1,0 +1,24 @@
+{
+  "id": "2694096980",
+  "name": "Герконовий датчик положення CMSU-020",
+  "sku": "08-327",
+  "url": "https://cncprom.ua/ua/p2694096980-gerkonovyj-datchik-polozheniya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Ступінь захисту IP", "64"],
+    ["Вага", "0.040"],
+    ["Довжина кабелю", "1.8"],
+    ["Напруга живлення", "5-24 В"],
+    ["Робоча температура", "-10 +80"],
+    ["Струм комутації", "100 мА"],
+    ["Тип датчика", "2 провідний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6773434139_gerkonovij-datchik-polozhennya.jpg",
+    "https://images.prom.ua/6773434358_gerkonovij-datchik-polozhennya.jpg",
+    "https://images.prom.ua/6773434497_gerkonovij-datchik-polozhennya.jpg",
+    "https://images.prom.ua/6773450828_gerkonovij-datchik-polozhennya.jpg"
+  ],
+  "accessories": []
+}

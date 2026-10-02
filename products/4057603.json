@@ -1,0 +1,37 @@
+{
+  "id": "4057603",
+  "name": "Кроковий двигун 8.5 N. m 34HS4802 5.0 А NEMA34",
+  "sku": "12-017",
+  "url": "https://cncprom.ua/ua/p4057603-shagovyj-dvigatel-85nm.html",
+  "attrs": [
+    ["Кількість фаз", "2"],
+    ["Споживаний струм", "5 А"],
+    ["Тип двигуна", "Безколекторний"],
+    ["Тип ротора", "Фазний"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Діаметр вала", "14"],
+    ["Крутний момент (Нм)", "8.5"],
+    ["Максимальна робоча температура", "80"],
+    ["Маса", "3.7 кг"],
+    ["Опір ізоляції", "100MΩ, 500VDC"],
+    ["Тип фланця", "NEMA 34 (86 мм)"],
+    ["Ток (A)", "5"],
+    ["Угол шага", "1,8 °"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1120941284_krokovij-dvigun-85.jpg",
+    "https://images.prom.ua/853936170_krokovij-dvigun-85.jpg",
+    "https://images.prom.ua/853937769_krokovij-dvigun-85.jpg",
+    "https://images.prom.ua/853937719_krokovij-dvigun-85.jpg",
+    "https://images.prom.ua/853937756_krokovij-dvigun-85.jpg",
+    "https://images.prom.ua/853937783_krokovij-dvigun-85.jpg"
+  ],
+  "accessories": [
+    "4057846",
+    "4877348",
+    "19908569",
+    "530947827",
+    "4057832"
+  ]
+}

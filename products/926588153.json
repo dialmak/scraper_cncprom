@@ -1,0 +1,30 @@
+{
+  "id": "926588153",
+  "name": "Блок змащення HIWIN HG25-E2",
+  "sku": "61-103",
+  "url": "https://cncprom.ua/ua/p926588153-blok-smazki-hiwin.html",
+  "attrs": [
+    ["Виробник", "Hiwin"],
+    ["Мoдель", "HG25-E2"],
+    ["Модуль", "E2"],
+    ["Тип каретки", "HGH 25, HGW 25"],
+    ["Вага", "32 г"],
+    ["Тип комплектуючого", "Блок мастила та пилозахист"],
+    ["Серія", "HG-ZZ"],
+    ["Клас в'язкості мастила", "ISO VG 680"],
+    ["Мастило в картриджі", "Mobil SHC 636"],
+    ["Температура використання", "-10˚C...+60˚C"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7711283271_blok-zmaschennya-hiwin.jpg",
+    "https://images.prom.ua/7711283270_blok-zmaschennya-hiwin.jpg",
+    "https://images.prom.ua/7711283274_blok-zmaschennya-hiwin.jpg",
+    "https://images.prom.ua/7711283272_blok-zmaschennya-hiwin.jpg"
+  ],
+  "accessories": [
+    "14466175",
+    "14466163",
+    "14466170"
+  ]
+}

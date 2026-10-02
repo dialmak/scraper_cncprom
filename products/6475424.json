@@ -1,0 +1,29 @@
+{
+  "id": "6475424",
+  "name": "Система керування NC-Studio плата, PCI-контролер на 3 координати",
+  "sku": "05-011",
+  "url": "https://cncprom.ua/ua/p6475424-sistema-upravleniya-studio.html",
+  "attrs": [
+    ["Вага", "405 г"],
+    ["Інтерфейс під'єднання до комп'ютера", "PCI"],
+    ["Кількість осей керування", "3"],
+    ["Кількість під'єднуваних датчиків", "3"],
+    ["Наявність опторозв'язування", "наявний"],
+    ["Наявність екрана", "Немає"],
+    ["Підтримка РГІ", "Немає"],
+    ["Сумісність з Windows", "32-бітні версії 98, XP, 2003"],
+    ["Сумісність із версіями NC-Studio:", "v5.4.49, v5.5.55/60"],
+    ["Частота STEP", "до 47 000 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/4408685294_sistema-keruvannya-nc-studio.jpg",
+    "https://images.prom.ua/1709945163_sistema-keruvannya-nc-studio.jpg",
+    "https://images.prom.ua/1709945155_sistema-keruvannya-nc-studio.jpg",
+    "https://images.prom.ua/1709945210_sistema-keruvannya-nc-studio.jpg",
+    "https://images.prom.ua/1709945142_sistema-keruvannya-nc-studio.jpg"
+  ],
+  "accessories": [
+    "6349268"
+  ]
+}

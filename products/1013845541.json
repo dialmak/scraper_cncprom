@@ -1,0 +1,35 @@
+{
+  "id": "1013845541",
+  "name": "Контролер MESA 7I76E",
+  "sku": "05-043",
+  "url": "https://cncprom.ua/ua/p1013845541-kontroller-mesa-7i76e.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На корпус"],
+    ["Висота", "24 мм"],
+    ["Довжина", "165 мм"],
+    ["Ширина", "101.5 мм"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Вага (г)", "210"],
+    ["Інтерфейс під'єднання дочірніх плат", "26-контактний роз'єм IDC"],
+    ["Інтерфейс під'єднання контролера", "Ethernet"],
+    ["Мoдель", "7I76E"],
+    ["Підтримувані операційні системи", "Linux, Windows"],
+    ["Тип плати", "материнська"]
+  ],
+  "specs": [
+    ["mesa_7i76e._rukovodstvo_polzovatelya_eng (1).pdf", "https://storage.ua.prom.st/2352532_mesa_7i76e._rukovodstvo_polzovatelya_eng_1.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3106035650_kontroler-mesa-7i76e.jpg",
+    "https://images.prom.ua/3106035830_kontroler-mesa-7i76e.jpg",
+    "https://images.prom.ua/3106035882_kontroler-mesa-7i76e.jpg",
+    "https://images.prom.ua/3106036010_kontroler-mesa-7i76e.jpg"
+  ],
+  "accessories": []
+}

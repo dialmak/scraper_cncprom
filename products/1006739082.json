@@ -1,0 +1,30 @@
+{
+  "id": "1006739082",
+  "name": "Датчик висоти інструмента (без магніту) THS-03",
+  "sku": "03-206",
+  "url": "https://cncprom.ua/ua/p1006739082-datchik-vysoty-instrumenta.html",
+  "attrs": [
+    ["Вага", "50 г"],
+    ["Висота датчика", "19.5 мм"],
+    ["Діаметр датчика", "35 мм мм."],
+    ["Діаметр поверхні контакту", "24.5 мм"],
+    ["Довжина сполучного дроту", "1.15 м"],
+    ["Кількість в пакованні", "1 шт. шт."],
+    ["Матеріал корпусу", "Поліамід"],
+    ["Матеріал поверхні контакту", "алюміній"],
+    ["Наявність магніту", "немає"],
+    ["Сумісність із ПЗ", "MACH3, LinuxCNC та інші"],
+    ["Опір ізоляції", "100 MОм"],
+    ["Стан", "Нове"],
+    ["Тип комплектуючого", "Датчик нуля"]
+  ],
+  "specs": [
+    ["Датчик висоти інструмента (без магніта). Посібник користувача.pdf", "https://storage.ua.prom.st/2359263_datchik_visoti_instrument__posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6860865231_datchik-visoti-instrumenta.jpg",
+    "https://images.prom.ua/1886486693_datchik-visoti-instrumenta.jpg",
+    "https://images.prom.ua/1886486697_datchik-visoti-instrumenta.jpg"
+  ],
+  "accessories": []
+}

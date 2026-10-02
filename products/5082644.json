@@ -1,0 +1,34 @@
+{
+  "id": "5082644",
+  "name": "Шпиндель повітряне охолодження EYS8043-18/4.0 (4 кВт, 220 В, 10 А, ER20)",
+  "sku": "17-006",
+  "url": "https://cncprom.ua/ua/p5082644-shpindel-vozdushnoe-ohlazhdenie.html",
+  "attrs": [
+    ["Вага", "8 г"],
+    ["Висота", "98 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "88 мм"],
+    ["Биття", "0.05"],
+    ["Вхідна напруга (В)", "220"],
+    ["Кількість підшипників", "4 шт."],
+    ["Корпус", "квадратний"],
+    ["Потужність", "4 кВт"],
+    ["Потужність, Вт", "4000 Вт"],
+    ["Робоча напруга", "220 В"],
+    ["Швидкість обертання", "18000 об./хв."],
+    ["Цанга", "ER20"],
+    ["Цанговий патрон", "ER20"],
+    ["Частота", "300 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2958307131_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2958307151_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2958307187_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2958307175_shpindel-povitryane-oholodzhennya.jpg"
+  ],
+  "accessories": [
+    "5082568",
+    "17665214"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "23542035",
+  "name": "Закритий лінійний підшипник в корпусі SCS 08UU (SMA08GUU)",
+  "sku": "50-001",
+  "url": "https://cncprom.ua/ua/p23542035-zakrytyj-linejnyj-podshipnik.html",
+  "attrs": [
+    ["Внутрішній діаметр.", "8 мм"],
+    ["Довжина:", "30 мм"],
+    ["Діаметр", "8"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5493429702_zakritij-linijnij-pidshipnik.jpg",
+    "https://images.prom.ua/7086475484_zakritij-linijnij-pidshipnik.jpg"
+  ],
+  "accessories": [
+    "23541506",
+    "46330208",
+    "46330176"
+  ]
+}

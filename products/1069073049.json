@@ -1,0 +1,44 @@
+{
+  "id": "1069073049",
+  "name": "Інвертор GT-7R5G-4, 7.5 kW, 17 A, 380 V",
+  "sku": "14-021",
+  "url": "https://cncprom.ua/ua/p1069073049-invertor-7r5g-380.html",
+  "attrs": [
+    ["Вага", "2.785 кг"],
+    ["Стан", "Новий"],
+    ["Вхідна напруга", "AC 380 V ±20%"],
+    ["Вихідна частота", "0.5-400 Hz"],
+    ["Мoдель", "GT-7R5G-4"],
+    ["Вихідний струм", "17 А"],
+    ["Вхідна частота", "50/60 Hz ±5 Hz"],
+    ["Частота (Гц)", "400"],
+    ["Вхідна напруга (В)", "380"],
+    ["Тип комплектуючого", "Інвертор"],
+    ["Потужність, Вт", "7500 Вт"],
+    ["Робоча температура", "-10 °C...+40 °C"],
+    ["Габаритні розміри", "171х150х220 мм"],
+    ["Вологість навколишнього середовища", "≤90%"],
+    ["Вхідний струм", "20 А"],
+    ["Метод керування", "векторний"],
+    ["Виробник", "Huanyang Electrical"],
+    ["Кількість фаз на вході", "3"],
+    ["Кількість фаз на виході", "3"],
+    ["Вихідна напруга", "0~380 V AC"]
+  ],
+  "specs": [
+    ["GT Series посібник користувача англійською.pdf", "https://storage.ua.prom.st/3453951_gt_series_posibnik_koristuvacha_anglijskoyu.pdf"],
+    ["GT Series посібник користувача анг.pdf", "https://storage.ua.prom.st/3453950_gt_series_posibnik_koristuvacha_ang.pdf"],
+    ["Налаштування інвертора серії GT для шпинделів та асинхронних двигунів 50 HZ.pdf", "https://storage.ua.prom.st/3453949_nalashtuvannya_invertora___ronnih_dviguniv_50_hz.pdf"],
+    ["Налаштування інвертора GT для шпинделів 400 HZ.pdf", "https://storage.ua.prom.st/3453948_nalashtuvannya_invertora___lya_shpindeliv_400_hz.pdf"],
+    ["Інструкція з експлуатації інвертора серії GT .pdf", "https://storage.ua.prom.st/3453952_nstruktsiya_z_ekspluatats___invertora_seriyi_gt_.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/2050344059_invertor-gt-7r5g-4-75.jpg",
+    "https://images.prom.ua/2050343066_invertor-gt-7r5g-4-75.jpg",
+    "https://images.prom.ua/2050275247_invertor-gt-7r5g-4-75.jpg",
+    "https://images.prom.ua/2050275255_invertor-gt-7r5g-4-75.jpg"
+  ],
+  "accessories": [
+    "463020718"
+  ]
+}

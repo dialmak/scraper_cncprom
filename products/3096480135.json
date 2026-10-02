@@ -1,0 +1,28 @@
+{
+  "id": "3096480135",
+  "name": "Поворотна вісь D69 для лазерного верстата, роторний патрон",
+  "sku": "07-031",
+  "url": "https://cncprom.ua/ua/p3096480135-povorotnaya-d69-dlya.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Довжина", "130 мм"],
+    ["Ширина", "80 мм"],
+    ["Висота", "90 мм"],
+    ["Вага", "2200 г"],
+    ["Модель:", "D69"],
+    ["Діаметр патрона:", "69 мм"],
+    ["Діаметр наскрізного отвору:", "25 мм"],
+    ["Кількість кулачків:", "3"],
+    ["Кроковий двигун:", "60HS76"],
+    ["Струм:", "4 А"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7504509254_povorotna-vis-d69.jpg",
+    "https://images.prom.ua/7504508810_povorotna-vis-d69.jpg",
+    "https://images.prom.ua/7504508815_povorotna-vis-d69.jpg",
+    "https://images.prom.ua/7504508814_povorotna-vis-d69.jpg",
+    "https://images.prom.ua/7520795958_povorotna-vis-d69.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "524882896",
+  "name": "Контролер висоти плазми 7UP (torch height control)",
+  "sku": "08-004",
+  "url": "https://cncprom.ua/ua/p524882896-kontroller-vysoty-plazmy.html",
+  "attrs": [
+    ["Габаритні розміри", "74х110х20мм"],
+    ["Клас захисту", "IP01, III"],
+    ["Напруга живлення", "12VDC"],
+    ["Споживаний струм", ">50mA"],
+    ["Температурний режим", "-10° до 50°С"],
+    ["Точність утримання", "+- 0,5 мм"]
+  ],
+  "specs": [
+    ["Контролер висоти плазми, 7Up (torch height control).pdf", "https://storage.ua.prom.st/2353834_kontroler_visoti_plazmi_7up_torch_height_control.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/768283129_kontroler-visoti-plazmi.jpg",
+    "https://images.prom.ua/768283447_kontroler-visoti-plazmi.jpg",
+    "https://images.prom.ua/768283229_kontroler-visoti-plazmi.jpg",
+    "https://images.prom.ua/768283249_kontroler-visoti-plazmi.jpg",
+    "https://images.prom.ua/768283262_kontroler-visoti-plazmi.jpg",
+    "https://images.prom.ua/768283394_kontroler-visoti-plazmi.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "406571759",
+  "name": "Драйвер крокового двигуна 3DМ2080, 8.2 A, 220VАC",
+  "sku": "06-011",
+  "url": "https://cncprom.ua/ua/p406571759-drajver-shagovogo-dvigatelya.html",
+  "attrs": [
+    ["Напруга живлення", "220 В змінного струму (АС)"],
+    ["Максимальний крок", "30000 кроків/оберт"],
+    ["Максимальний робочий струм", "8,2 А"],
+    ["Струм, А", "10"],
+    ["Стан", "Нове"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3067274876_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3067275524_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3067275871_drajver-krokovogo-dviguna.jpg"
+  ],
+  "accessories": [
+    "4057846",
+    "406643288",
+    "19908569",
+    "4057832"
+  ]
+}

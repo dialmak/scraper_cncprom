@@ -1,0 +1,22 @@
+{
+  "id": "582556376",
+  "name": "Контролер MESA 7I92M, Ethernet, для LinuxCNC",
+  "sku": "05-019",
+  "url": "https://cncprom.ua/ua/p582556376-kontroller-mesa-7i92m.html",
+  "attrs": [
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Інтерфейс під'єднання контролера", "Ethernet"]
+  ],
+  "specs": [
+    ["7i92M manual (ENG).pdf", "https://storage.ua.prom.st/1005742_7i92m_manual_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3134186996_kontroler-mesa-7i92m.jpg",
+    "https://images.prom.ua/3134187623_kontroler-mesa-7i92m.jpg",
+    "https://images.prom.ua/3134187730_kontroler-mesa-7i92m.jpg",
+    "https://images.prom.ua/3134187215_kontroler-mesa-7i92m.jpg"
+  ],
+  "accessories": []
+}

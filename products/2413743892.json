@@ -1,0 +1,28 @@
+{
+  "id": "2413743892",
+  "name": "Колекторний електродвигун 1500W 60V 25A",
+  "sku": "12-963",
+  "url": "https://cncprom.ua/ua/p2413743892-kollektornyj-elektrodvigatel-1500w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Матеріал корпусу", "Метал"],
+    ["Тип двигуна", "Колекторний"],
+    ["Потужність", "1.5 кВт"],
+    ["Номінальний струм", "25.0"],
+    ["Висота", "210 мм"],
+    ["Довжина:", "380.0"],
+    ["Вага", "25"],
+    ["Діаметр вала", "22"],
+    ["Номінальна напруга", "60V DC"],
+    ["Частота обертання", "3500"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6374333278_kolektornij-elektrodvigun-1500w.jpg",
+    "https://images.prom.ua/6374333666_kolektornij-elektrodvigun-1500w.jpg",
+    "https://images.prom.ua/6374333280_kolektornij-elektrodvigun-1500w.jpg",
+    "https://images.prom.ua/6374333269_kolektornij-elektrodvigun-1500w.jpg"
+  ],
+  "accessories": []
+}

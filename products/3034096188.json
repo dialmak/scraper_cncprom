@@ -1,0 +1,19 @@
+{
+  "id": "3034096188",
+  "name": "Верстат з ЧПК C-10060, 0,8 kW, фрезерно-гравірувальний",
+  "sku": "10-313",
+  "url": "https://cncprom.ua/ua/p3034096188-stanok-chpu-10060.html",
+  "attrs": [],
+  "specs": [
+    ["Посібник користувача англійською (3).pdf", "https://storage.ua.prom.st/3350132_posibnik_koristuvacha_anglijskoyu_3.pdf"],
+    ["контролер JYS4 англійською.pdf", "https://storage.ua.prom.st/3334150_kontroler_jys4_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7454449002_verstat-z-chpk.jpg",
+    "https://images.prom.ua/7454619323_verstat-z-chpk.jpg",
+    "https://images.prom.ua/7454619627_verstat-z-chpk.jpg",
+    "https://images.prom.ua/7470939967_verstat-z-chpk.jpg",
+    "https://images.prom.ua/7477167854_verstat-z-chpk.jpg"
+  ],
+  "accessories": []
+}

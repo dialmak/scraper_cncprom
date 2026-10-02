@@ -1,0 +1,37 @@
+{
+  "id": "71066759",
+  "name": "Бездротовий пульт керування з енкодером для Mach3 WHB04B-4",
+  "sku": "01-005",
+  "url": "https://cncprom.ua/ua/p71066759-besprovodnoj-pult-upravleniya.html",
+  "attrs": [
+    ["Вага", "360 г"],
+    ["Висота", "52.5 мм"],
+    ["Довжина", "200 мм"],
+    ["Кількість в упаковці", "1 шт."],
+    ["Стан", "Новий"],
+    ["Ширина", "85 мм"],
+    ["Вихідна потужність", "10 ДБ"],
+    ["Дальність дії", "40м"],
+    ["Кількість програмованих кнопок", "5"],
+    ["Мoдель", "WHB04B-4 V3.84"],
+    ["Програмне забезпечення", "Mach3"],
+    ["Радіочастоти стандарту", "433 МГц ISM"],
+    ["Тип комплектуючого", "Бездротовий пульт керування"],
+    ["Фірма", "XHC"],
+    ["Чутливість приймача", "до 98 дБ"],
+    ["Енкодер із ручним керуванням", "100 імпульсів/перевертень"]
+  ],
+  "specs": [
+    ["Посібник по експлуатації пульта з ЧПУ для mach3.pdf", "https://storage.ua.prom.st/2370137_posibnik_po_ekspluatatsiy__lta_z_chpu_dlya_mach3.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1663893005_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1663893054_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1663892998_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/1663893007_bezdrotovij-pult-keruvannya.jpg",
+    "https://images.prom.ua/3447349519_bezdrotovij-pult-keruvannya.jpg"
+  ],
+  "accessories": [
+    "530947827"
+  ]
+}

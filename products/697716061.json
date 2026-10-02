@@ -1,0 +1,26 @@
+{
+  "id": "697716061",
+  "name": "Драйвер Leadshine  DM542 , 4.2 А, 20—50 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-101",
+  "url": "https://cncprom.ua/ua/p697716061-drajver-leadshine-dm542.html",
+  "attrs": [
+    ["Вага", "280г"],
+    ["Габаритні розміри", "118х75х34 мм"],
+    ["Мікрокрок", "15 режимів роботи, максимум 25600 імпульсів на оберт"],
+    ["Напруга живлення", "20-50 В (номінальне до 36 В)"],
+    ["Ток", "от 1,00 до 4,20А"],
+    ["Ток (A)", "4.2"],
+    ["Частота(Гц)", "до 200 кГц"],
+    ["Струм, А", "4.2"]
+  ],
+  "specs": [
+    ["Цифровий драйвер DM542 Leadshine. Інструкція (ENG).pdf", "https://storage.ua.prom.st/2369970_tsifrovij_drajver_dm542_l__hine._nstruktsiya_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3050300475_drajver-leadshine-dm542.jpg",
+    "https://images.prom.ua/3050300717_drajver-leadshine-dm542.jpg",
+    "https://images.prom.ua/3050301005_drajver-leadshine-dm542.jpg",
+    "https://images.prom.ua/3050301412_drajver-leadshine-dm542.jpg"
+  ],
+  "accessories": []
+}

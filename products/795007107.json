@@ -1,0 +1,35 @@
+{
+  "id": "795007107",
+  "name": "Шпиндель повітряне охолодження EYS8043-24/0.80 з фланцем (0.8 кВт, 220 В, 6.5 А, ER11)",
+  "sku": "17-014",
+  "url": "https://cncprom.ua/ua/p795007107-shpindel-vozdushnoe-ohlazhdenie.html",
+  "attrs": [
+    ["Висота", "77 мм"],
+    ["Довжина", "225 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "94 мм"],
+    ["Биття (мм)", "0.005"],
+    ["Вага", "3.5 кг"],
+    ["Вхідна напруга (В)", "220"],
+    ["Кількість підшипників", "4 шт."],
+    ["Корпус", "квадратний"],
+    ["Потужність", "0.8 кВт"],
+    ["Потужність, Вт", "800 Вт"],
+    ["Загальна довжина", "225 мм"],
+    ["Подшипники", "С7002 (4шт)"],
+    ["Робоча напруга", "220 В"],
+    ["Швидкість обертання", "24000 об./хв."],
+    ["Цанга", "ER11"],
+    ["Цанговий патрон", "ER11"],
+    ["Частота", "400 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/2951796714_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2951796761_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2951796819_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2951796777_shpindel-povitryane-oholodzhennya.jpg",
+    "https://images.prom.ua/2951796796_shpindel-povitryane-oholodzhennya.jpg"
+  ],
+  "accessories": []
+}

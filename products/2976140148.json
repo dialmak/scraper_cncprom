@@ -1,0 +1,27 @@
+{
+  "id": "2976140148",
+  "name": "Електричний лінійний привід 30 мм/с, 12 В, хід 100 мм, тяга 20 Н (2 кг), актуатор 100/158-S4-12V-W",
+  "sku": "12-357",
+  "url": "https://cncprom.ua/ua/p2976140148-elektricheskij-linejnyj-privod.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Вхідна напруга", "DC 12 В"],
+    ["Мoдель", "100/158-S4-12V-W"],
+    ["Вага", "0.064 кг"],
+    ["Рівень захисту", "IP60"],
+    ["Швидкість", "30 мм/с"],
+    ["Хід", "100 мм"],
+    ["Тип вироби", "електричний міні-лінійний привід"],
+    ["Тяга (вантажопідйомність):", "20 Н ( 2 кг)"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7256055181_elektrichnij-linijnij-privid.jpg",
+    "https://images.prom.ua/7256055215_elektrichnij-linijnij-privid.jpg",
+    "https://images.prom.ua/7256108367_elektrichnij-linijnij-privid.jpg"
+  ],
+  "accessories": [
+    "2995818293"
+  ]
+}

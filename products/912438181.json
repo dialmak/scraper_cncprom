@@ -1,0 +1,30 @@
+{
+  "id": "912438181",
+  "name": "Шарнірна регульована опора SRO-M12x100-D50, верстатна різьбова віброопора М12, опорна ніжка",
+  "sku": "22-015",
+  "url": "https://cncprom.ua/ua/p912438181-sharnirnaya-reguliruemaya-opora.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.125 г"],
+    ["Висота", "126 мм"],
+    ["Діаметр", "50 мм"],
+    ["Кількість в упаковці", "1 шт."],
+    ["Стан", "Новий"],
+    ["Матеріал", "Оцинкована сталь, нейлон, каучук"],
+    ["Тип комплектуючого", "Опора"],
+    ["Різьба", "М12"],
+    ["Статичне навантаження", "1100 кг"],
+    ["Довжина нарізної частини (мм)", "100 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6695970418_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/6695970629_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/6695971426_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/7561536592_sharnirna-regulovana-opora.jpg"
+  ],
+  "accessories": [
+    "909053025",
+    "909064643"
+  ]
+}

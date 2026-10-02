@@ -1,0 +1,27 @@
+{
+  "id": "2419723519",
+  "name": "Електричний колекторний двигун MY1016Z, 24V 350W з редуктором, із зіркою на 9 зубів під велосипедний ланцюг",
+  "sku": "12-915",
+  "url": "https://cncprom.ua/ua/p2419723519-elektricheskij-kollektornyj-dvigatel.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Напруга", "24 В"],
+    ["Споживаний струм", "14 А"],
+    ["Тип збудження", "Від постійних магнітів"],
+    ["Тип двигуна", "Колекторний"],
+    ["Частота обертання", "300 об/хв"],
+    ["Діаметр вала", "11 мм"],
+    ["Маса", "2.8 г"],
+    ["ККД, не менше", "78 %"],
+    ["Потужність", "350"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6388143165_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6341400875_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6388143231_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6388143292_elektrichnij-kolektornij-dvigun.jpg",
+    "https://images.prom.ua/6335074025_elektrichnij-kolektornij-dvigun.jpg"
+  ],
+  "accessories": []
+}

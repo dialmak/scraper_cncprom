@@ -1,0 +1,24 @@
+{
+  "id": "2381092035",
+  "name": "Контролер безколекторного двигуна 48-60V 3000W",
+  "sku": "02-403",
+  "url": "https://cncprom.ua/ua/p2381092035-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Тип", "Контролер"],
+    ["Вага", "2800"],
+    ["Потужність", "3 кВт"],
+    ["Робоча температура", "-20~50°C"],
+    ["Розміри", "340x140x80 мм"],
+    ["Максимальний струм", "100A"],
+    ["Робоча напруга контролера", "48-60V"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6317545470_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6317545472_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6319262252_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

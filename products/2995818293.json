@@ -1,0 +1,22 @@
+{
+  "id": "2995818293",
+  "name": "Контролер лінійного приводу 12 В,  перемикач із дистанційним керуванням",
+  "sku": "05-140",
+  "url": "https://cncprom.ua/ua/p2995818293-kontroller-linejnogo-privoda.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.076 кг"],
+    ["Вихідна напруга", "DC 12V/24V"],
+    ["Вхідна напруга", "DC 12V/24V"],
+    ["Клас захисту", "IP60"],
+    ["Максимальний струм", "5А"],
+    ["Тип пристрою", "контролер лінійного приводу"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7279086058_kontroler-linijnogo-privodu.jpg",
+    "https://images.prom.ua/7279086060_kontroler-linijnogo-privodu.jpg",
+    "https://images.prom.ua/7279095953_kontroler-linijnogo-privodu.jpg"
+  ],
+  "accessories": []
+}

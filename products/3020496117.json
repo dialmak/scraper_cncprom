@@ -1,0 +1,35 @@
+{
+  "id": "3020496117",
+  "name": "3D принтер Creality HALOT-X1 16K фотополімерний LCD UV Resin з Wi-Fi, автокалібруванням та областю друку 211×118×200 мм",
+  "sku": "10-143",
+  "url": "https://cncprom.ua/ua/p3020496117-printer-creality-halot.html",
+  "attrs": [
+    ["Виробник", "Creality"],
+    ["Гарантійний термін", "12 міс"],
+    ["Інтерфейси підключення", "WiFi"],
+    ["Максимальна швидкість друку", "2.83 мм/сек"],
+    ["Метод друку", "LCD"],
+    ["Стан", "Новий"],
+    ["Тип корпусу", "Закритий"],
+    ["Тип пристрою", "3D-принтер"],
+    ["Вага", "12.75 кг"],
+    ["Висота", "434 мм"],
+    ["Довжина", "344 мм"],
+    ["Ширина", "331 мм"],
+    ["Максимальна робоча висота", "200 мм"],
+    ["Рабочая длина", "211.68 мм"],
+    ["Робоча ширина", "118.37 мм"]
+  ],
+  "specs": [
+    ["c5054d66b5779fdea81945e6df217cbfb9b712e7f8d7f2b687974ad338618249.pdf", "https://storage.ua.prom.st/3334172_c5054d66b5779fdea81945e6d__7f2b687974ad338618249.pdf"],
+    ["cc367c00d5103665945b10926014d06271039751dd316182763a36002980fcc3.pdf", "https://storage.ua.prom.st/3318895_cc367c00d5103665945b10926__16182763a36002980fcc3.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7348940413_3d-printer-creality.jpg",
+    "https://images.prom.ua/7348941202_3d-printer-creality.jpg",
+    "https://images.prom.ua/7348942333_3d-printer-creality.jpg",
+    "https://images.prom.ua/7348943630_3d-printer-creality.jpg",
+    "https://images.prom.ua/7348944077_3d-printer-creality.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2919727813",
+  "name": "Магнітний герконовий датчик положення D-A93, NO",
+  "sku": "08-329",
+  "url": "https://cncprom.ua/ua/p2919727813-magnitnyj-gerkonovyj-datchik.html",
+  "attrs": [
+    ["Індикатор:", "світлодіод"],
+    ["Вага", "0.018 кг"],
+    ["Довжина кабелю", "1.8 м"],
+    ["Клас захисту", "IP67"],
+    ["Максимальна потужність", "10 Вт"],
+    ["Максимальний струм комутації", "100 мА"],
+    ["Максимальний струм навантаження", "до 40 mA"],
+    ["Мoдель", "D-A93"],
+    ["Напруга живлення", "5-120 В DC/AC"],
+    ["Робоча температура", "-10 … +60 °C"],
+    ["Тип датчика", "герконовий магнітний"],
+    ["Тип контакту:", "NO (нормально розімкнутий)"],
+    ["Тип підключення", "двохпровідний"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7079862706_magnitnij-gerkonovij-datchik.jpg",
+    "https://images.prom.ua/7080817954_magnitnij-gerkonovij-datchik.jpg",
+    "https://images.prom.ua/6773434497_magnitnij-gerkonovij-datchik.jpg",
+    "https://images.prom.ua/7080815931_magnitnij-gerkonovij-datchik.jpg"
+  ],
+  "accessories": []
+}

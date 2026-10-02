@@ -1,0 +1,31 @@
+{
+  "id": "694552171",
+  "name": "DSP Контролер лазерного верстата Anywells AWC708C Lite",
+  "sku": "05-024",
+  "url": "https://cncprom.ua/ua/p694552171-dsp-kontroller-lazernogo.html",
+  "attrs": [
+    ["Виробник", "КНР"],
+    ["Країна виробник", "Китай"],
+    ["Тип монтажу", "На корпус"],
+    ["Тип управління", "Автоматичне/Ручне"],
+    ["Діагональ екрану", "4.3 дюйм"],
+    ["Роздільна здатність екрану", "1024×576"],
+    ["Відтворення кольорів РК дисплею", "Кольорова"],
+    ["Вага", "300"]
+  ],
+  "specs": [
+    ["Прошивка панели контроллера AWC708c lite для работы с поворотной осью (160901L1(U for rotate).zip", "https://storage.ua.prom.st/1219966_proshivka_paneli_kontroll___160901l1u_for_rotate.zip"],
+    ["Прошивка панели контроллера AWC708c lite (160815L1.UG5).zip", "https://storage.ua.prom.st/1219967_proshivka_paneli_kontroll__08c_lite_160815l1.ug5.zip"],
+    ["Прошивка панели контроллера AWC708c lite (181101L1.UG5).rar", "https://storage.ua.prom.st/1219968_proshivka_paneli_kontroll__08c_lite_181101l1.ug5.rar"],
+    ["Русификатор Trocen AWC708C Lite (1).zip", "https://storage.ua.prom.st/1219969_rusifikator_trocen_awc708c_lite_1.zip"],
+    ["Драйвер v2.12.28 Windows xp-vista-7-8-10 WHQL.zip", "https://storage.ua.prom.st/1219970_draiver_v2.12.28_windows_xp_vista_7_8_10_whql.zip"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1145207928_dsp-kontroler-lazernogo.jpg",
+    "https://images.prom.ua/1144725925_dsp-kontroler-lazernogo.jpg",
+    "https://images.prom.ua/1144119897_dsp-kontroler-lazernogo.jpg",
+    "https://images.prom.ua/1144736521_dsp-kontroler-lazernogo.jpg",
+    "https://images.prom.ua/1145189445_dsp-kontroler-lazernogo.jpg"
+  ],
+  "accessories": []
+}

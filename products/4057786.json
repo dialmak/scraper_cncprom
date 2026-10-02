@@ -1,0 +1,38 @@
+{
+  "id": "4057786",
+  "name": "Драйвер CW8060, 6 А, 24—80 VDC, цифровий, для двофазного крокового двигуна",
+  "sku": "06-002",
+  "url": "https://cncprom.ua/ua/p4057786-drajver-cw8060-vdc.html",
+  "attrs": [
+    ["Вихідний струм", "2～ 6А"],
+    ["Мікрокрок", "14 режимів роботи"],
+    ["Напруга живлення", "24-80VDC"],
+    ["Стан", "Нове"],
+    ["Ток (A)", "6"],
+    ["Струм, А", "6"]
+  ],
+  "specs": [
+    ["8060 2-Phase stepping Motor Driver Manual.pdf", "https://storage.ua.prom.st/2369961_8060_2_phase_stepping_motor_driver_manual.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3047496708_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/3043580150_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/3043580510_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/3043580633_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/3047497080_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/4408126398_drajver-cw8060-6.jpg",
+    "https://images.prom.ua/3047497189_drajver-cw8060-6.jpg"
+  ],
+  "accessories": [
+    "4057586",
+    "4057846",
+    "4084782",
+    "6896760",
+    "4696280",
+    "6896670",
+    "6896754",
+    "4057612",
+    "19908569",
+    "4057832"
+  ]
+}

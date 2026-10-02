@@ -1,0 +1,31 @@
+{
+  "id": "813726641",
+  "name": "Планетарний редуктор 60PGL10K (1:10) для серводвигуна",
+  "sku": "09-101",
+  "url": "https://cncprom.ua/ua/p813726641-planetarnyj-reduktor-60pgl10k.html",
+  "attrs": [
+    ["ККД, не менше", "0.95 %"],
+    ["ККД, не менш ніж", "0.95"],
+    ["Діаметр заднього вала", "14 мм."],
+    ["Діаметр переднього вала", "16 мм"],
+    ["Крутний момент (Нм)", "17.6"],
+    ["Люфт", "≤12 arcmin"],
+    ["Максимальна швидкість", "6000 об./хв"],
+    ["Номінальна швидкість", "3000 об/хв"],
+    ["Номінальний крутний момент", "17.6 Нм"],
+    ["Робоча температура", "-10 °C...+90 °C"],
+    ["Тип фланця", "60 мм"],
+    ["Рівень шуму", "≤62 dBA/1m"],
+    ["Діаметр вала", "14, 16"],
+    ["Вага", "1.3"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6602906882_planetarnij-reduktor-60pgl10k.jpg",
+    "https://images.prom.ua/1408324866_planetarnij-reduktor-60pgl10k.jpg",
+    "https://images.prom.ua/1408324998_planetarnij-reduktor-60pgl10k.jpg",
+    "https://images.prom.ua/1408325001_planetarnij-reduktor-60pgl10k.jpg",
+    "https://images.prom.ua/1409614360_planetarnij-reduktor-60pgl10k.jpg"
+  ],
+  "accessories": []
+}

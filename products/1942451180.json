@@ -1,0 +1,19 @@
+{
+  "id": "1942451180",
+  "name": "Модуль керування заряджанням батареї XY-CD63L",
+  "sku": "03-098",
+  "url": "https://cncprom.ua/ua/p1942451180-modul-upravleniya-zaryadkoj.html",
+  "attrs": [
+    ["Виробник", "Songle Relay"],
+    ["Країна виробник", "Китай"]
+  ],
+  "specs": [
+    ["GY20476.pdf", "https://storage.ua.prom.st/3198075_gy20476.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/4852972011_modul-keruvannya-zaryadzhannyam.jpg",
+    "https://images.prom.ua/4852972322_modul-keruvannya-zaryadzhannyam.jpg",
+    "https://images.prom.ua/4852972648_modul-keruvannya-zaryadzhannyam.jpg"
+  ],
+  "accessories": []
+}

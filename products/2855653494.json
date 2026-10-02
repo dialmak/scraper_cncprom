@@ -1,0 +1,41 @@
+{
+  "id": "2855653494",
+  "name": "Портативний лазерний гравер DJ6, 3 Вт, 80х80 мм",
+  "sku": "10-547",
+  "url": "https://cncprom.ua/ua/p2855653494-portativnyj-lazernyj-graver.html",
+  "attrs": [
+    ["Вага", "1.35 кг"],
+    ["Висота", "228 мм"],
+    ["Довжина", "168 мм"],
+    ["Ширина", "168 мм"],
+    ["Стан", "Новий"],
+    ["Тип верстата", "Фрезерно-гравірувальний верстат"],
+    ["Вхідна потужність:", "24 Вт"],
+    ["Джерело живлення машини:", "напруга 12 В 2 А"],
+    ["Довжина хвилі", "450 нм"],
+    ["Максимальне фокусування:", "100 мм"],
+    ["Матеріали для гравіювання", "Папір/дерев’яна стружка/пластик/камінь/шкіра/тканина/бамбук/фарба для металу"],
+    ["Метод керування:", "ШІМ"],
+    ["Найкращий діапазон фокусування:", "30~50 мм"],
+    ["Площа гравіювання:", "80x80 мм"],
+    ["Порт даних:", "USB типу B"],
+    ["Порт живлення:", "DC05"],
+    ["Потужність лазерної головки:", "3 Вт"],
+    ["Роздільна здатність", "0,05 мм"],
+    ["Система підтримки:", "Win7/Win8/Win10/MAC/іOS/Android"],
+    ["Формат зображення", "JPEG/BMP/TIF/GIF"]
+  ],
+  "specs": [
+    ["Посібник користувача англійською.pdf", "https://storage.ua.prom.st/3174480_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6980222250_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6980262533_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6983606840_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6983609749_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6983607068_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6983607133_portativnij-lazernij-graver.jpg",
+    "https://images.prom.ua/6983673173_portativnij-lazernij-graver.jpg"
+  ],
+  "accessories": []
+}

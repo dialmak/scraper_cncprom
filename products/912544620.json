@@ -1,0 +1,29 @@
+{
+  "id": "912544620",
+  "name": "Шарнірна регульована опора віброгасна SRO-M12x80-D80Н, верстатна різьбова віброопора М12, опорна ніжка",
+  "sku": "22-016",
+  "url": "https://cncprom.ua/ua/p912544620-sharnirnaya-reguliruemaya-opora.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Висота", "110 мм"],
+    ["Діаметр", "80 мм"],
+    ["Вага", "170 г"],
+    ["Кількість в упаковці", "1 шт."],
+    ["Матеріал", "Оцинкована сталь, нейлон, каучук"],
+    ["Тип комплектуючого", "Опора"],
+    ["Різьба", "М12"],
+    ["Діаметр отворів", "10"],
+    ["Довжина нарізної частини (мм)", "80 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1640693150_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/1640693160_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/1640732779_sharnirna-regulovana-opora.jpg",
+    "https://images.prom.ua/7561480055_sharnirna-regulovana-opora.jpg"
+  ],
+  "accessories": [
+    "909053025",
+    "909064643"
+  ]
+}

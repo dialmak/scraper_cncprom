@@ -1,0 +1,33 @@
+{
+  "id": "420752309",
+  "name": "Драйвер крокового двигуна ВL-TB6560 V2.0 3,5 А, 10-35 VDC",
+  "sku": "06-005",
+  "url": "https://cncprom.ua/ua/p420752309-drajver-shagovogo-dvigatelya.html",
+  "attrs": [
+    ["Вхідна напруга", "10-35 В постійної напруги"],
+    ["Вихідний струм", "0.3A～3A ( макс. 3.5А)"],
+    ["Мікрокрок", "1…2…8…16"],
+    ["Робоча температура", "10 - 45 °C"],
+    ["Ток (A)", "3.5"],
+    ["Встановлення максимального струму", "14 щаблів"]
+  ],
+  "specs": [
+    ["Драйвер крокового двигуна ТВ66560. Інструкція.pdf", "https://storage.ua.prom.st/2369980_drajver_krokovogo_dviguna_tv66560._nstruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/596109616_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/596115319_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/596115664_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/4408136753_drajver-krokovogo-dviguna.jpg"
+  ],
+  "accessories": [
+    "4057846",
+    "6896760",
+    "25422762",
+    "4696280",
+    "6896754",
+    "19908569",
+    "4057832",
+    "6475293"
+  ]
+}

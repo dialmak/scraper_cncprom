@@ -1,0 +1,40 @@
+{
+  "id": "1528078361",
+  "name": "Плата керування Arduino Uno R3 (Original), контролер ЧПК",
+  "sku": "03-407",
+  "url": "https://cncprom.ua/ua/p1528078361-plata-upravleniya-arduino.html",
+  "attrs": [
+    ["Виробник", "Arduino"],
+    ["Країна виробник", "Італія"],
+    ["Вага", "25 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "80 мм"],
+    ["Стан", "Новий"],
+    ["Ширина", "59 мм"],
+    ["EEPROM", "1 Кб"],
+    ["SRAM", "2 Кб"],
+    ["Аналогові вхідні контакти", "6"],
+    ["Вхідна напруга", "7-12 В"],
+    ["Вхідна напруга (ліміти)", "6-20 В"],
+    ["Виведення цифрового введення/виведення ШІМ", "6"],
+    ["Кількість світлодіодних індикаторів", "4"],
+    ["Мікроконтролер", "ATmega328P"],
+    ["Постійний струм для виведення 3.3 В", "50 мА"],
+    ["Постійний струм на виводі введення/виведення", "20 мА"],
+    ["Робоча напруга", "5 V В"],
+    ["Тактова частота", "16 МГц"],
+    ["Флешпам'ять", "32 Кб"],
+    ["Цифрові контакти введення/виведення", "14"]
+  ],
+  "specs": [
+    ["Cхема плати Arduino Uno R3.pdf", "https://storage.ua.prom.st/1978073_chema_plati_arduino_uno_r3.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3489847508_plata-keruvannya-arduino.jpg",
+    "https://images.prom.ua/3489847610_plata-keruvannya-arduino.jpg",
+    "https://images.prom.ua/3489847867_plata-keruvannya-arduino.jpg",
+    "https://images.prom.ua/3489847947_plata-keruvannya-arduino.jpg",
+    "https://images.prom.ua/3489848006_plata-keruvannya-arduino.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1490313269",
+  "name": "Регульований перетворювач напруги XYS3580",
+  "sku": "05-067",
+  "url": "https://cncprom.ua/ua/p1490313269-reguliruemyj-preobrazovatel-napryazheniya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Висота", "44 мм"],
+    ["Вага", "0.086"],
+    ["Гарантійний термін", "3 міс"],
+    ["Довжина:", "79"],
+    ["Захист від короткого замикання", "Да"],
+    ["Захист від перегрівання", "Да"],
+    ["Захист від перевантажень", "Да"],
+    ["Захист від переполюсування", "Немає"],
+    ["Номінальна потужність", "80"],
+    ["Номінальний струм", "5.1"],
+    ["Стан", "Нове"],
+    ["Ширина", "43 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3370423336_regulovanij-peretvoryuvach-naprugi.jpg",
+    "https://images.prom.ua/3370423371_regulovanij-peretvoryuvach-naprugi.jpg",
+    "https://images.prom.ua/3370423560_regulovanij-peretvoryuvach-naprugi.jpg"
+  ],
+  "accessories": []
+}

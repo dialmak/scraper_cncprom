@@ -1,0 +1,25 @@
+{
+  "id": "3080664912",
+  "name": "Опорно-поворотний підшипник (ОПП) 011.10.120 (174х80 мм) із зовнішнім зубчастим вінцем (m=2, Z=85)",
+  "sku": "67-012",
+  "url": "https://cncprom.ua/ua/p3080664912-oporno-povorotnyj-podshipnik.html",
+  "attrs": [
+    ["Форма тіла кочення", "Кулька"],
+    ["Вага", "2.75 кг"],
+    ["Зовнішній діаметр", "174 мм"],
+    ["Висота", "20 мм"],
+    ["Модель:", "011.10.120"],
+    ["Тип:", "прецизійний підшипник"],
+    ["Модуль:", "2"],
+    ["Кількість зубів:", "85"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7485356538_oporno-povorotnij-pidshipnik-opp.jpg",
+    "https://images.prom.ua/7477743382_oporno-povorotnij-pidshipnik-opp.jpg",
+    "https://images.prom.ua/7477740255_oporno-povorotnij-pidshipnik-opp.jpg",
+    "https://images.prom.ua/7475458485_oporno-povorotnij-pidshipnik-opp.jpg",
+    "https://images.prom.ua/7477744076_oporno-povorotnij-pidshipnik-opp.jpg"
+  ],
+  "accessories": []
+}

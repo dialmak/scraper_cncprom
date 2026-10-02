@@ -1,0 +1,38 @@
+{
+  "id": "919422979",
+  "name": "Комплект шпинделя 400 Вт, 48 В, ER8 з драйвером NVBDL і кріпленням",
+  "sku": "17-022",
+  "url": "https://cncprom.ua/ua/p919422979-komplekt-shpindelya-400.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Цанга", "ER8"],
+    ["Корпус", "круглий"],
+    ["Вхідна напруга (В)", "48"],
+    ["Тип двигуна", "Безколекторний"],
+    ["Потужність, Вт", "400 Вт"],
+    ["Вихідна потужність", "345W"],
+    ["Напруга", "48VDC"],
+    ["Максимальна вихідна потужність драйвера", "600W"],
+    ["Модель двигуна", "JK57BLS03-01-X001"],
+    ["Розміри драйвера", "118×76×33 мм"],
+    ["Вага шпинделя", "1 кг"],
+    ["Діапазон напруги драйвера", "24VDC-60VDC"],
+    ["Діаметр шпинделя (мм)", "57"],
+    ["Безперервний струм (A)", "0.9A"],
+    ["Загальна довжина шпинделя", "124,4 мм"],
+    ["Крутний момент двигуна", "0.33 Нм"],
+    ["Максимальна швидкість двигуна (об/хв)", "12000"]
+  ],
+  "specs": [
+    ["Шпиндельный драйвер NVBDH + и NVBDL + (eng).pdf", "https://storage.ua.prom.st/1291386_shpindelnyj_drajver_nvbdh_i_nvbdl_eng.pdf"],
+    ["shpindel_400w_er8_s_vozdushnym_ohlazhdeniem.pdf", "https://storage.ua.prom.st/2353795_shpindel_400w_er8_s_vozdushnym_ohlazhdeniem.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6600886940_komplekt-shpindelya-400.jpg",
+    "https://images.prom.ua/1655762761_komplekt-shpindelya-400.jpg",
+    "https://images.prom.ua/1655762566_komplekt-shpindelya-400.jpg",
+    "https://images.prom.ua/1655762839_komplekt-shpindelya-400.jpg",
+    "https://images.prom.ua/1655762722_komplekt-shpindelya-400.jpg"
+  ],
+  "accessories": []
+}

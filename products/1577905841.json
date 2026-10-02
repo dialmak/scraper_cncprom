@@ -1,0 +1,23 @@
+{
+  "id": "1577905841",
+  "name": "Індуктивний датчик HURON LJ18A3-8-Z/AX NPN NC закритий",
+  "sku": "03-070",
+  "url": "https://cncprom.ua/ua/p1577905841-induktivnyj-datchik-huron.html",
+  "attrs": [
+    ["Виробник", "Huron"],
+    ["Вага", "80"],
+    ["Діаметр датчика", "17 мм мм."],
+    ["Довжина датчика", "66 мм."],
+    ["Напруга живлення", "6-36 В"],
+    ["Стан", "Нове"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3667449774_induktivnij-datchik-huron.jpg",
+    "https://images.prom.ua/3667449516_induktivnij-datchik-huron.jpg",
+    "https://images.prom.ua/3668832155_induktivnij-datchik-huron.jpg"
+  ],
+  "accessories": [
+    "1017097703"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "21403513",
+  "name": "Інвертор (частотник) 7KW 0-600Hz 380V три фази",
+  "sku": "14-007",
+  "url": "https://cncprom.ua/ua/p21403513-invertor-chastotnik-7kw.html",
+  "attrs": [
+    ["Вхід фаз", "3 фази"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "380 В"],
+    ["Вихід фаз", "3 фази"],
+    ["Вихідна частота", "0-600 Hz"],
+    ["Вихідна напруга", "380VAC"],
+    ["Метод управління", "векторний"],
+    ["Потужність", "7 кВт кВт"],
+    ["Ток", "17А"]
+  ],
+  "specs": [
+    ["Huanyang VFD Inverter Manual 7.0kw (ENG).pdf", "https://storage.ua.prom.st/970159_huanyang_vfd_i___7.0kw_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/830352336_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/830135701_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/830135703_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/830352360_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/830135738_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/830135762_invertor-chastotnik-7kw.jpg",
+    "https://images.prom.ua/12800437_invertor-chastotnik-7kw.jpg"
+  ],
+  "accessories": []
+}

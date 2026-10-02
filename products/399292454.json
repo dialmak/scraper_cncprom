@@ -1,0 +1,27 @@
+{
+  "id": "399292454",
+  "name": "Підшипник лінійний закритий дыаметр 8 мм з пластиковим сепаратором LM8UU",
+  "sku": "59-001",
+  "url": "https://cncprom.ua/ua/p399292454-podshipnik-linejnyj-zakrytyj.html",
+  "attrs": [
+    ["Матеріал виробу", "Сталь"],
+    ["Тип підшипника ковзання", "Лінійний"],
+    ["Ущільнювач", "Так"],
+    ["Внутрішній діаметр", "8 мм."],
+    ["Довжина:", "24"],
+    ["Зовнішній діаметр", "15 мм."],
+    ["Діаметр", "8"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5372061312_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372061619_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372065696_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5362506549_pidshipnik-linijnij-zakritij.jpg"
+  ],
+  "accessories": [
+    "23541506",
+    "46330208",
+    "46330176"
+  ]
+}

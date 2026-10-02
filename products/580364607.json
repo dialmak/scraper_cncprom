@@ -1,0 +1,33 @@
+{
+  "id": "580364607",
+  "name": "Інвертор HY01D543B (VFD) 1.5KW 4A 380V три фази",
+  "sku": "14-009",
+  "url": "https://cncprom.ua/ua/p580364607-invertor-hy01d543b-vfd.html",
+  "attrs": [
+    ["Вага", "1.837 кг"],
+    ["Максимальна робоча температура навколишнього середовища", "40 град."],
+    ["Мінімальна робоча температура навколишнього середовища", "-10 град."],
+    ["Вхід фаз", "3"],
+    ["Вхідна частота", "48-63 Hz"],
+    ["Вхідна напруга", "380±15%"],
+    ["Вхідна напруга (В)", "380"],
+    ["Вихід фаз", "3"],
+    ["Вихідна частота", "0-400 Hz"],
+    ["Вихідна напруга", "380VAC"],
+    ["Потужність, Вт", "1500 Вт"],
+    ["Ток", "4А"],
+    ["Частота (Гц)", "400"]
+  ],
+  "specs": [
+    ["Huanyang VFD Inverter Manual 1.5kw 380V.pdf", "https://storage.ua.prom.st/2370511_huanyang_vfd_inverter_manual_1.5kw_380v.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/898454657_invertor-hy01d543b-vfd.jpg",
+    "https://images.prom.ua/898454675_invertor-hy01d543b-vfd.jpg",
+    "https://images.prom.ua/848421984_invertor-hy01d543b-vfd.jpg",
+    "https://images.prom.ua/898454724_invertor-hy01d543b-vfd.jpg",
+    "https://images.prom.ua/848421996_invertor-hy01d543b-vfd.jpg",
+    "https://images.prom.ua/2613124676_invertor-hy01d543b-vfd.jpg"
+  ],
+  "accessories": []
+}

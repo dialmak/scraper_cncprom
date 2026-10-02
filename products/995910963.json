@@ -1,0 +1,31 @@
+{
+  "id": "995910963",
+  "name": "Контролер MESA 7I85",
+  "sku": "05-040",
+  "url": "https://cncprom.ua/ua/p995910963-kontroller-mesa-7i85.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Країна виробник", "США"],
+    ["Вага", "0.123 кг"],
+    ["Гарантійний термін", "3 міс"],
+    ["Стан", "Новий"],
+    ["Тип монтажу", "На плату"],
+    ["Максимальна робоча температура", "85 град."],
+    ["Мінімальна робоча температура", "-40 град."],
+    ["Напруга", "5 В"],
+    ["Інтерфейс під'єднання контролера", "LPT"],
+    ["Мoдель", "7I85"],
+    ["Тип плати", "дочірня"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/3092351207_kontroler-mesa-7i85.jpg",
+    "https://images.prom.ua/3092394255_kontroler-mesa-7i85.jpg",
+    "https://images.prom.ua/3092394987_kontroler-mesa-7i85.jpg",
+    "https://images.prom.ua/3092397234_kontroler-mesa-7i85.jpg",
+    "https://images.prom.ua/3092351564_kontroler-mesa-7i85.jpg"
+  ],
+  "accessories": [
+    "473946953"
+  ]
+}

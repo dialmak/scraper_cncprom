@@ -1,0 +1,28 @@
+{
+  "id": "557028157",
+  "name": "Поворотна вісь 80мм 6:1 К11 Nema23 3-кулачковий патрон, на ремені",
+  "sku": "07-008",
+  "url": "https://cncprom.ua/ua/p557028157-povorotnaya-80mm-k11.html",
+  "attrs": [
+    ["Двигун", "NEMA 23"],
+    ["Діаметр патрона", "80 мм."],
+    ["Крутний момент", "18 кг/см"],
+    ["Редукція", "6:1"],
+    ["Тип комплектуючого", "Поворотна вісь"],
+    ["Тип патрона", "3"],
+    ["Тип редуктора", "ремінний"],
+    ["Ток", "3 А"],
+    ["Токарний патрон", "К11 80 мм (3-кулачковий)"]
+  ],
+  "specs": [
+    ["Схематичне креслення.pdf", "https://storage.ua.prom.st/2358804_shematichne_kreslennya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/842274790_povorotna-vis-80mm.jpg",
+    "https://images.prom.ua/842274814_povorotna-vis-80mm.jpg",
+    "https://images.prom.ua/842274858_povorotna-vis-80mm.jpg",
+    "https://images.prom.ua/842274874_povorotna-vis-80mm.jpg",
+    "https://images.prom.ua/842274901_povorotna-vis-80mm.jpg"
+  ],
+  "accessories": []
+}

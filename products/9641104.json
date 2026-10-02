@@ -1,0 +1,33 @@
+{
+  "id": "9641104",
+  "name": "Шпиндель для ЧПК 1.5 kw, ER16, повітряне охолодження",
+  "sku": "17-003",
+  "url": "https://cncprom.ua/ua/p9641104-shpindel-dlya-chpu.html",
+  "attrs": [
+    ["Діаметр", "80 мм"],
+    ["Довжина", "200 мм"],
+    ["Стан", "Новий"],
+    ["Биття", "0.05"],
+    ["Вхідна напруга (В)", "220"],
+    ["Кількість підшипників", "4 шт."],
+    ["Корпус", "круглий"],
+    ["Потужність", "1.5 кВт"],
+    ["Потужність, Вт", "1500 Вт"],
+    ["Подшипники", "2X7002, 2X7004 P4 DT"],
+    ["Робоча напруга", "220 В"],
+    ["Швидкість обертання", "24000 об./хв."],
+    ["Цанга", "ER16"],
+    ["Цанговий патрон", "ER16"],
+    ["Частота", "400 Гц"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/677184800_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/677182724_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/677182986_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/820015124_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/7025970117_shpindel-dlya-chpk.jpg",
+    "https://images.prom.ua/7026038335_shpindel-dlya-chpk.jpg"
+  ],
+  "accessories": []
+}

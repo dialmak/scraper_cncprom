@@ -1,0 +1,161 @@
+<p style="text-align:center"><span style="font-size:18px"><strong>Контролер крокового двигуна ZK-SMC01</strong></span></p>
+<p style="text-align:center"><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>ZK-SMC01 — це універсальний контролер для одноосьового крокового двигуна, який забезпечує точне керування швидкістю, напрямком, кількістю імпульсів та режимами роботи. </strong>Пристрій підтримує ручне, автоматичне та послідовне (через TTL-порт) керування, що робить його ідеальним для використання в системах ЧПК, тестуванні двигунів, механічних приводах, 3D-принтерах та інших проєктах автоматизації.</span></p>
+<p><span style="font-size:18px">Контролер має зручний інтерфейс із РК-дисплеєм, кнопками керування напрямком (CW/CCW), кнопкою запуску (RUN/STOP) та поворотним енкодером для швидкого налаштування параметрів. </span></p>
+<p><span style="font-size:18px"><strong>Особливості:</strong> </span></p>
+<ul>
+<li><span style="font-size:18px">Підтримка ручного та автоматичного режимів</span></li>
+<li><span style="font-size:18px">Можливість серійного зв’язку через TTL UART</span></li>
+<li><span style="font-size:18px">Керування напрямом, швидкістю, кількістю кроків і затримками</span></li>
+<li><span style="font-size:18px">Вбудований захист від неправильної полярності живлення</span></li>
+<li><span style="font-size:18px">Оптимізовані алгоритми керування для плавного запуску та зупинки</span></li>
+<li><span style="font-size:18px">Просте налаштування через енкодер і кнопки</span></li>
+</ul>
+<p><strong><span style="font-size:18px">Модуль має наступні дев'ять режимів роботи:</span></strong></p>
+<p><span style="font-size:18px"><strong>P01-1</strong> – ручний режим (обертання за допомогою ручки);<br>
+<strong>P01-2</strong> - обертання по утриманні клавіші напряму;<br>
+<strong>P01-3</strong> - постійно, по натисканню клавішу напрями;<br>
+<strong>P01-4</strong> - на встановлене число імпульсів та циклів та затримкою;<br>
+<strong>P01-5</strong> - на встановлене число імпульсів та циклів з подальшим поверненням назад;<br>
+<strong>P01-6</strong> - на встановлене число імпульсів із поверненням назад, задане число циклів;<br>
+<strong>P01-7</strong> - обертання поки натиснута клавіша з наступною затримкою та поверненням назад;<br>
+<strong>P01-8</strong> - обертання на час затримки, встановлене в іншому напрямку, затримкою у прямому та з повторенням кількості циклів;<br>
+<strong>P01-9</strong> - після увімкнення пристрою автоматичний запуск циклів вперед-назад на задану кількість імпульсів із затримками.</span></p>
+<p style="text-align:center"><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Технічні характеристики:</strong></span></p>
+<p><span style="font-size:18px"><em>Модель:</em> ZK-SMC01</span></p>
+<p><span style="font-size:18px"><em>Кількість осей:</em> 1</span></p>
+<p><span style="font-size:18px"><em>Тип двигуна:</em>&nbsp;будь-який драйвер двигуна, що використовує сигнал STEP / DIR</span></p>
+<p><span style="font-size:18px"><em>Живлення:</em> DC 5–30 V</span></p>
+<p><span style="font-size:18px"><em>Струм приводу:</em> до 4 А</span></p>
+<p><span style="font-size:18px"><em>Сигнал керування двигуном:</em> загальний катод</span></p>
+<p><span style="font-size:18px"><em>Діапазон швидкостей:</em> 0,1 – 999 об/хв</span></p>
+<p><span style="font-size:18px"><em>Кількість імпульсів CW/CCW:</em> 1 – 9 999 999</span></p>
+<p><span style="font-size:18px"><em>Кількість циклів:</em> 1 – 9999</span></p>
+<p><span style="font-size:18px"><em>Затримка (вперед/реверс):</em> 0,1 – 999,9 с</span></p>
+<p><span style="font-size:18px"><em>Мікрокрок (поділ):</em> 1 – 128</span></p>
+<p><span style="font-size:18px"><em>Керування прискоренням і уповільненням:</em> Так</span></p>
+<p><span style="font-size:18px"><em>Захист від зворотної полярності входу:</em>&nbsp;Так&nbsp;</span></p>
+<p><span style="font-size:18px"><em>Режими керування:</em> Автоматичний/Ручний/Налаштування/UART</span></p>
+<p><span style="font-size:18px"><em>Робоча температура:</em> –5°C … +60°C (без конденсації)</span></p>
+<p><span style="font-size:18px"><em>Робоча вологість:</em> 5%~95% відносної вологості</span></p>
+<p><span style="font-size:18px"><em>Вага: </em>38 г</span></p>
+<p><span style="font-size:18px"><strong>Функціонал:</strong></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/JWr03NyS/1-70.jpg" style="width:500px;height:500px"></span></p>
+<p><span style="font-size:18px"><strong>Налаштування:</strong><br>
+<strong>F-01</strong> - Вибір режиму роботи<br>
+<strong>F-02</strong> - Кількість імпульсів уперед<br>
+<strong>F-03</strong> - Швидкість вперед, об/хв.<br>
+<strong>F-04</strong> - Кількість імпульсів зворотнього ходу<br>
+<strong>F-05</strong> - Швидкість реверсу, об/хв.<br>
+<strong>F-06</strong> - Час роботи циклів.<br>
+<strong>F-07</strong> - Затримка обертання вперед на місці<br>
+<strong>F-08</strong> - Затримка реверсу на місці<br>
+<strong>F-09</strong> - Кількість імпульсів на оберт<br>
+<strong>F-10</strong> - Вміст головного інтерфейсу<br>
+<strong>F-11</strong> - Дія при натисканні клавіші паузи, повільна/негайна зупинка<br>
+<strong>F-12</strong> - Прискорення та уповільнення<br>
+<strong>F-13 </strong>- Адреса модуля 1-255&nbsp;</span></p>
+<p><span style="font-size:18px"><strong>Деталі контролера:</strong></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/gZnJjhMF/1-69.jpg" style="width:500px;height:500px"></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/1tHVNC1D/1-68.jpg" style="width:500px;height:500px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><strong>Огляд функцій інтерфейсу та спосіб роботи.</strong></span></p>
+<p><span style="font-size:18px"><em>Контролер поділено на два інтерфейси: інтерфейс керування [F] та інтерфейс меню налаштувань.</em></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/hJMg3Vfz/1-71.jpg" style="width:500px;height:500px"></span></p>
+<p><span style="font-size:18px"><strong>Інструкції з експлуатації:</strong></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/JRNbZw5b/1.jpg" style="width:500px;height:500px"></span></p>
+<p><img alt="" src="https://i.ibb.co/5WJ7tZNR/335-15-1.png" style="width:600px;height:600px"></p>
+<p><span style="font-size:18px"><strong>Габаритні розміри:</strong></span></p>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/hRSdkmFq/1-72.jpg" style="width:500px;height:500px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_red">
+<div>
+<h2><span style="font-size:18px"><strong>Важливо!</strong><br>
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця</span></h2>
+<h2><span style="font-size:18px">Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою.</span></h2>
+<h2><span style="font-size:18px"><strong>Інформація на сайті є актуальною на момент її опублікування!</strong></span></h2>
+</div>
+</div>
+<div class="ck-alert">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong>Більш докладну інструкцію по експлуатації надано в розділі – "Специфікація"</strong></span></div>
+</div>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong><span class="ck-alert__title"></span>Комплект поставки:</strong><span class="fa fa-car" style="color:#000000">&nbsp;</span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><strong>Контролер ZK-SMC01 крокового двигуна,&nbsp;&nbsp;5–30 V (1 шт.)</strong></span></li>
+<li><span style="font-size:18px"><strong>Шлейфовий розʼєм (1шт)</strong></span></li>
+</ul>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong>Дивіться всі наші оголошення:</strong></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2432613-alyuminievyj-profil" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank">Блоки живлення</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1270337-gibkie-mufty" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1372753-gibkij-kabel-kanal" target="_blank">Гнучкий кабель канал&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1261329-stanki-chpu" target="_blank">Верстати з ЧПК</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022907-datchiki-knopki-razemy" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki" target="_blank">Затискні цанги, гайки ER</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1292282-shvp" target="_blank">КГП</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022485-kontrollery" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022553-shagovye-dvigateli" target="_blank">Крокові двигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie" target="_blank">Лінійні направляючі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g16759716-linejnye-podshipniki" target="_blank">Лінійні підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka" target="_blank">Регулятори висоти різака THC&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488426-reechnyj-privod" target="_blank">Рейковий привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488264-remennyj-privod" target="_blank">Ремінний привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g51015677-rezhuschij-instrument" target="_blank">Ріжучий інструмент</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1481716-povorotnye-osi" target="_blank">Поворотні осі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank">Пульти ручного управління і DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami" target="_blank">Серводвигуни з серводрайверами</a>&nbsp;</span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" target="_blank">Системи охолодження і вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu" target="_blank">Шпинделі</a></span></li>
+</ul>
+<p>&nbsp;</p>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>

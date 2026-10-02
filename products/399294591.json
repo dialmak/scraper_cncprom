@@ -1,0 +1,28 @@
+{
+  "id": "399294591",
+  "name": "Підшипник лінійний закритий LM25UU",
+  "sku": "59-006",
+  "url": "https://cncprom.ua/ua/p399294591-podshipnik-linejnyj-zakrytyj.html",
+  "attrs": [
+    ["Матеріал виробу", "Сталь"],
+    ["Тип підшипника ковзання", "Лінійний"],
+    ["Ущільнювач", "Так"],
+    ["Внутрішній діаметр.", "25"],
+    ["Довжина:", "59"],
+    ["Зовнішній діаметр", "40 мм."],
+    ["Діаметр", "25"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5372061312_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372061619_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5372065696_pidshipnik-linijnij-zakritij.jpg",
+    "https://images.prom.ua/5362506549_pidshipnik-linijnij-zakritij.jpg"
+  ],
+  "accessories": [
+    "46332281",
+    "46332596",
+    "46332629",
+    "46332616"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "2184075312",
+  "name": "Розумний зарядний пристрій SС-12-24V-900А для  різних типів акумуляторів (12-24V, 900А)",
+  "sku": "HP02-004",
+  "url": "https://cncprom.ua/ua/p2184075312-umnoe-zaryadnoe-ustrojstvo.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Індикатор заряду елементів живлення", "Так"],
+    ["Напруга живильної мережі", "220 В"],
+    ["Ручка для перенесення", "Так"],
+    ["Стан", "Новий"],
+    ["Тип акумулятора", "Свинцево-кислотні (SLA)"],
+    ["Тип зарядного пристрою", "Імпульсні"],
+    ["Тип індикатора", "Дисплей"],
+    ["Колір", "Сірий"],
+    ["Висота", "180 мм"],
+    ["Довжина", "280 мм"],
+    ["Маса", "5.5 кг"],
+    ["Ширина", "140 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5723275337_rozumnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275338_rozumnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275339_rozumnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275340_rozumnij-zaryadnij-pristrij.jpg",
+    "https://images.prom.ua/5723275341_rozumnij-zaryadnij-pristrij.jpg"
+  ],
+  "accessories": []
+}

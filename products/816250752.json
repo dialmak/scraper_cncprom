@@ -1,0 +1,33 @@
+{
+  "id": "816250752",
+  "name": "Інвертор Simphoenix V350-4T0075, 7.5 KW 17A 380V",
+  "sku": "14-013",
+  "url": "https://cncprom.ua/ua/p816250752-invertor-simphoenix-v350.html",
+  "attrs": [
+    ["Вага", "4.3 кг"],
+    ["Висота", "275 мм"],
+    ["Довжина", "180 мм"],
+    ["Ширина", "160 мм"],
+    ["Стан", "Новий"],
+    ["Кількість фаз живлення", "3"],
+    ["- Повна споживана потужність", "11.2 кВА"],
+    ["Вхідна частота", "50/60 Гц"],
+    ["Вхідна напруга (В)", "380"],
+    ["Вихідна частота", "РЗН 0-300Гц, РЗВ 0-1000Гц"],
+    ["Вихідна напруга", "380 В"],
+    ["Потужність, Вт", "7500 Вт"],
+    ["Ток", "17А"],
+    ["Частота (Гц)", "1000"]
+  ],
+  "specs": [
+    ["Посібник до перетворювача частоти Simphoenix 4T0075 (ENG).pdf", "https://storage.ua.prom.st/2370499_posibnik_do_peretvoryuvac__simphoenix_4t0075_eng.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/1414166872_invertor-simphoenix-v350-4t0075.jpg",
+    "https://images.prom.ua/1414166987_invertor-simphoenix-v350-4t0075.jpg",
+    "https://images.prom.ua/1414166859_invertor-simphoenix-v350-4t0075.jpg",
+    "https://images.prom.ua/1414167076_invertor-simphoenix-v350-4t0075.jpg",
+    "https://images.prom.ua/1414167222_invertor-simphoenix-v350-4t0075.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,103 @@
+<p><span style="font-size:18px"><strong>Модуль для керування зарядом батареї </strong><span style="font-size:18px"><strong>XY-L30A</strong></span><strong>, контролер заряду акумулятора з дисплеєм, плата для автоматичного увімкнення/вимкнення заряду акумулятора (6-60 V)</strong></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">Контролер <strong>XY-L30A</strong> використовується для автоматичного увімкнення та вимкнення зарядного пристрою заданими параметрами, які встановлюються за допомогою трьох кнопок (SET, UP і DOWN), встановлених <span style="font-size:18px">на платі модуля</span>. Контролер оснащений дисплеєм з підсвіткою, на якому відображається поточна напруга, рівень та час заряджання.</span></p>
+<p><span style="font-size:18px">Для заряджання акумулятора потрібне зарядний пристрій з достатньою вихідною напругою. Реле замикається, коли напруга акумулятора дорівнює або падає нижче заданого параметра, і розмикається, коли досягається верхня межа.</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px"></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px">Основні функції контролера:</span></p>
+<p><span style="font-size:18px">1.&nbsp;Контроль заряду акумулятора, автоматичне вимкнення відповідно заданим параметрам;</span></p>
+<p><span style="font-size:18px">2.&nbsp;Регульований час зарядки;</span></p>
+<p><span style="font-size:18px">3. Підтримка функції приймання даних та установки параметрів через UART (рівень TTL);</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Характеристики:</span></strong></p>
+<ul>
+<li><span style="font-size:18px">Вхідна напруга: від 6 V до 60 V;</span></li>
+<li><span style="font-size:18px">Вбудоване реле: SLA-05VDC-SL-A;</span></li>
+<li><span style="font-size:18px">Точність відображення: 0.1 V;</span></li>
+<li><span style="font-size:18px">Точність управління: 0.1 V</span></li>
+<li><span style="font-size:18px">Діапазон напруги: 0-60 V постійного току;</span></li>
+<li><span style="font-size:18px">Струм зарядки: до 30 А;</span></li>
+<li><span style="font-size:18px">Колір дисплея: синій;</span></li>
+<li><span style="font-size:18px">Розмір плати: 92x45 мм;</span></li>
+<li><span style="font-size:18px">Відображення інформації: напруга, час, відсоток заряду</span></li>
+<li><span style="font-size:18px">Формат часу: 00:00&nbsp;(макс 99.99&nbsp;(~100 годин))</span></li>
+<li><span style="font-size:18px">Сумісність:&nbsp;універсальний</span></li>
+</ul>
+<p>&nbsp;</p>
+<p><span style="font-size:18px">Процедура установки параметрів:</span></p>
+<p><span style="font-size:18px">1.&nbsp;&nbsp;Натисніть та утримуйте кнопку SET (&lt;3 сек) для входу в екран налаштування параметрів;</span></p>
+<p><span style="font-size:18px">2. За допомогою<span style="font-size:18px">&nbsp;кнопок UP/DOWN установіть потрібне значення</span>&nbsp;(для швидкої зміни затисніть кнопку)<span style="font-size:18px">;</span></span></p>
+<p><span style="font-size:18px">3. Для переходу до наступного параметра, зробіть короткочасне натискання кнопки SET;</span></p>
+<p><span style="font-size:18px">3. Після встановлення всіх параметрів, затисніть кнопку SET (&lt;3 сек), щоб вийти з режиму налаштування;</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Установка параметрів акумулятора:</strong></span></p>
+<p><span style="font-size:18px">Перед зарядкою акумулятора установіть мінімальну напругу (вольт-LI)&nbsp;<span style="font-size:18px">та максимальну напругу (вольт-HI)</span>. Ці значення потрібні для розрахунку та відображення рівня заряду батареї.</span></p>
+<p><span style="font-size:18px">Максимальна напруга також використовується для визначення моменту припинення заряджання.</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Установка часу зарядки:</strong></span></p>
+<p><span style="font-size:18px">Крім контролю верхньої межі напруги в процесі заряджання, є другий спосіб зупинити зарядку: після заданого часу. Ця функція за замовчуванням відключена і&nbsp;визначається як параметр часу --:-- h. У цьому стані заряджання продовжується нескінченно, поки напруга батареї</span><span style="font-size:18px"> не досягне максимально заданого рівня.</span></p>
+<p><span style="font-size:18px">Для активації функції заряджання з обмеженням часу, необхідно встановити ненульовий час в діапазоні від мінімум 1 хвилини (00:01h) до максимум 100 годин (99:59h).</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:18px"><strong>Схема підключення джерела живлення та акумулятора:</strong></span></p>
+<p><img alt="" src="https://images.prom.ua/4352632098_w640_h2048_xy_l30a.jpg?fresh=1&amp;PIMAGE_ID=4352632098" style="width:640px;height:471px"></p>
+<p><img alt="Контролер XY-L30A для заряджання акумулятора" src="https://images.prom.ua/4368560448_w640_h2048_4353248376_w640_h2048_274316239.jpg?fresh=1&amp;PIMAGE_ID=4368560448" style="width:635px;height:357px"></p>
+<p>&nbsp;</p>
+<div class="ck-alert ck-alert_theme_blue">
+<div><span style="font-size:18px">Комплект постачання:</span></div>
+</div>
+<ul>
+<li><span style="font-size:18px">Контролер зарядки&nbsp;акумулятора XY-L30A (1 шт);</span><span class="ck-alert__title"></span></li>
+</ul>
+<p>&nbsp;</p>
+<div class="ck-alert ck-alert_theme_red">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span></span>
+<p><span style="font-size:18px"><strong>Важливо!</strong><br>
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця</span></p>
+<p><span style="font-size:18px">Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою</span></p>
+<p><strong><span style="font-size:18px">Інформація на сайті є актуальною на момент її опублікування!</span></strong></p>
+<span style="font-size:18px"><span class="ck-alert__title"></span></span>
+<p><span style="font-size:18px"></span></p>
+</div>
+</div>
+<p>&nbsp;</p>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong>Як придбати даний товар:</strong></span></div>
+</div>
+<p>&nbsp; <span class="fa fa-shopping-cart" style="font-size:28px;color:#298c36"></span><span style="font-size:18px">&nbsp;Оформити замовлення ви можете на сайті, натиснувши на кнопку або в телефонному режимі.</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;<span class="fa fa-phone-square" style="font-size:28px;color:#298c36"></span>&nbsp;Наші менеджери проконсультують вас, дадуть пораду, а також дадуть відповіді на ваші запитання про товар. Номер для зв'язку з менеджером:&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; +38 (096) 655-71-06;&nbsp; +38 (099) 100-30-30;&nbsp;+380 (73) 100-30-30</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;<span class="fa fa-comment-o" style="font-size:28px;color:#298c36"></span>&nbsp;Також ви можете залишити свій&nbsp;<a href="https://prom.ua/opinions/create/299341?page_type=cs_opinion_list" target="_blank">в</a><a href="http://prom.ua/opinions/create/299341?page_type=cs_opinion_list" target="_blank">ідгук</a>&nbsp;про нас.</span></p>
+<p>&nbsp;</p>
+<div style=""><span></span></div>
+<p><span style="font-size:18px"><strong>Дивіться всі наші оголошення</strong></span></p>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/product_list" target="_blank">Каталог товарів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1261329-stanki" target="_blank">Верстати</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g92857157-osnastka-dlya-stankov" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" target="_blank">Системи охолодження та вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022485-kontrollery" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022553-elektrodvigateli" target="_blank">Електродвигун</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami" target="_blank">Серводвигуни із серводрайверами</a>&nbsp;</span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank">Блоки живлення</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu" target="_blank">Шпинделі</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank">Пульти ручного керування та DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022907-datchiki-knopki-razemy" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie-podshipniki" target="_blank">Лінійні напрямні та підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g96553590-peredachi" target="_blank">Передачі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g71921739-sistemy-smazki-napravlyayuschih" target="_blank">Системи змащення напрямних і передач</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g100126570-mehanika" target="_blank">Механіка</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1270337-gibkie-mufty" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1372753-gibkij-kabel-kanal" target="_blank">Гнучкий кабель-канал (кабелеукладач)</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g51015677-frezy-dlya-stankov" target="_blank">Фрези</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2432613-alyuminievyj-profil" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g106846694-pnevmatika" target="_blank">Пневматика</a></span></li>
+</ul>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>

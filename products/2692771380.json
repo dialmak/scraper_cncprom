@@ -1,0 +1,26 @@
+{
+  "id": "2692771380",
+  "name": "Інтерфейсна плата на 4 осі з портом USB 6560 AXIS 4 для верстата з ЧПК, комутаційна плата керування під USBCNC",
+  "sku": "05-127",
+  "url": "https://cncprom.ua/ua/p2692771380-interfejsnaya-plata-osi.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.49 кг"],
+    ["Стан", "Новий"],
+    ["Тип управління", "Автоматичне/Ручне"],
+    ["Висота", "0.25 мм"],
+    ["Довжина", "0.152 мм"],
+    ["Ширина", "0.153 мм"]
+  ],
+  "specs": [
+    ["мануал USB6560AXIS4_ .pdf", "https://storage.ua.prom.st/3054483_manual_usb6560axis4__.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6771579976_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/6771580240_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/6771580670_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/6771581098_interfejsna-plata-na.jpg",
+    "https://images.prom.ua/6771581477_interfejsna-plata-na.jpg"
+  ],
+  "accessories": []
+}

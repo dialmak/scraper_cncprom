@@ -1,0 +1,29 @@
+{
+  "id": "700538092",
+  "name": "Драйвер крокового двигуна BL-TB6600, 4.35 A, 32 VDC",
+  "sku": "06-013",
+  "url": "https://cncprom.ua/ua/p700538092-drajver-shagovogo-dvigatelya.html",
+  "attrs": [
+    ["Вага", "119 г"],
+    ["Габаритні розміри", "80×50×29мм"],
+    ["Діапазон робочого струму", "0,5-4,5 А"],
+    ["Напруга живлення", "від 8 до 50 В"],
+    ["Робоча температура", "10 до +45˚С"],
+    ["Ток (A)", "5"],
+    ["Частота сигнала", "до 200 кГц"],
+    ["Струм, А", "4.5"]
+  ],
+  "specs": [
+    ["Драйвер крокового двигуна BL TB6600 v1.2. Інструкція.pdf", "https://storage.ua.prom.st/2369992_drajver_krokovogo_dviguna__600_v1.2._nstruktsiya.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/3058288631_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3058289122_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3062349331_drajver-krokovogo-dviguna.jpg",
+    "https://images.prom.ua/3062349551_drajver-krokovogo-dviguna.jpg"
+  ],
+  "accessories": [
+    "35093502",
+    "4056281"
+  ]
+}

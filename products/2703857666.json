@@ -1,0 +1,28 @@
+{
+  "id": "2703857666",
+  "name": "BMS плата JK-BD4A8S-6PR для акумуляторів LiFePO4/Li-ion/LTO, 3S-8S, 60A з активним балансуванням 0.4A",
+  "sku": "05-331",
+  "url": "https://cncprom.ua/ua/p2703857666-bms-plata-bd4a8s.html",
+  "attrs": [
+    ["Виробник", "Jikong"],
+    ["Країна виробник", "Китай"],
+    ["Вага", "0.23 г"],
+    ["Висота", "18 мм"],
+    ["Довжина", "122 мм"],
+    ["Стан", "Новий"],
+    ["Тип", "Активний балансир"],
+    ["Тип модуля", "Силовий"],
+    ["Колір", "Сріблястий"],
+    ["Ширина", "93 мм"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3114501_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/6789688289_bms-plata-jk-bd4a8s-6pr.jpg",
+    "https://images.prom.ua/6798223765_bms-plata-jk-bd4a8s-6pr.jpg",
+    "https://images.prom.ua/7156815439_bms-plata-jk-bd4a8s-6pr.jpg",
+    "https://images.prom.ua/6789688671_bms-plata-jk-bd4a8s-6pr.jpg"
+  ],
+  "accessories": []
+}

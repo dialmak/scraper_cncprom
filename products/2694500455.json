@@ -1,0 +1,25 @@
+{
+  "id": "2694500455",
+  "name": "Контролер безколекторного двигуна 48V-64V, 1000 W",
+  "sku": "02-413",
+  "url": "https://cncprom.ua/ua/p2694500455-kontroller-beskollektornogo-dvigatelya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Стан", "Новий"],
+    ["Потужність", "1 кВт"],
+    ["Робоча температура", "-20~50°C"],
+    ["Максимальний струм", "40 А"],
+    ["Робоча пружна контролера", "48-64 V"],
+    ["Розміри", "125х85х47"],
+    ["Вага (г)", "700"],
+    ["Потужність", "1000"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6779868218_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6779868279_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6779868330_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/6779868379_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
+  "accessories": []
+}

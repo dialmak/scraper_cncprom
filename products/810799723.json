@@ -1,0 +1,35 @@
+{
+  "id": "810799723",
+  "name": "Фільтр живлення EMI CW4L2-10A-T",
+  "sku": "03-103",
+  "url": "https://cncprom.ua/ua/p810799723-filtr-pitaniya-emi.html",
+  "attrs": [
+    ["Висота", "29 мм"],
+    ["Ширина", "51 мм"],
+    ["Вага", "144 г"],
+    ["Довжина:", "90"],
+    ["Напруга", "115/250 В"],
+    ["Робоча температура", "-25...+85 °C"],
+    ["Ток", "10 А"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/1401733685_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401733734_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401733979_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401734078_filtr-zhivlennya-emi.jpg",
+    "https://images.prom.ua/1401734088_filtr-zhivlennya-emi.jpg"
+  ],
+  "accessories": [
+    "6896741",
+    "4058027",
+    "4057846",
+    "4877348",
+    "5702429",
+    "4696280",
+    "6896670",
+    "4057832",
+    "4058051",
+    "6475293"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "26553722",
+  "name": "Мембранний водяний насос 35W 24V DC 2.9 L/min для охолодження шпинделя",
+  "sku": "18-002",
+  "url": "https://cncprom.ua/ua/p26553722-membrannyj-vodyanoj-nasos.html",
+  "attrs": [
+    ["Максимальний тиск", "0,64 мПа"],
+    ["Потужність, Вт", "35 Вт"],
+    ["Номінальна потужність", "35W"],
+    ["Номінальний струм", "1,6A"],
+    ["Розмір входу/виходу трубки", "10 мм"],
+    ["Расход", "2,9 л/хв."]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/885914972_membrannij-vodyanij-nasos.jpg",
+    "https://images.prom.ua/885915018_membrannij-vodyanij-nasos.jpg",
+    "https://images.prom.ua/885915054_membrannij-vodyanij-nasos.jpg",
+    "https://images.prom.ua/885915056_membrannij-vodyanij-nasos.jpg",
+    "https://images.prom.ua/885915105_membrannij-vodyanij-nasos.jpg"
+  ],
+  "accessories": []
+}

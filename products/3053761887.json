@@ -1,0 +1,23 @@
+{
+  "id": "3053761887",
+  "name": "Контролер Ruida RDC8445S з панеллю управління для CO₂ лазерного верстата",
+  "sku": "05-133",
+  "url": "https://cncprom.ua/ua/p3053761887-kontroller-ruida-rdc8445s.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "1.19 кг"],
+    ["Стан", "Новий"],
+    ["Об'єм оперативної пам'яті", "1000 MB"]
+  ],
+  "specs": [
+    ["Посібник користувача RDC8445S (англійською).pdf", "https://storage.ua.prom.st/3347008_posibnik_koristuvacha_rdc8445s_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7443657288_kontroler-ruida-rdc8445s.jpg",
+    "https://images.prom.ua/7443657832_kontroler-ruida-rdc8445s.jpg",
+    "https://images.prom.ua/7443662486_kontroler-ruida-rdc8445s.jpg",
+    "https://images.prom.ua/7443663056_kontroler-ruida-rdc8445s.jpg",
+    "https://images.prom.ua/7443663057_kontroler-ruida-rdc8445s.jpg"
+  ],
+  "accessories": []
+}

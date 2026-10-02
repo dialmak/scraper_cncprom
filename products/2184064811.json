@@ -1,0 +1,25 @@
+{
+  "id": "2184064811",
+  "name": "Зарядний пристрій HP, блок живлення для ноутбуків, адаптер змінного струму (19.5V 10.3A 200W)+мережевий кабель",
+  "sku": "HP02-009",
+  "url": "https://cncprom.ua/ua/p2184064811-zaryadnoe-ustrojstvo-dlya.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вихідна потужність", "200 Вт"],
+    ["Вихідна напруга (output)", "19.5 В"],
+    ["Індикатор роботи", "Ні"],
+    ["Призначення", "Для ноутбука"],
+    ["Сила вихідного струму", "10.3A"],
+    ["Сумісність з брендом", "HP (Hewlett Packard)"],
+    ["Стан", "Новий"],
+    ["Тип роз'єму", "7.4x5.0 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5717464196_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/4947015570_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464198_zaryadnij-pristrij-hp.jpg",
+    "https://images.prom.ua/5717464199_zaryadnij-pristrij-hp.jpg"
+  ],
+  "accessories": []
+}

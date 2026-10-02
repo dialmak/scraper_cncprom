@@ -1,0 +1,25 @@
+{
+  "id": "469871279",
+  "name": "Шпиндель з автоматичною зміною інструменту RTM100-30-24/3.0, 3 квт, 380 V (водяне охолодження)",
+  "sku": "13-006",
+  "url": "https://cncprom.ua/ua/p469871279-shpindel-avtomaticheskoj-smenoj.html",
+  "attrs": [
+    ["Діаметр", "100 мм"],
+    ["Стан", "Новий"],
+    ["Вхідна напруга (В)", "380"],
+    ["Корпус", "круглий"],
+    ["Потужність", "3 kw кВт"],
+    ["Потужність, Вт", "3000 Вт"],
+    ["Робоча напруга", "380 В"],
+    ["Тип патрона", "ВТ30"],
+    ["Частота", "400 Гц"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/3181743_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/670005921_shpindel-z-avtomatichnoyu.jpg",
+    "https://images.prom.ua/670006317_shpindel-z-avtomatichnoyu.jpg"
+  ],
+  "accessories": []
+}

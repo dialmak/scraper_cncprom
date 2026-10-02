@@ -1,0 +1,27 @@
+{
+  "id": "2118119426",
+  "name": "Дросель пневматичний цанговий SL4-M5 (фітинг), пневмодросель для трубки 4 мм",
+  "sku": "08-330",
+  "url": "https://cncprom.ua/ua/p2118119426-drossel-pnevmaticheskij-tsangovyj.html",
+  "attrs": [
+    ["Вага", "0.008 кг"],
+    ["Діаметр", "4 мм"],
+    ["Довжина", "29 мм"],
+    ["Максимальна робоча температура", "60 град."],
+    ["Максимальний робочий тиск", "0.9 МПа"],
+    ["Мінімальна робоча температура", "0 град."],
+    ["Зовнішня різьба", "M5"],
+    ["З'єднання", "Різьбове"],
+    ["Тип", "Пневмодроссель"],
+    ["Тип з'єднання", "Цангові"],
+    ["Ширина", "25 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/5548245160_drosel-pnevmatichnij-tsangovij.jpg",
+    "https://images.prom.ua/5548245350_drosel-pnevmatichnij-tsangovij.jpg",
+    "https://images.prom.ua/5548245400_drosel-pnevmatichnij-tsangovij.jpg",
+    "https://images.prom.ua/5548245678_drosel-pnevmatichnij-tsangovij.jpg"
+  ],
+  "accessories": []
+}

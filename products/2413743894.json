@@ -1,0 +1,28 @@
+{
+  "id": "2413743894",
+  "name": "Колекторний електродвигун 800W 48V 16A",
+  "sku": "12-960",
+  "url": "https://cncprom.ua/ua/p2413743894-kollektornyj-elektrodvigatel-800w.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Матеріал корпусу", "Метал"],
+    ["Тип двигуна", "Колекторний"],
+    ["Потужність", "0.8 кВт"],
+    ["Споживаний струм", "16.0"],
+    ["Висота", "190 мм"],
+    ["Довжина:", "380.0"],
+    ["Діаметр вала", "22"],
+    ["Вага (кг)", "16.4"],
+    ["Коефіцієнт редукції", "5:1"],
+    ["Напруга", "48"],
+    ["Швидкість обертання двигуна", "3500 об./хв"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/6369380431_kolektornij-elektrodvigun-800w.jpg",
+    "https://images.prom.ua/6369380427_kolektornij-elektrodvigun-800w.jpg",
+    "https://images.prom.ua/6369380515_kolektornij-elektrodvigun-800w.jpg",
+    "https://images.prom.ua/6369380429_kolektornij-elektrodvigun-800w.jpg"
+  ],
+  "accessories": []
+}

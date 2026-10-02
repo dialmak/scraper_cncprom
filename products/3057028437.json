@@ -1,0 +1,30 @@
+{
+  "id": "3057028437",
+  "name": "Автономний контролер DDCS V4.1, 3 осi управлiння",
+  "sku": "05-131",
+  "url": "https://cncprom.ua/ua/p3057028437-avtonomnyj-kontroller-ddcs.html",
+  "attrs": [
+    ["Країна виробник", "Китай"],
+    ["Вага", "1.8 кг"],
+    ["Стан", "Новий"],
+    ["Висота", "48 мм"],
+    ["Довжина", "237 мм"],
+    ["Ширина", "154 мм"],
+    ["Кількість аналогових входів", "18"],
+    ["Кількість аналогових виходів", "3"],
+    ["Напруга", "24 В"],
+    ["Об'єм оперативної пам'яті", "1000 MB"]
+  ],
+  "specs": [
+    ["Посібник користувача (англійською).pdf", "https://storage.ua.prom.st/3343422_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7444020637_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444013965_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444013957_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444014983_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444014985_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444025144_avtonomnij-kontroler-ddcs.jpg"
+  ],
+  "accessories": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "3100034085",
+  "name": "3D-принтер фотополімерний ELEGOO Saturn 4 Ultra 12K, область друку 218×123×220 мм, Wi-Fi, автоматичне калібрування",
+  "sku": "10-144",
+  "url": "https://cncprom.ua/ua/p3100034085-printer-fotopolimernyj-elegoo.html",
+  "attrs": [
+    ["Виробник", "Elegoo"],
+    ["Метод друку", "LCD"],
+    ["Максимальна швидкість друку", "150 мм/сек"],
+    ["Гарантійний термін", "12 міс"],
+    ["Стан", "Новий"],
+    ["Тип пристрою", "3D-принтер"],
+    ["Інтерфейси підключення", "WiFi"],
+    ["Довжина", "327 мм"],
+    ["Ширина", "329 мм"],
+    ["Висота", "548 мм"],
+    ["Вага", "14.5 кг"],
+    ["Рабочая длина", "218.88 мм"],
+    ["Робоча ширина", "122.88 мм"],
+    ["Максимальна робоча висота", "220 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7521543598_3d-printer-fotopolimernij-elegoo.jpg",
+    "https://images.prom.ua/7521543681_3d-printer-fotopolimernij-elegoo.jpg",
+    "https://images.prom.ua/7521543687_3d-printer-fotopolimernij-elegoo.jpg",
+    "https://images.prom.ua/7521543695_3d-printer-fotopolimernij-elegoo.jpg"
+  ],
+  "accessories": []
+}
