@@ -15,7 +15,7 @@ const { ICONS } = require('./lib/icons');
 const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
-const { hasDescription, hasCategoryDescription, descriptionJson, categoryJson, descIndex } = require('./lib/desc');
+const { hasDescription, hasCategoryDescription, descriptionJson, categoryJson, descIndex, descSearchIndex } = require('./lib/desc');
 const { parseMany } = require('./lib/desc-parse');
 const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
@@ -359,6 +359,10 @@ async function writeDescriptions(ids) {
   fs.mkdirSync(DESC_DIR, { recursive: true });
   products.forEach(p => fs.writeFileSync(path.join(DESC_DIR, `${p.productId}.json`), descriptionJson(p, idx, parsed.get('p' + p.productId)), 'utf-8'));
   nodes.forEach(n => fs.writeFileSync(path.join(DESC_DIR, `c${n.categoryId}.json`), categoryJson(n, parsed.get('c' + n.categoryId)), 'utf-8'));
+  // Індекс пошуку за описом — окремим файлом, завантажується лише при пошуку (lib/desc.js).
+  fs.writeFileSync(path.join(DIR, 'desc-index.json'), JSON.stringify(descSearchIndex(
+    products.map(p => ({ p, parsed: parsed.get('p' + p.productId) })),
+    nodes.map(n => ({ n, parsed: parsed.get('c' + n.categoryId) })), idx)), 'utf-8');
   return products.length + nodes.length;
 }
 
