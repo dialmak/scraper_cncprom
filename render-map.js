@@ -514,10 +514,13 @@ table.search-table .col-cat { width: 28%; }
 .desc-gal-arrow:hover { background: #fff; border-color: #64748b; color: #000; }
 .desc-gal-arrow.prev { left: 6px; }
 .desc-gal-arrow.next { right: 6px; }
-.desc-gal-thumbs { display: flex; gap: 5px; margin-top: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.desc-gal-thumbs { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; padding: 5px 4px 6px; scrollbar-width: thin; }
 .desc-gal-thumb { flex: none; width: 44px; height: 44px; padding: 2px; border: 2px solid var(--border-color); border-radius: 5px; background: #fff; cursor: pointer; }
-.desc-gal-thumb:hover { border-color: var(--border-dark); }
-.desc-gal-thumb.on { border-color: var(--border-active); }
+/* Обране фото має бути видно одразу (користувач 02.10.2026: «дуже погано видно, на якому фото
+   фокус»): решта мініатюр пригашені, обрана — яскрава, з товстою синьою рамкою й трохи більша. */
+.desc-gal-thumb { opacity: .45; transition: opacity .12s, transform .12s; }
+.desc-gal-thumb:hover { opacity: .85; border-color: var(--border-dark); }
+.desc-gal-thumb.on { opacity: 1; border-color: var(--desc-btn-bg); box-shadow: 0 0 0 2px var(--desc-btn-bg); transform: scale(1.08); }
 .desc-gal-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .desc-facts { border-collapse: collapse; width: 100%; font-size: 0.84rem; margin-top: 14px; }
 .desc-facts td { padding: 5px 0; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
