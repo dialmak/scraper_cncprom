@@ -1159,7 +1159,8 @@ function descBodyHtml(d, back) {
     '</table>';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
-    '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/' + (d.category ? 'categories/' + esc(String(d.id).slice(1)) : 'products/' + esc(d.id)) + '.html" target="_blank" rel="noopener">Історія змін опису ↗</a>' +
+    // Без опису файлу products/<id>.html у гілці data немає — посилання вело б у нікуди.
+    (!d.html && !d.description ? '' : '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/' + (d.category ? 'categories/' + esc(String(d.id).slice(1)) : 'products/' + esc(d.id)) + '.html" target="_blank" rel="noopener">Історія змін опису ↗</a>') +
     '</div>';
   return tabsHtml + '<div class="desc-grid"><div class="desc-main">' + panes + '</div>' +
     '<aside class="desc-side">' + gallery + facts + links + '</aside></div>';
