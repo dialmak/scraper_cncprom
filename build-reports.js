@@ -142,38 +142,97 @@ function reportDiff(a, b, products, desc) {
   return { rows: rows, cats: cats, totals: totals };
 }
 
+// LCS двох масивів → [['=', x] | ['-', x] | ['+', x]]; спільні початок і кінець — без
+// таблиці (описи між ночами майже однакові, тож таблиця зазвичай крихітна). Вилучене
+// стоїть перед доданим: «було → стало» читається зліва направо.
+function reportLcs(x, y) {
+  var pre = 0, suf = 0, out = [], i, j;
+  while (pre < x.length && pre < y.length && x[pre] === y[pre]) pre++;
+  while (suf < x.length - pre && suf < y.length - pre && x[x.length - 1 - suf] === y[y.length - 1 - suf]) suf++;
+  var X = x.slice(pre, x.length - suf), Y = y.slice(pre, y.length - suf), n = X.length, m = Y.length;
+  for (i = 0; i < pre; i++) out.push(['=', x[i]]);
+  if (n * m > 4000000) { X.forEach(function (v) { out.push(['-', v]); }); Y.forEach(function (v) { out.push(['+', v]); }); }
+  else {
+    var T = new Uint32Array((n + 1) * (m + 1));
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
+      T[i * (m + 1) + j] = X[i] === Y[j] ? T[(i + 1) * (m + 1) + j + 1] + 1 : Math.max(T[(i + 1) * (m + 1) + j], T[i * (m + 1) + j + 1]);
+    for (i = 0, j = 0; i < n || j < m;) {
+      if (i < n && j < m && X[i] === Y[j]) { out.push(['=', X[i]]); i++; j++; }
+      else if (i < n && (j === m || T[(i + 1) * (m + 1) + j] >= T[i * (m + 1) + j + 1])) { out.push(['-', X[i]]); i++; }
+      else { out.push(['+', Y[j]]); j++; }
+    }
+  }
+  for (i = x.length - suf; i < x.length; i++) out.push(['=', x[i]]);
+  return out;
+}
+
+// Опис «як у вікні „Опис"» зі змінами просто в ньому (вибір користувача 05.10.2026,
+// варіант «В»): у box малюється НОВИЙ опис тим самим descFillHtml, що й вікно «Опис»
+// (картинки, таблиці, оформлення), слова порівнюються зі старим описом; додане
+// обгортається в <ins>, вилучене вставляється перед ним у <del>. Абзац, пункт чи
+// клітинка зі зміною отримує клас blk-chg (смужка ліворуч і ціль кнопки «Наступна
+// зміна»). Картинки порівнюються за адресою: нова — зелена рамка, вилучені — рядом
+// унизу. Повертає кількість змінених місць.
+function reportHtmlDiff(box, oldHtml, newHtml) {
+  function tokens(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), out = [], n;
+    while ((n = w.nextNode())) { var re = /\S+/g, m; while ((m = re.exec(n.textContent))) out.push({ node: n, at: m.index, t: m[0] }); }
+    return out;
+  }
+  // Адреса картинки без підпису проксі Prom (він новий щоночі).
+  function imgKey(img) {
+    var s = img.getAttribute('src') || '', m = s.match(/^https?:\/\/ssl\.prom\.st\/q\?(?:.*&)?u=([^&]+)/i);
+    try { return m ? decodeURIComponent(m[1]) : s; } catch (e) { return s; }
+  }
+  var oldBox = document.createElement('div');
+  descFillHtml(oldBox, oldHtml || '');
+  box.innerHTML = '';
+  descFillHtml(box, newHtml || '');
+  var A = tokens(oldBox), B = tokens(box), bi = 0, marks = [], pending = [];
+  reportLcs(A.map(function (x) { return x.t; }), B.map(function (x) { return x.t; })).forEach(function (op) {
+    if (op[0] === '-') { pending.push(op[1]); return; }
+    var tk = B[bi++];
+    if (op[0] === '+' || pending.length) marks.push({ tk: tk, ins: op[0] === '+', del: pending.join(' ') });
+    pending = [];
+  });
+  // З кінця до початку: позиції в текстових вузлах, що лишились попереду, не зсуваються.
+  marks.reverse().forEach(function (m) {
+    var r = document.createRange();
+    r.setStart(m.tk.node, m.tk.at); r.setEnd(m.tk.node, m.tk.at + m.tk.t.length);
+    if (m.ins) { var ins = document.createElement('ins'); ins.className = 'd-ins'; r.surroundContents(ins); r.setStartBefore(ins); }
+    r.collapse(true);
+    if (m.del) { var del = document.createElement('del'); del.className = 'd-del'; del.textContent = m.del; r.insertNode(document.createTextNode(' ')); r.insertNode(del); }
+  });
+  // Вилучене в самому кінці опису: слова, після яких у новому тексті вже нічого немає.
+  if (pending.length) { var tail = document.createElement('p'); tail.innerHTML = '<del class="d-del"></del>'; tail.firstChild.textContent = pending.join(' '); box.appendChild(tail); }
+  var oldImgs = {}, newImgs = {};
+  Array.prototype.forEach.call(oldBox.querySelectorAll('img'), function (i) { oldImgs[imgKey(i)] = i; });
+  Array.prototype.forEach.call(box.querySelectorAll('img'), function (i) { var k = imgKey(i); newImgs[k] = true; if (!oldImgs[k]) i.classList.add('img-ins'); });
+  var gone = Object.keys(oldImgs).filter(function (k) { return !newImgs[k]; });
+  if (gone.length) {
+    var gb = document.createElement('div'); gb.className = 'img-gone blk-chg';
+    gb.innerHTML = '<div class="img-gone-label">Вилучені картинки</div>';
+    gone.forEach(function (k) { var im = document.createElement('img'); im.className = 'desc-img img-del'; im.loading = 'lazy'; im.src = oldImgs[k].getAttribute('src'); gb.appendChild(im); });
+    box.appendChild(gb);
+  }
+  Array.prototype.forEach.call(box.querySelectorAll('.d-ins, .d-del, .img-ins'), function (e) {
+    var b = e.closest('p, li, td, th, h1, h2, h3, h4, h5, h6, blockquote, div');
+    (b && b !== box && box.contains(b) ? b : e).classList.add('blk-chg');
+  });
+  return box.querySelectorAll('.blk-chg').length;
+}
+
 // Різниця двох текстів опису для вікна «Було / стало» → HTML. Спершу рядки (LCS):
 // однакові лишаються як є, далі ніж за 2 рядки від зміни — згортаються в «без змін:
 // N рядків»; підряд вилучені й додані рядки порівнюються вже по словах, щоб у
 // переписаному абзаці було видно саме змінені слова, а не весь абзац двічі.
 function reportTextDiff(a, b) {
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  // LCS двох масивів → [['=', x] | ['-', x] | ['+', x]]; спільні початок і кінець — без таблиці.
-  function lcs(x, y) {
-    var pre = 0, suf = 0, out = [], i, j;
-    while (pre < x.length && pre < y.length && x[pre] === y[pre]) pre++;
-    while (suf < x.length - pre && suf < y.length - pre && x[x.length - 1 - suf] === y[y.length - 1 - suf]) suf++;
-    var X = x.slice(pre, x.length - suf), Y = y.slice(pre, y.length - suf), n = X.length, m = Y.length;
-    for (i = 0; i < pre; i++) out.push(['=', x[i]]);
-    if (n * m > 4000000) { X.forEach(function (v) { out.push(['-', v]); }); Y.forEach(function (v) { out.push(['+', v]); }); }
-    else {
-      var T = new Uint32Array((n + 1) * (m + 1));
-      for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
-        T[i * (m + 1) + j] = X[i] === Y[j] ? T[(i + 1) * (m + 1) + j + 1] + 1 : Math.max(T[(i + 1) * (m + 1) + j], T[i * (m + 1) + j + 1]);
-      for (i = 0, j = 0; i < n || j < m;) {
-        if (i < n && j < m && X[i] === Y[j]) { out.push(['=', X[i]]); i++; j++; }
-        // Вилучене — перед доданим: «було → стало» читається зліва направо.
-        else if (i < n && (j === m || T[(i + 1) * (m + 1) + j] >= T[i * (m + 1) + j + 1])) { out.push(['-', X[i]]); i++; }
-        else { out.push(['+', Y[j]]); j++; }
-      }
-    }
-    for (i = x.length - suf; i < x.length; i++) out.push(['=', x[i]]);
-    return out;
-  }
+  var lcs = reportLcs;
   function words(oldText, newText) {
     var tok = function (s) { return s.split(/(\s+)/).filter(function (t) { return t !== ''; }); };
     var html = '', cur = null, buf = '';
-    function flush() { if (buf) html += cur === '-' ? '<del class="d-del">' + esc(buf) + '</del>' : cur === '+' ? '<ins class="d-ins">' + esc(buf) + '</ins>' : esc(buf); buf = ''; }
+    function flush() { if (buf) html += cur === '-' ? '<del class="d-del">' + esc(buf) + '</del>' : cur === '+' ? (/<\/del>$/.test(html) ? ' ' : '') + '<ins class="d-ins">' + esc(buf) + '</ins>' : esc(buf); buf = ''; }
     lcs(tok(oldText), tok(newText)).forEach(function (op) {
       // Пробіл між двома зміненими словами не розриває виділення.
       var k = op[0] !== '=' || !/^\s+$/.test(op[1]) ? op[0] : cur;
@@ -444,16 +503,58 @@ function initReportsPage() {
     $('diff-overlay').classList.add('open');
     if (!descTexts[id]) descTexts[id] = getJson(DATA + 'desc/' + encodeURIComponent(id) + '.json');
     descTexts[id].then(function (t) {
-      var a = t[btn.getAttribute('data-from')], b = t[btn.getAttribute('data-to')];
-      $('diff-body').innerHTML =
-        '<div class="diff-legend"><span>Було на ' + fmtLong(range.from) + ', стало на ' + fmtLong(range.to) + '.</span>' +
+      var a = t[btn.getAttribute('data-from')], b = t[btn.getAttribute('data-to')], body = $('diff-body');
+      if (!a || !b) { body.innerHTML = '<div class="empty">Одну з версій опису не знайдено.</div>'; return; }
+      // Посилання на GitHub — на файл цього товару в коміті зі зміною, по одному на
+      // кожну зміну всередині періоду (користувач 05.10.2026: «реальні зміни конкретного
+      // товару, а не все підряд»).
+      var anchor = (idx.descAnchor || {})[id];
+      var gh = (idx.desc[id] || []).filter(function (v) { return v[2] && v[0] > range.from && v[0] <= range.to; }).map(function (v) {
+        return '<a target="_blank" rel="noopener" href="https://github.com/dialmak/scraper_cncprom/commit/' + esc(v[2]) + (anchor ? '#diff-' + esc(anchor) : '') + '">Зміна від ' + fmtLong(v[0]) + ' на GitHub ↗</a>';
+      }).join('');
+      body.innerHTML =
+        '<div class="diff-head"><div class="diff-legend"><span>Було на ' + fmtLong(range.from) + ', стало на ' + fmtLong(range.to) + '.</span>' +
         '<span><del class="d-del">вилучене</del> <ins class="d-ins">додане</ins></span>' +
-        (r.url ? '<a target="_blank" rel="noopener" href="' + esc(r.url) + '">Відкрити на cncprom.ua ↗</a>' : '') +
-        // Усі дати, коли магазин міняв цей опис, — замість посилання на GitHub (там клік
-        // по запису відкривав увесь нічний коміт, а не зміни цього товару; 05.10.2026).
-        '<span>Опис змінювався: ' + (idx.desc[id] || []).slice(1).map(function (v) { return fmtLong(v[0]); }).join(', ') + '.</span></div>' +
-        (a == null || b == null ? '<div class="empty">Текст однієї з версій не знайдено.</div>' : '<div class="diff-text">' + reportTextDiff(a, b) + '</div>');
-    }).catch(function (e) { $('diff-body').innerHTML = '<div class="empty">Не вдалося завантажити тексти опису.<div class="subtle">' + esc(e && e.message) + '</div></div>'; });
+        (r.url ? '<a target="_blank" rel="noopener" href="' + esc(r.url) + '">Відкрити на cncprom.ua ↗</a>' : '') + gh + '</div>' +
+        '<div class="diff-tools"><div class="chips" role="group" aria-label="Що показати">' +
+        '<button class="chip" data-dmode="diff">Зміни</button><button class="chip" data-dmode="old">Було</button><button class="chip" data-dmode="new">Стало</button></div>' +
+        '<button class="chip" id="diff-next">Наступна зміна ↓</button><span class="subtle" id="diff-count"></span></div></div>' +
+        '<div class="desc-text desc-html" id="diff-html"></div><div id="diff-extra"></div>';
+      var at = -1;
+      function list(title, items) { return items.length ? '<h4 class="diff-h">' + title + '</h4><ul class="diff-list">' + items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : ''; }
+      function listDiff(title, x, y) { return x.join('\n') === y.join('\n') ? '' : '<h4 class="diff-h">' + title + '</h4><div class="diff-text">' + reportTextDiff(x.join('\n'), y.join('\n')) + '</div>'; }
+      function marks() { return body.querySelectorAll('#diff-html .blk-chg, #diff-extra .diff-line.chg'); }
+      function draw(mode) {
+        Array.prototype.forEach.call(body.querySelectorAll('[data-dmode]'), function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-dmode') === mode)); });
+        var box = $('diff-html'), extra = $('diff-extra'), v = mode === 'old' ? a : b;
+        at = -1;
+        if (mode === 'diff') {
+          reportHtmlDiff(box, a.html, b.html);
+          // Комплект і список супутніх у вікні «Опис» — окремі вкладки, у тексті опису їх
+          // немає; тут вони під описом, і лише коли в них щось змінилось.
+          extra.innerHTML = listDiff('Комплект постачання', a.kit || [], b.kit || []) + listDiff('До цього товару у нас можна придбати', a.also || [], b.also || []);
+        } else {
+          box.innerHTML = ''; descFillHtml(box, v.html || '');
+          extra.innerHTML = list('Комплект постачання', v.kit || []) + list('До цього товару у нас можна придбати', v.also || []);
+        }
+        var n = mode === 'diff' ? marks().length : 0;
+        $('diff-next').style.display = n ? '' : 'none';
+        $('diff-count').textContent = n ? 'змінених місць: ' + n : '';
+        body.scrollTop = 0;
+      }
+      body.querySelector('.diff-tools').addEventListener('click', function (e) {
+        var c = e.target.closest('[data-dmode]');
+        if (c) { draw(c.getAttribute('data-dmode')); return; }
+        if (!e.target.closest('#diff-next')) return;
+        var m = marks(); if (!m.length) return;
+        at = (at + 1) % m.length;
+        Array.prototype.forEach.call(m, function (x) { x.classList.remove('chg-now'); });
+        m[at].classList.add('chg-now');
+        m[at].scrollIntoView({ block: 'center', behavior: 'smooth' });
+        $('diff-count').textContent = 'зміна ' + (at + 1) + ' з ' + m.length;
+      });
+      draw('diff');
+    }).catch(function (e) { $('diff-body').innerHTML = '<div class="empty">Не вдалося завантажити версії опису.<div class="subtle">' + esc(e && e.message) + '</div></div>'; });
   }
   function productTable(rows) {
     var shown = rows.slice(0, st.limit);
@@ -708,6 +809,19 @@ html, body { height: auto; overflow: visible; }
 .diff-legend a { color: var(--text-link); text-decoration: none; }
 .diff-legend a:hover { text-decoration: underline; }
 .diff-text { font-size: .88rem; line-height: 1.55; color: var(--text-main); }
+/* Легенда й кнопки лишаються на місці, коли опис гортається. */
+.diff-panel .help-panel-body { padding-top: 0; gap: 10px; }
+.diff-head { position: sticky; top: 0; z-index: 2; background: var(--bg-white); padding: 8px 0 8px; border-bottom: 1px solid var(--border-color); }
+.diff-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 8px; font-size: .78rem; }
+.diff-h { font-size: .9rem; font-weight: 600; margin: 14px 0 6px; color: var(--text-main); }
+.diff-list { margin: 0; padding-left: 22px; font-size: .86rem; line-height: 1.6; }
+/* Змінене місце в описі: смужка ліворуч; поточне (кнопка «Наступна зміна») — рамка. */
+#diff-html .blk-chg { box-shadow: -11px 0 0 -8px var(--border-active); }
+#diff-html td.blk-chg, #diff-html th.blk-chg { box-shadow: inset 3px 0 0 var(--border-active); }
+#diff-html .chg-now, #diff-extra .chg-now { outline: 2px solid var(--border-active); outline-offset: 3px; border-radius: 2px; }
+#diff-html img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
+#diff-html img.img-del { outline: 3px solid var(--status-no); outline-offset: 2px; opacity: .6; max-width: 160px; display: inline-block; margin: 6px 10px 6px 4px; }
+.img-gone-label { font-size: .8rem; color: var(--status-no); margin: 10px 0 4px; }
 .diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
 .diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
 .diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
@@ -747,7 +861,7 @@ html, body { height: auto; overflow: visible; }
 // рахується від того самого рядка, який потім записується у файл, — інакше
 // браузер із новим HTML міг би лишитись на закешованих старих стилях чи коді.
 const REPORTS_CSS = css.trim() + '\n';
-const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportTextDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
+const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportLcs, reportHtmlDiff, reportTextDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
 
 // ==================== СТОРІНКА ====================
 const html = `<!DOCTYPE html>
@@ -833,9 +947,11 @@ ${narrowGuardHtml()}
 // вважається. Відбитки textHash зі знімків тут свідомо не беруться: вони залежать від
 // версії розбору на момент знімка, а тут обидві версії розбираються поточною.
 //
-// Пише reports/data/desc/<id>.json — { відбиток: текст } усіх версій товару, а в
-// index.json іде desc: { id: [[дата, відбиток], …] } (перший запис — з датою '',
-// версія до першої зміни). Відбиток на дату — останній запис, не пізніший за неї.
+// Пише reports/data/desc/<id>.json — { відбиток: { html, kit, also } } усіх версій
+// товару (html — той самий очищений HTML, що у вікні «Опис»), а в index.json іде
+// desc: { id: [[дата, відбиток, коміт], …] } (перший запис — з датою '', версія до
+// першої зміни, без коміту) і descAnchor: { id: якір файлу в коміті на GitHub }.
+// Відбиток на дату — останній запис, не пізніший за неї.
 function descDisplayText(d) {
   if (!d) return '';
   const clean = s => String(s || '').replace(/!\[\]\([^)]*\)/g, '🖼 картинка').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
@@ -867,19 +983,23 @@ async function readDescHistory(products) {
   });
   const parsed = await parseMany(list);
   const h = t => crypto.createHash('sha1').update(t).digest('hex').slice(0, 10);
-  const hist = {}, texts = {};
+  const hist = {}, texts = {}, anchors = {};
   let markupOnly = 0;
   changes.forEach(c => {
     const a = descDisplayText(parsed.get(`${c.commit}:${c.id}:a`)), b = descDisplayText(parsed.get(`${c.commit}:${c.id}:b`));
     if (a === b) { markupOnly++; return; }
     const ha = h(a), hb = h(b);
+    const ver = d => ({ html: (d && d.html) || '', kit: (d && d.kit) || [], also: ((d && d.xsell) || []).map(x => x[0]).filter(Boolean) });
     texts[c.id] = texts[c.id] || {};
-    texts[c.id][ha] = a; texts[c.id][hb] = b;
+    texts[c.id][ha] = ver(parsed.get(`${c.commit}:${c.id}:a`)); texts[c.id][hb] = ver(parsed.get(`${c.commit}:${c.id}:b`));
     if (!hist[c.id]) hist[c.id] = [['', ha]];
-    hist[c.id].push([c.date, hb]);
+    // Третій елемент — коміт гілки data зі зміною: посилання на GitHub веде одразу на
+    // файл цього товару в ньому (#diff-<sha256 шляху>), а не на весь нічний коміт.
+    hist[c.id].push([c.date, hb, c.commit]);
+    anchors[c.id] = crypto.createHash('sha256').update(`products/${c.id}.html`).digest('hex');
   });
   console.log(`Зміни описів: ${changes.length} змінених файлів в історії, з них лише розмітка ${markupOnly}; товарів зі зміненим текстом ${Object.keys(hist).length}.`);
-  return { hist, texts };
+  return { hist, texts, anchors };
 }
 
 // ==================== ЗБІРКА ====================
@@ -966,7 +1086,7 @@ if (require.main === module) (async () => {
   });
 
   const usedDates = daily.map(x => x.date);
-  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, desc }), 'utf-8');
+  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, desc, descAnchor: descHist ? descHist.anchors : {} }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
 

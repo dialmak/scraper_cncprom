@@ -1165,9 +1165,8 @@ function descBodyHtml(d, back) {
     '</table>';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
-    // Посилання «Історія змін опису» на GitHub прибрано 05.10.2026: клік по запису там
-    // відкривав увесь нічний коміт на тисячі файлів, а не зміни цього товару. Зміни
-    // опису показує «Історія змін» сайту (тип «Змінився опис», вікно «Було / стало»).
+    // Посилання на GitHub дописує initDescriptions (descHistoryLink), і лише товару, чий
+    // опис магазин справді міняв: веде на файл цього товару в коміті зі зміною.
     '</div>';
   return tabsHtml + '<div class="desc-grid"><div class="desc-main">' + panes + '</div>' +
     '<aside class="desc-side">' + gallery + facts + links + '</aside></div>';
@@ -1329,9 +1328,29 @@ function initDescriptions() {
       var slot = body.querySelector('[data-desc-html]');
       if (slot) descFillHtml(slot, d.html);
       body.scrollTop = 0;
+      if (!d.category) descHistoryLink(id);
     }).catch(function () {
       delete cache[id];
       if (current === id) body.innerHTML = '<div class="empty-note">Не вдалося завантажити опис. Спробуйте ще раз.</div>';
+    });
+  }
+  // Остання зміна опису на GitHub (користувач 05.10.2026: «показати реальні зміни опису
+  // конкретного товару, а не все підряд»). Історія змін — reports/data/index.json
+  // (build-reports.js: desc — [[дата, відбиток, коміт]], descAnchor — якір файлу в
+  // коміті), завантажується раз на сторінку при першому відкритому вікні. Товар, чий
+  // опис не мінявся, посилання не має: показувати нема чого.
+  var histPromise = null;
+  function descHistoryLink(id) {
+    if (!histPromise) histPromise = fetch('reports/data/index.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    histPromise.then(function (ix) {
+      var h = ((ix.desc || {})[id] || []).filter(function (v) { return v[2]; }), box = body.querySelector('.desc-links');
+      if (current !== id || !h.length || !box) return;
+      var last = h[h.length - 1], d = last[0].split('-'), anchor = (ix.descAnchor || {})[id];
+      var a = document.createElement('a');
+      a.target = '_blank'; a.rel = 'noopener';
+      a.href = 'https://github.com/dialmak/scraper_cncprom/commit/' + encodeURIComponent(last[2]) + (anchor ? '#diff-' + encodeURIComponent(anchor) : '');
+      a.textContent = 'Зміна опису від ' + d[2] + '.' + d[1] + '.' + d[0] + ' на GitHub ↗';
+      box.appendChild(a);
     });
   }
   document.addEventListener('click', function (e) {
