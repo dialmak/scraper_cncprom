@@ -215,11 +215,47 @@ function reportHtmlDiff(box, oldHtml, newHtml) {
     gone.forEach(function (k) { var im = document.createElement('img'); im.className = 'desc-img img-del'; im.loading = 'lazy'; im.src = oldImgs[k].getAttribute('src'); gb.appendChild(im); });
     box.appendChild(gb);
   }
+  // Сусідні додані (чи вилучені) слова, між якими лише пробіл, — одним виділенням.
+  ['d-ins', 'd-del'].forEach(function (cls) {
+    Array.prototype.slice.call(box.querySelectorAll('.' + cls)).forEach(function (el) {
+      if (!el.parentNode) return;
+      for (;;) {
+        var sp = el.nextSibling, nx = sp && sp.nodeType === 3 && /^\s*$/.test(sp.textContent) ? sp.nextSibling : sp;
+        if (!nx || nx.nodeType !== 1 || nx.tagName !== el.tagName || !nx.classList.contains(cls)) break;
+        if (sp !== nx) el.appendChild(sp);
+        while (nx.firstChild) el.appendChild(nx.firstChild);
+        nx.remove();
+      }
+    });
+  });
   Array.prototype.forEach.call(box.querySelectorAll('.d-ins, .d-del, .img-ins'), function (e) {
     var b = e.closest('p, li, td, th, h1, h2, h3, h4, h5, h6, blockquote, div');
     (b && b !== box && box.contains(b) ? b : e).classList.add('blk-chg');
   });
   return box.querySelectorAll('.blk-chg').length;
+}
+
+// Список рядків (комплект постачання, «можна придбати») зі змінами → <ul>: незмінні
+// пункти як є, змінений — з виділеними словами, доданий чи вилучений — цілком.
+function reportListDiff(x, y) {
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  var ops = reportLcs(x, y), out = '<ul class="desc-kit">', i = 0;
+  while (i < ops.length) {
+    if (ops[i][0] === '=') { out += '<li>' + esc(ops[i][1]) + '</li>'; i++; continue; }
+    var del = [], ins = [];
+    while (i < ops.length && ops[i][0] !== '=') { (ops[i][0] === '-' ? del : ins).push(ops[i][1]); i++; }
+    for (var k = 0; k < Math.max(del.length, ins.length); k++) {
+      var o = del[k], n = ins[k], li = '';
+      if (o != null && n != null) {
+        var cur = '', buf = '';
+        var flush = function () { if (buf) li += cur === '-' ? '<del class="d-del">' + esc(buf) + '</del> ' : cur === '+' ? '<ins class="d-ins">' + esc(buf) + '</ins>' : esc(buf); buf = ''; };
+        reportLcs(o.split(/(\s+)/), n.split(/(\s+)/)).forEach(function (op) { if (op[0] !== cur) { flush(); cur = op[0]; } buf += op[1]; });
+        flush();
+      } else li = o != null ? '<del class="d-del">' + esc(o) + '</del>' : '<ins class="d-ins">' + esc(n) + '</ins>';
+      out += '<li class="blk-chg">' + li + '</li>';
+    }
+  }
+  return out + '</ul>';
 }
 
 // Різниця двох текстів опису для вікна «Було / стало» → HTML. Спершу рядки (LCS):
@@ -486,75 +522,100 @@ function initReportsPage() {
       return '<span class="subtle">' + fmtPrice(r.fromPrice) + '</span><span class="arrow-to">→</span><b>' + fmtPrice(r.price) + '</b>' +
         '<span class="muted price-pct">' + sign + Math.abs(pct).toFixed(1).replace('.', ',') + '%</span>';
     }
-    if (r.type === 'desc') return '<button class="chip" data-diff="' + esc(r.id) + '" data-from="' + esc(r.fromHash) + '" data-to="' + esc(r.toHash) + '">Було / стало</button>';
+    if (r.type === 'desc') return '<button class="chip" data-desc="' + esc(r.id) + '" data-diff="' + esc(r.id) + '" data-from="' + esc(r.fromHash) + '" data-to="' + esc(r.toHash) + '">Було / стало</button>';
     return '<span class="subtle">зник із сайту</span>';
   }
 
-  // ---------- Вікно «Було / стало» ----------
-  // Тексти всіх версій опису товару — reports/data/desc/<id>.json (readDescHistory у
-  // build-reports.js), відбитки початку й кінця періоду — у кнопці рядка таблиці.
-  var descTexts = {};
-  function openDiff(btn) {
-    var id = btn.getAttribute('data-diff'), r = D.rows.filter(function (x) { return x.type === 'desc' && x.id === id; })[0];
-    if (!r) return;
-    $('diff-title').textContent = r.name;
-    $('diff-code').textContent = r.sku || '';
-    $('diff-body').innerHTML = '<div class="empty subtle">Завантажуємо…</div>';
-    $('diff-overlay').classList.add('open');
+  // ---------- Зміни опису у вікні «Опис» ----------
+  // Розмір і наповнення — самого вікна «Опис» (користувач 05.10.2026): ті самі вкладки,
+  // фото, код, ціна й наявність; сторінка змін лише домальовує в ньому зміни. Кнопка
+  // «Було / стало» має data-desc, тож вікно відкриває initDescriptions (map-common.js),
+  // а що показати — каже want: { id, from, to } (відбитки версій на початок і кінець
+  // періоду). Картки супутніх у вікні відкривають інші товари як звичайний опис;
+  // «← Назад» повертає до змін.
+  // Тексти версій — reports/data/desc/<id>.json (readDescHistory у build-reports.js).
+  var descTexts = {}, want = null;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-diff]');
+    if (b) want = { id: b.getAttribute('data-diff'), from: b.getAttribute('data-from'), to: b.getAttribute('data-to'), dates: [range.from, range.to] };
+  }, true);
+  function showChanges(id, d, body) {
+    if (!want || want.id !== id) return false;
+    var w = want, tabs = body.querySelector('.desc-tabs'), tools = document.createElement('div');
+    tools.className = 'chg-tools';
+    tools.innerHTML = '<span class="subtle">Завантажуємо зміни опису…</span>';
+    if (tabs) tabs.parentNode.insertBefore(tools, tabs.nextSibling); else body.insertBefore(tools, body.firstChild);
+    // Рядок кнопок закріплено під вкладками, вкладки — під заголовком вікна.
+    tools.style.top = (tabs ? tabs.offsetHeight : 0) + 'px';
     if (!descTexts[id]) descTexts[id] = getJson(DATA + 'desc/' + encodeURIComponent(id) + '.json');
     descTexts[id].then(function (t) {
-      var a = t[btn.getAttribute('data-from')], b = t[btn.getAttribute('data-to')], body = $('diff-body');
-      if (!a || !b) { body.innerHTML = '<div class="empty">Одну з версій опису не знайдено.</div>'; return; }
-      // Посилання на GitHub — на файл цього товару в коміті зі зміною, по одному на
-      // кожну зміну всередині періоду (користувач 05.10.2026: «реальні зміни конкретного
-      // товару, а не все підряд»).
+      if (!document.body.contains(tools)) return; // вікно вже показує інше
+      var a = t[w.from], b = t[w.to];
+      if (!a || !b) { tools.innerHTML = '<span>Одну з версій опису не знайдено.</span>'; return; }
       var anchor = (idx.descAnchor || {})[id];
-      var gh = (idx.desc[id] || []).filter(function (v) { return v[2] && v[0] > range.from && v[0] <= range.to; }).map(function (v) {
+      var gh = (idx.desc[id] || []).filter(function (v) { return v[2] && v[0] > w.dates[0] && v[0] <= w.dates[1]; }).map(function (v) {
         return '<a target="_blank" rel="noopener" href="https://github.com/dialmak/scraper_cncprom/commit/' + esc(v[2]) + (anchor ? '#diff-' + esc(anchor) : '') + '">Зміна від ' + fmtLong(v[0]) + ' на GitHub ↗</a>';
       }).join('');
-      body.innerHTML =
-        '<div class="diff-head"><div class="diff-legend"><span>Було на ' + fmtLong(range.from) + ', стало на ' + fmtLong(range.to) + '.</span>' +
-        '<span><del class="d-del">вилучене</del> <ins class="d-ins">додане</ins></span>' +
-        (r.url ? '<a target="_blank" rel="noopener" href="' + esc(r.url) + '">Відкрити на cncprom.ua ↗</a>' : '') + gh + '</div>' +
-        '<div class="diff-tools"><div class="chips" role="group" aria-label="Що показати">' +
-        '<button class="chip" data-dmode="diff">Зміни</button><button class="chip" data-dmode="old">Було</button><button class="chip" data-dmode="new">Стало</button></div>' +
-        '<button class="chip" id="diff-next">Наступна зміна ↓</button><span class="subtle" id="diff-count"></span></div></div>' +
-        '<div class="desc-text desc-html" id="diff-html"></div><div id="diff-extra"></div>';
-      var at = -1;
-      function list(title, items) { return items.length ? '<h4 class="diff-h">' + title + '</h4><ul class="diff-list">' + items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : ''; }
-      function listDiff(title, x, y) { return x.join('\n') === y.join('\n') ? '' : '<h4 class="diff-h">' + title + '</h4><div class="diff-text">' + reportTextDiff(x.join('\n'), y.join('\n')) + '</div>'; }
-      function marks() { return body.querySelectorAll('#diff-html .blk-chg, #diff-extra .diff-line.chg'); }
+      tools.innerHTML = '<span>Зміни опису: було на ' + fmtLong(w.dates[0]) + ', стало на ' + fmtLong(w.dates[1]) + '</span>' +
+        '<div class="chips" role="group" aria-label="Що показати"><button class="chip" data-dmode="diff">Зміни</button><button class="chip" data-dmode="old">Було</button><button class="chip" data-dmode="new">Стало</button></div>' +
+        '<button class="chip" id="chg-next">Наступна зміна ↓</button><span class="subtle" id="chg-count"></span><span class="grow"></span>' + gh;
+      var textPane = body.querySelector('[data-desc-pane="text"]'), kitPane = body.querySelector('[data-desc-pane="kit"]'), at = -1;
+      if (!textPane) return;
+      function list(items) { return '<ul class="desc-kit">' + items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>'; }
+      function marks() { return body.querySelectorAll('[data-desc-pane] .blk-chg'); }
       function draw(mode) {
-        Array.prototype.forEach.call(body.querySelectorAll('[data-dmode]'), function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-dmode') === mode)); });
-        var box = $('diff-html'), extra = $('diff-extra'), v = mode === 'old' ? a : b;
+        Array.prototype.forEach.call(tools.querySelectorAll('[data-dmode]'), function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-dmode') === mode)); });
+        var v = mode === 'old' ? a : b, ak = a.kit || [], bk = b.kit || [], aa = a.also || [], ba = b.also || [];
+        textPane.innerHTML = '<div class="desc-text desc-html" data-desc-html></div>';
+        var slot = textPane.firstChild, extra = '';
+        if (mode === 'diff') reportHtmlDiff(slot, a.html, b.html); else descFillHtml(slot, v.html || '');
+        // Комплект: у своїй вкладці, коли вона є; інакше (у сьогоднішньому описі комплекту
+        // вже немає) — під описом. Список «можна придбати» у вікні — картки, тому зміни
+        // його назв теж під описом.
+        var kitHtml = mode === 'diff' ? reportListDiff(ak, bk) : list(v.kit || []);
+        if (kitPane) kitPane.innerHTML = kitHtml;
+        else if (mode === 'diff' ? ak.join('\n') !== bk.join('\n') : (v.kit || []).length) extra += '<h4 class="chg-h">Комплект постачання</h4>' + kitHtml;
+        if (mode === 'diff' ? aa.join('\n') !== ba.join('\n') : false) extra += '<h4 class="chg-h">До цього товару у нас можна придбати</h4>' + reportListDiff(aa, ba);
+        if (extra) textPane.insertAdjacentHTML('beforeend', extra);
+        // На вкладці зі змінами — лише число змін (замість кількості пунктів).
+        Array.prototype.forEach.call(body.querySelectorAll('[data-desc-tab]'), function (tab) {
+          var old = tab.querySelector('.tab-chg'); if (old) old.remove();
+          var pane = body.querySelector('[data-desc-pane="' + tab.getAttribute('data-desc-tab') + '"]'), n = pane ? pane.querySelectorAll('.blk-chg').length : 0;
+          tab.classList.toggle('has-chg', n > 0);
+          if (n) tab.insertAdjacentHTML('beforeend', '<span class="tab-chg">' + n + '</span>');
+        });
+        if (tabs) tools.style.top = Math.ceil(tabs.getBoundingClientRect().height) + 'px';
         at = -1;
-        if (mode === 'diff') {
-          reportHtmlDiff(box, a.html, b.html);
-          // Комплект і список супутніх у вікні «Опис» — окремі вкладки, у тексті опису їх
-          // немає; тут вони під описом, і лише коли в них щось змінилось.
-          extra.innerHTML = listDiff('Комплект постачання', a.kit || [], b.kit || []) + listDiff('До цього товару у нас можна придбати', a.also || [], b.also || []);
-        } else {
-          box.innerHTML = ''; descFillHtml(box, v.html || '');
-          extra.innerHTML = list('Комплект постачання', v.kit || []) + list('До цього товару у нас можна придбати', v.also || []);
-        }
-        var n = mode === 'diff' ? marks().length : 0;
-        $('diff-next').style.display = n ? '' : 'none';
-        $('diff-count').textContent = n ? 'змінених місць: ' + n : '';
-        body.scrollTop = 0;
+        var n = marks().length;
+        $('chg-next').style.display = n ? '' : 'none';
+        $('chg-count').textContent = n ? 'змінених місць: ' + n : '';
       }
-      body.querySelector('.diff-tools').addEventListener('click', function (e) {
+      tools.addEventListener('click', function (e) {
         var c = e.target.closest('[data-dmode]');
         if (c) { draw(c.getAttribute('data-dmode')); return; }
-        if (!e.target.closest('#diff-next')) return;
+        if (!e.target.closest('#chg-next')) return;
         var m = marks(); if (!m.length) return;
         at = (at + 1) % m.length;
-        Array.prototype.forEach.call(m, function (x) { x.classList.remove('chg-now'); });
+        // Зміна на іншій вкладці — спершу відкрити її (клік, щоб спрацював обробник вікна).
+        var name = m[at].closest('[data-desc-pane]').getAttribute('data-desc-pane'), tab = body.querySelector('[data-desc-tab="' + name + '"]');
+        if (tab && !tab.classList.contains('on')) tab.click();
+        Array.prototype.forEach.call(body.querySelectorAll('.chg-now'), function (x) { x.classList.remove('chg-now'); });
         m[at].classList.add('chg-now');
         m[at].scrollIntoView({ block: 'center', behavior: 'smooth' });
-        $('diff-count').textContent = 'зміна ' + (at + 1) + ' з ' + m.length;
+        $('chg-count').textContent = 'зміна ' + (at + 1) + ' з ' + m.length;
       });
       draw('diff');
-    }).catch(function (e) { $('diff-body').innerHTML = '<div class="empty">Не вдалося завантажити версії опису.<div class="subtle">' + esc(e && e.message) + '</div></div>'; });
+    }).catch(function (e) { tools.innerHTML = '<span>Не вдалося завантажити версії опису. ' + esc(e && e.message) + '</span>'; });
+    return true;
+  }
+  // Файлу опису на сайті вже немає (товар зник після кінця періоду): ті самі зміни без
+  // вкладок і фото.
+  function showChangesBare(id, body, title, code) {
+    if (!want || want.id !== id) return false;
+    var r = D.rows.filter(function (x) { return x.type === 'desc' && x.id === id; })[0];
+    title.textContent = r ? r.name : 'Зміни опису'; code.textContent = r ? r.sku || '' : '';
+    body.innerHTML = '<div class="desc-grid"><div class="desc-main"><div class="desc-pane" data-desc-pane="text"></div></div></div>';
+    return showChanges(id, {}, body);
   }
   function productTable(rows) {
     var shown = rows.slice(0, st.limit);
@@ -680,16 +741,14 @@ function initReportsPage() {
     panel.addEventListener('click', function (e) {
       var c = e.target.closest('[data-chip]');
       if (c) { toggleType(c.getAttribute('data-chip')); st.limit = PAGE; render(); return; }
-      if (e.target.closest('[data-more]')) { st.limit += PAGE; render(); return; }
-      var dd = e.target.closest('[data-diff]');
-      if (dd) openDiff(dd);
+      if (e.target.closest('[data-more]')) { st.limit += PAGE; render(); }
     });
     panel.addEventListener('change', function (e) { if (e.target.id === 'top') { st.top = e.target.value; st.limit = PAGE; render(); } });
     panel.addEventListener('input', function (e) { if (e.target.id === 'q') { st.q = e.target.value; st.limit = PAGE; render(); } });
   }
 
   initThemeToggle();
-  setupModalOverlay('diff-overlay', null, 'diff-close');
+  initDescriptions({ base: '../', onShow: showChanges, onFail: showChangesBare });
   initHeaderMenus();
   initHelpWindow();
   initNarrowGuard();
@@ -800,28 +859,34 @@ html, body { height: auto; overflow: visible; }
 .t-price { color: var(--chg-price); background: var(--chg-price-bg); border-color: var(--chg-price-border); }
 .price-pct { margin-left: 8px; white-space: nowrap; }
 .t-desc { color: var(--chg-desc); background: var(--chg-desc-bg); border-color: var(--chg-desc-border); }
-/* Вікно «Було / стало»: вилучене закреслено червоним, додане підкреслено зеленим —
-   колір і вигляд разом, не колір сам по собі. */
-.help-panel.diff-panel { width: min(1000px, 92vw); max-width: none; }
-.diff-panel .help-panel-head h3 { flex: 1; min-width: 0; }
-.diff-code { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); margin: 0 10px; white-space: nowrap; }
-.diff-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; font-size: .8rem; color: var(--text-muted); padding: 4px 0 2px; }
-.diff-legend a { color: var(--text-link); text-decoration: none; }
-.diff-legend a:hover { text-decoration: underline; }
-.diff-text { font-size: .88rem; line-height: 1.55; color: var(--text-main); }
-/* Легенда й кнопки лишаються на місці, коли опис гортається. */
-.diff-panel .help-panel-body { padding-top: 0; gap: 10px; }
-.diff-head { position: sticky; top: 0; z-index: 2; background: var(--bg-white); padding: 8px 0 8px; border-bottom: 1px solid var(--border-color); }
-.diff-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 8px; font-size: .78rem; }
-.diff-h { font-size: .9rem; font-weight: 600; margin: 14px 0 6px; color: var(--text-main); }
-.diff-list { margin: 0; padding-left: 22px; font-size: .86rem; line-height: 1.6; }
-/* Змінене місце в описі: смужка ліворуч; поточне (кнопка «Наступна зміна») — рамка. */
-#diff-html .blk-chg { box-shadow: -11px 0 0 -8px var(--border-active); }
-#diff-html td.blk-chg, #diff-html th.blk-chg { box-shadow: inset 3px 0 0 var(--border-active); }
-#diff-html .chg-now, #diff-extra .chg-now { outline: 2px solid var(--border-active); outline-offset: 3px; border-radius: 2px; }
-#diff-html img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
-#diff-html img.img-del { outline: 3px solid var(--status-no); outline-offset: 2px; opacity: .6; max-width: 160px; display: inline-block; margin: 6px 10px 6px 4px; }
+/* Зміни опису у вікні «Опис» (вигляд обрав користувач з макетів 05.10.2026).
+   Слова: вилучене закреслено червоним, додане підкреслено зеленим — колір і вигляд
+   разом, не колір сам по собі. Речення (абзац, пункт, клітинка) зі зміною — завжди в
+   блідо-зеленій рамці; поточне, на яке перейшли кнопкою «Наступна зміна», —
+   темно-зелена товща рамка й світло-зелене тло. */
+.d-del { color: var(--status-no); background: var(--status-no-bg); text-decoration: line-through; }
+.d-ins { color: var(--status-yes); background: var(--status-yes-bg); text-decoration: underline; text-decoration-thickness: 1px; }
+#desc-body .blk-chg { outline: 1.5px solid color-mix(in srgb, var(--status-yes) 50%, transparent); outline-offset: 3px; border-radius: 3px; }
+#desc-body td.blk-chg, #desc-body th.blk-chg { outline-offset: -2px; }
+#desc-body .blk-chg.chg-now { outline: 2.5px solid var(--status-yes); background: var(--status-yes-bg); }
+#desc-body img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
+#desc-body img.img-del { outline: 3px solid var(--status-no); outline-offset: 2px; opacity: .6; max-width: 160px; display: inline-block; margin: 6px 10px 6px 4px; }
 .img-gone-label { font-size: .8rem; color: var(--status-no); margin: 10px 0 4px; }
+/* Рядок «було / стало» з кнопками: закріплений під вкладками (top ставить скрипт за
+   висотою ряду вкладок), щоб «Наступна зміна» була під рукою при прокрутці. */
+.chg-tools { position: sticky; z-index: 2; background: var(--bg-white); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  margin: -14px 0 12px; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: .8rem; color: var(--text-muted); }
+.chg-tools .grow { flex: 1; }
+.chg-tools a { color: var(--text-link); text-decoration: none; }
+.chg-tools a:hover { text-decoration: underline; }
+.chg-h { font-size: .9rem; font-weight: 600; margin: 16px 0 6px; color: var(--text-main); }
+/* Позначка на вкладці: скільки на ній змін (кількість пунктів тоді схована). */
+.tab-chg { display: inline-block; min-width: 17px; padding: 0 5px; margin-left: 6px; border-radius: 9px; font: 700 .7rem/17px var(--font-sans); text-align: center; background: var(--status-yes); color: var(--bg-white); }
+.desc-tab.has-chg .desc-tab-n { display: none; }
+.diff-text { font-size: .88rem; line-height: 1.55; color: var(--text-main); }
+.diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
+.diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
 .diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
 .diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
 .diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
@@ -861,7 +926,7 @@ html, body { height: auto; overflow: visible; }
 // рахується від того самого рядка, який потім записується у файл, — інакше
 // браузер із новим HTML міг би лишитись на закешованих старих стилях чи коді.
 const REPORTS_CSS = css.trim() + '\n';
-const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportLcs, reportHtmlDiff, reportTextDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
+const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportLcs, reportHtmlDiff, reportListDiff, reportTextDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
 
 // ==================== СТОРІНКА ====================
 const html = `<!DOCTYPE html>
@@ -923,12 +988,7 @@ ${narrowGuardHtml()}
     </div>
   </main>
   <div class="chart-tip" id="chart-tip" role="tooltip"></div>
-  <div class="help-overlay" id="diff-overlay">
-    <div class="help-panel diff-panel" role="dialog" aria-modal="true" aria-labelledby="diff-title">
-      <div class="help-panel-head"><h3 id="diff-title"></h3><span class="diff-code" id="diff-code"></span><button class="btn-help-close" id="diff-close" aria-label="Закрити" data-tip="Закрити (Esc)">✕</button></div>
-      <div class="help-panel-body" id="diff-body"></div>
-    </div>
-  </div>
+
 
   <script src="../map-common.js${assetVer(path.join(SITE_DIR, 'map-common.js'))}"></script>
   <script src="reports.js${contentVer(REPORTS_JS)}"></script>

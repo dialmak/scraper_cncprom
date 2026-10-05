@@ -1226,7 +1226,13 @@ function descFillHtml(slot, html) {
 // вікні, «← Назад» повертає (стек скидається, коли вікно відкривають заново).
 // Фото на весь екран — свій шар поверх вікна: Esc і клік поза фото закривають лише
 // його (слухач у фазі захоплення, раніше за Esc вікна), ← → гортають.
-function initDescriptions() {
+// opts (необов'язково; сторінка змін, build-reports.js): base — шлях до кореня сайту
+// ('../'); onShow(id, d, body) — після того, як вікно намальоване (сторінка змін
+// домальовує в ньому зміни опису; true — посилання на GitHub додасть сама);
+// onFail(id, body) — файл опису не завантажився (true — вікно заповнено).
+function initDescriptions(opts) {
+  opts = opts || {};
+  var base = opts.base || '';
   var overlay = document.createElement('div');
   overlay.id = 'desc-overlay';
   overlay.className = 'help-overlay desc-overlay';
@@ -1312,7 +1318,7 @@ function initDescriptions() {
     code.textContent = '';
     body.innerHTML = '<div class="empty-note">Завантаження опису…</div>';
     if (!cache[id]) {
-      cache[id] = fetch('desc/' + encodeURIComponent(id) + '.json').then(function (r) {
+      cache[id] = fetch(base + 'desc/' + encodeURIComponent(id) + '.json').then(function (r) {
         if (!r.ok) throw new Error(r.status);
         return r.json();
       });
@@ -1328,10 +1334,13 @@ function initDescriptions() {
       var slot = body.querySelector('[data-desc-html]');
       if (slot) descFillHtml(slot, d.html);
       body.scrollTop = 0;
-      if (!d.category) descHistoryLink(id);
+      var own = opts.onShow && opts.onShow(id, d, body);
+      if (!d.category && !own) descHistoryLink(id);
     }).catch(function () {
       delete cache[id];
-      if (current === id) body.innerHTML = '<div class="empty-note">Не вдалося завантажити опис. Спробуйте ще раз.</div>';
+      if (current !== id) return;
+      body.innerHTML = '<div class="empty-note">Не вдалося завантажити опис. Спробуйте ще раз.</div>';
+      if (opts.onFail) { photos = []; opts.onFail(id, body, title, code); }
     });
   }
   // Остання зміна опису на GitHub (користувач 05.10.2026: «показати реальні зміни опису
@@ -1341,7 +1350,7 @@ function initDescriptions() {
   // опис не мінявся, посилання не має: показувати нема чого.
   var histPromise = null;
   function descHistoryLink(id) {
-    if (!histPromise) histPromise = fetch('reports/data/index.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    if (!histPromise) histPromise = fetch(base + 'reports/data/index.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     histPromise.then(function (ix) {
       var h = ((ix.desc || {})[id] || []).filter(function (v) { return v[2]; }), box = body.querySelector('.desc-links');
       if (current !== id || !h.length || !box) return;
