@@ -449,7 +449,9 @@ function initReportsPage() {
         '<div class="diff-legend"><span>Було на ' + fmtLong(range.from) + ', стало на ' + fmtLong(range.to) + '.</span>' +
         '<span><del class="d-del">вилучене</del> <ins class="d-ins">додане</ins></span>' +
         (r.url ? '<a target="_blank" rel="noopener" href="' + esc(r.url) + '">Відкрити на cncprom.ua ↗</a>' : '') +
-        '<a target="_blank" rel="noopener" href="https://github.com/dialmak/scraper_cncprom/commits/data/products/' + esc(id) + '.html">Уся історія опису ↗</a></div>' +
+        // Усі дати, коли магазин міняв цей опис, — замість посилання на GitHub (там клік
+        // по запису відкривав увесь нічний коміт, а не зміни цього товару; 05.10.2026).
+        '<span>Опис змінювався: ' + (idx.desc[id] || []).slice(1).map(function (v) { return fmtLong(v[0]); }).join(', ') + '.</span></div>' +
         (a == null || b == null ? '<div class="empty">Текст однієї з версій не знайдено.</div>' : '<div class="diff-text">' + reportTextDiff(a, b) + '</div>');
     }).catch(function (e) { $('diff-body').innerHTML = '<div class="empty">Не вдалося завантажити тексти опису.<div class="subtle">' + esc(e && e.message) + '</div></div>'; });
   }

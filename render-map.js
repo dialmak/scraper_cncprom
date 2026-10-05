@@ -1165,8 +1165,9 @@ function descBodyHtml(d, back) {
     '</table>';
   var links = '<div class="desc-links">' +
     '<a href="' + esc(d.url) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' +
-    // Без опису файлу products/<id>.html у гілці data немає — посилання вело б у нікуди.
-    (!d.html && !d.description ? '' : '<a href="https://github.com/dialmak/scraper_cncprom/commits/data/' + (d.category ? 'categories/' + esc(String(d.id).slice(1)) : 'products/' + esc(d.id)) + '.html" target="_blank" rel="noopener">Історія змін опису ↗</a>') +
+    // Посилання «Історія змін опису» на GitHub прибрано 05.10.2026: клік по запису там
+    // відкривав увесь нічний коміт на тисячі файлів, а не зміни цього товару. Зміни
+    // опису показує «Історія змін» сайту (тип «Змінився опис», вікно «Було / стало»).
     '</div>';
   return tabsHtml + '<div class="desc-grid"><div class="desc-main">' + panes + '</div>' +
     '<aside class="desc-side">' + gallery + facts + links + '</aside></div>';
