@@ -1,10 +1,26 @@
 {
   "id": "3220090798",
-  "name": "Акумуляторна батарея Deye SE-F16, LiFePO4 51.2V, 314 Ah, 16 kWh, для інверторних систем",
+  "name": "Акумуляторна батарея Deye SE-F16-C, LiFePO4 51.2V, 314 Ah, 16 kWh, для інверторних систем",
   "sku": "91-029",
   "url": "https://cncprom.ua/ua/p3220090798-akkumulyatornaya-batareya-deye.html",
-  "attrs": [],
-  "specs": [],
-  "photos": [],
+  "attrs": [
+    ["Виробник", "Deye"],
+    ["Тип акумулятора", "LiFePO4"],
+    ["Ємність акумулятору", "314 А. г"],
+    ["Напрацювання", "6000 циклів заряду"],
+    ["Напруга", "512 В"],
+    ["Струм заряду", "157 А"],
+    ["Стан", "Новий"],
+    ["Вага", "109 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача F16 англійською.pdf", "https://storage.ua.prom.st/3485005_posibnik_koristuvacha_f16_anglijskoyu.pdf"],
+    ["Посібник користувача Deye_SE-F16.pdf", "https://storage.ua.prom.st/3485004_posibnik_koristuvacha_deye_se_f16.pdf"],
+    ["посібник додатка.pdf", "https://storage.ua.prom.st/3485003_posibnik_dodatka.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7767014399_akumulyatorna-batareya-deye.jpg",
+    "https://images.prom.ua/7767014418_akumulyatorna-batareya-deye.jpg"
+  ],
   "accessories": []
 }

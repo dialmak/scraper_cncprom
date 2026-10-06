@@ -1,10 +1,24 @@
 {
   "id": "3220090799",
-  "name": "Акумуляторна батарея Deye SE-F5 PRO, LiFePO4 51.2V, 100 Ah, 5.12 kWh, для інверторних систем",
+  "name": "Акумуляторна батарея Deye SE-F5 PRO-C, LiFePO4 51.2V, 100 Ah, 5.12 kWh, для інверторних систем",
   "sku": "91-030",
   "url": "https://cncprom.ua/ua/p3220090799-akkumulyatornaya-batareya-deye.html",
-  "attrs": [],
+  "attrs": [
+    ["Виробник", "Deye"],
+    ["Тип акумулятора", "LiFePO4"],
+    ["Ємність акумулятору", "100 А. г"],
+    ["Напрацювання", "6000 циклів заряду"],
+    ["Напруга", "51.2 В"],
+    ["Струм заряду", "50 А"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Максимальна робоча температура", "55 град."],
+    ["Стан", "Новий"],
+    ["Вага", "44 кг"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7767494400_akumulyatorna-batareya-deye.jpg",
+    "https://images.prom.ua/7767494404_akumulyatorna-batareya-deye.jpg"
+  ],
   "accessories": []
 }

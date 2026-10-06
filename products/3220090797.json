@@ -1,10 +1,26 @@
 {
   "id": "3220090797",
-  "name": "Акумуляторна батарея Deye SE-F12, LiFePO4 51.2V, 235 Ah, 12.03 kWh, для інверторних систем",
+  "name": "Акумуляторна батарея Deye SE-F12-C , LiFePO4 51.2V, 235 Ah, 12.03 kWh, для інверторних систем",
   "sku": "91-031",
   "url": "https://cncprom.ua/ua/p3220090797-akkumulyatornaya-batareya-deye.html",
-  "attrs": [],
-  "specs": [],
-  "photos": [],
+  "attrs": [
+    ["Виробник", "Deye"],
+    ["Тип акумулятора", "LiFePO4"],
+    ["Ємність акумулятору", "235 А. г"],
+    ["Напрацювання", "6000 циклів заряду"],
+    ["Напруга", "51.2 В"],
+    ["Струм заряду", "115 А"],
+    ["Стан", "Новий"],
+    ["Вага", "84 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача SE-F12.pdf", "https://storage.ua.prom.st/3485093_posibnik_koristuvacha_se_f12.pdf"],
+    ["посібник по додатку.pdf", "https://storage.ua.prom.st/3485092_posibnik_po_dodatku.pdf"],
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/3485091_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7767015715_akumulyatorna-batareya-deye.jpg",
+    "https://images.prom.ua/7767015712_akumulyatorna-batareya-deye.jpg"
+  ],
   "accessories": []
 }
