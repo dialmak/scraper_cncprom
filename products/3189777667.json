@@ -1,0 +1,23 @@
+{
+  "id": "3189777667",
+  "name": "Серводрайвер AASD‑20A, 220 В, для 80ST‑M04025, 4 Н·м, 4,4 А",
+  "sku": "09-032",
+  "url": "https://cncprom.ua/ua/p3189777667-servodrajver-aasd20a-220.html",
+  "attrs": [
+    ["Напруга", "220 В"],
+    ["Споживана потужність", "1000 Вт"],
+    ["Стан", "Новий"],
+    ["Вага", "1.4 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача, частина 2.pdf", "https://storage.ua.prom.st/3459302_posibnik_koristuvacha_chastina_2.pdf"],
+    ["Посібник користувача, частина 1.pdf", "https://storage.ua.prom.st/3459301_posibnik_koristuvacha_chastina_1.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7712206010_servodrajver-aasd20a-220.jpg",
+    "https://images.prom.ua/7712206007_servodrajver-aasd20a-220.jpg",
+    "https://images.prom.ua/7712206261_servodrajver-aasd20a-220.jpg",
+    "https://images.prom.ua/7712206266_servodrajver-aasd20a-220.jpg"
+  ],
+  "accessories": []
+}
