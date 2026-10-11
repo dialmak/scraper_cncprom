@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Історія змін каталогу</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../map-common.css?v=382842d4">
+<link rel="stylesheet" href="reports.css?v=6f7eedbc">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="catalog-title">cncprom.ua</span>
+      <span class="btn-theme-toggle catalog-subtitle-btn" style="cursor:default">📜 Історія змін каталогу · останній знімок <span id="generated">…</span></span>
+    </div>
+    <div class="header-center"></div>
+    <div class="header-right">
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">🗺️ Мапа сайту</a>
+
+      <button id="btn-help" class="btn-theme-toggle" data-help="changes" data-help-src="../help.html" data-tip="Про проєкт, пояснення до цифр і позначок, пошук і подяки">❓ Довідка</button>
+      <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
+      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+    </div>
+  </header>
+
+
+  <div class="narrow-guard" id="narrow-guard">
+    <div class="narrow-guard-box">
+      <div class="narrow-guard-icon">🖥️</div>
+      <h2>Завузький екран</h2>
+      <p class="narrow-guard-now">Ширина вікна/дисплею у вас: <b id="narrow-guard-width">—</b>&nbsp;px.</p>
+      <p>Сайт розрахований на вікно/дисплей від <b>1300</b>&nbsp;px.</p>
+      <p>Відкрийте сторінку на комп'ютері або<br>розгорніть вікно на весь екран.</p>
+    </div>
+  </div>
+  <main class="rep-wrap">
+    <div class="top-row">
+      <h1>Історія змін каталогу<span class="muted" id="period-label"></span></h1>
+      <div class="range-bar" id="range">
+        <label for="rf">Порівняти</label><select id="rf"></select><span class="range-arrow" aria-hidden="true">→</span>
+        <select id="rt" aria-label="по дату"></select>
+        <div class="chips" id="quick" role="group" aria-label="Швидкий вибір періоду">
+          <button class="chip" data-q="day">Останній день</button><button class="chip" data-q="week">Тиждень</button><button class="chip" data-q="all">Увесь період</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="card chart-card" id="chart-card" aria-labelledby="chart-title">
+      <div class="chart-head">
+        <h2 id="chart-title"><button type="button" class="chart-toggle" id="chart-toggle" aria-expanded="false" aria-controls="chart-body"><span class="caret" aria-hidden="true">▸</span>Змін за день</button></h2>
+        <span class="hint" id="chart-hint">Синім виділено дні, що входять у порівняння. Клік по стовпчику починає період із цього дня.</span>
+      </div>
+      <div id="chart-body" hidden>
+        <svg id="chart" role="img" aria-label="Кількість змін каталогу за кожен день"></svg>
+      </div>
+    </section>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div id="panel-wrap">
+      <section class="card">
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div id="panel"><div class="empty subtle">Завантажуємо дані…</div></div>
+      </section>
+    </div>
+  </main>
+  <div class="chart-tip" id="chart-tip" role="tooltip"></div>
+
+
+  <script src="../map-common.js?v=d48c527c"></script>
+  <script src="reports.js?v=9edcf27d"></script>
+  <script>initReportsPage();</script>
+</body>
+</html>

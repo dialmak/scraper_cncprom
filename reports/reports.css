@@ -1,0 +1,149 @@
+:root { --chg-bar: #2563eb; --chg-mov: #6d28d9; --chg-mov-bg: #f5f3ff; --chg-mov-border: #ddd6fe; --chg-price: #b45309; --chg-price-bg: #fffbeb; --chg-price-border: #fde68a; --chg-desc: #0f766e; --chg-desc-bg: #f0fdfa; --chg-desc-border: #99f6e4; }
+:root[data-theme="dark"] { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); --chg-desc: #2dd4bf; --chg-desc-bg: rgba(45,212,191,.12); --chg-desc-border: rgba(45,212,191,.3); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); --chg-desc: #2dd4bf; --chg-desc-bg: rgba(45,212,191,.12); --chg-desc-border: rgba(45,212,191,.3); } }
+
+/* map-common.css робить html,body { height:100%; overflow:hidden } — для
+   <id>_map.html, де прокручується лише внутрішня .main-content. Тут, як і на
+   map.html, прокручується весь документ; без цього перевизначення сторінка
+   колесом не прокручувалась узагалі й таблиця нижче першого екрана була
+   недосяжна. Саме visible, НЕ auto — з тієї ж причини, що й у build-maps.js:
+   auto на html і body разом робить body окремим скрол-контейнером, і липка
+   .app-header їде разом зі сторінкою. */
+html, body { height: auto; overflow: visible; }
+.rep-wrap { max-width: 1280px; margin: 0 auto; padding: 20px 20px 48px; }
+.card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; }
+.top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.top-row h1 { font-size: 1.25rem; margin: 0; font-weight: 600; }
+.top-row h1 .muted { font-weight: 400; font-size: .9rem; margin-left: 6px; }
+
+.range-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.range-bar label { font-size: .8rem; color: var(--text-muted); }
+.range-bar select, .filters select { font: inherit; font-size: .85rem; padding: 5px 8px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); }
+.filters select { max-width: 260px; }
+.range-arrow { color: var(--text-faint); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-dark); background: var(--bg-white); color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+/* Під курсором рамка й текст світлішають: одного тла в темній темі майже не видно. */
+.chip:hover:not([disabled]) { background: var(--bg-hover); border-color: var(--text-muted); color: var(--text-main); }
+.chip[disabled] { opacity: .45; cursor: default; }
+.chip[aria-pressed="true"] { background: var(--bg-active); border-color: var(--border-active); color: var(--text-main); }
+.chip[aria-pressed="true"]:hover { background: var(--bg-active); border-color: var(--text-link); }
+.chip .n { font-family: var(--font-mono); font-size: .72rem; color: var(--text-subtle); }
+
+.chart-card { padding: 16px 18px 10px; margin-bottom: 16px; }
+.chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.chart-head h2 { font-size: .95rem; margin: 0; font-weight: 600; }
+.chart-head .hint { font-size: .78rem; color: var(--text-muted); }
+#chart { width: 100%; height: 190px; display: block; margin-top: 8px; }
+#chart .grid { stroke: var(--border-color); stroke-width: 1; }
+#chart .axis { fill: var(--text-subtle); font-size: 11px; font-family: var(--font-sans); }
+#chart .axis.cur { fill: var(--text-main); font-weight: 600; }
+#chart .bar { fill: var(--chg-bar); }
+#chart .bar.off { fill: var(--border-dark); }
+#chart g:hover .bar { opacity: .82; }
+#chart .hit { fill: transparent; cursor: pointer; }
+#chart .cap { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
+.chart-tip { position: fixed; pointer-events: none; z-index: 50; background: var(--bg-header); border: 1px solid var(--border-dark);
+  border-radius: 8px; padding: 8px 10px; font-size: .78rem; box-shadow: 0 6px 20px rgba(0,0,0,.12); display: none; min-width: 200px; }
+.chart-tip b { display: block; margin-bottom: 4px; }
+.chart-tip .row { display: flex; justify-content: space-between; gap: 16px; color: var(--text-muted); }
+.chart-tip .row span:last-child { font-family: var(--font-mono); color: var(--text-main); }
+.chart-tip .foot { margin-top: 6px; color: var(--text-subtle); }
+/* Заголовок графіка — кнопка згортання, але виглядає як заголовок. */
+.chart-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0;
+  font: inherit; color: inherit; cursor: pointer; }
+.chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
+.chart-toggle:hover, .chart-toggle:hover .caret { color: var(--text-link); }
+
+.tiles { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.tile:hover:not([disabled]) { border-color: var(--border-dark); }
+.tile[disabled] { cursor: default; }
+.tile[aria-pressed="true"] { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active) inset; }
+.tile .tb { align-self: flex-start; }
+.tile .num { font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.tile .num.zero { color: var(--text-subtle); }
+.tile .lbl { font-size: .78rem; color: var(--text-muted); }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-color); padding: 0 12px; }
+.tab { font: inherit; font-size: .88rem; padding: 10px 14px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer; margin-bottom: -1px; }
+.tab:hover { color: var(--text-main); }
+.tab[aria-selected="true"] { color: var(--text-main); border-bottom-color: var(--border-active); font-weight: 600; }
+.tab .n { font-family: var(--font-mono); font-size: .75rem; color: var(--text-subtle); margin-left: 4px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
+.filters .right { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.search-mini { font: inherit; font-size: .85rem; padding: 6px 10px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); min-width: 220px; }
+.result-line { padding: 8px 12px; font-size: .78rem; color: var(--text-muted); }
+
+/* Бейдж типу зміни: іконка + колір + текст — ніколи не колір сам по собі */
+.tb { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
+.tb .ic { font-family: var(--font-mono); }
+.t-in  { color: var(--status-yes); background: var(--status-yes-bg); border-color: var(--status-yes-border); }
+.t-out { color: var(--status-no);  background: var(--status-no-bg);  border-color: var(--status-no-border); }
+.t-add { color: var(--text-link);  background: var(--bg-active);     border-color: var(--border-dark); }
+.t-rem { color: var(--text-muted); background: var(--bg-tag);        border-color: var(--border-dark); }
+.t-mov { color: var(--chg-mov);    background: var(--chg-mov-bg);    border-color: var(--chg-mov-border); }
+.t-price { color: var(--chg-price); background: var(--chg-price-bg); border-color: var(--chg-price-border); }
+.price-pct { margin-left: 8px; white-space: nowrap; }
+.t-desc { color: var(--chg-desc); background: var(--chg-desc-bg); border-color: var(--chg-desc-border); }
+/* Зміни опису у вікні «Опис» (вигляд обрав користувач з макетів 05.10.2026).
+   Слова: вилучене закреслено червоним, додане підкреслено зеленим — колір і вигляд
+   разом, не колір сам по собі. Речення (абзац, пункт, клітинка) зі зміною — завжди в
+   блідо-зеленій рамці; поточне, на яке перейшли кнопкою «Наступна зміна», —
+   темно-зелена товща рамка й світло-зелене тло. */
+.d-del { color: var(--status-no); background: var(--status-no-bg); text-decoration: line-through; }
+.d-ins { color: var(--status-yes); background: var(--status-yes-bg); text-decoration: underline; text-decoration-thickness: 1px; }
+#desc-body .blk-chg { outline: 1.5px solid color-mix(in srgb, var(--status-yes) 50%, transparent); outline-offset: 3px; border-radius: 3px; }
+#desc-body td.blk-chg, #desc-body th.blk-chg { outline-offset: -2px; }
+#desc-body .blk-chg.chg-now { outline: 2.5px solid var(--status-yes); background: var(--status-yes-bg); }
+#desc-body img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
+#desc-body img.img-del { outline: 3px solid var(--status-no); outline-offset: 2px; opacity: .6; max-width: 160px; display: inline-block; margin: 6px 10px 6px 4px; }
+.img-gone-label { font-size: .8rem; color: var(--status-no); margin: 10px 0 4px; }
+/* Рядок «було / стало» з кнопками: закріплений під вкладками (top ставить скрипт за
+   висотою ряду вкладок), щоб «Наступна зміна» була під рукою при прокрутці. */
+.chg-tools { position: sticky; z-index: 2; background: var(--bg-white); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  margin: -14px 0 12px; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: .8rem; color: var(--text-muted); }
+.chg-tools .grow { flex: 1; }
+.chg-tools a { color: var(--text-link); text-decoration: none; }
+.chg-tools a:hover { text-decoration: underline; }
+.chg-h { font-size: .9rem; font-weight: 600; margin: 16px 0 6px; color: var(--text-main); }
+/* Позначка на вкладці: скільки на ній змін (кількість пунктів тоді схована). */
+.tab-chg { display: inline-block; min-width: 17px; padding: 0 5px; margin-left: 6px; border-radius: 9px; font: 700 .7rem/17px var(--font-sans); text-align: center; background: var(--status-yes); color: var(--bg-white); }
+.desc-tab.has-chg .desc-tab-n { display: none; }
+.diff-text { font-size: .88rem; line-height: 1.55; color: var(--text-main); }
+.diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
+.diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
+.diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
+.diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
+.d-del { color: var(--status-no); background: var(--status-no-bg); text-decoration: line-through; }
+.d-ins { color: var(--status-yes); background: var(--status-yes-bg); text-decoration: underline; text-decoration-thickness: 1px; }
+
+.rep-table td { vertical-align: top; }
+.rep-table th { white-space: nowrap; }
+.code { font-family: var(--font-mono); font-size: .76rem; color: var(--text-muted); background: var(--bg-tag); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+.pname { color: var(--text-main); text-decoration: none; }
+.pname:hover { color: var(--text-link); text-decoration: underline; }
+.cat-link { color: var(--text-muted); text-decoration: none; }
+.cat-link:hover { color: var(--text-link); text-decoration: underline; }
+.cat-site { color: inherit; text-decoration: none; }
+.cat-site:hover { color: var(--text-link); text-decoration: underline; }
+.path-line + .path-line { margin-top: 4px; }
+.path-label { display: inline-block; min-width: 48px; color: var(--text-muted); }
+.path-link { color: inherit; text-decoration: none; }
+.path-link:hover { color: var(--text-link); text-decoration: underline; }
+.muted { color: var(--text-muted); }
+.subtle { color: var(--text-subtle); }
+.arrow-to { color: var(--text-faint); padding: 0 4px; }
+.more-row { padding: 12px; text-align: center; border-top: 1px solid var(--border-color); }
+.empty { padding: 48px 16px; text-align: center; color: var(--text-muted); }
+.empty b { display: block; color: var(--text-main); font-size: 1rem; margin-bottom: 6px; }
+
+@media (max-width: 1000px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rep-wrap { padding: 16px 16px 40px; }
+  .filters .right { margin-left: 0; width: 100%; }
+  .search-mini { min-width: 0; flex: 1; }
+}

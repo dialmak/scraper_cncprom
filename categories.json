@@ -1,0 +1,212 @@
+{
+  "discoveredAt": "2026-10-10T23:37:48.918Z",
+  "categories": [
+    {
+      "number": 1,
+      "categoryId": "1477431",
+      "categoryName": "Пульти ручного управління і DSP контролери",
+      "categoryUrl": "https://cncprom.ua/ua/g1477431-pulty-ruchnogo-upravleniya",
+      "scrapingTime": 1.6,
+      "image": "https://images.prom.ua/3097317800_w165_h220_pulti-ruchnogo-upravlinnya.jpg",
+      "position": 12
+    },
+    {
+      "number": 2,
+      "categoryId": "1484318",
+      "categoryName": "Перетворювачі частоти (інвертори)",
+      "categoryUrl": "https://cncprom.ua/ua/g1484318-preobrazovateli-chastoty-invertory",
+      "scrapingTime": 1.9,
+      "image": "https://images.prom.ua/2052766007_w165_h220_peretvoryuvachi-chastoti-invertori.jpg",
+      "position": 11
+    },
+    {
+      "number": 3,
+      "categoryId": "1372753",
+      "categoryName": "Гнучкий кабель-канал (кабелеукладач)",
+      "categoryUrl": "https://cncprom.ua/ua/g1372753-gibkij-kabel-kanal",
+      "scrapingTime": 2.1,
+      "image": "https://images.prom.ua/3097322766_w165_h220_gnuchkij-kabel-kanal-kabeleukladach.jpg",
+      "position": 19
+    },
+    {
+      "number": 4,
+      "categoryId": "71921739",
+      "categoryName": "Системи змащення напрямних та передач",
+      "categoryUrl": "https://cncprom.ua/ua/g71921739-sistemy-smazki-napravlyayuschih",
+      "scrapingTime": 2.3,
+      "image": "https://images.prom.ua/1905958814_w165_h220_sistemi-zmaschennya-napryamnih.jpg",
+      "position": 16
+    },
+    {
+      "number": 5,
+      "categoryId": "100126570",
+      "categoryName": "Механіка",
+      "categoryUrl": "https://cncprom.ua/ua/g100126570-mehanika",
+      "scrapingTime": 2.4,
+      "image": "https://images.prom.ua/3300452138_w165_h220_mehanika.jpg",
+      "position": 17
+    },
+    {
+      "number": 6,
+      "categoryId": "1022837",
+      "categoryName": "Драйвери крокового двигуна",
+      "categoryUrl": "https://cncprom.ua/ua/g1022837-drajvery-shagovogo-dvigatelya",
+      "scrapingTime": 2.6,
+      "image": "https://images.prom.ua/7629220138_w165_h220_drajveri-krokovogo-dviguna.jpg",
+      "position": 6
+    },
+    {
+      "number": 7,
+      "categoryId": "51015677",
+      "categoryName": "Ріжучий інструмент",
+      "categoryUrl": "https://cncprom.ua/ua/g51015677-rezhuschij-instrument",
+      "scrapingTime": 3,
+      "image": "https://images.prom.ua/3297237593_w165_h220_rizhuchij-instrument.jpg",
+      "position": 21
+    },
+    {
+      "number": 8,
+      "categoryId": "17662477",
+      "categoryName": "Драйвери і крокові двигуни з енкодером",
+      "categoryUrl": "https://cncprom.ua/ua/g17662477-drajvery-shagovye-dvigateli",
+      "scrapingTime": 3.4,
+      "image": "https://images.prom.ua/2160693920_w165_h220_drajveri-i-krokovi.jpg",
+      "position": 7
+    },
+    {
+      "number": 9,
+      "categoryId": "96572435",
+      "categoryName": "Системи охолодження і вентиляції",
+      "categoryUrl": "https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii",
+      "scrapingTime": 3.7,
+      "image": "https://images.prom.ua/3052962588_w165_h220_sistemi-oholodzhennya-i.jpg",
+      "position": 3
+    },
+    {
+      "number": 10,
+      "categoryId": "18556308",
+      "categoryName": "Серводвигуни із серводрайверами",
+      "categoryUrl": "https://cncprom.ua/ua/g18556308-servodvigateli-servodrajverami",
+      "scrapingTime": 4.3,
+      "image": "https://images.prom.ua/3097339240_w165_h220_servodviguni-iz-servodrajverami.jpg",
+      "position": 8
+    },
+    {
+      "number": 11,
+      "categoryId": "1270337",
+      "categoryName": "Муфти з'єднувальні",
+      "categoryUrl": "https://cncprom.ua/ua/g1270337-soedinitelnye-mufty",
+      "scrapingTime": 4.6,
+      "image": "https://images.prom.ua/7770406694_w165_h220_mufti-zyednuvalni.jpg",
+      "position": 18
+    },
+    {
+      "number": 12,
+      "categoryId": "152464274",
+      "categoryName": "Лінійні приводи",
+      "categoryUrl": "https://cncprom.ua/ua/g152464274-linejnye-privody",
+      "scrapingTime": 5.9,
+      "image": "https://images.prom.ua/7770263181_w165_h220_linijni-privodi.jpg",
+      "position": 23
+    },
+    {
+      "number": 13,
+      "categoryId": "1022485",
+      "categoryName": "Контролери для ЧПК",
+      "categoryUrl": "https://cncprom.ua/ua/g1022485-kontroleri-dlya-chpu",
+      "scrapingTime": 6.8,
+      "image": "https://images.prom.ua/7746609739_w165_h220_kontroleri-dlya-chpk.jpg",
+      "position": 4
+    },
+    {
+      "number": 14,
+      "categoryId": "92857157",
+      "categoryName": "Оснащення для верстатів",
+      "categoryUrl": "https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov",
+      "scrapingTime": 7.6,
+      "image": "https://images.prom.ua/2786002914_w165_h220_osnaschennya-dlya-verstativ.jpg",
+      "position": 2
+    },
+    {
+      "number": 15,
+      "categoryId": "106846694",
+      "categoryName": "Пневматика",
+      "categoryUrl": "https://cncprom.ua/ua/g106846694-pnevmatika",
+      "scrapingTime": 12.9,
+      "image": "https://images.prom.ua/3744593927_w165_h220_pnevmatika.jpg",
+      "position": 22
+    },
+    {
+      "number": 16,
+      "categoryId": "1022952",
+      "categoryName": "Джерела живлення та акумулятори",
+      "categoryUrl": "https://cncprom.ua/ua/g1022952-istochniki-pitaniya-akkumulyatory",
+      "scrapingTime": 13.7,
+      "image": "https://images.prom.ua/4486633000_w165_h220_dzherela-zhivlennya-ta.jpg",
+      "position": 9
+    },
+    {
+      "number": 17,
+      "categoryId": "1022907",
+      "categoryName": "Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри",
+      "categoryUrl": "https://cncprom.ua/ua/g1022907-datchiki-knopki-razemy",
+      "scrapingTime": 16.4,
+      "image": "https://images.prom.ua/746237665_w165_h220_datchiki-knopki-rozyemi.jpg",
+      "position": 13
+    },
+    {
+      "number": 18,
+      "categoryId": "1022553",
+      "categoryName": "Електродвигуни",
+      "categoryUrl": "https://cncprom.ua/ua/g1022553-elektrodvigateli",
+      "scrapingTime": 18.6,
+      "image": "https://images.prom.ua/3050414355_w165_h220_elektrodviguni.jpg",
+      "position": 5
+    },
+    {
+      "number": 19,
+      "categoryId": "1261329",
+      "categoryName": "Верстати та промислове обладнання",
+      "categoryUrl": "https://cncprom.ua/ua/g1261329-stanki-promyshlennoe-oborudovanie",
+      "scrapingTime": 19,
+      "image": "https://images.prom.ua/2045576997_w165_h220_verstati-ta-promislove.jpg",
+      "position": 1
+    },
+    {
+      "number": 20,
+      "categoryId": "1484301",
+      "categoryName": "Шпинделі",
+      "categoryUrl": "https://cncprom.ua/ua/g1484301-shpindeli",
+      "scrapingTime": 19.2,
+      "image": "https://images.prom.ua/2052774855_w165_h220_shpindeli.jpg",
+      "position": 10
+    },
+    {
+      "number": 21,
+      "categoryId": "1548856",
+      "categoryName": "Лінійні напрямні та підшипники",
+      "categoryUrl": "https://cncprom.ua/ua/g1548856-linejnye-napravlyayuschie-podshipniki",
+      "scrapingTime": 22,
+      "image": "https://images.prom.ua/2052787595_w165_h220_linijni-napryamni-ta.jpg",
+      "position": 14
+    },
+    {
+      "number": 22,
+      "categoryId": "2432613",
+      "categoryName": "Алюмінієвий профіль",
+      "categoryUrl": "https://cncprom.ua/ua/g2432613-alyuminievyj-profil",
+      "scrapingTime": 24,
+      "image": "https://images.prom.ua/3103801246_w165_h220_alyuminiyevij-profil.jpg",
+      "position": 20
+    },
+    {
+      "number": 23,
+      "categoryId": "96553590",
+      "categoryName": "Передачі",
+      "categoryUrl": "https://cncprom.ua/ua/g96553590-peredachi",
+      "scrapingTime": 44.4,
+      "image": "https://images.prom.ua/3050456140_w165_h220_peredachi.jpg",
+      "position": 15
+    }
+  ]
+}
