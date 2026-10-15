@@ -787,23 +787,6 @@ button.hdr-stamp[data-tip] { cursor: help; }
   html body { overflow: hidden; }
 }
 
-/* Меню-дропдаун у шапці («Звіт скрапера», «Звірки», «Довідка»). Списку
-   з трьох-чотирьох рядків модальне вікно із затемненням завелике — він висить під
-   своєю кнопкою. Великі панелі зі списками (дерево розбіжностей, логи, сама
-   Довідка) лишаються модальними: туди веде рядок дропдауна. Опис лежить тут,
-   а не в build-maps.js, бо таке меню є на всіх трьох сторінках.
-   position: absolute від обгортки працює, бо в .app-header немає overflow: hidden;
-   z-index вищий за саму шапку (10), щоб список лягав поверх таблиці. */
-.hdr-menu { position: relative; display: inline-flex; flex-shrink: 0; }
-.hdr-dropdown {
-  display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 120;
-  min-width: 380px; max-width: min(460px, calc(100vw - 32px));
-  background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.28); padding: 2px 14px 8px;
-}
-/* Для кнопки в правій групі — вирівнювання по правому краю, інакше
-   список виліз би за межі екрана. */
-.hdr-dropdown.right { left: auto; right: 0; }
 /* «?» у полі пошуку (searchHelpButtonHtml у lib/help.js): відкриває Довідку на
    розділі «Пошук». Голий знак питання, без кружечка (так попросив користувач).
    ✕ очищення стоїть ліворуч від нього, тому поле має відступ праворуч під обидва. */
@@ -811,53 +794,12 @@ button.hdr-stamp[data-tip] { cursor: help; }
 .search-help-btn { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: none;
   color: var(--text-muted); font: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1; cursor: pointer; }
 .search-help-btn:hover { color: var(--text-link); background: var(--bg-hover); }
-.hdr-dropdown.open { display: block; }
-/* Шторка під відкритим меню — як у модальних панелей, але легша (0.28 проти 0.4):
-   меню не блокує роботу, воно закривається будь-яким кліком. z-index 9, а не
-   поверх усього: .app-header (10) — власний контекст накладання, тож сам список
-   із z-index 120 лежить усередині шапки і шторка його не накриє: шапка лишається
-   світлою, меню від неї й росте.
-   Окремий елемент (його створює initHeaderMenus), а не body::before — щоб його можна
-   було знайти з JS і перевірити смоук-тестом: у псевдоелемента немає ні вузла, ні
-   геометрії. opacity, а не display — затемнення наростає плавно, а не стрибком. */
-.menu-scrim {
-  position: fixed; inset: 0; z-index: 9; background: rgba(0,0,0,0.28);
-  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
-}
-.menu-scrim.open { opacity: 1; pointer-events: auto; }
-.hdr-dropdown h3 { font-size: 0.82rem; font-weight: 700; color: var(--text-main); padding: 10px 2px 2px; }
-
-/* Рядок меню: значок, назва, число, дія. Число стоїть окремою колонкою,
-   а не в назві, як було в кнопках до 25.09.2026. */
-.check-row { display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 12px;
-  padding: 9px 4px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
-.check-row:last-child { border-bottom: 0; }
 /* Зелена версія синього значка (ℹ️). Шрифтовий color на emoji не діє —
    це кольорова гліфа, а не літера, тож крутимо відтінок фільтром. Значок синій
    на всіх основних платформах, тому скрізь вийде зелений.
    Кут підібраний вимірюванням кольору: CSS hue-rotate — не чесний поворот відтінку, а матричне
    наближення, і «математичні» +100° дають не зелений, а малиновий. */
 .ico-green { filter: hue-rotate(-80deg) saturate(1.15); }
-/* justify-self: start — щоб підказка спрацьовувала саме на словах, а не по всій
-   довжині рядка: у grid комірка 1fr розтягнула б span до самого числа. */
-.check-row .nm { color: var(--text-main); justify-self: start; }
-/* Без font-weight: число не має бути товще за сусідні слова в тому ж рядку. */
-.check-row .val { font-variant-numeric: tabular-nums; }
-.check-row .val.bad { color: var(--status-no); }
-.check-row .val.ok { color: var(--status-yes); }
-/* Без свого font-size — число й дія стоять поруч і мають бути одного кегля. */
-.check-row .act { font: inherit; color: var(--text-link); background: none;
-  border: 0; padding: 0; cursor: pointer; }
-.check-row a.act { text-decoration: none; }  /* рядок-посилання на окрему сторінку (Тест платформи) */
-.check-row .act:hover { text-decoration: underline; }
-/* "немає" — стан, а не дія: без кольору посилання, без підкреслення й руки. */
-.check-row .act.none { color: var(--text-subtle); cursor: default; }
-.check-row .act.none:hover { text-decoration: none; }
-/* Значок біля "Звірки": скільки звірок щось знайшли. */
-.badge-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
-  height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; font-size: 0.7rem;
-  font-weight: 600; background: var(--badge-bg); color: #fff; }
-
 /* Подяки: картка-посилання з логотипом. Логотипи — окремі файли в logos/,
    а не вбудовані SVG: панель однакова на двох десятках сторінок. */
 .credit-list { display: grid; gap: 8px; margin: 10px 0 14px; }
@@ -925,16 +867,13 @@ function initHelpWindow() {
     if (tip) tip.classList.remove('visible');
     setTimeout(function () { try { frame.focus(); } catch (e) {} }, 50);
   }
-  // Фаза перехоплення: «Докладніше в Довідці» лежить у шпаргалці пошуку, а
-  // випадне меню зупиняє спливання кліків усередині себе (initHeaderMenus).
+  // Фаза перехоплення: кнопка «Довідка» може лежати всередині елемента, що сам
+  // зупиняє спливання кліків.
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-help]') : null;
     if (!b) return;
     e.preventDefault();
     e.stopPropagation();
-    Array.prototype.forEach.call(document.querySelectorAll('.hdr-dropdown.open'), function (d) { d.classList.remove('open'); });
-    var scrim = document.querySelector('.menu-scrim');
-    if (scrim) scrim.classList.remove('open');
     open(b.getAttribute('data-help'), b.getAttribute('data-help-src') || 'help.html');
   }, true);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
@@ -946,60 +885,6 @@ function initHelpWindow() {
       try { localStorage.setItem('help-full', isFull() ? '1' : '0'); } catch (x) {}
       tellFrame();
     }
-  });
-}
-
-function initHeaderMenus() {
-  var drops = [];
-  // Шторка — окремий елемент .menu-scrim (CSS вище), клас open на ньому вмикає
-  // затемнення. syncScrim — одна функція на всі шляхи закриття (кнопка, клік
-  // поза списком, Esc, рядок із [data-open]), щоб шторка ніде не лишилась
-  // висіти після закритого меню.
-  var scrim = document.createElement('div');
-  scrim.className = 'menu-scrim';
-  document.body.appendChild(scrim);
-  var syncScrim = function () {
-    var any = false;
-    drops.forEach(function (d) { if (d.classList.contains('open')) any = true; });
-    scrim.classList.toggle('open', any);
-  };
-  Array.prototype.forEach.call(document.querySelectorAll('.hdr-menu'), function (m) {
-    var btn = m.querySelector('.hdr-menu-btn'), drop = m.querySelector('.hdr-dropdown');
-    if (!btn || !drop) return;
-    drops.push(drop);
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      // Підказка самої кнопки висить рівно там, куди розгортається список, і накриває
-      // його заголовок: курсор після кліку лишається на кнопці, тож mouseleave не
-      // сталось. Гасимо її вручну — вона з'явиться знову при наступному наведенні.
-      var tip = document.getElementById('custom-tooltip');
-      if (tip) tip.classList.remove('visible');
-      var wasOpen = drop.classList.contains('open');
-      drops.forEach(function (d) { d.classList.remove('open'); });
-      if (!wasOpen) drop.classList.add('open');
-      syncScrim();
-    });
-    // Клік усередині списку не має його закривати — крім кліку по [data-open],
-    // який закриває його сам і відкриває потрібну панель (обробник нижче).
-    drop.addEventListener('click', function (e) { e.stopPropagation(); });
-  });
-  document.addEventListener('click', function () {
-    drops.forEach(function (d) { d.classList.remove('open'); });
-    syncScrim();
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { drops.forEach(function (d) { d.classList.remove('open'); }); syncScrim(); }
-  });
-  // Рядок меню відкриває свою панель і закриває саме меню: два відкритих
-  // вікна одночасно виглядали б як помилка, а Esc закривав би обидва одразу.
-  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) {
-    b.addEventListener('click', function () {
-      var hub = b.closest('.help-overlay, .hdr-dropdown');
-      if (hub) hub.classList.remove('open');
-      syncScrim();
-      var o = document.getElementById(b.getAttribute('data-open'));
-      if (o) o.classList.add('open');
-    });
   });
 }
 
@@ -1030,9 +915,9 @@ function initThemeToggle() {
 
 // ==================== МОДАЛЬНА ПАНЕЛЬ (спільна для <id>_map.html і map.html) ====================
 // Відкриття/закриття кнопкою, кліком поза панеллю, Esc — для всіх модальних
-// панелей: Довідка, «Товари поза категоріями», логи й панелі звірок на map.html.
-// Кнопка-відкривач необов'язкова (null): панелі, які відкриває рядок меню
-// (initHeaderMenus), реєструються лише заради закриття. Top-level з тієї ж
+// панелей: Довідка, вікно «Опис», логи й списки меню на map.html.
+// Кнопка-відкривач необов'язкова (null): панелі, які відкриває пункт меню
+// (initSideMenu у build-maps.js), реєструються лише заради закриття. Top-level з тієї ж
 // причини, що й initThemeToggle.
 function setupModalOverlay(overlayId, openBtnId, closeBtnId) {
   var overlay = document.getElementById(overlayId);
@@ -1345,16 +1230,16 @@ function initDescriptions(opts) {
   }
   // Остання зміна опису на GitHub (користувач 05.10.2026: «показати реальні зміни опису
   // конкретного товару, а не все підряд»). Історія змін — reports/data/index.json
-  // (build-reports.js: desc — [[дата, відбиток, коміт]], descAnchor — якір файлу в
-  // коміті), завантажується раз на сторінку при першому відкритому вікні. Товар, чий
-  // опис не мінявся, посилання не має: показувати нема чого.
+  // (build-reports.js: content — [[дата, відбиток, коміт, які файли]], contentAnchor — якорі
+  // файлів у коміті), завантажується раз на сторінку при першому відкритому вікні. Лише
+  // зміни, що зачепили файл опису (літера h): товар, чий опис не мінявся, посилання не має.
   var histPromise = null;
   function descHistoryLink(id) {
     if (!histPromise) histPromise = fetch(base + 'reports/data/index.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     histPromise.then(function (ix) {
-      var h = ((ix.desc || {})[id] || []).filter(function (v) { return v[2]; }), box = body.querySelector('.desc-links');
+      var h = ((ix.content || {})['p' + id] || []).filter(function (v) { return v[2] && /h/.test(v[3] || ''); }), box = body.querySelector('.desc-links');
       if (current !== id || !h.length || !box) return;
-      var last = h[h.length - 1], d = last[0].split('-'), anchor = (ix.descAnchor || {})[id];
+      var last = h[h.length - 1], d = last[0].split('-'), anchor = ((ix.contentAnchor || {})['p' + id] || [])[0];
       var a = document.createElement('a');
       a.target = '_blank'; a.rel = 'noopener';
       a.href = 'https://github.com/dialmak/scraper_cncprom/commit/' + encodeURIComponent(last[2]) + (anchor ? '#diff-' + encodeURIComponent(anchor) : '');
@@ -2717,24 +2602,7 @@ function initCatalogMap(CATALOG_DATA) {
       renderSidebar();
     });
 
-    // Посилання в панелі "Товари поза категоріями" — статичний список (рахується
-    // один раз при генерації), тож слухачі теж достатньо навісити один раз тут,
-    // а не при кожному renderContent.
-    var orphanOverlayEl = document.getElementById('orphan-overlay');
-    Array.prototype.forEach.call(document.querySelectorAll('.orphan-cat-link'), function (link) {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        state.selectedNodeId = link.dataset.id;
-        var curr = parentMap.get(link.dataset.id);
-        while (curr) { state.sidebarCollapsed.delete(curr.id); curr = parentMap.get(curr.id); }
-        if (orphanOverlayEl) orphanOverlayEl.classList.remove('open');
-        renderSidebar(); renderContent();
-      });
-    });
-
-    initHeaderMenus();
     initHelpWindow();
-    setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
 
     var searchInput = document.getElementById('search-input');
     var btnClear = document.getElementById('btn-clear-search');
@@ -2865,7 +2733,7 @@ function initCatalogMap(CATALOG_DATA) {
 const COMMON_CSS_FILE = path.join(OUTPUT_DIR, 'map-common.css');
 const COMMON_JS_FILE = path.join(OUTPUT_DIR, 'map-common.js');
 fs.writeFileSync(COMMON_CSS_FILE, css.trim() + '\n', 'utf-8');
-fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, descBtnHtml, descBodyHtml, descFillHtml, initDescriptions, setupTooltips, initHeaderMenus, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, descSearchLoad, searchDescriptions, searchWithDescriptions, descResultsHtml, escapeAttr, initSiteSearch, initCatalogMap]
+fs.writeFileSync(COMMON_JS_FILE, [initThemeToggle, setupModalOverlay, descBtnHtml, descBodyHtml, descFillHtml, initDescriptions, setupTooltips, initHelpWindow, initNarrowGuard, searchPrep, searchWords, compileSearch, searchTermScore, filterProducts, searchPreps, searchVocab, searchLayoutSwap, searchFuzzyWords, searchProducts, searchNoteHtml, highlightMatch, sortByAvailability, availSortTh, descSearchLoad, searchDescriptions, searchWithDescriptions, descResultsHtml, escapeAttr, initSiteSearch, initCatalogMap]
   .map(fn => fn.toString()).join('\n\n') + '\n', 'utf-8');
 writeLogos(OUTPUT_DIR);
 // Версію рахуємо ПІСЛЯ запису обох файлів: посилання має відповідати щойно
@@ -2883,89 +2751,11 @@ const infoBanner = HAS_PRODUCTS ? '' : `
       Щоб їх зібрати, запустіть скрапер для цієї категорії ще раз: <code>node scrape-complete.js "${escapeHtmlOuter(catalog.url || '')}"</code></span>
     </div>`;
 
-// Кнопка в шапці (поряд з датою оновлення) + модальна панель зі списком —
-// замість банера прямо над змістом (той засмічував основну мапу постійно
-// видимим блоком). Панель — не окрема сутність, а другий екземпляр того
-// самого overlay/panel вигляду, що й Довідка (див. setupModalOverlay).
-// Обидва рахуються один раз при генерації, тож коли orphanCategories порожній
-// (немає жодної такої категорії), ні кнопки, ні панелі в розмітці нема.
-// Число в заголовку панелі — сума ТОВАРІВ (c.own у кожній категорії), а не
-// кількість самих орфан-категорій у списку: заголовок каже "Знайдені
-// товари...", тож і число має рахувати товари, а не категорії, які їх містять.
-const orphanTotalProducts = orphanCategories.reduce((sum, c) => sum + c.own, 0);
+// «Товари поза категоріями» на мапі розділу — лише позначки «(N)» у боковому дереві.
+// Кнопку й панель у шапці прибрано 14.10.2026 разом із переходом на просту шапку
+// (рішення користувача): загальний список є в меню map.html і веде на потрібний вузол.
+// orphan_categories у сайдкарі лишається — з нього й будується той список.
 
-// Вигляд панелі — точно такий самий, як у зведеної "Товари поза
-// категоріями" на map.html (build-maps.js, treeRows/treeRowHtml): заголовок
-// групи = категорія 1 рівня із сумою товарів, під ним дерево вузлів з
-// відступом 18px на рівень. До 24.09.2026 тут був плоский список без
-// відступів, і дві однакові за змістом панелі виглядали по-різному.
-//
-// Добудовані ланки (предки, яких самих у списку немає) — не прикраса:
-// сироти розкидані по дереву, і без них відступ натякав би на рівень,
-// якого на екрані немає. Звертатись до build-maps.js тут ніяк: це окремий
-// процес, який запускає саме цей скрипт, — спільний тут лише CSS.
-const orphanRows = (() => {
-  const parentOf = new Map();
-  (function walk(n, parent) {
-    parentOf.set(String(n.id), parent);
-    n.children.forEach(c => walk(c, n));
-  })(appTree, null);
-  const flagged = new Map(orphanCategories.map(c => [String(c.id), c]));
-  const keep = new Set();
-  flagged.forEach((c, id) => {
-    let cur = id;
-    let guard = 0;
-    while (cur && guard++ < 20) {
-      keep.add(cur);
-      const p = parentOf.get(cur);
-      cur = p ? String(p.id) : null;
-    }
-  });
-  const rows = [];
-  (function walk(n) {
-    if (keep.has(String(n.id))) rows.push({ node: n, item: flagged.get(String(n.id)) || null });
-    n.children.forEach(walk);
-  })(appTree);
-  // Добудована ланка 1 рівня не показується: заголовок групи — це вона й є.
-  return rows.filter(r => r.item || r.node.level > 1);
-})();
-
-const orphanRowsHtml = orphanRows.map(r => {
-  // Категорія 1 рівня може бути сиротою сама для себе (товари лежать
-  // прямо в ній). Повторювати тут її назву не можна — вона вже в
-  // заголовку групи, і рядок виглядав би як помилка. Фраза та сама,
-  // що й у рядках зведення нижче в цьому ж файлі.
-  const name = r.item && r.node.level === 1
-    ? 'Товари категорії, які не входять до підкатегорій'
-    : escapeHtmlOuter(r.node.name);
-  return '<a href="#" class="cat-found-badge tree-row orphan-cat-link' + (r.item ? '' : ' dim') +
-    '" data-id="' + escapeHtmlOuter(r.node.id) +
-    '" style="margin-left:' + ((r.node.level - 1) * 18) + 'px;">' +
-    name + ' <span class="node-count">(' + r.node.stats.own_products + ')</span></a>';
-}).join('');
-const orphanMenuButtonHtml = orphanCategories.length === 0 ? '' : `
-      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">${ICONS.orphans} Товари поза категоріями</button>`;
-
-const orphanPanelHtml = orphanCategories.length === 0 ? '' : `
-  <div class="help-overlay" id="orphan-overlay">
-    <div class="help-panel">
-      <div class="help-panel-head">
-        <h3>Знайдені товари, які не входять до підкатегорій (${orphanTotalProducts})</h3>
-        <button class="btn-help-close" id="btn-orphan-close" data-tip="Закрити (Esc)">✕</button>
-      </div>
-      <div class="help-panel-body">
-        <p class="failed-note">У дужках вказано, скільки товарів лежить прямо в цій категорії, повз її підкатегорії. Блідим ідуть проміжні категорії без таких товарів: вони тут лише щоб дерево не мало розривів.<br>Натисніть назву, щоб перейти до цього вузла мапи.</p>
-        <div class="orphan-group-list">
-          <div class="orphan-group">
-            <a href="#" class="orphan-group-head orphan-cat-link" data-id="${escapeHtmlOuter(appTree.id)}">${ICONS.folder} ${escapeHtmlOuter(appTree.name)} <span class="node-count">(${orphanTotalProducts})</span></a>
-            <div class="orphan-cat-list">${orphanRowsHtml}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-
-const rootUrl = CATALOG_DATA.tree.url || '#';
 const rootLevelsLabel = maxLevelSafe > 1 ? `1–${maxLevelSafe} рівні` : 'рівень 1';
 
 const html = `<!DOCTYPE html>
@@ -2983,7 +2773,7 @@ const html = `<!DOCTYPE html>
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">${escapeHtmlOuter(CATALOG_DATA.tree.name)}</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>${orphanMenuButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${escapeHtmlOuter(scrapedAt)}</button>
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -2993,18 +2783,15 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
     <div class="header-right">
-      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
-      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
 ${helpButtonHtml('category')}
       <button id="btn-theme-toggle" class="btn-theme-toggle" data-tip="Перемкнути тему">
         <span class="theme-icon">\u{1F319}</span> <span class="theme-text">Темна</span>
       </button>
-      <a href="${escapeHtmlOuter(rootUrl)}" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
     </div>
   </header>
 
 ${narrowGuardHtml()}
-  ${orphanPanelHtml}
 
   <div class="workspace">
     <aside class="sidebar">

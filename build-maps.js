@@ -12,10 +12,11 @@ const { plural } = require('./lib/plural');
 const { signed } = require('./lib/num');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
-const { menuRow, helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
+const { helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
 const { assetVer } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
 const { hasDescription, hasCategoryDescription, descriptionJson, categoryJson, descIndex, descSearchIndex } = require('./lib/desc');
+const { collectMedia, collectLinks, knownIds, hostOf, isPromHost } = require('./lib/media');
 const { parseMany } = require('./lib/desc-parse');
 const { narrowGuardHtml } = require('./lib/notice');
 const { readCategories, filePath: categoriesFile } = require('./lib/categories');
@@ -333,6 +334,115 @@ function readSearchEntries(id) {
   return out;
 }
 
+// Медіа для меню «Доступність медіа» на map.html (14.10.2026, → HISTORY п. 53, 55, 56).
+// Результат перевірки check-media.js (media-check.json: адреса → стан) зводиться з
+// каталогами: де стоїть кожен файл. Списки великі (одних сторонніх картинок ~2,4 тис.
+// у ~2,6 тис. товарів), тож у map.html іде лише число, а самі списки — окремим
+// media-report.json, який сторінка завантажує, коли відкривають пункт меню:
+//   { checkedAt, owners: { p<id>|c<id>: [назва, код, адреса, topId, categoryId] },
+//     broken: { image|file|video|link: [[адреса, код, з якої дати, [[власник, [місця]]]]] },
+//     hosts | fileHosts | siteHosts: [[хостинг, [[адреса, [[власник, [місця]]]]]]],
+//     videos: [[платформа, [[адреса, назва, [[власник, [місця]]]]]]] }
+// Місця — для кожного власника окремо: у списку «Де на сторінці» стоїть після
+// «Сторінки» (15.10.2026), і файл буває в описі одного товару, а в іншого мініатюрою.
+// Недоступний — той, що не відкривається другу перевірку поспіль (n ≥ 2, див.
+// check-media.js). Биті посилання: помилка в самій адресі (подвоєне https://, номер чи
+// слово замість адреси) — одразу, без запиту; сторінка, якої немає, — як файли, з n ≥ 2.
+// Немає media-check.json — повертає null, пункти меню кажуть «немає даних».
+function writeMediaReport(ids) {
+  let check;
+  try { check = JSON.parse(fs.readFileSync(path.join(DIR, 'media-check.json'), 'utf-8')); } catch (e) { return null; }
+  const results = check.results || {};
+  const owners = {};
+  const catalogs = [];
+  ids.forEach(id => {
+    try { catalogs.push([id, JSON.parse(fs.readFileSync(path.join(DIR, `${id}_catalog.json`), 'utf-8'))]); } catch (e) { /* немає каталогу */ }
+  });
+  const known = knownIds(catalogs.map(x => x[1]));
+  const where = new Map();  // адреса → Map власник → Set місць (gallery, desc, xsell…, див. lib/media.js)
+  const links = new Map();  // ключ посилання → { url, problem, check, ext, at: Map власник → Set місць }
+  const put = (map, key, o, place) => {
+    if (!map.has(key)) map.set(key, new Map());
+    const byOwner = map.get(key);
+    if (!byOwner.has(o)) byOwner.set(o, new Set());
+    byOwner.get(o).add(place);
+  };
+  catalogs.forEach(([id, c]) => {
+    const topId = String(c.categoryId || id);
+    (function walk(n) {
+      owners['c' + n.categoryId] = [n.categoryName || '', '', n.url || '', topId, String(n.categoryId)];
+      (n.children || []).forEach(walk);
+    })(c.tree);
+    (c.products || []).forEach(p => {
+      owners['p' + p.productId] = [p.productName || '', p.sku || '', p.finalUrl || '', topId, String(p.categoryId)];
+    });
+    collectMedia(c).forEach(m => put(where, m.url, m.productId ? 'p' + m.productId : 'c' + m.categoryId, m.place));
+    collectLinks(c, known).forEach(l => {
+      // Помилкова адреса — сама собою; сторінка — за адресою запиту (той самий товар під
+      // різними слагами й доменами — одне посилання).
+      const key = l.problem ? 'bad:' + l.url : l.check;
+      if (!links.has(key)) links.set(key, { url: l.url, problem: l.problem, check: l.check, ext: l.ext, at: new Map() });
+      const at = links.get(key).at, o = l.productId ? 'p' + l.productId : 'c' + l.categoryId;
+      if (!at.has(o)) at.set(o, new Set());
+      at.get(o).add(l.place);
+    });
+  });
+  const used = new Set();
+  const list = byOwner => [...(byOwner || [])].map(([o, at]) => { used.add(o); return [o, [...at]]; });
+  const own = url => list(where.get(url));
+  const since = r => r.since ? fmtDate(new Date(r.since)) : '';
+  const broken = { image: [], file: [], video: [], link: [] };
+  const hostsMap = { image: new Map(), file: new Map() };
+  const videoMap = new Map();
+  for (const [url, r] of Object.entries(results)) {
+    if (!where.has(url)) continue;  // адреса з категорії, якої вже немає в каталогах, або посилання
+    if (r.s !== 'ok' && r.n >= 2 && broken[r.k]) broken[r.k].push([url, String(r.c), since(r), own(url)]);
+    const host = hostOf(url);
+    const hm = hostsMap[r.k];
+    if (hm && !isPromHost(host)) {
+      if (!hm.has(host)) hm.set(host, []);
+      hm.get(host).push([url, own(url)]);
+    }
+    if (r.k === 'video') {
+      const platform = /youtube\.com|youtu\.be/.test(host) ? 'YouTube' : host;
+      if (!videoMap.has(platform)) videoMap.set(platform, []);
+      videoMap.get(platform).push([url, r.t || '', own(url)]);
+    }
+  }
+  const siteMap = new Map();
+  links.forEach(l => {
+    if (l.problem) { broken.link.push([l.url, l.problem, '', list(l.at)]); return; }
+    const r = results[l.check];
+    if (r && r.s !== 'ok' && r.n >= 2) broken.link.push([l.url, String(r.c), since(r), list(l.at)]);
+    if (l.ext) {
+      const h = l.ext.replace(/^www\./, '');
+      if (!siteMap.has(h)) siteMap.set(h, []);
+      siteMap.get(h).push([l.check, list(l.at)]);
+    }
+  });
+  // Спершу файли, що стоять у найбільшій кількості товарів: їх виправлення дає найбільше.
+  Object.values(broken).forEach(l => l.sort((a, b) => b[3].length - a[3].length));
+  const byHost = (m, i) => [...m].map(([h, files]) => [h, files.sort((a, b) => b[i].length - a[i].length)])
+    .sort((a, b) => b[1].length - a[1].length);
+  const hosts = byHost(hostsMap.image, 1), fileHosts = byHost(hostsMap.file, 1), siteHosts = byHost(siteMap, 1), videos = byHost(videoMap, 2);
+  const report = { checkedAt: check.checkedAt, owners: {}, broken, hosts, fileHosts, siteHosts, videos };
+  used.forEach(o => { report.owners[o] = owners[o] || ['', '', '', '', '']; });
+  fs.writeFileSync(path.join(DIR, 'media-report.json'), JSON.stringify(report), 'utf-8');
+  const ownersOf = (lists, i) => new Set(lists.flatMap(x => x[i].map(o => o[0]))).size;
+  const grouped = (g, i) => ({ files: g.reduce((n, h) => n + h[1].length, 0), owners: ownersOf(g.flatMap(h => h[1]), i) });
+  return {
+    checkedAt: check.checkedAt,
+    image: { files: broken.image.length, owners: ownersOf(broken.image, 3) },
+    file: { files: broken.file.length, owners: ownersOf(broken.file, 3) },
+    video: { files: broken.video.length, owners: ownersOf(broken.video, 3) },
+    link: { files: broken.link.length, owners: ownersOf(broken.link, 3) },
+    hosts: grouped(hosts, 1),
+    fileHosts: grouped(fileHosts, 1),
+    siteHosts: grouped(siteHosts, 1),
+    videos: grouped(videos, 2),
+  };
+}
+
 // Опис кожного товару — окремим файлом desc/<productId>.json, опис категорії —
 // desc/c<categoryId>.json: кнопка «Опис» завантажує файл лише при кліку. Разом описи
 // десятки МБ, тож ні в сторінку, ні в search-index.json вони не йдуть (lib/desc.js).
@@ -433,7 +543,250 @@ function newestScrapedAt(entries) {
   return best;
 }
 
-function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
+// ==================== ВЕРТИКАЛЬНЕ МЕНЮ map.html (клієнт) ====================
+// Серіалізується в сторінку через .toString(), тож самодостатня (без замикань на Node).
+// Робить чотири речі: згортання меню до смужки іконок (стан у localStorage), списки на
+// місці таблиці (відкритий — один, його пункт підсвічено), числа «Історії каталогу» з
+// reports/data/index.json і вміст списків медіа з media-report.json.
+function initSideMenu() {
+  var nav = document.getElementById('vnav');
+  if (!nav) return;
+  var body = document.body;
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var items = Array.prototype.slice.call(nav.querySelectorAll('.vn-item'));
+  var hideTip = function () { var t = document.getElementById('custom-tooltip'); if (t) t.classList.remove('visible'); };
+
+  // ---- Згортання до смужки іконок. Підказка на смужці — назва й число пункту. ----
+  var rail = document.getElementById('vn-rail-btn');
+  function railVal(x) { var v = x.querySelector('.vn-val'); var t = v ? v.textContent.trim() : ''; return t && t !== '…' ? ': ' + t : ''; }
+  function setRail(on, save) {
+    body.classList.toggle('vn-rail', on);
+    rail.textContent = on ? '»' : '«';
+    rail.setAttribute('data-tip', on ? 'Розгорнути меню' : 'Згорнути меню');
+    items.forEach(function (x) {
+      if (!x.hasAttribute('data-full-tip')) x.setAttribute('data-full-tip', x.getAttribute('data-tip') || '');
+      var t = on ? x.getAttribute('data-rail-tip') + railVal(x) : x.getAttribute('data-full-tip');
+      if (t) x.setAttribute('data-tip', t); else x.removeAttribute('data-tip');
+    });
+    if (save) { try { localStorage.setItem('vnav-rail', on ? '1' : '0'); } catch (e) {} }
+  }
+  rail.addEventListener('click', function () { hideTip(); setRail(!body.classList.contains('vn-rail'), true); });
+  var savedRail = null;
+  try { savedRail = localStorage.getItem('vnav-rail'); } catch (e) {}
+
+  // ---- Списки на місці таблиці: відкритий завжди один. ----
+  var overlays = Array.prototype.slice.call(document.querySelectorAll('.list-overlay'));
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) {
+    b.addEventListener('click', function () {
+      var id = b.getAttribute('data-open');
+      overlays.forEach(function (o) { if (o.id !== id) o.classList.remove('open'); });
+      var o = document.getElementById(id);
+      if (!o) return;
+      o.classList.add('open');
+      o.scrollTop = 0;
+      hideTip();
+      fillMedia(o);
+    });
+  });
+  function syncActive() {
+    var open = overlays.filter(function (o) { return o.classList.contains('open'); })[0];
+    items.forEach(function (x) { x.classList.toggle('active', !!open && x.getAttribute('data-open') === open.id); });
+  }
+  overlays.forEach(function (o) { new MutationObserver(syncActive).observe(o, { attributes: true, attributeFilter: ['class'] }); });
+  // Пошук показує результати на місці таблиці — відкритий список їх би закрив.
+  var si = document.getElementById('search-input');
+  if (si) si.addEventListener('input', function () { overlays.forEach(function (o) { o.classList.remove('open'); }); });
+
+  // ---- Числа «Історії каталогу»: останній знімок проти попереднього. ----
+  var histEls = Array.prototype.slice.call(nav.querySelectorAll('[data-hist]'));
+  var setGroupCount = function (group, n) {
+    var c = nav.querySelector('[data-group="' + group + '"] .vn-count');
+    if (!c) return;
+    c.textContent = n || '';
+    if (n) c.removeAttribute('hidden'); else c.setAttribute('hidden', '');
+  };
+  if (histEls.length) {
+    fetch('reports/data/index.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (idx) {
+      var last = idx.daily[idx.daily.length - 1] || {}, t = last.t || {};
+      var v = { content: t.content || 0 };
+      v.all = ['in', 'out', 'added', 'removed', 'moved', 'price', 'content', 'cats'].reduce(function (n, k) { return n + (t[k] || 0); }, 0);
+      var d = String(last.date || '').split('-');
+      var when = d.length === 3 ? d[2] + '.' + d[1] + '.' + d[0] : '';
+      var found = 0;
+      histEls.forEach(function (x) {
+        var n = v[x.getAttribute('data-hist')] || 0, el = x.querySelector('[data-hist-val]');
+        el.textContent = n > 0 ? n : 'немає';
+        el.className = 'vn-val ' + (n > 0 ? 'chg' : 'none');
+        if (n > 0) found++;
+        if (when) {
+          var tip = (x.getAttribute('data-full-tip') || x.getAttribute('data-tip') || '') + '\nЗнімок ' + when + ' порівняно з попереднім.';
+          x.setAttribute('data-full-tip', tip);
+          if (!body.classList.contains('vn-rail')) x.setAttribute('data-tip', tip);
+        }
+      });
+      setGroupCount('history', found);
+      setRail(body.classList.contains('vn-rail'), false);
+    }).catch(function () {
+      histEls.forEach(function (x) { var el = x.querySelector('[data-hist-val]'); el.textContent = 'немає даних'; });
+    });
+  }
+  setRail(savedRail === '1', false);
+
+  // ---- Списки медіа: media-report.json завантажується раз, при першому відкритті. ----
+  var loading = null;
+  // «Що з ним» — словами; код відповіді лишається в media-check.json.
+  // 429 — хостинг відмовляє («забагато запитів»): так відповідає захист від ботів, і браузер
+  // покупця картинку теж не показує (перевірено 15.10.2026 на intelelectron.ru).
+  var reasons = { '404': 'файлу немає', '410': 'файлу немає', '401': 'доступ закрито', '403': 'доступ закрито',
+    '429': 'хостинг відмовляє', ENOTFOUND: 'хостингу не існує', timeout: 'не відповідає',
+    login: 'доступ закрито' /* закритий файл Google Drive: сторінка входу */,
+    // Помилка в самій адресі посилання (linkProblem у lib/media.js).
+    double: 'подвоєна адреса', number: 'номер замість адреси', word: 'слово замість адреси' };
+  var reason = function (c, kind) {
+    c = String(c);
+    if (kind === 'link' && (c === '404' || c === '410')) return 'сторінки немає';
+    if (kind === 'link' && c === 'ENOTFOUND') return 'сайту не існує';
+    return reasons[c] || (/CERT|TLS/.test(c) ? 'недійсний сертифікат' : /TIMEOUT/.test(c) ? 'не відповідає' :
+      /^5\d\d$/.test(c) ? 'помилка хостингу' : c);
+  };
+  var decode = function (u) { try { return decodeURI(u); } catch (e) { return u; } };
+  // Бите посилання: адреса з помилкою — як є, текстом (вона нікуди не веде, а саму
+  // помилку треба бачити: «https://https://…»); сторінка, якої немає, — посиланням.
+  function linkHtml(url, code) {
+    if (reasons[code] && /^(double|number|word)$/.test(code)) return '<code class="md-bad">' + esc(decode(url)) + '</code>';
+    return '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="md-file">' + esc(decode(url).replace(/^https?:\/\//, '')) + '</a>';
+  }
+  // Посилання на інший сайт: сайт уже в заголовку групи, тож шлях разом з параметрами
+  // (на store.mesanet.com усі сторінки — «index.php?…», різняться лише параметрами).
+  function siteHtml(url) {
+    var rest = decode(url).replace(/^https?:\/\/[^/]+\/?/, '');
+    return '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="md-file">' + esc(rest || 'головна сторінка') + '</a>';
+  }
+  // Відео: назва з YouTube (oEmbed у check-media.js), під нею платформа й id.
+  function videoHtml(url, title) {
+    var yt = url.match(/youtube\.com\/embed\/([\w-]{11})/), id = yt ? yt[1] : '';
+    var href = id ? 'https://www.youtube.com/watch?v=' + id : url;
+    return '<a href="' + esc(href) + '" target="_blank" rel="noopener" class="md-file">' + esc(title || (id ? 'відео ' + id : url)) + '</a>' +
+      '<div class="md-sub">' + (id ? 'YouTube · ' + esc(id) : esc(url)) + '</div>';
+  }
+  function fileHtml(url) {
+    var yt = url.match(/youtube\.com\/embed\/([\w-]{11})/);
+    var href = yt ? 'https://www.youtube.com/watch?v=' + yt[1] : url;
+    var host = url.replace(/^https?:\/\//, '').split('/')[0];
+    // Шлях без хостингу, а не лише ім'я: на ImgBB «5.png» — десятки різних файлів,
+    // відрізняє їх тека перед іменем.
+    // Google Drive: у шляху лише службове «open» чи «file/d/…/view», розрізняє їх id.
+    var gd = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^#]*&)?id=|drive\/(?:u\/\d+\/)?(folders)\/)([\w-]+)/);
+    var name = yt ? 'відео ' + yt[1] : gd ? (gd[1] ? 'тека ' : 'файл ') + gd[2] :
+      url.split(/[?#]/)[0].replace(/^https?:\/\/[^/]+\//, '') || url;
+    try { name = decodeURIComponent(name); } catch (e) {}
+    return '<a href="' + esc(href) + '" target="_blank" rel="noopener" class="md-file">' + esc(name) + '</a><div class="md-sub">' + esc(host) + '</div>';
+  }
+  // Де на сторінці стоїть файл (місця з lib/media.js) — для кожної сторінки окремо.
+  var PLACE = { gallery: 'Фото товару', desc: 'Опис', xsell: 'Мініатюра в списку супутніх', link: 'Посилання в описі',
+    spec: 'Специфікація', tile: 'Плитка категорії', video: 'Відео в описі',
+    listing: 'Список розділів магазину' /* шаблон «Дивіться всі наші оголошення» */ };
+  var placeHtml = function (list) { return (list || []).map(function (p) { return '<div>' + esc(PLACE[p] || p) + '</div>'; }).join(''); };
+  // Сторінка на сайті, де стоїть файл: товар або категорія, посилання на cncprom.ua
+  // у новій вкладці (рішення користувача 15.10.2026: коду товару й окремого ↗ немає).
+  function ownerCells(rep, pair) {
+    var key = pair[0], o = rep.owners[key] || ['', '', '', '', ''], isCat = key.charAt(0) === 'c';
+    var name = esc(o[0] || key.slice(1));
+    return '<td class="md-page">' + (o[2] ? '<a href="' + esc(o[2]) + '" target="_blank" rel="noopener">' + name + '</a>' : name) +
+      (isCat ? ' <span class="md-sub">категорія</span>' : '') + '</td>' +
+      '<td class="md-place">' + placeHtml(pair[1]) + '</td>';
+  }
+  // Файл — свій tbody: №, посилання (і «Що з ним») на всю групу, під ними рядок на
+  // кожну сторінку, щоб місце стояло навпроти своєї назви. Видно одну сторінку, решта
+  // схована (.md-hid), «ще N» розгортає групу (клас md-open на tbody).
+  var SHOW = 1;
+  function groupHtml(rep, n, url, why, owners, cell) {
+    var more = owners.length > SHOW ? owners.length - SHOW : 0;
+    var span = ' rowspan="' + (owners.length + (more ? 1 : 0)) + '"';
+    var head = '<td class="md-n"' + span + '>' + n + '</td><td' + span + '>' + (cell || fileHtml(url)) + '</td>' +
+      (why === null ? '' : '<td class="md-why"' + span + '>' + esc(why) + '</td>');
+    var rows = owners.map(function (pair, i) {
+      return '<tr' + (i >= SHOW ? ' class="md-hid"' : '') + '>' + (i === 0 ? head : '') + ownerCells(rep, pair) + '</tr>';
+    }).join('');
+    if (more) rows += '<tr class="md-more-row"><td colspan="2"><button type="button" class="md-more" data-more="' + more + '">ще ' + more + '</button></td></tr>';
+    return '<tbody class="md-grp">' + rows + '</tbody>';
+  }
+  var LINK_HEAD = { image: 'Посилання на зображення', hosts: 'Посилання на зображення', file: 'Посилання на файл',
+    'file-hosts': 'Посилання на файл', video: 'Посилання на відео', link: 'Посилання', 'site-hosts': 'Посилання', videos: 'Відео' };
+  // Списки групами: зображення й файли на сторонніх хостингах і посилання на інші сайти — за
+  // хостингом, відео — за платформою (у відео в записі ще назва: власники третім елементом).
+  var GROUPS = { hosts: ['hosts', 'файлів'], 'file-hosts': ['fileHosts', 'файлів'], 'site-hosts': ['siteHosts', 'посилань'], videos: ['videos', 'відео'] };
+  var hostList = function (kind, rep) { return GROUPS[kind] ? rep[GROUPS[kind][0]] || [] : null; };
+  var ownersOf = function (kind, f) { return kind === 'videos' ? f[2] : f[1]; };
+  var SORT_ARROWS = ['⇅', '▼', '▲'];
+  // sort: null — колонка «Що з ним» не показується (сторонні хостинги); 0/1/2 — порядок.
+  function tableHtml(kind, groups, sort) {
+    return '<table class="md-tab"><thead><tr><th class="md-n">№</th><th class="md-link">' + LINK_HEAD[kind] + '</th>' +
+      (sort === null ? '' : '<th class="md-why md-sort' + (sort ? ' active' : '') + '" data-md-sort>Що з ним<span class="sort-arrow">' + SORT_ARROWS[sort] + '</span></th>') +
+      '<th>Сторінка на сайті</th><th class="md-place">Де на сторінці</th></tr></thead>' + groups + '</table>';
+  }
+  // Сортування за «Що з ним» — клік по заголовку по колу: як у списку (спершу файли
+  // в найбільшій кількості сторінок) → за причиною А–Я → Я–А. Номер лишається за файлом.
+  function renderMedia(kind, rep, sort) {
+    var hl = hostList(kind, rep);
+    if (hl) {
+      if (!hl.length) return '<p class="failed-note">Немає.</p>';
+      return hl.map(function (h, hi) {
+        var own = {};
+        h[1].forEach(function (f) { ownersOf(kind, f).forEach(function (o) { own[o[0]] = 1; }); });
+        return '<details class="md-host" data-host="' + hi + '"' + (hi === 0 ? ' open' : '') + '><summary><b>' + esc(h[0]) + '</b> · ' + GROUPS[kind][1] + ' ' + h[1].length +
+          ', товарів і категорій ' + Object.keys(own).length + '</summary><div class="md-host-body"></div></details>';
+      }).join('');
+    }
+    var list = (rep.broken[kind] || []).map(function (f, i) { return { f: f, n: i + 1, why: reason(f[1], kind) }; });
+    if (!list.length) return '<p class="failed-note">Немає.</p>';
+    sort = sort || 0;
+    if (sort) list.sort(function (a, b) { return (sort === 1 ? 1 : -1) * a.why.localeCompare(b.why, 'uk') || a.n - b.n; });
+    return tableHtml(kind, list.map(function (x) { return groupHtml(rep, x.n, x.f[0], x.why, x.f[3], kind === 'link' ? linkHtml(x.f[0], x.f[1]) : null); }).join(''), sort);
+  }
+  function fillHost(det, rep, kind) {
+    var box = det.querySelector('.md-host-body');
+    if (!box || box.getAttribute('data-filled')) return;
+    var files = hostList(kind, rep)[+det.getAttribute('data-host')][1];
+    box.innerHTML = tableHtml(kind, files.map(function (f, i) {
+      return groupHtml(rep, i + 1, f[0], null, ownersOf(kind, f),
+        kind === 'videos' ? videoHtml(f[0], f[1]) : kind === 'site-hosts' ? siteHtml(f[0]) : null);
+    }).join(''), null);
+    box.setAttribute('data-filled', '1');
+  }
+  function fillMedia(o) {
+    var box = o.querySelector('[data-media-body]');
+    if (!box || box.getAttribute('data-filled')) return;
+    box.innerHTML = '<p class="failed-note">Завантаження…</p>';
+    loading = loading || fetch('media-report.json').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    loading.then(function (rep) {
+      var kind = box.getAttribute('data-media-body'), sort = 0;
+      box.innerHTML = renderMedia(kind, rep, sort);
+      box.addEventListener('click', function (e) {
+        if (!e.target.closest) return;
+        if (e.target.closest('[data-md-sort]')) {
+          sort = (sort + 1) % 3;
+          box.innerHTML = renderMedia(kind, rep, sort);
+          return;
+        }
+        var b = e.target.closest('.md-more');
+        if (!b) return;
+        var open = b.closest('tbody').classList.toggle('md-open');
+        b.textContent = open ? 'згорнути' : 'ще ' + b.getAttribute('data-more');
+      });
+      box.setAttribute('data-filled', '1');
+      Array.prototype.forEach.call(box.querySelectorAll('.md-host'), function (det) {
+        if (det.open) fillHost(det, rep, kind);
+        det.addEventListener('toggle', function () { if (det.open) fillHost(det, rep, kind); });
+      });
+    }).catch(function (e) {
+      loading = null;
+      box.innerHTML = '<p class="failed-note">Список не завантажився (' + esc(e && e.message) + '). Сторінку треба відкривати через сервер, не з диска.</p>';
+    });
+  }
+}
+
+function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, mediaStats) {
   // Логотипи для розділу «Подяки» в Довідці: зазвичай їх кладе render-map.js разом із
   // map-common.*, але коли жодна категорія ще не скраплена, він не запускається жодного разу.
   writeLogos(DIR);
@@ -473,8 +826,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   // категорій: заголовок каже "Знайдені товари...".
   const orphanGroups = sorted.filter(e => (e.orphan_categories || []).length > 0);
   const orphanTotal = orphanGroups.reduce((n, e) => n + e.orphan_categories.reduce((k, oc) => k + oc.own, 0), 0);
-  const orphanMenuButtonHtml = orphanTotal === 0 ? '' : `
-      <button id="btn-orphan-cats" class="btn-theme-toggle catalog-subtitle-btn" data-tip="Знайдені товари, які не входять до підкатегорій">${ICONS.orphans} Товари поза категоріями</button>`;
   const orphanPanelHtml = orphanTotal === 0 ? '' : `
   <div class="help-overlay" id="orphan-overlay">
     <div class="help-panel">
@@ -664,76 +1015,113 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
     </div>
   </div>`;
 
-  // ---- Два меню-дропдауни замість шести кнопок у шапці (25.09.2026) ----
-  // До того кожна діагностика мала власну кнопку, яка з'являлась лише при
-  // ненульовому значенні: шапка росла до 14 елементів у погану ніч, а в тиху
-  // не можна було відрізнити "перевірили, все добре" від "не перевіряли".
-  // Тепер у меню рядок на кожну перевірку, і чистий результат теж видно
-  // («немає»). Самі панелі зі списками лишились як були — рядок лише веде до них.
-  // Коли перевірка нічого не знайшла, рядок каже "немає" у колонці дії,
-  // а колонка числа лишається порожньою: нуль поруч із "немає" сказав би те саме
-  // двічі (так само до 25.09.2026 було зі словом "чисто").
-  // tip може бути порожнім: для логів підказка лише повторювала б назву
-  // рядка, а шляхи до файлів тепер у Довідці.
-  // unit: '' — число без одиниці, null — числа не показувати взагалі. Так
-  // зроблено для розбіжностей звірки: там це кількість ВУЗЛІВ, а не розмір
-  // розбіжності, і читається не тим, чим є — саме тому ці числа вже
-  // прибирали з самої панелі 24.09.2026.
-  // valText — готовий текст числової колонки, коли те, що показуємо, й те, що відкриває
-  // панель, — різні величини. У «Розбіжностей звірки» count — це вузли (є чи немає
-  // чого відкривати), а показується розбіжність у товарах — і вона зі знаком, тож
-  // через count > 0 її не пропустиш.
-  const checkRow = (icon, name, tip, count, unit, overlayId, valText) => `
-          <div class="check-row">
-            <span>${icon}</span><span class="nm"${tip ? ` data-tip="${escapeHtmlOuter(tip)}"` : ''}>${escapeHtmlOuter(name)}</span>
-            <span class="val ${count > 0 ? 'bad' : 'ok'}">${valText !== undefined ? escapeHtmlOuter(valText) : (count > 0 && unit !== null ? count + (unit ? ' ' + unit : '') : '')}</span>
-            ${count > 0
-              ? `<button class="act" data-open="${overlayId}">відкрити</button>`
-              : '<span class="act none">немає</span>'}
-          </div>`;
-  // Розмітка рядка без числа — спільна з меню «Довідка» (lib/help.js).
-  const logRow = (name, tip, overlayId) => menuRow(ICONS.log, name, overlayId, tip);
+  // ---- Вертикальне меню (14.10.2026; макет із варіантами погодив користувач) ----
+  // Замість двох випадних меню («Звірки», «Звіт скрапера») і кнопок шапки. Групи
+  // згори донизу: що змінилось у каталозі → що не відкривається → звірка з сайтом →
+  // Prom → робота скрапера → Експорт. Кожна перевірка — пункт і при чистому
+  // результаті («немає»): так видно «перевірили, все добре», а не «не перевіряли»
+  // (правило ще з меню 25.09.2026). Число в заголовку групи — скільки пунктів щось
+  // знайшли, а не сума: сума змішала б вузли з товарами й файли з товарами. Фон — лише
+  // в цього числа, у пунктах числа кольорові без фону (вибір користувача з макета).
+  // Числа «Історії каталогу» вписує initSideMenu з reports/data/index.json: сторінку
+  // змін у нічному прогоні збирають ПІСЛЯ map.html, і число, вписане тут, відставало б
+  // на день. kind — колір числа й крапки на згорнутій смужці: chg (зміни), bad
+  // (поломка), chk (звірка), host (сторонні хостинги), info (не проблема); plain — без
+  // числа (логи, Експорт); nodata — перевірки ще не було.
+  const menuItem = ({ icon, name, tip, val, kind, open, href, download, hist, tag }) => {
+    const n = val === undefined || val === null || val === '' ? null : String(val);
+    let valHtml;
+    if (hist) valHtml = `<span class="vn-val none" data-hist-val>…</span>`;
+    else if (n !== null) valHtml = `<span class="vn-val ${kind}">${escapeHtmlOuter(n)}</span>`;
+    else if (kind === 'plain') valHtml = '';
+    else valHtml = `<span class="vn-val none">${kind === 'nodata' ? 'немає даних' : 'немає'}</span>`;
+    const found = n !== null && ['bad', 'chk', 'host'].includes(kind);
+    const inner = `<span class="vn-ic">${icon}${found ? `<i class="vn-dot ${kind}"></i>` : ''}</span>` +
+      `<span class="vn-nm">${escapeHtmlOuter(name)}${tag ? ` <em class="vn-tag">${tag}</em>` : ''}</span>${valHtml}`;
+    const attrs = `${tip ? ` data-tip="${escapeHtmlOuter(tip)}"` : ''} data-rail-tip="${escapeHtmlOuter(name)}"` +
+      `${found ? ' data-found="1"' : ''}${hist ? ` data-hist="${hist}"` : ''}`;
+    // Пункт без знахідок нікуди не веде (як «немає» в старому меню): відкривати порожній список нема чого.
+    if (open && (n !== null || kind === 'plain')) return `<button type="button" class="vn-item" data-open="${open}"${attrs}>${inner}</button>`;
+    if (href) return `<a class="vn-item" href="${href}"${download ? ' download' : ''}${attrs}>${inner}</a>`;
+    return `<div class="vn-item static"${attrs}>${inner}</div>`;
+  };
+  const menuGroup = (id, title, badge, items) => {
+    const found = items.filter(x => x.includes('data-found="1"')).length;
+    return `
+    <section class="vn-group" data-group="${id}">
+      <div class="vn-head"><span class="vn-title">${title}</span><span class="vn-count ${badge}"${found ? '' : ' hidden'}>${found || ''}</span></div>
+      <div class="vn-body">${items.join('')}</div>
+    </section>`;
+  };
+  const mediaItem = (icon, name, tip, stat, open, kind, tag) => menuItem({
+    icon, name, tip, tag, open,
+    kind: mediaStats ? kind : 'nodata',
+    val: mediaStats && stat && stat.files > 0 ? stat.files : null,
+  });
+  const ms = mediaStats || {};
+  const sideMenuHtml = `
+  <nav class="vnav" id="vnav" aria-label="Меню">
+    <div class="vn-top"><button type="button" class="vn-rail-btn" id="vn-rail-btn" data-tip="Згорнути меню">«</button></div>${menuGroup('history', 'Історія каталогу', 'chg', [
+      menuItem({ icon: ICONS.history, name: 'Усі зміни', hist: 'all', href: 'reports/index.html', tip: 'Усі зміни каталогу за останню ніч: наявність, ціни, нові й видалені товари, категорії, описи, медіа.\nБудь-який період: на сторінці «Історія змін».' }),
+      menuItem({ icon: ICONS.content, name: 'Змінений контент', hist: 'content', href: 'reports/index.html?type=content', tip: 'Опис, фото, характеристики, файли й відео, які змінив магазин' }),
+    ])}${menuGroup('media', 'Доступність медіа', 'bad', [
+      mediaItem(ICONS.image, 'Недоступні зображення', 'Фото, картинки в описах і плитки категорій, що не відкриваються', ms.image, 'media-image-overlay', 'bad'),
+      mediaItem(ICONS.file, 'Недоступні файли', 'PDF і файли з описів, що не відкриваються', ms.file, 'media-file-overlay', 'bad'),
+      mediaItem(ICONS.video, 'Недоступні відео', 'Відео YouTube з описів, що не відкриваються', ms.video, 'media-video-overlay', 'bad'),
+      mediaItem(ICONS.brokenLink, 'Биті посилання', 'Посилання в описах, що нікуди не ведуть', ms.link, 'media-link-overlay', 'bad'),
+      mediaItem(ICONS.videos, 'Відео', 'Відео в описах за платформою', ms.videos, 'media-videos-overlay', 'info'),
+      mediaItem(ICONS.hosts, 'Зображення на сторонніх хостингах', 'Картинки в описах не на серверах Prom', ms.hosts, 'media-hosts-overlay', 'host'),
+      mediaItem(ICONS.hosts, 'Файли на сторонніх хостингах', 'PDF і файли з описів не на серверах Prom', ms.fileHosts, 'media-file-hosts-overlay', 'host'),
+      mediaItem(ICONS.sites, 'Посилання на інші сайти', 'Посилання з описів на сторонні сайти', ms.siteHosts, 'media-sites-overlay', 'host'),
+    ])}${menuGroup('checks', 'Звірка з сайтом', 'chk', [
+      menuItem({ icon: ICONS.mismatch, name: 'Розбіжності звірки', tip: 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності», у товарах', kind: 'chk', val: mismatchTotal > 0 ? mismatchDiffText : null, open: 'mismatch-overlay' }),
+      menuItem({ icon: ICONS.crumbs, name: 'Не збігається з крихтами', tip: 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', kind: 'chk', val: crumbTotal || null, open: 'crumbs-overlay' }),
+      menuItem({ icon: ICONS.crumbs, name: 'Крихти без категорії', tip: 'У хлібних крихтах товару немає жодної категорії', kind: 'chk', val: crumbUnknownTotal || null, open: 'crumbs-unknown-overlay' }),
+      menuItem({ icon: ICONS.orphans, name: 'Товари поза категоріями', tip: 'Знайдені товари, які не входять до підкатегорій', kind: 'chk', val: orphanTotal || null, open: 'orphan-overlay' }),
+    ])}${menuGroup('prom', 'Аудит prom.ua', '', [
+      // Окрема сторінка, не список: посилання, а не [data-open]. У лічильник не входить.
+      menuItem({ icon: ICONS.platform, name: 'Тест платформи', tip: 'Пробний тест: категорії платформи Prom, комісії й службові дані товарів однієї категорії («Контролери для ЧПК»)', kind: 'info', val: 'пробний', href: 'platform-test.html' }),
+    ])}${menuGroup('report', 'Звіт скрапера', 'bad', [
+      menuItem({ icon: ICONS.errors, name: 'Помилки', tip: 'Помилки скрапінгу', kind: 'bad', val: errorTotal || null, open: 'errors-overlay' }),
+      menuItem({ icon: ICONS.failed, name: 'Не оброблено', tip: 'Товари, сторінку яких скрапер не зміг прочитати', kind: 'bad', val: failedTotal || null, open: 'failed-overlay' }),
+      menuItem({ icon: ICONS.log, name: 'Лог скрапінгу', kind: 'plain', open: 'scrape-log-overlay' }),
+      menuItem({ icon: ICONS.log, name: 'Лог збірки', kind: 'plain', open: 'map-log-overlay' }),
+    ])}${xlsxReady ? `
+    <div class="vn-links">${menuItem({ icon: ICONS.export, name: 'Експорт', kind: 'plain', href: XLSX_FILE, download: true, tip: 'Завантажити мапу категорій у форматі XLSX' })}</div>` : ''}
+  </nav>`;
 
-  const reportMenuButtonHtml = `
-      <div class="hdr-menu">
-        <button id="btn-report" class="btn-theme-toggle hdr-menu-btn" data-tip="Результат роботи скрапера">${ICONS.report} Звіт скрапера</button>
-        <div class="hdr-dropdown right" id="report-dropdown">
-          <h3>Звіт про роботу скрапера</h3>
-          <div>${checkRow(ICONS.errors, 'Помилки', 'Помилки скрапінгу', errorTotal, '', 'errors-overlay')}${checkRow(ICONS.failed, 'Не оброблено', 'Товари, сторінку яких скрапер не зміг прочитати', failedTotal, '', 'failed-overlay')}${logRow('Лог скрапінгу', '', 'scrape-log-overlay')}${logRow('Лог збірки', '', 'map-log-overlay')}
-          </div>
-        </div>
-      </div>`;
-
-  // Лічильник на кнопці — скільки ЗВІРОК із трьох щось знайшли, а не
-  // сума знайденого: сума змішувала б вузли з товарами. Коли все чисто,
-  // значка немає зовсім — червоний «0» читався б як проблема.
-  const checksProblems = [mismatchTotal, crumbTotal, crumbUnknownTotal].filter(n => n > 0).length;
-  // Розділ «Аудит категорій товару на prom.ua» (назва користувача, 29.09.2026): поки
-  // лише пробна сторінка platform-test.html (platform-test.js), тож у значок кнопки
-  // не рахується. Сторінка окрема, не панель: <a>, а не [data-open].
-  const platformRowHtml = `
-          <div class="check-row">
-            <span>${ICONS.platform}</span><span class="nm" data-tip="Пробний тест: категорії платформи Prom, комісії й службові дані товарів однієї категорії («Контролери для ЧПК»)">Тест платформи</span>
-            <span class="val">пробний</span>
-            <a class="act" href="platform-test.html">відкрити</a>
-          </div>`;
-  const checksMenuButtonHtml = `
-      <div class="hdr-menu">
-        <button id="btn-checks" class="btn-theme-toggle catalog-subtitle-btn hdr-menu-btn" data-tip="Звірка того, що зібрав скрапер, із тим, що є на сайті">${ICONS.checks} Звірки${checksProblems > 0 ? ` <span class="badge-count">${checksProblems}</span>` : ''}</button>
-        <div class="hdr-dropdown" id="checks-dropdown">
-          <h3>Звірка скрапера з даними сайту</h3>
-          <div>${checkRow(ICONS.mismatch, 'Розбіжності звірки', 'Розбіжності звірки «Готово до відправки» з лічильником сайту «В наявності»', mismatchTotal, null, 'mismatch-overlay', `${mismatchDiffText} ${plural(Math.abs(mismatchDiff), 'товар', 'товари', 'товарів')}`)}${checkRow(ICONS.crumbs, 'Не збігається з крихтами', 'Хлібні крихти товару ведуть в іншу гілку, ніж та, де його знайшов скрапер', crumbTotal, plural(crumbTotal, 'товар', 'товари', 'товарів'), 'crumbs-overlay')}${checkRow(ICONS.crumbs, 'Крихти без категорії', 'У хлібних крихтах товару немає жодної категорії', crumbUnknownTotal, plural(crumbUnknownTotal, 'товар', 'товари', 'товарів'), 'crumbs-unknown-overlay')}
-          </div>
-          <h3>Аудит категорій товару на prom.ua</h3>
-          <div>${platformRowHtml}
-          </div>
-        </div>
-      </div>`;
-
-  // Посилання на експорт — звичайний <a download>, а не панель: тут нема чого
-  // показувати, є що завантажити. Не рендериться, якщо файл не записався.
-  const xlsxButtonHtml = xlsxReady ? `
-      <a href="${XLSX_FILE}" download class="btn-theme-toggle catalog-subtitle-btn" data-tip="Завантажити мапу категорій у форматі XLSX">${ICONS.export} Експорт</a>` : '';
+  // Списки медіа: оболонка тут, вміст малює initSideMenu з media-report.json при
+  // першому відкритті (списки великі, у map.html їм не місце).
+  const mediaPanelHtml = (id, title, note, kind) => `
+  <div class="help-overlay" id="${id}">
+    <div class="help-panel">
+      <div class="help-panel-head">
+        <h3>${title}</h3>
+        <button class="btn-help-close" id="${id}-close" data-tip="Закрити (Esc)">✕</button>
+      </div>
+      <div class="help-panel-body">
+        <p class="failed-note">${note}</p>
+        <div data-media-body="${kind}"></div>
+      </div>
+    </div>
+  </div>`;
+  const brokenNote = 'Не відкриваються другу перевірку поспіль (перевірка щоночі після скрапінгу).';
+  // Текст користувача (15.10.2026) — про зображення, тож лише в їхньому списку.
+  const brokenImageNote = 'Не відкриваються другу перевірку поспіль (перевірка щоночі після скрапінгу). Сторінки сайту повільно завантажуються, якщо зображення на них недоступні.';
+  const mediaPanelsHtml = !mediaStats ? '' :
+    mediaPanelHtml('media-image-overlay', `${ICONS.image} Недоступні зображення (${ms.image.files})`, brokenImageNote, 'image') +
+    mediaPanelHtml('media-file-overlay', `${ICONS.file} Недоступні файли (${ms.file.files})`, brokenNote, 'file') +
+    mediaPanelHtml('media-video-overlay', `${ICONS.video} Недоступні відео (${ms.video.files})`, brokenNote, 'video') +
+    mediaPanelHtml('media-link-overlay', `${ICONS.brokenLink} Биті посилання (${(ms.link || {}).files || 0})`,
+      'Посилання в описах, що нікуди не ведуть: сторінки товару, розділу чи сайту вже немає, або адресу записано з помилкою. Помилку в адресі видно одразу, сторінку, якої немає, з другої перевірки поспіль.', 'link') +
+    mediaPanelHtml('media-videos-overlay', `${ICONS.videos} Відео (${(ms.videos || {}).files || 0})`,
+      'Відео, вбудовані в описи, групами за платформою.', 'videos') +
+    mediaPanelHtml('media-hosts-overlay', `${ICONS.hosts} Зображення на сторонніх хостингах (${ms.hosts.files})`,
+      'Картинки в описах, які лежать не на серверах Prom. Групи за хостингом, у кожній спершу файли, що стоять у найбільшій кількості товарів.', 'hosts') +
+    mediaPanelHtml('media-file-hosts-overlay', `${ICONS.hosts} Файли на сторонніх хостингах (${(ms.fileHosts || {}).files || 0})`,
+      'PDF у вкладці «Специфікація» і файли за посиланнями в описах, які лежать не на серверах Prom. Групи за хостингом, у кожній спершу файли, що стоять у найбільшій кількості товарів.', 'file-hosts') +
+    mediaPanelHtml('media-sites-overlay', `${ICONS.sites} Посилання на інші сайти (${(ms.siteHosts || {}).files || 0})`,
+      'Посилання з описів на сторонні сайти, групами за сайтом.', 'site-hosts');
 
   // Логи вбудовуються в сторінку готовими таблицями (lib/runlog.js): map.html
   // статична, підвантажити файл за запитом нема звідки. Свіжий прогін зверху й
@@ -794,17 +1182,95 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   .run-error { font-size: 0.78rem; line-height: 1.45; color: var(--text-main); overflow-wrap: anywhere; }
   .run-error-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
   .run-error-badge { background: none; border: none; padding: 0; margin-left: 4px; font: inherit; line-height: 1; cursor: pointer; }
-  /* Шапка map.html має помітно більше кнопок, ніж у мапи розділу, звідки взято
-     map-common.css. Там .app-header має фіксовану висоту 44px (від неї рахується
-     .workspace: calc(100vh - 44px)), а .header-left не переноситься, тож на
-     вужчому вікні ліва група вилазила за свою коробку й накривала поле пошуку,
-     а її кнопки ставали неклікабельними, хоч і були видимі. Тут висоту можна
-     відпустити: map.html скролить увесь документ, і від неї нічого не рахується. */
-  .app-header { height: auto; min-height: 44px; flex-wrap: wrap; padding-top: 5px; padding-bottom: 5px; row-gap: 6px; }
-  .header-left { flex-wrap: wrap; row-gap: 6px; }
-  /* Стилі меню-дропдаунів (.hdr-menu, .hdr-dropdown, .check-row, .badge-count)
-     лежать у map-common.css: таке саме меню є й на мапі розділу, і на
-     сторінці історії змін, тож вигляд має бути один на три сторінки. */
+  /* ---- Вертикальне меню (14.10.2026, макет погоджено) ----
+     Шапка тепер коротка (назва, дата, пошук, Довідка, Тема, cncprom.ua ↗) і не
+     переноситься: висота 44px з map-common.css, від неї рахується верх меню й списків.
+     Ширина меню 326px (на 15% ширше першого макета, на прохання користувача);
+     згорнуте — смужка іконок 52px. --vnav-cur — поточна ширина, від неї зсув таблиці
+     й списків. */
+  :root { --vnav-w: 326px; --vnav-rail: 52px;
+    --vn-bad: #b91c1c; --vn-chk: #c2410c; --vn-host: #a21caf; --vn-chg: #1d4ed8; }
+  /* Числа в пунктах — кольоровий текст без фону: у темній темі світліші відтінки, у
+     світлій темніші, обидва ≥ 4.5:1 до тла меню (заміряно 14.10.2026). */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vn-bad: #f87171; --vn-chk: #fb923c; --vn-host: #e879f9; --vn-chg: #60a5fa; } }
+  :root[data-theme="dark"] { --vn-bad: #f87171; --vn-chk: #fb923c; --vn-host: #e879f9; --vn-chg: #60a5fa; }
+  body { --vnav-cur: var(--vnav-w); }
+  body.vn-rail { --vnav-cur: var(--vnav-rail); }
+  .vnav { position: fixed; left: 0; top: 44px; bottom: 0; width: var(--vnav-cur); z-index: 9; overflow-y: auto; overflow-x: hidden;
+    background: var(--bg-sidebar); border-right: 1px solid var(--border-color); padding: 6px 0 24px; font-size: 0.8rem; }
+  .index-wrap { margin-left: var(--vnav-cur); }
+  .vn-top { display: flex; justify-content: flex-end; padding: 0 8px 2px; }
+  .vn-rail-btn { width: 28px; height: 24px; border: 1px solid var(--border-color); border-radius: 4px;
+    background: var(--bg-white); color: var(--text-muted); cursor: pointer; }
+  .vn-rail-btn:hover { background: var(--bg-hover); color: var(--text-main); }
+  .vn-group { padding: 2px 6px 6px; }
+  .vn-head { display: flex; align-items: center; gap: 6px; padding: 8px 6px 4px; color: var(--text-subtle);
+    font: 700 0.68rem var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; }
+  .vn-count { margin-left: auto; min-width: 18px; padding: 0 5px; border-radius: 9px; color: #fff; text-align: center;
+    font: 700 0.66rem/16px var(--font-sans); letter-spacing: 0; background: var(--badge-bg); }
+  .vn-count[hidden] { display: none; }
+  .vn-count.chk { background: #c2410c; }
+  .vn-count.chg { background: #2563eb; }
+  .vn-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 6px; border: 0; border-radius: 5px;
+    background: none; color: var(--text-main); font: 500 0.8rem/1.25 var(--font-sans); text-align: left; text-decoration: none; cursor: pointer; }
+  a.vn-item:hover, button.vn-item:hover { background: var(--bg-hover); text-decoration: none; }
+  /* Пункт без дії («немає») — не клікабельний, але з підказкою: знак питання, як усе таке на сайті. */
+  .vn-item.static { cursor: help; }
+  .vn-item.active { background: var(--bg-active); box-shadow: inset 3px 0 0 var(--border-active); }
+  .vn-ic { position: relative; flex: none; width: 22px; text-align: center; font-size: 0.95rem; }
+  .vn-dot { position: absolute; right: -1px; top: -1px; width: 7px; height: 7px; border-radius: 50%; display: none; }
+  .vn-dot.bad { background: var(--status-no); } .vn-dot.chk { background: #ea580c; } .vn-dot.host { background: #c000c0; }
+  .vn-nm { flex: 1; min-width: 0; }
+  .vn-tag { font-style: normal; font-size: 0.62rem; font-weight: 600; color: var(--text-subtle); white-space: nowrap;
+    border: 1px dashed var(--border-dark); border-radius: 3px; padding: 0 3px; }
+  .vn-val { flex: none; font-weight: 600; font-size: 0.78rem; }
+  .vn-val.bad { color: var(--vn-bad); } .vn-val.chk { color: var(--vn-chk); } .vn-val.host { color: var(--vn-host); }
+  .vn-val.chg { color: var(--vn-chg); } .vn-val.none { color: var(--text-subtle); }
+  /* Число без оцінки (усі відео): звичайним приглушеним текстом, на виділеному рядку теж ≥ 4.5:1. */
+  .vn-val.info { color: var(--text-muted); }
+  .vn-links { padding: 6px; border-top: 1px solid var(--border-color); margin-top: 4px; }
+  body.vn-rail .vn-nm, body.vn-rail .vn-val, body.vn-rail .vn-title, body.vn-rail .vn-count { display: none; }
+  body.vn-rail .vn-head { padding: 4px 0; border-top: 1px solid var(--border-color); margin-top: 4px; }
+  body.vn-rail .vn-group, body.vn-rail .vn-links { padding-left: 4px; padding-right: 4px; }
+  body.vn-rail .vn-item { justify-content: center; padding: 6px 0; }
+  body.vn-rail .vn-dot { display: block; }
+  body.vn-rail .vn-top { justify-content: center; padding: 0; }
+  /* Списки (логи, звірки, медіа) — на місці таблиці праворуч від меню, а не вікном
+     поверх сторінки: меню лишається видимим і робочим (варіант 4 з макета). */
+  .list-overlay { top: 44px; left: var(--vnav-cur); padding: 20px; z-index: 8; background: var(--bg-page);
+    align-items: stretch; justify-content: stretch; }
+  .list-overlay .help-panel { max-width: none; width: 100%; height: 100%; box-shadow: none; display: flex; flex-direction: column; }
+  .list-overlay .help-panel-body { max-height: none; flex: 1; min-height: 0; }
+  /* Таблиці списків медіа. */
+  /* Ширини — частками й table-layout: fixed, щоб колонки стояли однаково в усіх
+     таблицях (групи хостингів — окремі таблиці; за вмістом вони роз'їжджались). */
+  .md-tab { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
+  .md-tab th { text-align: left; font-weight: 600; color: var(--text-muted); padding: 4px 8px; border-bottom: 1px solid var(--border-dark); }
+  .md-tab td { padding: 3px 8px; vertical-align: top; }
+  /* Файл — свій tbody; межа між файлами, а не між сторінками одного файлу. */
+  .md-tab .md-grp { border-bottom: 1px solid var(--border-color); }
+  .md-tab .md-grp > tr:first-child > td { padding-top: 7px; }
+  .md-tab .md-grp > tr:last-child > td { padding-bottom: 7px; }
+  .md-tab tbody:not(.md-open) .md-hid { display: none; }
+  .md-tab .md-n { width: 40px; color: var(--text-subtle); }
+  .md-tab th.md-n { color: var(--text-muted); }
+  .md-tab .md-link { width: 24%; }
+  .md-tab th.md-why { width: 14%; }
+  .md-tab th.md-place { width: 20%; }
+  .md-tab .md-why, .md-tab .md-place { color: var(--text-muted); }
+  .md-tab th.md-sort { cursor: pointer; user-select: none; }
+  .md-tab th.md-sort:hover { color: var(--text-main); }
+  .md-tab th.md-sort.active .sort-arrow { opacity: 1; color: var(--text-link); }
+  .md-file { overflow-wrap: anywhere; }
+  /* Адреса з помилкою (подвоєне https://, номер чи слово замість адреси) — текстом, не посиланням. */
+  .md-bad { font-family: var(--font-mono); font-size: 0.74rem; color: var(--status-no); overflow-wrap: anywhere; }
+  .md-sub { color: var(--text-subtle); font-size: 0.72rem; }
+  .md-more { background: none; border: 0; padding: 4px 2px; min-width: 24px; font: inherit; font-size: 0.76rem; color: var(--text-link); cursor: pointer; }
+  .md-more:hover { text-decoration: underline; }
+  .md-host { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 8px; background: var(--bg-white); }
+  .md-host > summary { cursor: pointer; padding: 8px 12px; font-size: 0.82rem; }
+  .md-host > summary:hover { background: var(--bg-hover); }
+  .md-host-body { padding: 0 8px 8px; }
   /* Два рядки під товаром у панелі крихт: куди його відніс обхід і що каже
      сайт. Підпис ліворуч — того ж тону, що й .path-label на сторінці змін,
      де такі ж пари "Було:/Стало:" стоять під зміною категорії. */
@@ -901,7 +1367,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
   <header class="app-header">
     <div class="header-left">
       <span class="catalog-title">cncprom.ua</span>
-      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${generatedAt}</button>${checksMenuButtonHtml}${orphanMenuButtonHtml}${xlsxButtonHtml}
+      <button class="btn-theme-toggle catalog-subtitle-btn hdr-stamp" data-tip="Дата та час скрапінгу">${ICONS.updated} ${generatedAt}</button>
     </div>
     <div class="header-center">
       <div class="search-wrap">
@@ -911,8 +1377,6 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady) {
       </div>
     </div>
     <div class="header-right">
-      <a href="reports/index.html" class="btn-theme-toggle" data-tip="Зміни каталогу за будь-який період: наявність, нові й видалені товари, категорії">${ICONS.history} Історія змін</a>
-${reportMenuButtonHtml}
 ${helpButtonHtml('map')}
       <button id="btn-theme-toggle" class="btn-theme-toggle">
         <span class="theme-icon">🌙</span> <span class="theme-text">Темна</span>
@@ -920,14 +1384,13 @@ ${helpButtonHtml('map')}
       <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
     </div>
   </header>
-${tablePanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `Лог скрапінгу`, scrapeLogContent)}
-${tablePanelHtml('map-log-overlay', 'btn-map-log-close', `Лог збірки`, mapLogContent)}
-${orphanPanelHtml}
-${mismatchPanelHtml}
-${crumbPanelHtml}
-${crumbUnknownPanelHtml}
-${failedPanelHtml}
-${errorsPanelHtml}
+${sideMenuHtml}
+${/* Списки меню відкриваються на місці таблиці (клас list-overlay, стилі вище), а не
+   вікном поверх сторінки: варіант 4 з макета, вибір користувача 14.10.2026. */
+  [tablePanelHtml('scrape-log-overlay', 'btn-scrape-log-close', `Лог скрапінгу`, scrapeLogContent),
+   tablePanelHtml('map-log-overlay', 'btn-map-log-close', `Лог збірки`, mapLogContent),
+   orphanPanelHtml, mismatchPanelHtml, crumbPanelHtml, crumbUnknownPanelHtml, failedPanelHtml, errorsPanelHtml, mediaPanelsHtml]
+    .join('\n').replace(/<div class="help-overlay" id="/g, '<div class="help-overlay list-overlay" id="')}
 ${narrowGuardHtml()}
   <div class="index-wrap">
     <div id="index-content">
@@ -958,10 +1421,13 @@ ${narrowGuardHtml()}
   </div>
 <script>
 initThemeToggle();
-setupModalOverlay('orphan-overlay', 'btn-orphan-cats', 'btn-orphan-close');
-// У цих панелей немає власної кнопки в шапці — їх відкриває рядок меню
-// (initHeaderMenus). setupModalOverlay все одно потрібен: він вішає хрестик,
-// Esc і клік поза панеллю, а відсутню кнопку-відкривач терпить (if (openBtn)).
+// Списки відкриває пункт меню (initSideMenu нижче). setupModalOverlay все одно
+// потрібен: він вішає хрестик, Esc і клік поза панеллю, а відсутню кнопку-відкривач
+// терпить (if (openBtn)).
+setupModalOverlay('orphan-overlay', null, 'btn-orphan-close');
+['media-image-overlay', 'media-file-overlay', 'media-video-overlay', 'media-link-overlay', 'media-videos-overlay', 'media-hosts-overlay', 'media-file-hosts-overlay', 'media-sites-overlay'].forEach(function (id) {
+  setupModalOverlay(id, null, id + '-close');
+});
 setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
 setupModalOverlay('map-log-overlay', null, 'btn-map-log-close');
 setupModalOverlay('mismatch-overlay', null, 'btn-mismatch-close');
@@ -969,17 +1435,16 @@ setupModalOverlay('crumbs-overlay', null, 'btn-crumbs-close');
 setupModalOverlay('crumbs-unknown-overlay', null, 'btn-crumbs-unknown-close');
 setupModalOverlay('failed-overlay', null, 'btn-failed-close');
 setupModalOverlay('errors-overlay', null, 'btn-errors-close');
-// Дропдауни шапки й обробник [data-open] — спільні для трьох сторінок,
-// живуть у map-common.js (див. initHeaderMenus у render-map.js).
-initHeaderMenus();
+${initSideMenu.toString()}
+initSideMenu();
 initHelpWindow();
 initNarrowGuard();
 // Значки помилок у рядках таблиці відкривають ту саму панель, що й рядок
 // «Помилки» у «Звіті скрапера».
 Array.prototype.forEach.call(document.querySelectorAll('.run-error-badge'), function (b) {
   b.addEventListener('click', function () {
-    var o = document.getElementById('errors-overlay');
-    if (o) o.classList.add('open');
+    var item = document.querySelector('#vnav [data-open="errors-overlay"]');
+    if (item) item.click();
   });
 });
 setupTooltips();
@@ -1084,6 +1549,16 @@ function writeRedirect(file, target) {
   const descT0 = Date.now();
   const descFiles = await writeDescriptions(builtIds);
   if (descFiles) console.log(`Описів товарів і категорій (desc/): ${descFiles}, ${((Date.now() - descT0) / 1000).toFixed(1)} с`);
+  let mediaStats = null;
+  try {
+    mediaStats = writeMediaReport(builtIds);
+    if (mediaStats) console.log(`Медіа: недоступних зображень ${mediaStats.image.files}, файлів ${mediaStats.file.files}, відео ${mediaStats.video.files}, битих посилань ${mediaStats.link.files}; на сторонніх хостингах ${mediaStats.hosts.files} зображень і ${mediaStats.fileHosts.files} файлів; відео ${mediaStats.videos.files}; посилань на інші сайти ${mediaStats.siteHosts.files}.`);
+    else console.log('Медіа: media-check.json немає — пункти «Доступність медіа» без даних.');
+  } catch (err) {
+    // Як і XLSX: зручність, а не результат — збірку не валить.
+    console.error(`УВАГА: звіт медіа не записано — ${err.message}`);
+    logError(`media-report.json не записано: ${err.message}`);
+  }
 
   // Експорт мапи категорій (без товарів) — кнопка "Експорт" на map.html.
   // Помилка тут не валить прогін: xlsx це зручність, а не результат, і нічний
@@ -1139,7 +1614,7 @@ function writeRedirect(file, target) {
   const scrapeLogContent = runLogHtml(readEvents(SCRAPE_LOG_FILE), { mapIds: new Set(entries.map(e => String(e.id))) });
   const mapLogContent = buildLogHtml(readEvents(LOG_FILE));
   try {
-    buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady);
+    buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, mediaStats);
   } catch (err) {
     console.error(`ПОМИЛКА: map.html не збережено — ${err.message}`);
     logError(`map.html не збережено: ${err.message}`);

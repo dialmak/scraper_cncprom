@@ -36,6 +36,7 @@ const { ICONS } = require('./lib/icons');
 const { helpButtonHtml, writeLogos } = require('./lib/help');
 const { assetVer, contentVer } = require('./lib/assets');
 const { narrowGuardHtml } = require('./lib/notice');
+const { realUrl, mediaFromHtml, mediaKey } = require('./lib/media');
 
 const DATA_DIR = path.resolve(process.argv[2] || path.join(__dirname, 'data-branch'));
 const SNAP_DIR = path.join(DATA_DIR, 'snapshots');
@@ -80,7 +81,7 @@ function reportExpand(snap, avail, date) {
 // з цінами не дає «змін» проти знімка без них.
 // Перейменування товару свідомо не відстежується.
 // Наявність порівнюється за reportIsYes, а не за точним текстом статусу.
-function reportDiff(a, b, products, desc) {
+function reportDiff(a, b, products, content) {
   products = products || {};
   function catName(id) { var c = b.cats.get(id) || a.cats.get(id); return c ? c.name : '#' + id; }
   // Розділ 1 рівня: спершу шукаємо в новому знімку, для видаленого — у старому.
@@ -109,23 +110,54 @@ function reportDiff(a, b, products, desc) {
     return { type: type, id: id, name: p[0], sku: p[1], url: p[2], cat: cat, catName: catName(cat),
       top: t ? t.id : '', topName: t ? t.name : '—', avail: avail };
   }
-  var rows = [], cats = [];
+  var rows = [], cats = [], priced = 0, priceRows = [];
   b.prods.forEach(function (pb, id) {
     var pa = a.prods.get(id);
     if (!pa) { rows.push(row('added', id, pb.cat, pb.avail)); return; }
     if (reportIsYes(pa.avail) !== reportIsYes(pb.avail)) rows.push(row(reportIsYes(pb.avail) ? 'in' : 'out', id, pb.cat, pb.avail));
     if (pa.cat !== pb.cat) { var r = row('moved', id, pb.cat, pb.avail); r.fromCat = pa.cat; r.fromCatName = catName(pa.cat); var ft = topOf(pa.cat); r.fromTop = ft ? ft.id : ''; rows.push(r); }
-    if (pa.price != null && pb.price != null && pa.price !== pb.price) { var rp = row('price', id, pb.cat, pb.avail); rp.fromPrice = pa.price; rp.price = pb.price; rows.push(rp); }
+    if (pa.price != null && pb.price != null) {
+      priced++;
+      if (pa.price !== pb.price) { var rp = row('price', id, pb.cat, pb.avail); rp.fromPrice = pa.price; rp.price = pb.price; rows.push(rp); priceRows.push(rp); }
+    }
   });
+  // Перерахунок за курсом (HISTORY п. 54): Prom час від часу перераховує ціни, задані у
+  // валюті, і за ніч «змінюється» ціна тисяч товарів на той самий відсоток (06.10.2026
+  // +0,22%, 14.10.2026 +0,44%). Ознака: ціна змінилась щонайменше в третини товарів, і
+  // 80% змін — це «стара × медіанний коефіцієнт» з точністю до округлення (1 грн або
+  // 0,3%). Такі зміни не показуються як «Змінилась ціна»; товари, чия ціна відійшла від
+  // загального коефіцієнта, лишаються — це справжні зміни. Для періоду з кількох днів
+  // коефіцієнт — добуток денних, і правило працює так само.
+  var recalc = null;
+  if (priceRows.length >= 50 && priceRows.length >= priced / 3) {
+    var ratios = priceRows.map(function (r) { return r.price / r.fromPrice; }).sort(function (x, y) { return x - y; });
+    var f = ratios[Math.floor(ratios.length / 2)];
+    var fits = function (r) { return Math.abs(r.price - r.fromPrice * f) <= Math.max(1, 0.003 * r.fromPrice); };
+    var n = priceRows.filter(fits).length;
+    if (n >= 0.8 * priceRows.length) {
+      recalc = { pct: (f - 1) * 100, n: n };
+      rows = rows.filter(function (r) { return !(r.type === 'price' && fits(r)); });
+    }
+  }
   a.prods.forEach(function (pa, id) { if (!b.prods.has(id)) rows.push(row('removed', id, pa.cat, pa.avail)); });
-  // Змінився опис: видимий текст на кінець періоду інший, ніж на початок (desc — історія
-  // з index.json, див. readDescHistory). Текст, що змінився й повернувся, зміною не є.
-  function descAt(list, d) { var h = null; for (var i = 0; i < list.length && list[i][0] <= d; i++) h = list[i][1]; return h; }
-  if (desc && a.date && b.date) Object.keys(desc).forEach(function (id) {
-    var pb = b.prods.get(id);
-    if (!pb || !a.prods.has(id)) return;
-    var ha = descAt(desc[id], a.date), hb = descAt(desc[id], b.date);
-    if (ha && hb && ha !== hb) { var rd = row('desc', id, pb.cat, pb.avail); rd.fromHash = ha; rd.toHash = hb; rows.push(rd); }
+  // Змінився контент: версія на кінець періоду інша, ніж на початок (content — історія з
+  // index.json, див. readContentHistory). Вміст, що змінився й повернувся, зміною не є.
+  // Власник — товар (p<id>) чи категорія (c<id>); обидва мають бути в обох знімках: новий
+  // і зниклий — це «Нові» й «Видалені», а не зміна контенту.
+  function verAt(list, d) { var h = null; for (var i = 0; i < list.length && list[i][0] <= d; i++) h = list[i][1]; return h; }
+  if (content && a.date && b.date) Object.keys(content).forEach(function (o) {
+    var id = o.slice(1), isCat = o.charAt(0) === 'c';
+    if (isCat ? !(a.cats.has(id) && b.cats.has(id)) : !(a.prods.has(id) && b.prods.has(id))) return;
+    var ha = verAt(content[o], a.date), hb = verAt(content[o], b.date);
+    if (!ha || !hb || ha === hb) return;
+    var r;
+    if (isCat) {
+      var cb = b.cats.get(id), t = topOf(id);
+      r = { type: 'content', id: id, isCat: true, name: cb.name, sku: '', url: '', cat: cb.parentId || '', catName: cb.parentId ? catName(cb.parentId) : '',
+        top: t ? t.id : '', topName: t ? t.name : '—', avail: '' };
+    } else { var pb = b.prods.get(id); r = row('content', id, pb.cat, pb.avail); r.price = pb.price; }
+    r.owner = o; r.fromHash = ha; r.toHash = hb;
+    rows.push(r);
   });
   b.cats.forEach(function (cb, id) {
     var ca = a.cats.get(id), t = topOf(id), top = t ? t.name : '—';
@@ -137,172 +169,316 @@ function reportDiff(a, b, products, desc) {
   a.cats.forEach(function (ca, id) {
     if (!b.cats.has(id)) { var t = topOf(id); cats.push({ type: 'removed', id: id, name: ca.name, path: pathOf(id), level: ca.level, topName: t ? t.name : '—', before: chainIn(a, id) }); }
   });
-  var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, price: 0, desc: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
+  var totals = { in: 0, out: 0, added: 0, removed: 0, moved: 0, price: 0, content: 0, cats: cats.length, products: b.prods.size, categories: b.cats.size };
   rows.forEach(function (r) { totals[r.type]++; });
-  return { rows: rows, cats: cats, totals: totals };
+  return { rows: rows, cats: cats, totals: totals, recalc: recalc };
 }
 
-// LCS двох масивів → [['=', x] | ['-', x] | ['+', x]]; спільні початок і кінець — без
-// таблиці (описи між ночами майже однакові, тож таблиця зазвичай крихітна). Вилучене
-// стоїть перед доданим: «було → стало» читається зліва направо.
-function reportLcs(x, y) {
+// LCS двох масивів ключів → [['=', i, j] | ['-', i] | ['+', j]] (індекси в x і y);
+// спільні початок і кінець — без таблиці (версії між ночами майже однакові, тож таблиця
+// зазвичай крихітна). Прибране стоїть перед доданим: «було → стало» зліва направо.
+function reportOps(x, y) {
   var pre = 0, suf = 0, out = [], i, j;
   while (pre < x.length && pre < y.length && x[pre] === y[pre]) pre++;
   while (suf < x.length - pre && suf < y.length - pre && x[x.length - 1 - suf] === y[y.length - 1 - suf]) suf++;
-  var X = x.slice(pre, x.length - suf), Y = y.slice(pre, y.length - suf), n = X.length, m = Y.length;
-  for (i = 0; i < pre; i++) out.push(['=', x[i]]);
-  if (n * m > 4000000) { X.forEach(function (v) { out.push(['-', v]); }); Y.forEach(function (v) { out.push(['+', v]); }); }
-  else {
-    var T = new Uint32Array((n + 1) * (m + 1));
+  var n = x.length - pre - suf, m = y.length - pre - suf;
+  for (i = 0; i < pre; i++) out.push(['=', i, i]);
+  if (n * m > 4000000) {
+    for (i = 0; i < n; i++) out.push(['-', pre + i]);
+    for (j = 0; j < m; j++) out.push(['+', pre + j]);
+  } else {
+    var T = new Uint32Array((n + 1) * (m + 1)), X = function (k) { return x[pre + k]; }, Y = function (k) { return y[pre + k]; };
     for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
-      T[i * (m + 1) + j] = X[i] === Y[j] ? T[(i + 1) * (m + 1) + j + 1] + 1 : Math.max(T[(i + 1) * (m + 1) + j], T[i * (m + 1) + j + 1]);
+      T[i * (m + 1) + j] = X(i) === Y(j) ? T[(i + 1) * (m + 1) + j + 1] + 1 : Math.max(T[(i + 1) * (m + 1) + j], T[i * (m + 1) + j + 1]);
     for (i = 0, j = 0; i < n || j < m;) {
-      if (i < n && j < m && X[i] === Y[j]) { out.push(['=', X[i]]); i++; j++; }
-      else if (i < n && (j === m || T[(i + 1) * (m + 1) + j] >= T[i * (m + 1) + j + 1])) { out.push(['-', X[i]]); i++; }
-      else { out.push(['+', Y[j]]); j++; }
+      if (i < n && j < m && X(i) === Y(j)) { out.push(['=', pre + i, pre + j]); i++; j++; }
+      else if (i < n && (j === m || T[(i + 1) * (m + 1) + j] >= T[i * (m + 1) + j + 1])) { out.push(['-', pre + i]); i++; }
+      else { out.push(['+', pre + j]); j++; }
     }
   }
-  for (i = x.length - suf; i < x.length; i++) out.push(['=', x[i]]);
+  for (i = 0; i < suf; i++) out.push(['=', x.length - suf + i, y.length - suf + i]);
   return out;
 }
 
-// Опис «як у вікні „Опис"» зі змінами просто в ньому (вибір користувача 05.10.2026,
-// варіант «В»): у box малюється НОВИЙ опис тим самим descFillHtml, що й вікно «Опис»
-// (картинки, таблиці, оформлення), слова порівнюються зі старим описом; додане
-// обгортається в <ins>, вилучене вставляється перед ним у <del>. Абзац, пункт чи
-// клітинка зі зміною отримує клас blk-chg (смужка ліворуч і ціль кнопки «Наступна
-// зміна»). Картинки порівнюються за адресою: нова — зелена рамка, вилучені — рядом
-// унизу. Повертає кількість змінених місць.
-function reportHtmlDiff(box, oldHtml, newHtml) {
+// Частини контенту (ключі статистики readContentHistory): назва для людини й вкладка
+// вікна, на якій її видно. Порядок — як у ряду «Що змінилось».
+var REPORT_PARTS = [
+  ['text', 'Текст опису', 'text'], ['descImg', 'Картинки в описі', 'text'], ['video', 'Відео', 'text'],
+  ['photos', 'Фото товару', 'photos'], ['attrs', 'Характеристики', 'attrs'], ['files', 'Файли', 'specs'],
+  ['kit', 'Комплект', 'kit'], ['also', 'Супутні товари', 'also'], ['tile', 'Плитка категорії', 'tile']
+];
+// «+558 слів», «+1 −1», «+2 −1 ~3» (~ — змінене значення характеристики); нулі не пишуться.
+function reportPartStat(k, v) {
+  var s = [v[0] ? '+' + v[0] : '', v[1] ? '−' + v[1] : '', v[2] ? '~' + v[2] : ''].filter(Boolean).join(' ');
+  return k === 'text' ? s + ' слів' : s;
+}
+
+// Вікно «Було / стало» для типу «Змінився контент» (вибір користувача з макета 16.10.2026:
+// «як при merge»). Дві колонки: ліва — версія на початок періоду, права — на кінець;
+// рядки вирівняні (LCS по блоках опису, пунктах, характеристиках за назвою), у зміненій
+// парі блоків — слова: прибрані закреслені червоним зліва, додані зеленим справа; порожній
+// бік заштрихований. «Лише зміни» (типово увімкнено) згортає незмінене, як git: по одному
+// блоку контексту біля зміни, решта — «⋯ ще N». Картинка, що не відкривається, —
+// рамка «не відкривається» з адресою: стара картинка показується з сервера Prom чи
+// хостингу, копій ми не зберігаємо.
+// open(r, dates, idx) — r: рядок reportDiff (owner, fromHash, toHash, назва, ціна…).
+function initContentWindow(DATA) {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var fmtLong = function (d) { var p = String(d).split('-'); return p[2] + '.' + p[1] + '.' + p[0]; };
+  var ov = document.createElement('div');
+  ov.id = 'mg-overlay';
+  ov.className = 'help-overlay mg-overlay';
+  ov.innerHTML = '<div class="help-panel mg-panel" role="dialog" aria-modal="true" aria-labelledby="mg-title">' +
+    '<div class="help-panel-head"><h3 id="mg-title"></h3><span class="mg-code" id="mg-code"></span>' +
+    '<button type="button" class="btn-help-close" id="mg-close" aria-label="Закрити">✕</button></div>' +
+    '<div class="mg-scroll" id="mg-scroll"></div></div>';
+  document.body.appendChild(ov);
+  setupModalOverlay('mg-overlay', null, 'mg-close');
+  var scroll = ov.querySelector('#mg-scroll'), cache = {}, at = -1, current = 0;
+
+  function imgKey(u) {
+    u = String(u || '');
+    var p = u.match(/^https?:\/\/ssl\.prom\.st\/q\?(?:.*&)?u=([^&]+)/i);
+    if (p) { try { u = decodeURIComponent(p[1]); } catch (e) { /* лишаємо як є */ } }
+    var m = u.match(/^https?:\/\/images\.(?:ua\.prom\.st|prom\.ua)\/(\d+)_/);
+    return m ? 'prom:' + m[1] : u.split('#')[0];
+  }
+  // Картинка не відкрилась (файл видалено, хостинг зник чи не відповідає) — рамка з адресою.
+  function guard(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('img'), function (im) {
+      im.addEventListener('error', function () {
+        var s = document.createElement('span');
+        s.className = 'mg-broken';
+        s.innerHTML = 'не відкривається<small>' + esc((im.getAttribute('src') || '').replace(/^https?:\/\//, '')) + '</small>';
+        (im.closest('a') || im).replaceWith(s);
+      });
+    });
+  }
+  function align(a, b, key) {
+    var out = [], dels = [], adds = [];
+    function flush() {
+      for (var k = 0; k < Math.max(dels.length, adds.length); k++)
+        out.push({ t: dels[k] != null && adds[k] != null ? 'chg' : dels[k] != null ? 'del' : 'add', a: dels[k], b: adds[k] });
+      dels = []; adds = [];
+    }
+    reportOps(a.map(key), b.map(key)).forEach(function (o) {
+      if (o[0] === '=') { flush(); out.push({ t: 'eq', a: o[1], b: o[2] }); }
+      else if (o[0] === '-') dels.push(o[1]); else adds.push(o[1]);
+    });
+    flush();
+    return out;
+  }
   function tokens(root) {
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), out = [], n;
     while ((n = w.nextNode())) { var re = /\S+/g, m; while ((m = re.exec(n.textContent))) out.push({ node: n, at: m.index, t: m[0] }); }
     return out;
   }
-  // Адреса картинки без підпису проксі Prom (він новий щоночі).
-  function imgKey(img) {
-    var s = img.getAttribute('src') || '', m = s.match(/^https?:\/\/ssl\.prom\.st\/q\?(?:.*&)?u=([^&]+)/i);
-    try { return m ? decodeURIComponent(m[1]) : s; } catch (e) { return s; }
-  }
-  var oldBox = document.createElement('div');
-  descFillHtml(oldBox, oldHtml || '');
-  box.innerHTML = '';
-  descFillHtml(box, newHtml || '');
-  var A = tokens(oldBox), B = tokens(box), bi = 0, marks = [], pending = [];
-  reportLcs(A.map(function (x) { return x.t; }), B.map(function (x) { return x.t; })).forEach(function (op) {
-    if (op[0] === '-') { pending.push(op[1]); return; }
-    var tk = B[bi++];
-    if (op[0] === '+' || pending.length) marks.push({ tk: tk, ins: op[0] === '+', del: pending.join(' ') });
-    pending = [];
-  });
-  // З кінця до початку: позиції в текстових вузлах, що лишились попереду, не зсуваються.
-  marks.reverse().forEach(function (m) {
-    var r = document.createRange();
-    r.setStart(m.tk.node, m.tk.at); r.setEnd(m.tk.node, m.tk.at + m.tk.t.length);
-    if (m.ins) { var ins = document.createElement('ins'); ins.className = 'd-ins'; r.surroundContents(ins); r.setStartBefore(ins); }
-    r.collapse(true);
-    if (m.del) { var del = document.createElement('del'); del.className = 'd-del'; del.textContent = m.del; r.insertNode(document.createTextNode(' ')); r.insertNode(del); }
-  });
-  // Вилучене в самому кінці опису: слова, після яких у новому тексті вже нічого немає.
-  if (pending.length) { var tail = document.createElement('p'); tail.innerHTML = '<del class="d-del"></del>'; tail.firstChild.textContent = pending.join(' '); box.appendChild(tail); }
-  var oldImgs = {}, newImgs = {};
-  Array.prototype.forEach.call(oldBox.querySelectorAll('img'), function (i) { oldImgs[imgKey(i)] = i; });
-  Array.prototype.forEach.call(box.querySelectorAll('img'), function (i) { var k = imgKey(i); newImgs[k] = true; if (!oldImgs[k]) i.classList.add('img-ins'); });
-  var gone = Object.keys(oldImgs).filter(function (k) { return !newImgs[k]; });
-  if (gone.length) {
-    var gb = document.createElement('div'); gb.className = 'img-gone blk-chg';
-    gb.innerHTML = '<div class="img-gone-label">Вилучені картинки</div>';
-    gone.forEach(function (k) { var im = document.createElement('img'); im.className = 'desc-img img-del'; im.loading = 'lazy'; im.src = oldImgs[k].getAttribute('src'); gb.appendChild(im); });
-    box.appendChild(gb);
-  }
-  // Сусідні додані (чи вилучені) слова, між якими лише пробіл, — одним виділенням.
-  ['d-ins', 'd-del'].forEach(function (cls) {
-    Array.prototype.slice.call(box.querySelectorAll('.' + cls)).forEach(function (el) {
-      if (!el.parentNode) return;
-      for (;;) {
-        var sp = el.nextSibling, nx = sp && sp.nodeType === 3 && /^\s*$/.test(sp.textContent) ? sp.nextSibling : sp;
-        if (!nx || nx.nodeType !== 1 || nx.tagName !== el.tagName || !nx.classList.contains(cls)) break;
-        if (sp !== nx) el.appendChild(sp);
-        while (nx.firstChild) el.appendChild(nx.firstChild);
-        nx.remove();
-      }
+  function wrap(list, tag, cls) {
+    list.slice().reverse().forEach(function (tk) {
+      var r = document.createRange();
+      r.setStart(tk.node, tk.at); r.setEnd(tk.node, tk.at + tk.t.length);
+      var el = document.createElement(tag); el.className = cls; r.surroundContents(el);
     });
-  });
-  Array.prototype.forEach.call(box.querySelectorAll('.d-ins, .d-del, .img-ins'), function (e) {
-    var b = e.closest('p, li, td, th, h1, h2, h3, h4, h5, h6, blockquote, div');
-    (b && b !== box && box.contains(b) ? b : e).classList.add('blk-chg');
-  });
-  return box.querySelectorAll('.blk-chg').length;
-}
+  }
+  function markWords(A, B) {
+    var ta = tokens(A), tb = tokens(B), del = [], ins = [];
+    reportOps(ta.map(function (x) { return x.t; }), tb.map(function (x) { return x.t; })).forEach(function (o) {
+      if (o[0] === '-') del.push(ta[o[1]]); else if (o[0] === '+') ins.push(tb[o[1]]);
+    });
+    wrap(del, 'del', 'd-del'); wrap(ins, 'ins', 'd-ins');
+  }
+  function cell(node, side) { var d = document.createElement('div'); d.className = 'mg-cell ' + side; if (node) d.appendChild(node); else d.classList.add('mg-empty'); return d; }
+  function rowEl(t, l, r) { var d = document.createElement('div'); d.className = 'mg-row ' + t; d.appendChild(cell(l, 'l')); d.appendChild(cell(r, 'r')); return d; }
+  function html(s) { var d = document.createElement('div'); d.innerHTML = s; return d; }
 
-// Список рядків (комплект постачання, «можна придбати») зі змінами → <ul>: незмінні
-// пункти як є, змінений — з виділеними словами, доданий чи вилучений — цілком.
-function reportListDiff(x, y) {
-  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  var ops = reportLcs(x, y), out = '<ul class="desc-kit">', i = 0;
-  while (i < ops.length) {
-    if (ops[i][0] === '=') { out += '<li>' + esc(ops[i][1]) + '</li>'; i++; continue; }
-    var del = [], ins = [];
-    while (i < ops.length && ops[i][0] !== '=') { (ops[i][0] === '-' ? del : ins).push(ops[i][1]); i++; }
-    for (var k = 0; k < Math.max(del.length, ins.length); k++) {
-      var o = del[k], n = ins[k], li = '';
-      if (o != null && n != null) {
-        var cur = '', buf = '';
-        var flush = function () { if (buf) li += cur === '-' ? '<del class="d-del">' + esc(buf) + '</del> ' : cur === '+' ? '<ins class="d-ins">' + esc(buf) + '</ins>' : esc(buf); buf = ''; };
-        reportLcs(o.split(/(\s+)/), n.split(/(\s+)/)).forEach(function (op) { if (op[0] !== cur) { flush(); cur = op[0]; } buf += op[1]; });
-        flush();
-      } else li = o != null ? '<del class="d-del">' + esc(o) + '</del>' : '<ins class="d-ins">' + esc(n) + '</ins>';
-      out += '<li class="blk-chg">' + li + '</li>';
+  // Опис: блоки — верхні елементи очищеного HTML (descFillHtml, як у вікні «Опис»).
+  function blocks(h) {
+    var box = document.createElement('div');
+    descFillHtml(box, h || '');
+    var out = [];
+    Array.prototype.slice.call(box.childNodes).forEach(function (n) {
+      if (n.nodeType === 3) { if (n.textContent.trim()) { var p = document.createElement('p'); p.textContent = n.textContent; out.push(p); } return; }
+      if (n.nodeType === 1) out.push(n);
+    });
+    return out;
+  }
+  function blockKey(b) {
+    return b.textContent.replace(/\s+/g, ' ').trim() + '|' +
+      Array.prototype.map.call(b.querySelectorAll('img'), function (i) { return imgKey(i.getAttribute('src')); }).join(',') + '|' +
+      Array.prototype.map.call(b.querySelectorAll('a[href]'), function (a) { return imgKey(a.getAttribute('href')); }).join(',');
+  }
+  function imgSet(list) { var s = {}; list.forEach(function (b) { Array.prototype.forEach.call(b.querySelectorAll('img'), function (i) { s[imgKey(i.getAttribute('src'))] = 1; }); }); return s; }
+  function textPane(a, b) {
+    var A = blocks(a.html), B = blocks(b.html), oldI = imgSet(A), newI = imgSet(B), pane = document.createElement('div');
+    if (!A.length && !B.length) return null;
+    align(A, B, blockKey).forEach(function (g) {
+      var l = g.a != null ? A[g.a] : null, r = g.b != null ? B[g.b] : null;
+      if (g.t === 'chg') markWords(l, r);
+      if (l) Array.prototype.forEach.call(l.querySelectorAll('img'), function (i) { if (!newI[imgKey(i.getAttribute('src'))]) i.classList.add('img-del'); });
+      if (r) Array.prototype.forEach.call(r.querySelectorAll('img'), function (i) { if (!oldI[imgKey(i.getAttribute('src'))]) i.classList.add('img-ins'); });
+      pane.appendChild(rowEl(g.t, l, r));
+    });
+    return pane;
+  }
+  function photoPane(a, b) {
+    if (!a.length && !b.length) return null;
+    var pane = document.createElement('div');
+    align(a, b, imgKey).forEach(function (g) {
+      var img = function (u, cls) { return html('<img class="mg-photo ' + cls + '" alt="" loading="lazy" src="' + esc(u) + '">'); };
+      pane.appendChild(rowEl(g.t, g.a != null ? img(a[g.a], g.t === 'eq' ? '' : 'img-del') : null, g.b != null ? img(b[g.b], g.t === 'eq' ? '' : 'img-ins') : null));
+    });
+    return pane;
+  }
+  // Характеристики — за назвою: порядок нового знімка, прибрані — у кінці.
+  function attrsPane(a, b) {
+    if (!a.length && !b.length) return null;
+    var am = {}, bm = {}, names = [], pane = document.createElement('div');
+    a.forEach(function (x) { am[x[0]] = x[1]; });
+    b.forEach(function (x) { bm[x[0]] = x[1]; names.push(x[0]); });
+    a.forEach(function (x) { if (!(x[0] in bm)) names.push(x[0]); });
+    names.forEach(function (n) {
+      var t = !(n in am) ? 'add' : !(n in bm) ? 'del' : am[n] !== bm[n] ? 'chg' : 'eq';
+      var kv = function (v) { return html('<div class="mg-kv"><span class="k">' + esc(n) + '</span><span class="v">' + esc(v) + '</span></div>'); };
+      var l = n in am ? kv(am[n]) : null, r = n in bm ? kv(bm[n]) : null;
+      if (t === 'chg') markWords(l.querySelector('.v'), r.querySelector('.v'));
+      pane.appendChild(rowEl(t, l, r));
+    });
+    return pane;
+  }
+  function listPane(a, b, key, item) {
+    if (!a.length && !b.length) return null;
+    var pane = document.createElement('div');
+    align(a, b, key).forEach(function (g) {
+      var l = g.a != null ? html('<div class="mg-li">' + item(a[g.a]) + '</div>') : null, r = g.b != null ? html('<div class="mg-li">' + item(b[g.b]) + '</div>') : null;
+      if (g.t === 'chg') markWords(l, r);
+      pane.appendChild(rowEl(g.t, l, r));
+    });
+    return pane;
+  }
+  // Незмінене згортається, як у git: блок контексту біля зміни лишається, решта — «⋯ ще N».
+  function fold(pane) {
+    var list = Array.prototype.slice.call(pane.children), ch = list.map(function (r) { return !r.classList.contains('eq'); });
+    list.forEach(function (r, i) { if (!ch[i] && (ch[i - 1] || ch[i + 1])) r.classList.add('ctx'); });
+    var run = [];
+    function flush() {
+      if (!run.length) return;
+      var n = run.length, gap = document.createElement('button');
+      gap.type = 'button'; gap.className = 'mg-gap';
+      gap.textContent = '⋯ ще ' + n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? 'незмінений блок' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'незмінені блоки' : 'незмінених блоків');
+      var rs = run;
+      gap.addEventListener('click', function () { rs.forEach(function (r) { r.classList.add('ctx'); }); gap.remove(); });
+      pane.insertBefore(gap, run[0]);
+      run = [];
     }
-  }
-  return out + '</ul>';
-}
-
-// Різниця двох текстів опису для вікна «Було / стало» → HTML. Спершу рядки (LCS):
-// однакові лишаються як є, далі ніж за 2 рядки від зміни — згортаються в «без змін:
-// N рядків»; підряд вилучені й додані рядки порівнюються вже по словах, щоб у
-// переписаному абзаці було видно саме змінені слова, а не весь абзац двічі.
-function reportTextDiff(a, b) {
-  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  var lcs = reportLcs;
-  function words(oldText, newText) {
-    var tok = function (s) { return s.split(/(\s+)/).filter(function (t) { return t !== ''; }); };
-    var html = '', cur = null, buf = '';
-    function flush() { if (buf) html += cur === '-' ? '<del class="d-del">' + esc(buf) + '</del>' : cur === '+' ? (/<\/del>$/.test(html) ? ' ' : '') + '<ins class="d-ins">' + esc(buf) + '</ins>' : esc(buf); buf = ''; }
-    lcs(tok(oldText), tok(newText)).forEach(function (op) {
-      // Пробіл між двома зміненими словами не розриває виділення.
-      var k = op[0] !== '=' || !/^\s+$/.test(op[1]) ? op[0] : cur;
-      if (k !== cur) { flush(); cur = k; }
-      buf += op[1];
-    });
+    list.forEach(function (r) { if (r.classList.contains('eq') && !r.classList.contains('ctx')) run.push(r); else flush(); });
     flush();
-    return html;
   }
-  var ops = lcs(String(a).split('\n'), String(b).split('\n')), lines = [], i;
-  for (i = 0; i < ops.length;) {
-    if (ops[i][0] === '=') { lines.push({ eq: true, html: esc(ops[i][1]) }); i++; continue; }
-    var del = [], ins = [];
-    while (i < ops.length && ops[i][0] !== '=') { (ops[i][0] === '-' ? del : ins).push(ops[i][1]); i++; }
-    if (del.length && ins.length) lines.push({ html: words(del.join('\n'), ins.join('\n')).replace(/\n/g, '<br>') });
-    else if (del.length) lines.push({ html: '<del class="d-del">' + esc(del.join('\n')).replace(/\n/g, '<br>') + '</del>' });
-    else lines.push({ html: '<ins class="d-ins">' + esc(ins.join('\n')).replace(/\n/g, '<br>') + '</ins>' });
+
+  var TABS = [['text', 'Опис'], ['photos', 'Фото'], ['attrs', 'Характеристики'], ['specs', 'Специфікація'], ['kit', 'Комплект постачання'],
+    ['also', 'Супутні товари'], ['tile', 'Плитка категорії']];
+  function showTab(name) {
+    Array.prototype.forEach.call(scroll.querySelectorAll('[data-mg-tab]'), function (t) { t.classList.toggle('on', t.getAttribute('data-mg-tab') === name); });
+    Array.prototype.forEach.call(scroll.querySelectorAll('[data-mg-pane]'), function (p) { p.hidden = p.getAttribute('data-mg-pane') !== name; });
   }
-  var CTX = 2, out = '', near = lines.map(function () { return false; });
-  lines.forEach(function (l, k) { if (!l.eq) for (var d = -CTX; d <= CTX; d++) if (lines[k + d]) near[k + d] = true; });
-  function rows(n) { return n % 10 === 1 && n % 100 !== 11 ? 'рядок' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'рядки' : 'рядків'; }
-  for (i = 0; i < lines.length;) {
-    if (near[i]) { out += '<div class="diff-line' + (lines[i].eq ? '' : ' chg') + '">' + (lines[i].html || '&nbsp;') + '</div>'; i++; continue; }
-    var k = i; while (k < lines.length && !near[k]) k++;
-    out += '<div class="diff-skip">без змін: ' + (k - i) + ' ' + rows(k - i) + '</div>';
-    i = k;
+  function marks() { return scroll.querySelectorAll('.mg-row:not(.eq)'); }
+
+  function draw(r, a, b, dates, idx) {
+    var st = ((idx.contentStats || {})[r.owner] || {})[r.fromHash + '>' + r.toHash] || {};
+    var files = function (v) { return v.specs.concat((v.files || []).map(function (u) { return ['', u]; })); };
+    var panes = {
+      text: textPane(a, b),
+      photos: r.isCat ? null : photoPane(a.photos || [], b.photos || []),
+      attrs: attrsPane(a.attrs || [], b.attrs || []),
+      specs: listPane(files(a), files(b), function (s) { return imgKey(s[1]); }, function (s) {
+        var name = s[0] || decodeURIComponent(String(s[1]).split(/[?#]/)[0].split('/').pop() || s[1]);
+        return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">📎 ' + esc(name) + ' ↗</a>' + (s[0] ? '' : ' <span class="subtle">посилання в описі</span>');
+      }),
+      kit: listPane(a.kit || [], b.kit || [], function (s) { return s; }, function (s) { return '• ' + esc(s); }),
+      also: listPane(a.also || [], b.also || [], function (x) { return x[0] + '\t' + imgKey(x[1]); }, function (x) {
+        return (x[1] ? '<img class="mg-thumb" alt="" loading="lazy" src="' + esc(x[1]) + '">' : '') + '<span>' + esc(x[0]) + '</span>';
+      }),
+      tile: (a.tile || b.tile) ? photoPane(a.tile ? [a.tile] : [], b.tile ? [b.tile] : []) : null
+    };
+    // Посилання на GitHub — кожна зміна цього власника в періоді: файл у коміті зі зміною.
+    var anchor = (idx.contentAnchor || {})[r.owner] || [];
+    var gh = ((idx.content || {})[r.owner] || []).filter(function (v) { return v[2] && v[0] > dates[0] && v[0] <= dates[1]; }).map(function (v) {
+      var an = /h/.test(v[3] || '') ? anchor[0] : anchor[1];
+      return '<a target="_blank" rel="noopener" href="https://github.com/dialmak/scraper_cncprom/commit/' + esc(v[2]) + (an ? '#diff-' + esc(an) : '') + '">Зміна від ' + fmtLong(v[0]) + ' на GitHub ↗</a>';
+    }).join('');
+    var price = r.price != null ? String(Math.round(r.price)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₴' : '';
+    scroll.innerHTML = '<div class="mg-meta">' + (price ? '<span class="mg-price">' + price + '</span>' : '') +
+      (r.avail ? '<span class="stock-badge ' + (/готово/i.test(r.avail) ? 'yes' : 'no') + '">' + esc(r.avail) + '</span>' : '') +
+      (r.siteUrl ? '<a href="' + esc(r.siteUrl) + '" target="_blank" rel="noopener">Відкрити на cncprom.ua ↗</a>' : '') + gh + '</div>' +
+      '<div class="mg-stats"><span class="subtle">Що змінилось:</span>' + REPORT_PARTS.filter(function (p) { return st[p[0]]; }).map(function (p) {
+        return '<button type="button" class="chip" data-mg-go="' + p[2] + '">' + p[1] + ' <b>' + reportPartStat(p[0], st[p[0]]) + '</b></button>';
+      }).join('') + '</div>' +
+      '<div class="mg-sticky"><div class="desc-tabs mg-tabs" role="tablist"></div>' +
+      '<div class="mg-tools"><button type="button" class="chip" id="mg-next">Наступна зміна ↓</button><span class="subtle" id="mg-count"></span><span class="grow"></span>' +
+      '<label class="mg-only"><input type="checkbox" id="mg-only" checked> Лише зміни</label></div>' +
+      '<div class="mg-cols"><div>Було · ' + fmtLong(dates[0]) + '</div><div>Стало · ' + fmtLong(dates[1]) + '</div></div></div>' +
+      '<div class="mg-body only" id="mg-body"></div>';
+    var body = scroll.querySelector('#mg-body'), tabs = scroll.querySelector('.mg-tabs'), first = null, any = null;
+    TABS.forEach(function (t) {
+      var p = panes[t[0]];
+      if (!p) return;
+      p.className = 'mg-pane'; p.setAttribute('data-mg-pane', t[0]); p.hidden = true;
+      guard(p); fold(p);
+      body.appendChild(p);
+      var n = p.querySelectorAll('.mg-row:not(.eq)').length;
+      if (n && !first) first = t[0];
+      if (!any) any = t[0];
+      tabs.insertAdjacentHTML('beforeend', '<button type="button" role="tab" class="desc-tab" data-mg-tab="' + t[0] + '">' + t[1] +
+        (n ? '<span class="tab-chg">' + n + '</span>' : '') + '</button>');
+    });
+    showTab(first || any || 'text');
+    at = -1;
+    var n = marks().length;
+    scroll.querySelector('#mg-count').textContent = n ? 'змін: ' + n : '';
+    scroll.querySelector('#mg-next').style.display = n ? '' : 'none';
   }
-  return out;
+  scroll.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-mg-tab], [data-mg-go]');
+    if (t) { showTab(t.getAttribute('data-mg-tab') || t.getAttribute('data-mg-go')); return; }
+    if (!e.target.closest('#mg-next')) return;
+    var m = marks(); if (!m.length) return;
+    at = (at + 1) % m.length;
+    showTab(m[at].closest('[data-mg-pane]').getAttribute('data-mg-pane'));
+    if (!m[at].offsetParent) m[at].classList.add('ctx'); // рядок у згорнутому — показати
+    Array.prototype.forEach.call(scroll.querySelectorAll('.mg-now'), function (x) { x.classList.remove('mg-now'); });
+    m[at].classList.add('mg-now');
+    m[at].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    scroll.querySelector('#mg-count').textContent = 'зміна ' + (at + 1) + ' з ' + m.length;
+  });
+  scroll.addEventListener('change', function (e) {
+    if (e.target.id === 'mg-only') scroll.querySelector('#mg-body').classList.toggle('only', e.target.checked);
+  });
+
+  return function open(r, dates, idx) {
+    var my = ++current;
+    document.getElementById('mg-title').textContent = r.isCat ? 'Категорія: ' + r.name : r.name;
+    document.getElementById('mg-code').textContent = r.sku || '';
+    scroll.innerHTML = '<div class="empty-note">Завантажуємо версії…</div>';
+    ov.classList.add('open');
+    scroll.scrollTop = 0;
+    if (!cache[r.owner]) cache[r.owner] = fetch(DATA + 'content/' + encodeURIComponent(r.owner) + '.json').then(function (x) {
+      if (!x.ok) throw new Error('HTTP ' + x.status); return x.json();
+    });
+    cache[r.owner].then(function (v) {
+      if (my !== current) return;
+      var a = v[r.fromHash], b = v[r.toHash];
+      if (!a || !b) { scroll.innerHTML = '<div class="empty-note">Однієї з версій не знайдено.</div>'; return; }
+      draw(r, a, b, dates, idx);
+    }).catch(function (e) {
+      delete cache[r.owner];
+      if (my === current) scroll.innerHTML = '<div class="empty-note">Не вдалося завантажити версії (' + esc(e && e.message) + ').</div>';
+    });
+  };
 }
 
 // ==================== КЛІЄНТ ====================
 function initReportsPage() {
   var DATA = 'data/';
-  var TYPES = ['out', 'in', 'added', 'removed', 'moved', 'price', 'desc'];
+  var TYPES = ['out', 'in', 'added', 'removed', 'moved', 'price', 'content'];
   var TYPE = {
     out:     { icon: '▼', label: 'Зникли з наявності', cls: 't-out' },
     in:      { icon: '▲', label: 'Знову в наявності',  cls: 't-in' },
@@ -310,13 +486,13 @@ function initReportsPage() {
     removed: { icon: '−', label: 'Видалені товари',    cls: 't-rem' },
     moved:   { icon: '⇄', label: 'Змінили категорію',  cls: 't-mov' },
     price:   { icon: '₴', label: 'Змінилась ціна',     cls: 't-price' },
-    desc:    { icon: '¶', label: 'Змінився опис',      cls: 't-desc' }
+    content: { icon: '✎', label: 'Змінився контент',   cls: 't-desc' }
   };
   var CAT = { added: ['+', 'Нова категорія', 't-add'], removed: ['−', 'Видалена', 't-rem'], renamed: ['✎', 'Перейменована', 't-mov'], moved: ['⇄', 'Перенесена', 't-mov'] };
-  var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4, price: 5, desc: 6 };
+  var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4, price: 5, content: 6 };
   var PAGE = 200;
 
-  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, q: '', top: '', limit: PAGE };
+  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, parts: {}, q: '', top: '', limit: PAGE };
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -398,7 +574,7 @@ function initReportsPage() {
   function niceMax(v) { if (v <= 5) return 5; var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
   // Зміни цін у стовпець не входять: ціни перераховуються сотнями за ніч і затулили б
   // решту змін. У підказці вони окремим рядком.
-  function dayTotal(d) { var t = d.t; return t ? t.in + t.out + t.added + t.removed + t.moved + (t.desc || 0) + t.cats : null; }
+  function dayTotal(d) { var t = d.t; return t ? t.in + t.out + t.added + t.removed + t.moved + (t.content || 0) + t.cats : null; }
   function drawChart() {
     // У згорнутому блоці svg.clientWidth — 0, і графік малювався б по запасній
     // ширині 800 і лишився б таким після розгортання. setChartOpen перемалює.
@@ -522,101 +698,20 @@ function initReportsPage() {
       return '<span class="subtle">' + fmtPrice(r.fromPrice) + '</span><span class="arrow-to">→</span><b>' + fmtPrice(r.price) + '</b>' +
         '<span class="muted price-pct">' + sign + Math.abs(pct).toFixed(1).replace('.', ',') + '%</span>';
     }
-    if (r.type === 'desc') return '<button class="chip" data-desc="' + esc(r.id) + '" data-diff="' + esc(r.id) + '" data-from="' + esc(r.fromHash) + '" data-to="' + esc(r.toHash) + '">Було / стало</button>';
+    if (r.type === 'content') {
+      var cs = partStats(r);
+      return '<div class="st-box">' + REPORT_PARTS.filter(function (p) { return cs[p[0]]; }).map(function (p) {
+        return '<span class="st-name">' + p[1] + '</span><span class="st-val">' + reportPartStat(p[0], cs[p[0]]) + '</span>';
+      }).join('') + '</div><button class="chip" data-content="' + esc(r.owner) + '">Було / стало</button>';
+    }
     return '<span class="subtle">зник із сайту</span>';
   }
 
-  // ---------- Зміни опису у вікні «Опис» ----------
-  // Розмір і наповнення — самого вікна «Опис» (користувач 05.10.2026): ті самі вкладки,
-  // фото, код, ціна й наявність; сторінка змін лише домальовує в ньому зміни. Кнопка
-  // «Було / стало» має data-desc, тож вікно відкриває initDescriptions (map-common.js),
-  // а що показати — каже want: { id, from, to } (відбитки версій на початок і кінець
-  // періоду). Картки супутніх у вікні відкривають інші товари як звичайний опис;
-  // «← Назад» повертає до змін.
-  // Тексти версій — reports/data/desc/<id>.json (readDescHistory у build-reports.js).
-  var descTexts = {}, want = null;
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('[data-diff]');
-    if (b) want = { id: b.getAttribute('data-diff'), from: b.getAttribute('data-from'), to: b.getAttribute('data-to'), dates: [range.from, range.to] };
-  }, true);
-  function showChanges(id, d, body) {
-    if (!want || want.id !== id) return false;
-    var w = want, tabs = body.querySelector('.desc-tabs'), tools = document.createElement('div');
-    tools.className = 'chg-tools';
-    tools.innerHTML = '<span class="subtle">Завантажуємо зміни опису…</span>';
-    if (tabs) tabs.parentNode.insertBefore(tools, tabs.nextSibling); else body.insertBefore(tools, body.firstChild);
-    // Рядок кнопок закріплено під вкладками, вкладки — під заголовком вікна.
-    tools.style.top = (tabs ? tabs.offsetHeight : 0) + 'px';
-    if (!descTexts[id]) descTexts[id] = getJson(DATA + 'desc/' + encodeURIComponent(id) + '.json');
-    descTexts[id].then(function (t) {
-      if (!document.body.contains(tools)) return; // вікно вже показує інше
-      var a = t[w.from], b = t[w.to];
-      if (!a || !b) { tools.innerHTML = '<span>Одну з версій опису не знайдено.</span>'; return; }
-      var anchor = (idx.descAnchor || {})[id];
-      var gh = (idx.desc[id] || []).filter(function (v) { return v[2] && v[0] > w.dates[0] && v[0] <= w.dates[1]; }).map(function (v) {
-        return '<a target="_blank" rel="noopener" href="https://github.com/dialmak/scraper_cncprom/commit/' + esc(v[2]) + (anchor ? '#diff-' + esc(anchor) : '') + '">Зміна від ' + fmtLong(v[0]) + ' на GitHub ↗</a>';
-      }).join('');
-      tools.innerHTML = '<span>Зміни опису: було на ' + fmtLong(w.dates[0]) + ', стало на ' + fmtLong(w.dates[1]) + '</span>' +
-        '<div class="chips" role="group" aria-label="Що показати"><button class="chip" data-dmode="diff">Зміни</button><button class="chip" data-dmode="old">Було</button><button class="chip" data-dmode="new">Стало</button></div>' +
-        '<button class="chip" id="chg-next">Наступна зміна ↓</button><span class="subtle" id="chg-count"></span><span class="grow"></span>' + gh;
-      var textPane = body.querySelector('[data-desc-pane="text"]'), kitPane = body.querySelector('[data-desc-pane="kit"]'), at = -1;
-      if (!textPane) return;
-      function list(items) { return '<ul class="desc-kit">' + items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>'; }
-      function marks() { return body.querySelectorAll('[data-desc-pane] .blk-chg'); }
-      function draw(mode) {
-        Array.prototype.forEach.call(tools.querySelectorAll('[data-dmode]'), function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-dmode') === mode)); });
-        var v = mode === 'old' ? a : b, ak = a.kit || [], bk = b.kit || [], aa = a.also || [], ba = b.also || [];
-        textPane.innerHTML = '<div class="desc-text desc-html" data-desc-html></div>';
-        var slot = textPane.firstChild, extra = '';
-        if (mode === 'diff') reportHtmlDiff(slot, a.html, b.html); else descFillHtml(slot, v.html || '');
-        // Комплект: у своїй вкладці, коли вона є; інакше (у сьогоднішньому описі комплекту
-        // вже немає) — під описом. Список «можна придбати» у вікні — картки, тому зміни
-        // його назв теж під описом.
-        var kitHtml = mode === 'diff' ? reportListDiff(ak, bk) : list(v.kit || []);
-        if (kitPane) kitPane.innerHTML = kitHtml;
-        else if (mode === 'diff' ? ak.join('\n') !== bk.join('\n') : (v.kit || []).length) extra += '<h4 class="chg-h">Комплект постачання</h4>' + kitHtml;
-        if (mode === 'diff' ? aa.join('\n') !== ba.join('\n') : false) extra += '<h4 class="chg-h">До цього товару у нас можна придбати</h4>' + reportListDiff(aa, ba);
-        if (extra) textPane.insertAdjacentHTML('beforeend', extra);
-        // На вкладці зі змінами — лише число змін (замість кількості пунктів).
-        Array.prototype.forEach.call(body.querySelectorAll('[data-desc-tab]'), function (tab) {
-          var old = tab.querySelector('.tab-chg'); if (old) old.remove();
-          var pane = body.querySelector('[data-desc-pane="' + tab.getAttribute('data-desc-tab') + '"]'), n = pane ? pane.querySelectorAll('.blk-chg').length : 0;
-          tab.classList.toggle('has-chg', n > 0);
-          if (n) tab.insertAdjacentHTML('beforeend', '<span class="tab-chg">' + n + '</span>');
-        });
-        if (tabs) tools.style.top = Math.ceil(tabs.getBoundingClientRect().height) + 'px';
-        at = -1;
-        var n = marks().length;
-        $('chg-next').style.display = n ? '' : 'none';
-        $('chg-count').textContent = n ? 'змінених місць: ' + n : '';
-      }
-      tools.addEventListener('click', function (e) {
-        var c = e.target.closest('[data-dmode]');
-        if (c) { draw(c.getAttribute('data-dmode')); return; }
-        if (!e.target.closest('#chg-next')) return;
-        var m = marks(); if (!m.length) return;
-        at = (at + 1) % m.length;
-        // Зміна на іншій вкладці — спершу відкрити її (клік, щоб спрацював обробник вікна).
-        var name = m[at].closest('[data-desc-pane]').getAttribute('data-desc-pane'), tab = body.querySelector('[data-desc-tab="' + name + '"]');
-        if (tab && !tab.classList.contains('on')) tab.click();
-        Array.prototype.forEach.call(body.querySelectorAll('.chg-now'), function (x) { x.classList.remove('chg-now'); });
-        m[at].classList.add('chg-now');
-        m[at].scrollIntoView({ block: 'center', behavior: 'smooth' });
-        $('chg-count').textContent = 'зміна ' + (at + 1) + ' з ' + m.length;
-      });
-      draw('diff');
-    }).catch(function (e) { tools.innerHTML = '<span>Не вдалося завантажити версії опису. ' + esc(e && e.message) + '</span>'; });
-    return true;
-  }
-  // Файлу опису на сайті вже немає (товар зник після кінця періоду): ті самі зміни без
-  // вкладок і фото.
-  function showChangesBare(id, body, title, code) {
-    if (!want || want.id !== id) return false;
-    var r = D.rows.filter(function (x) { return x.type === 'desc' && x.id === id; })[0];
-    title.textContent = r ? r.name : 'Зміни опису'; code.textContent = r ? r.sku || '' : '';
-    body.innerHTML = '<div class="desc-grid"><div class="desc-main"><div class="desc-pane" data-desc-pane="text"></div></div></div>';
-    return showChanges(id, {}, body);
-  }
+  // ---------- Змінився контент: вікно «Було / стало» (initContentWindow) ----------
+  // Статистика пари версій — з index.json (contentStats), версії вікно бере само.
+  function partStats(r) { return ((idx.contentStats || {})[r.owner] || {})[r.fromHash + '>' + r.toHash] || {}; }
+  var openContent = initContentWindow(DATA);
+  function siteUrl(r) { return r.isCat ? catUrls[r.id] || '' : r.url; }
   function productTable(rows) {
     var shown = rows.slice(0, st.limit);
     return '<div class="result-line">Показано ' + shown.length + ' з ' + rows.length + '</div>' +
@@ -625,9 +720,12 @@ function initReportsPage() {
       '</tr></thead><tbody>' + shown.map(function (r) {
         return '<tr><td>' + badge(r.type) + '</td>' +
           '<td>' + (r.sku ? '<span class="code">' + esc(r.sku) + '</span>' : '<span class="subtle">—</span>') + '</td>' +
-          '<td>' + (r.url ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(r.url) + '">' + esc(r.name) + '</a>' : esc(r.name)) + '</td>' +
-          '<td>' + (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
-          (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + mapLink(r.top, r.cat, r.catName) : '') + '</td>' +
+          '<td>' + (siteUrl(r) ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(siteUrl(r)) + '">' + esc(r.name) + '</a>' : esc(r.name)) +
+          (r.isCat ? '<span class="cat-tag">категорія</span>' : '') + '</td>' +
+          // Категорія товару; для категорії — її батьківська (розділ 1 рівня — без батька: тире).
+          '<td>' + (r.isCat && !r.cat ? '<span class="subtle">—</span>' :
+            (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
+            (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + mapLink(r.top, r.cat, r.catName) : '')) + '</td>' +
           '<td>' + detail(r) + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
       (rows.length > st.limit ? '<div class="more-row"><button class="chip" data-more>Показати ще ' + Math.min(PAGE, rows.length - st.limit) + ' з ' + (rows.length - st.limit) + '</button></div>' : '');
@@ -658,11 +756,22 @@ function initReportsPage() {
     var q = st.q.trim().toLowerCase(), any = Object.keys(st.types).length > 0;
     return D.rows.filter(function (r) {
       if (any && !st.types[r.type]) return false;
+      if (r.type === 'content' && Object.keys(st.parts).length && !Object.keys(partStats(r)).some(function (k) { return st.parts[k]; })) return false;
       if (st.top && r.top !== st.top) return false;
       return !q || (r.name + ' ' + r.sku + ' ' + r.catName + ' ' + r.topName).toLowerCase().indexOf(q) >= 0;
     }).sort(function (a, b) {
       return (ORDER[a.type] - ORDER[b.type]) || a.topName.localeCompare(b.topName, 'uk') || a.name.localeCompare(b.name, 'uk');
     });
+  }
+  // Ряд «Що змінилось:» — скільки товарів змінили кожну частину контенту; клік фільтрує
+  // (як фішки: можна кілька). Лише коли вибрано «Змінився контент».
+  function partsHtml() {
+    if (!st.types.content) return '';
+    var n = {};
+    D.rows.forEach(function (r) { if (r.type === 'content') Object.keys(partStats(r)).forEach(function (k) { n[k] = (n[k] || 0) + 1; }); });
+    return '<div class="parts"><span class="parts-lbl">Що змінилось:</span>' + REPORT_PARTS.map(function (p) {
+      return '<button class="chip" data-part="' + p[0] + '" aria-pressed="' + !!st.parts[p[0]] + '"' + (n[p[0]] ? '' : ' disabled') + '>' + p[1] + '<span class="n">' + (n[p[0]] || 0) + '</span></button>';
+    }).join('') + '</div>';
   }
   function render() {
     drawTiles();
@@ -681,6 +790,7 @@ function initReportsPage() {
       '<select id="top" aria-label="Розділ 1 рівня"><option value="">Усі розділи</option>' + Object.keys(tops).sort(function (a, b) { return tops[a].localeCompare(tops[b], 'uk'); })
         .map(function (id) { return '<option value="' + esc(id) + '"' + (id === st.top ? ' selected' : '') + '>' + esc(tops[id]) + '</option>'; }).join('') + '</select>' +
       '<input id="q" class="search-mini" type="search" placeholder="Пошук: назва, код, категорія" value="' + esc(st.q) + '"></div></div>' +
+      partsHtml() +
       (rows.length ? productTable(rows)
         : '<div class="empty"><b>' + (D.rows.length ? 'Нічого не знайдено' : 'Товари за цей період не змінювались') + '</b>' +
           (D.rows.length ? 'Зніміть фільтри або змініть запит.' : 'Оберіть ширший період угорі або кліком по графіку.') + '</div>');
@@ -696,11 +806,12 @@ function initReportsPage() {
     $('panel').innerHTML = '<div class="empty subtle">Завантажуємо знімки…</div>';
     Promise.all([loadSnap(range.from), loadSnap(range.to)]).then(function (s) {
       if (my !== seq) return; // користувач уже обрав інший період — застарілу відповідь відкидаємо
-      D = reportDiff(s[0], s[1], products, idx.desc);
+      D = reportDiff(s[0], s[1], products, idx.content);
       // Фільтр, якому в новому періоді нема що показати, знімається: вимкнену фішку не
       // зняти кліком, а розділу, якого немає в списку, не видно в <select>. Інакше після
       // зміни періоду таблиця порожня без видимої причини (27.09.2026).
       Object.keys(st.types).forEach(function (k) { if (!D.totals[k]) delete st.types[k]; });
+      if (!st.types.content) st.parts = {};
       if (st.top && !D.rows.some(function (r) { return r.top === st.top; })) st.top = '';
       st.limit = PAGE; render();
     }).catch(fail);
@@ -741,6 +852,10 @@ function initReportsPage() {
     panel.addEventListener('click', function (e) {
       var c = e.target.closest('[data-chip]');
       if (c) { toggleType(c.getAttribute('data-chip')); st.limit = PAGE; render(); return; }
+      var pt = e.target.closest('[data-part]');
+      if (pt) { var k = pt.getAttribute('data-part'); if (st.parts[k]) delete st.parts[k]; else st.parts[k] = true; st.limit = PAGE; render(); return; }
+      var oc = e.target.closest('[data-content]');
+      if (oc) { var o = oc.getAttribute('data-content'), r = D.rows.filter(function (x) { return x.owner === o; })[0]; if (r) { r.siteUrl = siteUrl(r); openContent(r, [range.from, range.to], idx); } return; }
       if (e.target.closest('[data-more]')) { st.limit += PAGE; render(); }
     });
     panel.addEventListener('change', function (e) { if (e.target.id === 'top') { st.top = e.target.value; st.limit = PAGE; render(); } });
@@ -748,8 +863,6 @@ function initReportsPage() {
   }
 
   initThemeToggle();
-  initDescriptions({ base: '../', onShow: showChanges, onFail: showChangesBare });
-  initHeaderMenus();
   initHelpWindow();
   initNarrowGuard();
   setupTooltips();
@@ -762,7 +875,14 @@ function initReportsPage() {
       $('chart-card').style.display = 'none'; $('tiles').style.display = 'none'; $('range').style.display = 'none';
       return;
     }
-    readRange(); setChartOpen(chartStored()); bindEvents(); update();
+    readRange();
+    // ?type=content — сторінка відкривається з увімкненим типом (так веде пункт меню
+    // «Змінений контент» на map.html). Старі посилання ?type=desc|img|file|video ведуть
+    // туди ж. Тип, якого в періоді немає, update() знімає сам.
+    var t0 = new URLSearchParams(location.search).get('type');
+    if (/^(desc|img|file|video)$/.test(t0 || '')) t0 = 'content';
+    if (TYPE[t0]) st.types[t0] = true;
+    setChartOpen(chartStored()); bindEvents(); update();
   }).catch(fail);
 }
 
@@ -859,39 +979,68 @@ html, body { height: auto; overflow: visible; }
 .t-price { color: var(--chg-price); background: var(--chg-price-bg); border-color: var(--chg-price-border); }
 .price-pct { margin-left: 8px; white-space: nowrap; }
 .t-desc { color: var(--chg-desc); background: var(--chg-desc-bg); border-color: var(--chg-desc-border); }
-/* Зміни опису у вікні «Опис» (вигляд обрав користувач з макетів 05.10.2026).
-   Слова: вилучене закреслено червоним, додане підкреслено зеленим — колір і вигляд
-   разом, не колір сам по собі. Речення (абзац, пункт, клітинка) зі зміною — завжди в
-   блідо-зеленій рамці; поточне, на яке перейшли кнопкою «Наступна зміна», —
-   темно-зелена товща рамка й світло-зелене тло. */
-.d-del { color: var(--status-no); background: var(--status-no-bg); text-decoration: line-through; }
-.d-ins { color: var(--status-yes); background: var(--status-yes-bg); text-decoration: underline; text-decoration-thickness: 1px; }
-#desc-body .blk-chg { outline: 1.5px solid color-mix(in srgb, var(--status-yes) 50%, transparent); outline-offset: 3px; border-radius: 3px; }
-#desc-body td.blk-chg, #desc-body th.blk-chg { outline-offset: -2px; }
-#desc-body .blk-chg.chg-now { outline: 2.5px solid var(--status-yes); background: var(--status-yes-bg); }
-#desc-body img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
-#desc-body img.img-del { outline: 3px solid var(--status-no); outline-offset: 2px; opacity: .6; max-width: 160px; display: inline-block; margin: 6px 10px 6px 4px; }
-.img-gone-label { font-size: .8rem; color: var(--status-no); margin: 10px 0 4px; }
-/* Рядок «було / стало» з кнопками: закріплений під вкладками (top ставить скрипт за
-   висотою ряду вкладок), щоб «Наступна зміна» була під рукою при прокрутці. */
-.chg-tools { position: sticky; z-index: 2; background: var(--bg-white); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
-  margin: -14px 0 12px; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: .8rem; color: var(--text-muted); }
-.chg-tools .grow { flex: 1; }
-.chg-tools a { color: var(--text-link); text-decoration: none; }
-.chg-tools a:hover { text-decoration: underline; }
-.chg-h { font-size: .9rem; font-weight: 600; margin: 16px 0 6px; color: var(--text-main); }
-/* Позначка на вкладці: скільки на ній змін (кількість пунктів тоді схована). */
+/* «Змінився контент»: у рядку таблиці — що саме змінилось; над таблицею — ряд частин. */
+.st-box { display: grid; grid-template-columns: auto auto; gap: 1px 10px; font-size: .78rem; margin-bottom: 6px; justify-content: start; }
+.st-name { color: var(--text-muted); }
+.st-val { font-family: var(--font-mono); font-size: .74rem; color: var(--text-main); }
+.parts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+.parts-lbl { font-size: .78rem; color: var(--text-subtle); margin-right: 4px; }
+.cat-tag { font-size: .72rem; color: var(--text-subtle); margin-left: 6px; }
+
+/* Вікно «Було / стало» як при merge (вибір користувача з макета 16.10.2026): ліва колонка —
+   початок періоду, права — кінець; змінене тлом і смужкою (червоне зліва, зелене справа),
+   слова — закреслене червоне й підкреслене зелене (колір і вигляд разом, не колір сам по
+   собі); порожній бік — штриховка. */
+.help-overlay.mg-overlay { padding: 3vh 0; align-items: flex-start; }
+.help-panel.mg-panel { width: 94vw; max-width: none; }
+.mg-panel .help-panel-head h3 { flex: 1; min-width: 0; }
+.mg-code { margin: 0 14px 0 16px; font-size: 1rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+.mg-code:empty { display: none; }
+.mg-scroll { max-height: calc(94vh - 58px); overflow-y: auto; }
+.mg-scroll > .empty-note { padding: 18px 20px; color: var(--text-muted); }
+.mg-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; padding: 12px 20px 4px; font-size: .82rem; }
+.mg-meta a { color: var(--text-link); text-decoration: none; }
+.mg-meta a:hover { text-decoration: underline; }
+.mg-price { font-weight: 600; }
+.mg-stats { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 20px 4px; font-size: .8rem; }
+.mg-stats .chip b { font-family: var(--font-mono); font-weight: 600; font-size: .74rem; color: var(--text-main); }
+.mg-sticky { position: sticky; top: 0; z-index: 3; background: var(--bg-white); padding: 0 20px; border-bottom: 1px solid var(--border-dark); }
+.mg-tabs { margin-bottom: 0; position: static; }
+.mg-tools { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: .8rem; }
+.mg-tools .grow { flex: 1; }
+.mg-only { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; color: var(--text-muted); }
+.mg-cols { display: grid; grid-template-columns: 1fr 1fr; font-size: .78rem; font-weight: 600; }
+.mg-cols > div { padding: 6px 12px; }
+.mg-cols > div:first-child { color: var(--status-no); border-right: 1px solid var(--border-dark); }
+.mg-cols > div:last-child { color: var(--status-yes); }
+.mg-body { padding: 0 20px 24px; }
+.mg-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-color); }
+.mg-cell { padding: 6px 12px; min-width: 0; overflow-wrap: anywhere; font-size: .88rem; line-height: 1.5; }
+.mg-cell.l { border-right: 1px solid var(--border-dark); }
+.mg-row.chg .mg-cell.l, .mg-row.del .mg-cell.l { background: var(--status-no-bg); box-shadow: inset 3px 0 0 var(--status-no); }
+.mg-row.chg .mg-cell.r, .mg-row.add .mg-cell.r { background: var(--status-yes-bg); box-shadow: inset 3px 0 0 var(--status-yes); }
+.mg-cell.mg-empty { background: repeating-linear-gradient(-45deg, transparent 0 6px, var(--border-color) 6px 7px); box-shadow: none; }
+.mg-row.mg-now { outline: 2px solid var(--border-active); outline-offset: -1px; }
+.mg-body.only .mg-row.eq:not(.ctx) { display: none; }
+.mg-body:not(.only) .mg-gap { display: none; }
+.mg-gap { display: block; width: 100%; text-align: center; font: inherit; font-size: .78rem; color: var(--text-link); background: var(--bg-hover); border: 0; border-bottom: 1px solid var(--border-color); padding: 5px; cursor: pointer; }
+.mg-gap:hover { text-decoration: underline; }
+.mg-cell p, .mg-cell ul, .mg-cell ol, .mg-cell table, .mg-cell h1, .mg-cell h2, .mg-cell h3, .mg-cell h4 { margin: 4px 0; }
+.mg-cell img.desc-img { max-width: 100%; height: auto; }
+.mg-cell .d-del { background: color-mix(in srgb, var(--status-no) 22%, transparent); color: var(--status-no); text-decoration: line-through; border-radius: 2px; }
+.mg-cell .d-ins { background: color-mix(in srgb, var(--status-yes) 22%, transparent); color: var(--status-yes); text-decoration: underline; text-decoration-thickness: 1px; border-radius: 2px; }
+.mg-cell img.img-del { outline: 3px dashed var(--status-no); outline-offset: 2px; opacity: .7; }
+.mg-cell img.img-ins { outline: 3px solid var(--status-yes); outline-offset: 2px; }
+/* Фото на білому в обох темах: фото Prom на білому, на темному тлі виходили б «вікна». */
+.mg-photo { max-width: 220px; max-height: 220px; background: #fff; border-radius: 6px; display: block; }
+.mg-thumb { width: 48px; height: 48px; object-fit: contain; background: #fff; border-radius: 4px; margin-right: 8px; vertical-align: middle; }
+.mg-kv { display: grid; grid-template-columns: 45% 1fr; gap: 10px; }
+.mg-kv .k { color: var(--text-muted); }
+.mg-li a { color: var(--text-link); text-decoration: none; }
+.mg-li a:hover { text-decoration: underline; }
+.mg-broken { display: inline-flex; flex-direction: column; gap: 4px; border: 2px dashed var(--status-no); border-radius: 6px; padding: 10px 12px; font-size: .76rem; color: var(--status-no); max-width: 260px; }
+.mg-broken small { color: var(--text-subtle); word-break: break-all; }
 .tab-chg { display: inline-block; min-width: 17px; padding: 0 5px; margin-left: 6px; border-radius: 9px; font: 700 .7rem/17px var(--font-sans); text-align: center; background: var(--status-yes); color: var(--bg-white); }
-.desc-tab.has-chg .desc-tab-n { display: none; }
-.diff-text { font-size: .88rem; line-height: 1.55; color: var(--text-main); }
-.diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
-.diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
-.diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
-.diff-line { padding: 1px 8px; border-left: 3px solid transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
-.diff-line.chg { border-left-color: var(--border-active); background: var(--bg-subtle); }
-.diff-skip { padding: 2px 8px; margin: 4px 0; font-size: .76rem; color: var(--text-subtle); border-left: 3px dotted var(--border-dark); }
-.d-del { color: var(--status-no); background: var(--status-no-bg); text-decoration: line-through; }
-.d-ins { color: var(--status-yes); background: var(--status-yes-bg); text-decoration: underline; text-decoration-thickness: 1px; }
 
 .rep-table td { vertical-align: top; }
 .rep-table th { white-space: nowrap; }
@@ -926,7 +1075,8 @@ html, body { height: auto; overflow: visible; }
 // рахується від того самого рядка, який потім записується у файл, — інакше
 // браузер із новим HTML міг би лишитись на закешованих старих стилях чи коді.
 const REPORTS_CSS = css.trim() + '\n';
-const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportLcs, reportHtmlDiff, reportListDiff, reportTextDiff, initReportsPage].map(fn => fn.toString()).join('\n\n') + '\n';
+const REPORTS_JS = [reportIsYes, reportExpand, reportDiff, reportOps, reportPartStat, initContentWindow, initReportsPage].map(fn => fn.toString()).join('\n\n') +
+  '\n\nvar REPORT_PARTS = ' + JSON.stringify(REPORT_PARTS) + ';\n';
 
 // ==================== СТОРІНКА ====================
 const html = `<!DOCTYPE html>
@@ -948,10 +1098,9 @@ const html = `<!DOCTYPE html>
     </div>
     <div class="header-center"></div>
     <div class="header-right">
-      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
 ${helpButtonHtml('changes', '../')}
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
-      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+      <a href="../map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
     </div>
   </header>
 
@@ -998,68 +1147,170 @@ ${narrowGuardHtml()}
 `;
 
 
-// ==================== ЗМІНИ ОПИСІВ ====================
-// Тип «Змінився опис» і вікно «Було / стало» (HISTORY.md, п. 49). Джерело — історія git
-// гілки data: generate-snapshot.js переписує products/<id>.html, лише коли магазин
-// змінив опис, тож коміт «Знімок за <дата>», що змінив файл, і є зміною опису тієї
-// дати. Обидві версії розбираються ТИМ САМИМ кодом, що й вікно «Опис» (lib/desc-parse.js),
-// і порівнюється видимий текст: правка лише розмітки (шрифт, відступ) зміною не
-// вважається. Відбитки textHash зі знімків тут свідомо не беруться: вони залежать від
-// версії розбору на момент знімка, а тут обидві версії розбираються поточною.
+// ==================== ЗМІНИ КОНТЕНТУ ====================
+// Тип «Змінився контент» і вікно «Було / стало» як при merge (HISTORY.md, п. 55; до
+// 16.10.2026 — окремо «Змінився опис», п. 49, і числа змін медіа). Джерело — історія git
+// гілки data: generate-snapshot.js переписує products/<id>.html|.json і
+// categories/<id>.html|.json, лише коли на сайті щось змінилось, тож коміт «Знімок за
+// <дата>», що змінив файл, — кандидат у зміну контенту тієї дати.
 //
-// Пише reports/data/desc/<id>.json — { відбиток: { html, kit, also } } усіх версій
-// товару (html — той самий очищений HTML, що у вікні «Опис»), а в index.json іде
-// desc: { id: [[дата, відбиток, коміт], …] } (перший запис — з датою '', версія до
-// першої зміни, без коміту) і descAnchor: { id: якір файлу в коміті на GitHub }.
-// Відбиток на дату — останній запис, не пізніший за неї.
-function descDisplayText(d) {
-  if (!d) return '';
-  const clean = s => String(s || '').replace(/!\[\]\([^)]*\)/g, '🖼 картинка').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
-  let out = clean(d.text);
-  if ((d.kit || []).length) out += '\nКомплект постачання:\n' + d.kit.join('\n');
-  if ((d.xsell || []).length) out += '\nДо цього товару у нас можна придбати:\n' + d.xsell.map(x => x[0]).filter(Boolean).join('\n');
-  return out.trim();
+// Контент — те, що бачить покупець на сторінці, крім назви, ціни й наявності (у них свої
+// типи): текст опису, картинки й посилання на файли в ньому, відео, фото товару,
+// характеристики, файли «Специфікації», комплект постачання, список супутніх, плитка
+// категорії. Опис обох версій розбирається ТИМ САМИМ кодом, що й вікно «Опис»
+// (lib/desc-parse.js), тож правка лише розмітки зміною не є. Характеристики — за назвою:
+// магазин їх тасує, і новий порядок зміною не вважається. Картинки Prom — за номером
+// (mediaKey): перейменування товару міняє назву файлу в адресі всіх його фото.
+//
+// Пише reports/data/content/<власник>.json — { відбиток: версія } (власник — p<id> чи
+// c<id>; версія — те, що малює вікно: html, kit, also, photos, attrs, specs, tile), а в
+// index.json: content: { власник: [[дата, відбиток, коміт, 'h'|'j'|'hj'], …] } (перший
+// запис — дата '', версія до першої зміни; літери — який файл змінив коміт),
+// contentStats: { власник: { 'від>до': статистика } } для кожної пари версій (таблиця
+// показує «що змінилось», не завантажуючи версій) і contentAnchor: { власник: [якір
+// .html, якір .json] } для посилань на GitHub.
+function contentText(d) {
+  return String((d && d.text) || '').replace(/!\[\]\([^)]*\)/g, '🖼').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').trim();
 }
-async function readDescHistory(products) {
+function contentVersion(json, raw, parsed) {
+  let d = {};
+  try { d = JSON.parse(json || '{}'); } catch (e) { /* пошкоджений файл — порожня версія */ }
+  const p = parsed || {};
+  // Картинки й файли — з розібраного опису, тобто з того, що видно: у сирому є ще шаблон
+  // магазину й скриншоти-підказки до «Специфікації», які вікно «Опис» прибирає (з них
+  // виходили хибні «+4 картинки»). Відео — із сирого: вбудовані плеєри розбір не лишає.
+  const shown = p.html ? mediaFromHtml(p.html) : [], rawMedia = raw ? mediaFromHtml(raw) : [];
+  const urls = (kind, places, from) => (from || shown).filter(m => m.kind === kind && places.includes(m.place)).map(m => m.url);
+  return {
+    html: p.html || '',
+    text: contentText(p),
+    kit: p.kit || [],
+    // Список супутніх з опису: назва й мініатюра (мініатюри у вікні «Опис» не видно).
+    also: (p.xsell || []).map(x => [x[0] || '', realUrl(x[2]) || '']).filter(x => x[0] || x[1]),
+    descImg: urls('image', ['desc', 'link']),
+    files: urls('file', ['link']),
+    video: urls('video', ['video'], rawMedia),
+    photos: (d.photos || []).map(realUrl).filter(Boolean),
+    attrs: d.attrs || [],
+    specs: (d.specs || []).map(s => [s[0] || '', realUrl(s[1]) || '']),
+    tile: realUrl(d.image) || '',
+  };
+}
+// Відбиток контенту: однаковий — зміни немає (лише назва, адреса, порядок характеристик
+// чи розмітка опису).
+function contentSig(v) {
+  const keys = list => list.map(mediaKey);
+  return JSON.stringify({
+    t: v.text, k: v.kit, a: v.also.map(x => x[0] + '\t' + mediaKey(x[1])),
+    di: keys(v.descImg), f: keys(v.files), v: v.video, p: keys(v.photos),
+    at: v.attrs.map(x => x[0] + '\t' + x[1]).sort(), s: v.specs.map(s => s[0] + '\t' + mediaKey(s[1])), tl: v.tile ? mediaKey(v.tile) : '',
+  });
+}
+// Скільки слів додано й прибрано: LCS по словах (спільні початок і кінець — без таблиці).
+function wordStats(a, b) {
+  const x = a.split(/\s+/).filter(Boolean), y = b.split(/\s+/).filter(Boolean);
+  let pre = 0, suf = 0;
+  while (pre < x.length && pre < y.length && x[pre] === y[pre]) pre++;
+  while (suf < x.length - pre && suf < y.length - pre && x[x.length - 1 - suf] === y[y.length - 1 - suf]) suf++;
+  const X = x.slice(pre, x.length - suf), Y = y.slice(pre, y.length - suf);
+  let same = 0;
+  if (X.length && Y.length && X.length * Y.length <= 4e6) {
+    let prev = new Uint32Array(Y.length + 1), cur = new Uint32Array(Y.length + 1);
+    for (let i = 1; i <= X.length; i++) {
+      for (let j = 1; j <= Y.length; j++) cur[j] = X[i - 1] === Y[j - 1] ? prev[j - 1] + 1 : Math.max(prev[j], cur[j - 1]);
+      [prev, cur] = [cur, prev];
+    }
+    same = prev[Y.length];
+  }
+  return [Y.length - same, X.length - same];
+}
+// Статистика пари версій: на частину — [додано, прибрано] (характеристики — ще й
+// змінено). Лише частини, що змінились.
+function contentStats(a, b) {
+  const st = {};
+  const sets = (x, y, key) => {
+    const A = new Set(x.map(key)), B = new Set(y.map(key));
+    return [y.filter(v => !A.has(key(v))).length, x.filter(v => !B.has(key(v))).length];
+  };
+  const put = (k, v) => { if (v[0] || v[1] || v[2]) st[k] = v; };
+  if (a.text !== b.text) put('text', wordStats(a.text, b.text));
+  put('descImg', sets(a.descImg, b.descImg, mediaKey));
+  put('photos', sets(a.photos, b.photos, mediaKey));
+  const am = new Map(a.attrs), bm = new Map(b.attrs), at = [0, 0, 0];
+  bm.forEach((v, k) => { if (!am.has(k)) at[0]++; else if (am.get(k) !== v) at[2]++; });
+  am.forEach((v, k) => { if (!bm.has(k)) at[1]++; });
+  put('attrs', at);
+  const fa = sets(a.specs.map(s => s[1]).concat(a.files), b.specs.map(s => s[1]).concat(b.files), mediaKey);
+  put('files', fa);
+  put('kit', sets(a.kit, b.kit, s => s));
+  put('also', sets(a.also, b.also, x => x[0] + '\t' + mediaKey(x[1])));
+  put('tile', sets(a.tile ? [a.tile] : [], b.tile ? [b.tile] : [], mediaKey));
+  put('video', sets(a.video, b.video, s => s));
+  return st;
+}
+async function readContentHistory(products, catUrls) {
   const { execFileSync } = require('child_process');
   const crypto = require('crypto');
   const { parseMany } = require('./lib/desc-parse');
   const git = args => execFileSync('git', args, { cwd: DATA_DIR, encoding: 'utf8', maxBuffer: 1 << 30, stdio: ['ignore', 'pipe', 'ignore'] });
   let log;
-  try { log = git(['log', '--reverse', '--format=@%H %s', '--name-status', '--diff-filter=M', 'HEAD', '--', 'products/*.html']); }
-  catch (e) { console.warn(`Історію описів не прочитано (${DATA_DIR} не git-тека гілки data?) — тип «Змінився опис» буде порожній.`); return null; }
-  const changes = [];
+  try { log = git(['log', '--reverse', '--format=@%H %s', '--name-status', '--diff-filter=M', 'HEAD', '--', 'products/*.html', 'products/*.json', 'categories/*.html', 'categories/*.json']); }
+  catch (e) { console.warn(`Історію контенту не прочитано (${DATA_DIR} не git-тека гілки data?) — тип «Змінився контент» буде порожній.`); return null; }
+  // Коміт × власник: які з двох файлів він змінив.
+  const changes = [], byKey = new Map();
   let commit = null, date = null;
   log.split('\n').forEach(line => {
     if (line[0] === '@') { const m = line.match(/^@(\w+) .*?(\d{4}-\d{2}-\d{2})/); commit = m ? m[1] : null; date = m ? m[2] : null; return; }
-    const f = line.match(/^M\tproducts\/(\d+)\.html$/);
-    if (f && commit) changes.push({ commit, date, id: f[1] });
+    const f = line.match(/^M\t(products|categories)\/(\d+)\.(html|json)$/);
+    if (!f || !commit) return;
+    const owner = (f[1] === 'products' ? 'p' : 'c') + f[2], key = commit + ':' + owner;
+    if (!byKey.has(key)) { const c = { commit, date, owner, dir: f[1], id: f[2], files: '' }; byKey.set(key, c); changes.push(c); }
+    const c = byKey.get(key);
+    if (!c.files.includes(f[3][0])) c.files = (c.files + f[3][0]).split('').sort().join('');
   });
-  const show = (rev, id) => { try { return git(['show', `${rev}:products/${id}.html`]); } catch (e) { return ''; } };
-  const list = [];
+  const show = (rev, file) => { try { return git(['show', `${rev}:${file}`]); } catch (e) { return ''; } };
+  const raws = new Map(), list = [];
   changes.forEach(c => {
-    const url = (products[c.id] || [])[2] || '';
-    list.push({ key: `${c.commit}:${c.id}:a`, raw: show(c.commit + '^', c.id), url }, { key: `${c.commit}:${c.id}:b`, raw: show(c.commit, c.id), url });
+    const url = c.dir === 'products' ? (products[c.id] || [])[2] || '' : catUrls[c.id] || '';
+    [c.commit + '^', c.commit].forEach(rev => {
+      const k = `${rev}:${c.owner}`;
+      if (raws.has(k)) return;
+      const r = { json: show(rev, `${c.dir}/${c.id}.json`), html: show(rev, `${c.dir}/${c.id}.html`) };
+      raws.set(k, r);
+      if (r.html) list.push({ key: k, raw: r.html, url });
+    });
   });
   const parsed = await parseMany(list);
+  const ver = k => { const r = raws.get(k); return contentVersion(r.json, r.html, parsed.get(k)); };
   const h = t => crypto.createHash('sha1').update(t).digest('hex').slice(0, 10);
-  const hist = {}, texts = {}, anchors = {};
-  let markupOnly = 0;
+  const hist = {}, versions = {}, anchors = {};
+  let same = 0;
   changes.forEach(c => {
-    const a = descDisplayText(parsed.get(`${c.commit}:${c.id}:a`)), b = descDisplayText(parsed.get(`${c.commit}:${c.id}:b`));
-    if (a === b) { markupOnly++; return; }
-    const ha = h(a), hb = h(b);
-    const ver = d => ({ html: (d && d.html) || '', kit: (d && d.kit) || [], also: ((d && d.xsell) || []).map(x => x[0]).filter(Boolean) });
-    texts[c.id] = texts[c.id] || {};
-    texts[c.id][ha] = ver(parsed.get(`${c.commit}:${c.id}:a`)); texts[c.id][hb] = ver(parsed.get(`${c.commit}:${c.id}:b`));
-    if (!hist[c.id]) hist[c.id] = [['', ha]];
-    // Третій елемент — коміт гілки data зі зміною: посилання на GitHub веде одразу на
-    // файл цього товару в ньому (#diff-<sha256 шляху>), а не на весь нічний коміт.
-    hist[c.id].push([c.date, hb, c.commit]);
-    anchors[c.id] = crypto.createHash('sha256').update(`products/${c.id}.html`).digest('hex');
+    const a = ver(`${c.commit}^:${c.owner}`), b = ver(`${c.commit}:${c.owner}`);
+    const sa = contentSig(a), sb = contentSig(b);
+    if (sa === sb) { same++; return; }
+    const ha = h(sa), hb = h(sb);
+    const keep = v => { const o = Object.assign({}, v); delete o.text; delete o.descImg; return o; };
+    versions[c.owner] = versions[c.owner] || {};
+    if (!versions[c.owner][ha]) versions[c.owner][ha] = { v: keep(a), full: a };
+    versions[c.owner][hb] = { v: keep(b), full: b };
+    if (!hist[c.owner]) hist[c.owner] = [['', ha]];
+    hist[c.owner].push([c.date, hb, c.commit, c.files]);
+    const path = `${c.dir}/${c.id}`, sha = p => crypto.createHash('sha256').update(p).digest('hex');
+    anchors[c.owner] = [sha(path + '.html'), sha(path + '.json')];
   });
-  console.log(`Зміни описів: ${changes.length} змінених файлів в історії, з них лише розмітка ${markupOnly}; товарів зі зміненим текстом ${Object.keys(hist).length}.`);
-  return { hist, texts, anchors };
+  // Статистика кожної пари версій власника (обидва напрями: період може «повернути»
+  // старий вміст, і тоді початок пізніший за кінець у ланцюжку версій).
+  const stats = {};
+  Object.keys(hist).forEach(o => {
+    const hs = Array.from(new Set(hist[o].map(x => x[1])));
+    stats[o] = {};
+    hs.forEach(x => hs.forEach(y => { if (x !== y) stats[o][x + '>' + y] = contentStats(versions[o][x].full, versions[o][y].full); }));
+  });
+  const files = {};
+  Object.keys(versions).forEach(o => { files[o] = {}; Object.keys(versions[o]).forEach(k => { files[o][k] = versions[o][k].v; }); });
+  console.log(`Зміни контенту: ${changes.length} змін файлів в історії, з них без зміни контенту ${same}; товарів і категорій зі зміненим контентом ${Object.keys(hist).length}.`);
+  return { hist, files, stats, anchors };
 }
 
 // ==================== ЗБІРКА ====================
@@ -1080,7 +1331,7 @@ if (require.main === module) (async () => {
   // бере їх через ../, але збиратись може й окремо від build-maps.js.
   writeLogos(SITE_DIR);
   // Прибрати компактні знімки дат, яких більше немає в гілці data.
-  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json', 'desc']));
+  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json', 'content']));
   fs.readdirSync(OUT_DATA).filter(f => !keep.has(f)).forEach(f => fs.rmSync(path.join(OUT_DATA, f), { recursive: true, force: true }));
 
   // Таблиця статусів наявності спільна для всіх днів: у кожному товарі лише її індекс.
@@ -1124,21 +1375,24 @@ if (require.main === module) (async () => {
     expandedByDate.push(reportExpand(compact, avail, d));
   }
 
-  // Зміни описів — з історії git (потрібен словник products: з нього адреса сторінки
-  // для розбору відносних посилань), тому після проходу по знімках.
-  const descHist = await readDescHistory(products);
-  const DESC_OUT = path.join(OUT_DATA, 'desc');
-  if (descHist) {
-    fs.mkdirSync(DESC_OUT, { recursive: true });
-    Object.keys(descHist.texts).forEach(id => fs.writeFileSync(path.join(DESC_OUT, `${id}.json`), JSON.stringify(descHist.texts[id]), 'utf-8'));
+  // Зміни контенту — з історії git (потрібні словники products і catUrls: з них адреса
+  // сторінки для розбору відносних посилань), тому після проходу по знімках. Тека
+  // content/ щоразу збирається з нуля: версії власника, якого вже немає в історії, не
+  // лишаються.
+  const contentHist = await readContentHistory(products, catUrls);
+  const CONTENT_OUT = path.join(OUT_DATA, 'content');
+  fs.rmSync(CONTENT_OUT, { recursive: true, force: true });
+  if (contentHist) {
+    fs.mkdirSync(CONTENT_OUT, { recursive: true });
+    Object.keys(contentHist.files).forEach(o => fs.writeFileSync(path.join(CONTENT_OUT, `${o}.json`), JSON.stringify(contentHist.files[o]), 'utf-8'));
   }
-  const desc = descHist ? descHist.hist : {};
+  const content = contentHist ? contentHist.hist : {};
 
   let prevExpanded = null;
   expandedByDate.forEach(expanded => {
     if (prevExpanded) {
-      const t = reportDiff(prevExpanded, expanded, null, desc).totals;
-      daily.push({ date: expanded.date, t: { in: t.in, out: t.out, added: t.added, removed: t.removed, moved: t.moved, price: t.price, desc: t.desc, cats: t.cats } });
+      const t = reportDiff(prevExpanded, expanded, null, content).totals;
+      daily.push({ date: expanded.date, t: { in: t.in, out: t.out, added: t.added, removed: t.removed, moved: t.moved, price: t.price, content: t.content, cats: t.cats } });
     } else {
       daily.push({ date: expanded.date, t: null });
     }
@@ -1146,7 +1400,8 @@ if (require.main === module) (async () => {
   });
 
   const usedDates = daily.map(x => x.date);
-  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, desc, descAnchor: descHist ? descHist.anchors : {} }), 'utf-8');
+  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, content,
+    contentStats: contentHist ? contentHist.stats : {}, contentAnchor: contentHist ? contentHist.anchors : {} }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
 

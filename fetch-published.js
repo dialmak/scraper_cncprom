@@ -7,10 +7,11 @@
 // Завантажує categories.json і для кожної категорії <id>_catalog.json
 // (дерево + товари + звірка в одному файлі), а також <id>_errors.json і
 // <id>_failed_urls.json, якщо вони є; якщо їх нема — видаляє локальні, щоб не
-// лишились чужі. Логи (scrape.jsonl, map.jsonl) — лише якщо локально їх немає.
+// лишились чужі. Логи (scrape.jsonl, map.jsonl) і media-check.json — лише якщо
+// локально їх немає.
 //
 // node fetch-published.js [pagesUrl]               (за замовчуванням — PAGES_URL нижче)
-// node fetch-published.js --logs-only [pagesUrl]   лише логи — для нічного прогону
+// node fetch-published.js --logs-only [pagesUrl]   лише логи й media-check.json — для нічного прогону
 //
 // --logs-only з'явився 26.09.2026 разом із scrape.jsonl: нічний прогін у CI бере
 // чистий чекаут із порожнім output/, і без цього кроку лог щоночі починався
@@ -52,8 +53,13 @@ async function getCategoryList() {
 // порожнім логом, стираючи історію (знайдено 25.09.2026 — користувач побачив
 // порожній лог). Тільки коли файла немає: локальну історію перезаписувати
 // чужою не можна.
+// media-check.json (check-media.js) — так само історія, а не результат одного прогону:
+// поле n рахує, скільки ночей поспіль файл не відкривається, і «недоступним» файл стає
+// лише з n ≥ 2. Без попереднього файлу кожна ніч у CI починала б з n = 1, і списки
+// «Недоступні …» на сайті лишались би порожніми; перебудова без скрапінгу без нього
+// втратила б і самі списки.
 async function fetchLogs() {
-  for (const name of ['scrape.jsonl', 'map.jsonl']) {
+  for (const name of ['scrape.jsonl', 'map.jsonl', 'media-check.json']) {
     const lp = path.join(DIR, name);
     if (fs.existsSync(lp)) { console.log(`  ${name}: лишаємо локальний`); continue; }
     try {

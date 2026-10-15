@@ -370,10 +370,9 @@ html, body { height: auto; overflow: visible; }
     </div>
     <div class="header-center"></div>
     <div class="header-right">
-      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
 ${helpButtonHtml('map')}
       <button id="btn-theme-toggle" class="btn-theme-toggle"><span class="theme-icon">🌙</span> <span class="theme-text">Темна</span></button>
-      <a href="https://cncprom.ua/ua/" class="link-site" target="_blank" rel="noopener">cncprom.ua ↗</a>
+      <a href="map.html" class="btn-theme-toggle" data-tip="Мапа всіх категорій сайту">${ICONS.map} Мапа сайту</a>
     </div>
   </header>
 ${narrowGuardHtml()}
@@ -425,7 +424,7 @@ ${narrowGuardHtml()}
   </div>
   <script src="map-common.js${assetVer(path.join(DIR, 'map-common.js'))}"></script>
   <script>${initFeeSort.toString()}
-initThemeToggle(); initHeaderMenus(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort();
+initThemeToggle(); initHelpWindow(); initNarrowGuard(); setupTooltips(); initFeeSort();
 setupModalOverlay('pt-note-overlay', 'pt-note-btn', 'btn-pt-note-close');</script>
 </body>
 </html>
