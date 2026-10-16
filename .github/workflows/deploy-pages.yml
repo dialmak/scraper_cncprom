@@ -151,7 +151,13 @@ jobs:
         run: node generate-snapshot.js data-branch
 
       - name: "Закомітити й запушити гілку data"
+        # 15.10.2026 GitHub 45 с не відповідав на пуш і дав HTTP 408: разовий збій, наступної
+        # ночі той самий за розміром коміт пройшов за 2 с. Тому пуш — до трьох спроб з паузою.
+        # Якщо всі три не вдались, сайт однаково публікується (мапи, логи, сторінка змін з
+        # локальної копії data), а останній крок робить прогін червоним (HISTORY п. 57).
+        id: data-push
         if: ${{ env.SCRAPE == 'true' }}
+        continue-on-error: true
         run: |
           cd data-branch
           git add snapshots
@@ -166,7 +172,12 @@ jobs:
           # прибирається: історія описів починається заново в новому форматі.
           git rm -r -q --ignore-unmatch descriptions
           git commit -m "Знімок за ${SNAPSHOT_DATE}" || echo "Немає змін для коміту"
-          git push origin data
+          for i in 1 2 3; do
+            git push origin data && exit 0
+            if [ "$i" -lt 3 ]; then echo "Пуш у data не вдався (спроба $i з 3), повтор через 60 с"; sleep 60; fi
+          done
+          echo "::error::Пуш у гілку data не вдався після трьох спроб: знімок за ${SNAPSHOT_DATE} не збережено"
+          exit 1
 
       - name: "Сторінка змін каталогу (reports/index.html)"
         # Будує output/site/reports/ з УСІХ знімків гілки data: дашборд зі шкалою
@@ -202,6 +213,19 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -q -m "Сайт за $(date -u +%F)"
-          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site
+          # До трьох спроб, як і пуш у data.
+          for i in 1 2 3; do
+            git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site && exit 0
+            if [ "$i" -lt 3 ]; then echo "Пуш сайту не вдався (спроба $i з 3), повтор через 60 с"; sleep 60; fi
+          done
+          exit 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Знімок дня не збережено"
+        # Сайт уже опубліковано, але прогін має бути червоним: знімка за цю ніч у data
+        # немає, і наступної ночі сторінка змін покаже дві доби одним днем.
+        if: ${{ steps.data-push.outcome == 'failure' }}
+        run: |
+          echo "::error::Знімок за ${SNAPSHOT_DATE} не запушено в гілку data (див. крок «Закомітити й запушити гілку data»)"
+          exit 1
