@@ -1,0 +1,23 @@
+{
+  "id": "3179951945",
+  "name": "Лінійний електропривід 5 мм/с, 24 В, хід 200 мм, тяга 1000 Н (до 100 кг), актуатор PFDE24V-200-5",
+  "sku": "12-394",
+  "url": "https://cncprom.ua/ua/p3179951945-linejnyj-elektroprivod-mms.html",
+  "attrs": [
+    ["Вантажопідйомність", "100 кг"],
+    ["Стан", "Новий"],
+    ["Номінальна робоча напруга", "24 В"],
+    ["Привід", "Електричний"],
+    ["Довжина", "321 мм"],
+    ["Ширина", "40 мм"],
+    ["Висота", "75 мм"],
+    ["Вага", "1 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7699908659_linijnij-elektroprivid-5.jpg",
+    "https://images.prom.ua/7699908670_linijnij-elektroprivid-5.jpg",
+    "https://images.prom.ua/7699909209_linijnij-elektroprivid-5.jpg"
+  ],
+  "accessories": []
+}

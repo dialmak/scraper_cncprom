@@ -1,0 +1,34 @@
+{
+  "id": "3147676037",
+  "name": "BMS JK-BD6A24S-10РD, 100A, для LiFePO4/Li-ion/LTO (8S-24S), 0.6A активного балансування",
+  "sku": "05-371",
+  "url": "https://cncprom.ua/ua/p3147676037-bms-bd6a24s-10rd.html",
+  "attrs": [
+    ["Тип", "Активний балансир"],
+    ["Стан", "Новий"],
+    ["Довжина", "136 мм"],
+    ["Ширина", "103 мм"],
+    ["Висота", "14 мм"],
+    ["Вага", "320 г"]
+  ],
+  "specs": [
+    ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3413542_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7610722736_bms-jk-bd6a24s-10rd-100a.jpg",
+    "https://images.prom.ua/7610722744_bms-jk-bd6a24s-10rd-100a.jpg",
+    "https://images.prom.ua/7187638951_bms-jk-bd6a24s-10rd-100a.jpg"
+  ],
+  "accessories": [
+    "1887250588",
+    "3009425194",
+    "3009425196",
+    "1944487647",
+    "2355683764",
+    "3009425193",
+    "3053757503",
+    "1887179597",
+    "3009425195",
+    "1831887026"
+  ]
+}

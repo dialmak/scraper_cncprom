@@ -1,0 +1,27 @@
+{
+  "id": "2912385942",
+  "name": "Автоматичний перемикач резерву GCQ4-125 /4Р (АВР/ATS) 80A, 4P, 220V",
+  "sku": "HP09-035",
+  "url": "https://cncprom.ua/ua/p2912385942-avtomaticheskij-pereklyuchatel-rezerva.html",
+  "attrs": [
+    ["Застосування системи", "Для освітлення, Для ліфтового обладнання, Для ліній технологічного процесу, Для банківського обладнання, Для генераторів"],
+    ["Тип управління", "Локальне"],
+    ["Датчик температури", "Ні"],
+    ["Індикація", "Світлова"],
+    ["Стан", "Новий"],
+    ["Довжина", "142 мм"],
+    ["Висота", "76 мм"],
+    ["Ширина", "100 мм"],
+    ["Вага", "0.8 кг"],
+    ["Мінімальна температура навколишнього середовища", "-5 град."],
+    ["Максимальна температура навколишнього середовища", "40 град."]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7167049831_avtomatichnij-peremikach-rezervu.jpg",
+    "https://images.prom.ua/7167050041_avtomatichnij-peremikach-rezervu.jpg",
+    "https://images.prom.ua/7167055309_avtomatichnij-peremikach-rezervu.jpg",
+    "https://images.prom.ua/7167057787_avtomatichnij-peremikach-rezervu.jpg"
+  ],
+  "accessories": []
+}

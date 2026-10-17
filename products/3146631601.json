@@ -1,0 +1,28 @@
+{
+  "id": "3146631601",
+  "name": "Опорний підшипник KP08 для вала Ø8 мм, корпусний кульковий підшипниковий вузол",
+  "sku": "88-061",
+  "url": "https://cncprom.ua/ua/p3146631601-opornyj-podshipnik-kp08.html",
+  "attrs": [
+    ["Тип підшипника", "Кочення"],
+    ["Матеріал виробу", "Сталь"],
+    ["Форма тіла кочення", "Кулька"],
+    ["Кількість рядів тіл кочення", "1 шт."],
+    ["Вага", "0.027 кг"],
+    ["Внутрішній діаметр", "8 мм"],
+    ["Висота", "29 мм"],
+    ["Наявність корпусу", "Так"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7697948358_opornij-pidshipnik-kp08.jpg",
+    "https://images.prom.ua/7698012548_opornij-pidshipnik-kp08.jpg",
+    "https://images.prom.ua/7697948825_opornij-pidshipnik-kp08.jpg",
+    "https://images.prom.ua/7701766519_opornij-pidshipnik-kp08.jpg"
+  ],
+  "accessories": [
+    "23541506",
+    "46330208",
+    "46330176"
+  ]
+}

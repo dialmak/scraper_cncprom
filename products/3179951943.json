@@ -1,0 +1,23 @@
+{
+  "id": "3179951943",
+  "name": "Лінійний електропривід 20 мм/с, 12 В, хід 300 мм, тяга 500 Н (до 50 кг), актуатор PFDE12V-300-20",
+  "sku": "12-392",
+  "url": "https://cncprom.ua/ua/p3179951943-linejnyj-elektroprivod-mms.html",
+  "attrs": [
+    ["Вантажопідйомність", "50 кг"],
+    ["Сила підйому при максимальному навантаженні", "500 Н"],
+    ["Стан", "Новий"],
+    ["Номінальна робоча напруга", "12 В"],
+    ["Довжина", "421 мм"],
+    ["Ширина", "40 мм"],
+    ["Висота", "75 мм"],
+    ["Вага", "1.05 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7699908659_linijnij-elektroprivid-20.jpg",
+    "https://images.prom.ua/7699908670_linijnij-elektroprivid-20.jpg",
+    "https://images.prom.ua/7702044729_linijnij-elektroprivid-20.jpg"
+  ],
+  "accessories": []
+}
