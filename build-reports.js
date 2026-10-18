@@ -58,6 +58,27 @@ function readCategoryUrls(fromSnapshots) {
 }
 const OUT_DATA = path.join(OUT_DIR, 'data');
 
+// Пропущені дні (між першим і останнім знімком немає знімка) знаходяться самі; тут лише
+// причина, яку покаже сторінка. Без запису — просто «знімка немає». → HISTORY п. 58.
+const SNAPSHOT_GAPS = {
+  '2026-10-15': 'збій GitHub', // пуш у data відхилено з HTTP 408, копії немає (п. 57)
+};
+// Календарні дні строго між сусідніми датами: [[дата, причина?]]. Прогалину понад 31 день
+// не розписуємо: кожен день — колонка графіка, а таке буває лише зі штучною датою
+// (regress додає знімок 2099-12-31).
+function missingDays(dates) {
+  const out = [];
+  for (let k = 1; k < dates.length; k++) {
+    if (Date.parse(dates[k]) - Date.parse(dates[k - 1]) > 32 * 864e5) continue;
+    const t = new Date(dates[k - 1] + 'T00:00:00Z');
+    for (t.setUTCDate(t.getUTCDate() + 1); t.toISOString().slice(0, 10) < dates[k]; t.setUTCDate(t.getUTCDate() + 1)) {
+      const d = t.toISOString().slice(0, 10);
+      out.push(SNAPSHOT_GAPS[d] ? [d, SNAPSHOT_GAPS[d]] : [d]);
+    }
+  }
+  return out;
+}
+
 // ==================== СПІЛЬНЕ ДЛЯ NODE І БРАУЗЕРА ====================
 // Чисті функції без замикань на Node-змінні — серіалізуються в reports.js.
 
@@ -492,12 +513,26 @@ function initReportsPage() {
   var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4, price: 5, content: 6 };
   var PAGE = 200;
 
-  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, parts: {}, q: '', top: '', limit: PAGE };
+  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, parts: {}, q: '', limit: PAGE };
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function fmtShort(d) { var p = d.split('-'); return p[2] + '.' + p[1]; }
   function fmtLong(d) { var p = d.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+  // Дні без знімка строго між a і b (idx.missing: [[дата, причина?]], → HISTORY п. 58).
+  function gapsBetween(a, b) { return (idx.missing || []).filter(function (m) { return m[0] > a && m[0] < b; }); }
+  function gapDays(gaps) {
+    if (gaps.length > 3) return gaps.length + ' днів';
+    return gaps.map(function (m) { return fmtShort(m[0]); }).join(', ');
+  }
+  // Список дат з неактивними пунктами пропущених днів між сусідніми датами списку.
+  function dateOptions(list, sel, last) {
+    return list.map(function (d, k) {
+      var gaps = k ? gapsBetween(list[k - 1], d) : [];
+      return gaps.map(function (m) { return '<option disabled>' + fmtLong(m[0]) + ' (знімка немає)</option>'; }).join('') +
+        '<option value="' + d + '"' + (d === sel ? ' selected' : '') + '>' + fmtLong(d) + (d === last ? ' (останній)' : '') + '</option>';
+    }).join('');
+  }
   // 12 960 ₴: пробіл між розрядами нерозривний; копійки — лише коли вони є.
   function fmtPrice(v) {
     var n = Math.round(v * 100) / 100;
@@ -548,10 +583,8 @@ function initReportsPage() {
   }
   function drawRange() {
     var ds = idx.dates;
-    $('rf').innerHTML = ds.filter(function (d) { return d < range.to; }).map(function (d) {
-      return '<option value="' + d + '"' + (d === range.from ? ' selected' : '') + '>' + fmtLong(d) + '</option>'; }).join('');
-    $('rt').innerHTML = ds.slice(1).map(function (d) {
-      return '<option value="' + d + '"' + (d === range.to ? ' selected' : '') + '>' + fmtLong(d) + (d === ds[ds.length - 1] ? ' (останній)' : '') + '</option>'; }).join('');
+    $('rf').innerHTML = dateOptions(ds.filter(function (d) { return d < range.to; }), range.from, null);
+    $('rt').innerHTML = dateOptions(ds.slice(1), range.to, ds[ds.length - 1]);
     Array.prototype.forEach.call(document.querySelectorAll('[data-q]'), function (b) {
       var r = quickRange(b.getAttribute('data-q'));
       b.setAttribute('aria-pressed', String(r.from === range.from && r.to === range.to));
@@ -580,7 +613,15 @@ function initReportsPage() {
     // ширині 800 і лишився б таким після розгортання. setChartOpen перемалює.
     if ($('chart-body').hidden) return;
     var svg = $('chart'), W = svg.clientWidth || 800, H = 190, pl = 40, pr = 8, pt = 18, pb = 24;
-    var days = idx.daily, n = days.length, band = (W - pl - pr) / n, bw = Math.min(24, band * 0.55);
+    // Колонки — дні зі знімком і пропущені дні (пунктирна рамка без data-i). data-i —
+    // індекс у idx.daily/idx.dates: на ньому тримаються підказка й клік, тож пропуски
+    // в daily не вставляються, а лише займають місце на осі.
+    var days = idx.daily, cols = [];
+    days.forEach(function (d, i) {
+      if (i) gapsBetween(days[i - 1].date, d.date).forEach(function (m) { cols.push({ date: m[0], gap: m }); });
+      cols.push({ date: d.date, d: d, i: i });
+    });
+    var n = cols.length, band = (W - pl - pr) / n, bw = Math.min(24, band * 0.55);
     var max = Math.max.apply(null, days.map(function (d) { return dayTotal(d) || 0; })), top = niceMax(max);
     var y = function (v) { return pt + (H - pt - pb) * (1 - v / top); };
     // Підписи осі X: спершу межі вибраного періоду, потім останній день, потім
@@ -588,9 +629,9 @@ function initReportsPage() {
     // вузькому екрані чи за довгу історію сусідні дати інакше злипаються).
     var MIN_GAP = 42, placed = [], labels = {};
     var labelX = function (i) { return Math.max(pl + 16, Math.min(W - pr - 16, pl + band * i + band / 2)); };
-    var prio = days.map(function (d, i) {
-      var p = (d.date === range.to || d.date === range.from) ? 0 : i === n - 1 ? 1 : 2;
-      return { i: i, p: p };
+    var prio = cols.map(function (c, k) {
+      var p = (c.date === range.to || c.date === range.from) ? 0 : k === n - 1 ? 1 : 2;
+      return { i: k, p: p };
     }).sort(function (x, y) { return x.p - y.p || x.i - y.i; });
     prio.forEach(function (c) {
       var x = labelX(c.i);
@@ -601,10 +642,18 @@ function initReportsPage() {
       out += '<line class="grid" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
         '<text class="axis" x="' + (pl - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + Math.round(v) + '</text>';
     });
-    days.forEach(function (d, i) {
-      var cx = pl + band * i + band / 2, tot = dayTotal(d), inR = d.date > range.from && d.date <= range.to;
+    cols.forEach(function (c, i) {
+      var cx = pl + band * i + band / 2;
+      if (c.gap) {
+        out += '<g class="gap" data-gap="' + c.date + '"><rect class="gap-box" x="' + (cx - bw / 2 + .5) + '" y="' + (pt + .5) + '" width="' + (bw - 1) +
+          '" height="' + (H - pt - pb - 1) + '" rx="3"/>' +
+          (labels[i] ? '<text class="axis" x="' + labelX(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + fmtShort(c.date) + '</text>' : '') +
+          '<rect class="hit" x="' + (pl + band * i) + '" y="' + pt + '" width="' + band + '" height="' + (H - pt) + '"/></g>';
+        return;
+      }
+      var d = c.d, tot = dayTotal(d), inR = d.date > range.from && d.date <= range.to;
       var edge = d.date === range.to || d.date === range.from;
-      out += '<g data-i="' + i + '">';
+      out += '<g data-i="' + c.i + '">';
       if (tot) {
         var r = Math.min(4, y(0) - y(tot), bw / 2), x0 = cx - bw / 2, x1 = cx + bw / 2, yb = y(0), yt = y(tot);
         out += '<path class="bar' + (inR ? '' : ' off') + '" d="M' + x0 + ',' + yb + 'V' + (yt + r) + 'Q' + x0 + ',' + yt + ' ' + (x0 + r) + ',' + yt +
@@ -622,15 +671,30 @@ function initReportsPage() {
     svg.innerHTML = out;
   }
   function chartTip(e) {
-    var tip = $('chart-tip'), g = e.target.closest && e.target.closest('g[data-i]');
+    var tip = $('chart-tip'), g = e.target.closest && e.target.closest('g[data-i], g[data-gap]');
     if (!g) { tip.style.display = 'none'; return; }
-    var i = +g.getAttribute('data-i'), d = idx.daily[i];
-    if (!d.t) tip.innerHTML = '<b>' + fmtLong(d.date) + '</b><div class="foot">Перший знімок: порівнювати нема з чим</div>';
-    else tip.innerHTML = '<b>' + fmtLong(d.date) + ' · змін: ' + dayTotal(d) + '</b>' +
-      TYPES.filter(function (k) { return k !== 'price'; }).map(function (k) { return '<div class="row"><span>' + TYPE[k].icon + ' ' + TYPE[k].label + '</span><span>' + d.t[k] + '</span></div>'; }).join('') +
-      '<div class="row"><span>✎ Структура категорій</span><span>' + d.t.cats + '</span></div>' +
-      (d.t.price ? '<div class="row"><span>₴ Змінилась ціна (окремо від стовпця)</span><span>' + d.t.price + '</span></div>' : '') +
-      '<div class="foot">Клік: порівняти з ' + fmtShort(idx.dates[i - 1]) + (range.to > d.date ? ' по ' + fmtShort(range.to) : '') + '</div>';
+    if (g.hasAttribute('data-gap')) {
+      // Пропущений день: зміни за нього — у стовпці наступного знімка.
+      var gd = g.getAttribute('data-gap'), gm = (idx.missing || []).filter(function (m) { return m[0] === gd; })[0] || [gd];
+      var next = idx.dates.filter(function (x) { return x > gd; })[0];
+      var nd = new Date(gd + 'T00:00:00Z'); nd.setUTCDate(nd.getUTCDate() + 1);
+      var both = next === nd.toISOString().slice(0, 10)
+        ? 'Зміни за ' + (gd.slice(5, 7) === next.slice(5, 7) ? gd.slice(8) : fmtShort(gd)) + ' і ' + fmtShort(next) + ' показано разом у стовпці ' + fmtShort(next) + '.'
+        : 'Зміни цього дня показано в стовпці ' + fmtShort(next) + '.';
+      tip.innerHTML = '<b>' + fmtLong(gd) + ' · знімка немає</b><div class="foot">Тієї ночі знімок не вдалося зберегти' + (gm[1] ? ' (' + esc(gm[1]) + ')' : '') + '.<br>' + both + '</div>';
+    } else {
+      var i = +g.getAttribute('data-i'), d = idx.daily[i];
+      var gaps = i ? gapsBetween(idx.dates[i - 1], d.date) : [];
+      var span = gaps.length + 1;
+      if (!d.t) tip.innerHTML = '<b>' + fmtLong(d.date) + '</b><div class="foot">Перший знімок: порівнювати нема з чим</div>';
+      else tip.innerHTML = '<b>' + fmtLong(d.date) + ' · змін: ' + dayTotal(d) + '</b>' +
+        TYPES.filter(function (k) { return k !== 'price'; }).map(function (k) { return '<div class="row"><span>' + TYPE[k].icon + ' ' + TYPE[k].label + '</span><span>' + d.t[k] + '</span></div>'; }).join('') +
+        '<div class="row"><span>✎ Структура категорій</span><span>' + d.t.cats + '</span></div>' +
+        (d.t.price ? '<div class="row"><span>₴ Змінилась ціна (окремо від стовпця)</span><span>' + d.t.price + '</span></div>' : '') +
+        (gaps.length ? '<div class="foot">Зміни за ' + (span === 2 ? 'два дні' : span < 5 ? span + ' дні' : span + ' днів') + ': ' +
+          (gaps.length === 1 ? 'знімка за ' + fmtShort(gaps[0][0]) + ' немає' : gaps.length > 3 ? 'немає знімків за ' + gapDays(gaps) : 'знімків за ' + gapDays(gaps) + ' немає') + '.</div>' : '') +
+        '<div class="foot">Клік: порівняти з ' + fmtShort(idx.dates[i - 1]) + (range.to > d.date ? ' по ' + fmtShort(range.to) : '') + '</div>';
+    }
     tip.style.display = 'block';
     tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8) + 'px';
     tip.style.top = (e.clientY + 14) + 'px';
@@ -655,7 +719,7 @@ function initReportsPage() {
   // ---------- Картки ----------
   function drawTiles() {
     var t = D.totals;
-    $('tiles').innerHTML = TYPES.map(function (k) {
+    var tiles = TYPES.map(function (k) {
       // Підсвічена кожна плитка, чий тип вибраний, скільки б типів не було вибрано
       // (до 27.09.2026 лише коли вибраний рівно один, і з двома фішками плитки гасли).
       // Нульова плитка неклікабельна, як і фішка: інакше клік давав порожню таблицю з
@@ -663,9 +727,16 @@ function initReportsPage() {
       var on = st.tab === 'prod' && !!st.types[k];
       return '<button class="card tile" data-type="' + k + '" aria-pressed="' + on + '"' + (t[k] ? '' : ' disabled') + '>' + badge(k, true) +
         '<span class="num' + (t[k] ? '' : ' zero') + '">' + t[k] + '</span><span class="lbl">' + TYPE[k].label + '</span></button>';
-    }).join('') +
+    }).concat(
       '<button class="card tile" data-type="cats" aria-pressed="' + (st.tab === 'cats') + '"' + (t.cats || st.tab === 'cats' ? '' : ' disabled') + '><span class="tb t-mov" aria-label="Структура категорій"><span class="ic" aria-hidden="true">✎</span></span>' +
-      '<span class="num' + (t.cats ? '' : ' zero') + '">' + t.cats + '</span><span class="lbl">Змін у структурі категорій</span></button>';
+      '<span class="num' + (t.cats ? '' : ' zero') + '">' + t.cats + '</span><span class="lbl">Змін у структурі категорій</span></button>');
+    // Чотири групи (користувач 18.10.2026, тонка лінія між ними): наявність і склад ·
+    // ціна · контент · структура категорій. Як вони взаємодіють — toggleType.
+    var k0 = 0;
+    $('tiles').innerHTML = [5, 1, 1, 1].map(function (n) {
+      var h = '<div class="tg" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr));flex:' + n + ' 1 0">' + tiles.slice(k0, k0 + n).join('') + '</div>';
+      k0 += n; return h;
+    }).join('');
   }
 
   // ---------- Таблиці ----------
@@ -712,9 +783,9 @@ function initReportsPage() {
   function partStats(r) { return ((idx.contentStats || {})[r.owner] || {})[r.fromHash + '>' + r.toHash] || {}; }
   var openContent = initContentWindow(DATA);
   function siteUrl(r) { return r.isCat ? catUrls[r.id] || '' : r.url; }
-  function productTable(rows) {
+  function productTable(rows, extra) {
     var shown = rows.slice(0, st.limit);
-    return '<div class="result-line">Показано ' + shown.length + ' з ' + rows.length + '</div>' +
+    return '<div class="result-line">Показано ' + shown.length + ' з ' + rows.length + (extra || '') + '</div>' +
       '<div class="table-wrap"><table class="simple-table rep-table"><thead><tr>' +
       '<th style="width:170px">Зміна</th><th style="width:110px">Код</th><th>Товар</th><th style="width:26%">Категорія</th><th style="width:24%">Що змінилось</th>' +
       '</tr></thead><tbody>' + shown.map(function (r) {
@@ -754,11 +825,13 @@ function initReportsPage() {
   }
   function filtered() {
     var q = st.q.trim().toLowerCase(), any = Object.keys(st.types).length > 0;
+    // Код можна шукати без дефісів і пробілів: «23101» знаходить 23-101 (користувач 18.10.2026).
+    var bare = function (s) { return s.toLowerCase().replace(/[^0-9a-zа-яіїєґё]/g, ''); }, qc = bare(q);
     return D.rows.filter(function (r) {
       if (any && !st.types[r.type]) return false;
       if (r.type === 'content' && Object.keys(st.parts).length && !Object.keys(partStats(r)).some(function (k) { return st.parts[k]; })) return false;
-      if (st.top && r.top !== st.top) return false;
-      return !q || (r.name + ' ' + r.sku + ' ' + r.catName + ' ' + r.topName).toLowerCase().indexOf(q) >= 0;
+      return !q || (r.name + ' ' + r.sku + ' ' + r.catName + ' ' + r.topName).toLowerCase().indexOf(q) >= 0 ||
+        (qc.length >= 2 && !!r.sku && bare(r.sku).indexOf(qc) >= 0);
     }).sort(function (a, b) {
       return (ORDER[a.type] - ORDER[b.type]) || a.topName.localeCompare(b.topName, 'uk') || a.name.localeCompare(b.name, 'uk');
     });
@@ -773,25 +846,21 @@ function initReportsPage() {
       return '<button class="chip" data-part="' + p[0] + '" aria-pressed="' + !!st.parts[p[0]] + '"' + (n[p[0]] ? '' : ' disabled') + '>' + p[1] + '<span class="n">' + (n[p[0]] || 0) + '</span></button>';
     }).join('') + '</div>';
   }
+  // Над таблицею (користувач 18.10.2026): фішок типів немає, їх повторювали плитки;
+  // фільтра розділів немає; пошук праворуч у рядку вкладок; «Скинути фільтр» знімає плитки.
   function render() {
     drawTiles();
+    var focused = document.activeElement && document.activeElement.id === 'q';
     $('tabs').innerHTML =
       '<button class="tab" role="tab" data-tab="prod" aria-selected="' + (st.tab === 'prod') + '">Товари<span class="n">' + D.rows.length + '</span></button>' +
-      '<button class="tab" role="tab" data-tab="cats" aria-selected="' + (st.tab === 'cats') + '">Категорії<span class="n">' + D.cats.length + '</span></button>';
+      '<button class="tab" role="tab" data-tab="cats" aria-selected="' + (st.tab === 'cats') + '">Категорії<span class="n">' + D.cats.length + '</span></button>' +
+      (st.tab === 'prod' ? '<input id="q" class="search-mini tabs-q" type="search" placeholder="Пошук: назва, код, категорія" value="' + esc(st.q) + '">' : '');
     var panel = $('panel');
     if (st.tab === 'cats') { panel.innerHTML = catTable(D.cats); return; }
-    var tops = {}; D.rows.forEach(function (r) { if (r.top) tops[r.top] = r.topName; });
-    var rows = filtered(), focused = document.activeElement && document.activeElement.id === 'q';
-    panel.innerHTML =
-      '<div class="filters"><div class="chips" role="group" aria-label="Тип зміни">' + TYPES.map(function (k) {
-        var n = D.totals[k];
-        return '<button class="chip" data-chip="' + k + '" aria-pressed="' + !!st.types[k] + '"' + (n ? '' : ' disabled') + '>' + TYPE[k].icon + ' ' + TYPE[k].label + '<span class="n">' + n + '</span></button>';
-      }).join('') + '</div><div class="right">' +
-      '<select id="top" aria-label="Розділ 1 рівня"><option value="">Усі розділи</option>' + Object.keys(tops).sort(function (a, b) { return tops[a].localeCompare(tops[b], 'uk'); })
-        .map(function (id) { return '<option value="' + esc(id) + '"' + (id === st.top ? ' selected' : '') + '>' + esc(tops[id]) + '</option>'; }).join('') + '</select>' +
-      '<input id="q" class="search-mini" type="search" placeholder="Пошук: назва, код, категорія" value="' + esc(st.q) + '"></div></div>' +
-      partsHtml() +
-      (rows.length ? productTable(rows)
+    var rows = filtered();
+    var reset = Object.keys(st.types).length ? '<span class="sep" aria-hidden="true">·</span><button class="link-btn" data-reset>Скинути фільтр</button>' : '';
+    panel.innerHTML = partsHtml() +
+      (rows.length ? productTable(rows, reset)
         : '<div class="empty"><b>' + (D.rows.length ? 'Нічого не знайдено' : 'Товари за цей період не змінювались') + '</b>' +
           (D.rows.length ? 'Зніміть фільтри або змініть запит.' : 'Оберіть ширший період угорі або кліком по графіку.') + '</div>');
     if (focused) { var qi = $('q'); qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
@@ -812,13 +881,22 @@ function initReportsPage() {
       // зміни періоду таблиця порожня без видимої причини (27.09.2026).
       Object.keys(st.types).forEach(function (k) { if (!D.totals[k]) delete st.types[k]; });
       if (!st.types.content) st.parts = {};
-      if (st.top && !D.rows.some(function (r) { return r.top === st.top; })) st.top = '';
       st.limit = PAGE; render();
     }).catch(fail);
   }
 
   // ---------- Події ----------
-  function toggleType(k) { if (st.types[k]) delete st.types[k]; else st.types[k] = true; }
+  // Групи типів (користувач 18.10.2026): наявність і склад поєднуються між собою; ціна,
+  // контент і структура категорій — кожна окремо. Вибір в іншій групі скидає попередню.
+  var GROUP = { out: 1, in: 1, added: 1, removed: 1, moved: 1, price: 2, content: 3 };
+  function toggleType(k) {
+    if (st.types[k]) delete st.types[k];
+    else {
+      Object.keys(st.types).forEach(function (t) { if (GROUP[t] !== GROUP[k]) delete st.types[t]; });
+      st.types[k] = true;
+    }
+    if (!st.types.content) st.parts = {};
+  }
   function bindEvents() {
     $('chart-toggle').addEventListener('click', function () { setChartOpen($('chart-body').hidden); });
     $('rf').addEventListener('change', function (e) { setRange(e.target.value, range.to); });
@@ -837,29 +915,27 @@ function initReportsPage() {
     $('tiles').addEventListener('click', function (e) {
       var b = e.target.closest('[data-type]'); if (!b) return;
       var k = b.getAttribute('data-type');
-      // Плитка діє так само, як фішка того ж типу: клік вмикає або вимикає тип. До
+      // Клік вмикає або вимикає тип (toggleType: вибір в іншій групі скидає попередню). До
       // 27.09.2026 плитка лишала «тільки цей тип», і клік по вже підсвіченій плитці при
-      // двох вибраних не знімав її, а скидав другу. Плитка категорій перемикає вкладку
-      // туди й назад; з вкладки «Категорії» плитка товарів повертає на «Товари» з цим
-      // типом увімкненим, а не вимкненим.
-      if (k === 'cats') st.tab = st.tab === 'cats' ? 'prod' : 'cats';
-      else if (st.tab === 'cats') { st.tab = 'prod'; st.types[k] = true; }
+      // двох вибраних не знімав її, а скидав другу. Плитка категорій — четверта група:
+      // перемикає вкладку туди й назад і скидає вибрані типи товарів; з вкладки
+      // «Категорії» плитка товарів повертає на «Товари» лише з цим типом.
+      if (k === 'cats') { if (st.tab === 'cats') st.tab = 'prod'; else { st.tab = 'cats'; st.types = {}; st.parts = {}; } }
+      else if (st.tab === 'cats') { st.tab = 'prod'; st.types = {}; st.types[k] = true; }
       else toggleType(k);
       st.limit = PAGE; render();
     });
     $('tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) { st.tab = b.getAttribute('data-tab'); render(); } });
+    $('tabs').addEventListener('input', function (e) { if (e.target.id === 'q') { st.q = e.target.value; st.limit = PAGE; render(); } });
     var panel = $('panel');
     panel.addEventListener('click', function (e) {
-      var c = e.target.closest('[data-chip]');
-      if (c) { toggleType(c.getAttribute('data-chip')); st.limit = PAGE; render(); return; }
+      if (e.target.closest('[data-reset]')) { st.types = {}; st.parts = {}; st.tab = 'prod'; st.limit = PAGE; render(); return; }
       var pt = e.target.closest('[data-part]');
       if (pt) { var k = pt.getAttribute('data-part'); if (st.parts[k]) delete st.parts[k]; else st.parts[k] = true; st.limit = PAGE; render(); return; }
       var oc = e.target.closest('[data-content]');
       if (oc) { var o = oc.getAttribute('data-content'), r = D.rows.filter(function (x) { return x.owner === o; })[0]; if (r) { r.siteUrl = siteUrl(r); openContent(r, [range.from, range.to], idx); } return; }
       if (e.target.closest('[data-more]')) { st.limit += PAGE; render(); }
     });
-    panel.addEventListener('change', function (e) { if (e.target.id === 'top') { st.top = e.target.value; st.limit = PAGE; render(); } });
-    panel.addEventListener('input', function (e) { if (e.target.id === 'q') { st.q = e.target.value; st.limit = PAGE; render(); } });
   }
 
   initThemeToggle();
@@ -908,11 +984,9 @@ html, body { height: auto; overflow: visible; }
 .top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .top-row h1 { font-size: 1.25rem; margin: 0; font-weight: 600; }
 .top-row h1 .muted { font-weight: 400; font-size: .9rem; margin-left: 6px; }
-
 .range-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .range-bar label { font-size: .8rem; color: var(--text-muted); }
-.range-bar select, .filters select { font: inherit; font-size: .85rem; padding: 5px 8px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); }
-.filters select { max-width: 260px; }
+.range-bar select { font: inherit; font-size: .85rem; padding: 5px 8px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); }
 .range-arrow { color: var(--text-faint); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font: inherit; font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-dark); background: var(--bg-white); color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -935,6 +1009,8 @@ html, body { height: auto; overflow: visible; }
 #chart .bar.off { fill: var(--border-dark); }
 #chart g:hover .bar { opacity: .82; }
 #chart .hit { fill: transparent; cursor: pointer; }
+#chart .gap .hit { cursor: default; }
+#chart .gap-box { fill: none; stroke: var(--border-dark); stroke-dasharray: 4 3; }
 #chart .cap { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
 .chart-tip { position: fixed; pointer-events: none; z-index: 50; background: var(--bg-header); border: 1px solid var(--border-dark);
   border-radius: 8px; padding: 8px 10px; font-size: .78rem; box-shadow: 0 6px 20px rgba(0,0,0,.12); display: none; min-width: 200px; }
@@ -948,9 +1024,10 @@ html, body { height: auto; overflow: visible; }
 .chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
 .chart-toggle:hover, .chart-toggle:hover .caret { color: var(--text-link); }
 
-.tiles { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.tiles { display: flex; margin-bottom: 16px; }
+.tiles .tg { display: grid; gap: 10px; min-width: 0; }
+.tiles .tg + .tg { border-left: 1px solid var(--border-dark); margin-left: 11px; padding-left: 11px; }
 .tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
-.tile:hover:not([disabled]) { border-color: var(--border-dark); }
 .tile[disabled] { cursor: default; }
 .tile[aria-pressed="true"] { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active) inset; }
 .tile .tb { align-self: flex-start; }
@@ -963,10 +1040,15 @@ html, body { height: auto; overflow: visible; }
 .tab:hover { color: var(--text-main); }
 .tab[aria-selected="true"] { color: var(--text-main); border-bottom-color: var(--border-active); font-weight: 600; }
 .tab .n { font-family: var(--font-mono); font-size: .75rem; color: var(--text-subtle); margin-left: 4px; }
-.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
-.filters .right { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 .search-mini { font: inherit; font-size: .85rem; padding: 6px 10px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); min-width: 220px; }
 .result-line { padding: 8px 12px; font-size: .78rem; color: var(--text-muted); }
+.tabs .tabs-q { margin: 6px 0 6px auto; align-self: center; min-width: 300px; }
+.result-line .sep { color: var(--text-faint); margin: 0 8px; }
+.link-btn { font: inherit; border: 0; background: none; padding: 0; color: var(--text-link); cursor: pointer; }
+.link-btn:hover { text-decoration: underline; }
+/* Наведення на невибрану плитку чи фішку — синя рамка (користувач 18.10.2026: сіра в темній темі
+   майже не помітна); вибрана відрізняється подвійною рамкою (плитка) чи тлом (фішка). */
+.tile:hover:not([disabled]):not([aria-pressed="true"]), .chip:hover:not([disabled]):not([aria-pressed="true"]) { border-color: var(--border-active); }
 
 /* Бейдж типу зміни: іконка + колір + текст — ніколи не колір сам по собі */
 .tb { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
@@ -1062,11 +1144,8 @@ html, body { height: auto; overflow: visible; }
 .empty { padding: 48px 16px; text-align: center; color: var(--text-muted); }
 .empty b { display: block; color: var(--text-main); font-size: 1rem; margin-bottom: 6px; }
 
-@media (max-width: 1000px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) {
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rep-wrap { padding: 16px 16px 40px; }
-  .filters .right { margin-left: 0; width: 100%; }
   .search-mini { min-width: 0; flex: 1; }
 }
 `;
@@ -1400,7 +1479,7 @@ if (require.main === module) (async () => {
   });
 
   const usedDates = daily.map(x => x.date);
-  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, avail, daily, content,
+  fs.writeFileSync(path.join(OUT_DATA, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), dates: usedDates, missing: missingDays(usedDates), avail, daily, content,
     contentStats: contentHist ? contentHist.stats : {}, contentAnchor: contentHist ? contentHist.anchors : {} }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
