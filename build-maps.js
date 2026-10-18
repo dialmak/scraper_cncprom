@@ -1062,7 +1062,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
   const sideMenuHtml = `
   <nav class="vnav" id="vnav" aria-label="Меню">
     <div class="vn-top"><button type="button" class="vn-rail-btn" id="vn-rail-btn" data-tip="Згорнути меню">«</button></div>${menuGroup('history', 'Історія каталогу', 'chg', [
-      menuItem({ icon: ICONS.history, name: 'Усі зміни', hist: 'all', href: 'reports/index.html', tip: 'Усі зміни каталогу за останню ніч: наявність, ціни, нові й видалені товари, категорії, описи, медіа.\nБудь-який період: на сторінці «Історія змін».' }),
+      menuItem({ icon: ICONS.history, name: 'Усі зміни', hist: 'all', href: 'reports/index.html', tip: 'Зміни каталогу за останню ніч. Період можна змінити на сторінці.' }),
       menuItem({ icon: ICONS.content, name: 'Змінений контент', hist: 'content', href: 'reports/index.html?type=content', tip: 'Опис, фото, характеристики, файли й відео, які змінив магазин' }),
     ])}${menuGroup('media', 'Доступність медіа', 'bad', [
       mediaItem(ICONS.image, 'Недоступні зображення', 'Фото, картинки в описах і плитки категорій, що не відкриваються', ms.image, 'media-image-overlay', 'bad'),
