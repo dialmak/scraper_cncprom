@@ -1225,6 +1225,11 @@ function initDescriptions(opts) {
       body.innerHTML = descBodyHtml(d, stack.length > 0);
       var slot = body.querySelector('[data-desc-html]');
       if (slot) descFillHtml(slot, d.html);
+      // Сторінка не в корені сайту (сторінка змін): назви карток ведуть на мапу відносно кореня.
+      if (base) Array.prototype.forEach.call(body.querySelectorAll('.desc-card-name[href]'), function (a) {
+        var h = a.getAttribute('href');
+        if (h && !/^(https?:|#|\/|\.\.\/)/.test(h)) a.setAttribute('href', base + h);
+      });
       body.scrollTop = 0;
       var own = opts.onShow && opts.onShow(id, d, body);
       if (!d.category && !own) descHistoryLink(id);

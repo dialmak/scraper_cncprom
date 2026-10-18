@@ -774,7 +774,7 @@ function initReportsPage() {
   var ORDER = { out: 0, in: 1, added: 2, removed: 3, moved: 4, price: 5, content: 6 };
   var PAGE = 200;
 
-  var idx, products, catUrls = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, parts: {}, q: '', limit: PAGE };
+  var idx, products, catUrls = {}, descIds = {}, snaps = {}, D, range = {}, st = { tab: 'prod', types: {}, parts: {}, q: '', limit: PAGE };
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -1044,21 +1044,29 @@ function initReportsPage() {
   function partStats(r) { return ((idx.contentStats || {})[r.owner] || {})[r.fromHash + '>' + r.toHash] || {}; }
   var openContent = initContentWindow(DATA, loadSnap);
   function siteUrl(r) { return r.isCat ? catUrls[r.id] || '' : r.url; }
+  // Назва відкриває вікно «Опис», на сайт — колонка «Перейти на сайт» ↗, як на мапах (користувач
+  // 18.10.2026). Опису немає (товар видалено, файлу desc/ вже немає) — назва веде на сайт.
+  function nameCell(r) {
+    var u = siteUrl(r), d = r.isCat ? 'c' + r.id : String(r.id);
+    if (descIds[d]) return '<a class="pname name-desc" href="' + esc(u || '#') + '" data-desc="' + esc(d) + '">' + esc(r.name) + '</a>';
+    return u ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(u) + '">' + esc(r.name) + '</a>' : esc(r.name);
+  }
   function productTable(rows, extra) {
     var shown = rows.slice(0, st.limit);
     return '<div class="result-line">Показано ' + shown.length + ' з ' + rows.length + (extra || '') + '</div>' +
       '<div class="table-wrap"><table class="simple-table rep-table"><thead><tr>' +
-      '<th style="width:170px">Зміна</th><th style="width:110px">Код</th><th>Товар</th><th style="width:26%">Категорія</th><th style="width:24%">Що змінилось</th>' +
+      '<th style="width:170px">Зміна</th><th style="width:110px">Код</th><th>Товар</th><th style="width:26%">Категорія</th><th style="width:24%">Що змінилось</th><th class="col-site">Перейти на сайт</th>' +
       '</tr></thead><tbody>' + shown.map(function (r) {
         return '<tr><td>' + badge(r.type) + '</td>' +
           '<td>' + (r.sku ? '<span class="code">' + esc(r.sku) + '</span>' : '<span class="subtle">—</span>') + '</td>' +
-          '<td>' + (siteUrl(r) ? '<a class="pname" target="_blank" rel="noopener" href="' + esc(siteUrl(r)) + '">' + esc(r.name) + '</a>' : esc(r.name)) +
+          '<td>' + nameCell(r) +
           (r.isCat ? '<span class="cat-tag">категорія</span>' : '') + '</td>' +
           // Категорія товару; для категорії — її батьківська (розділ 1 рівня — без батька: тире).
           '<td>' + (r.isCat && !r.cat ? '<span class="subtle">—</span>' :
             (r.top ? '<a class="cat-link" href="../' + esc(r.top) + '_map.html">' + esc(r.topName) + '</a>' : '<span class="muted">' + esc(r.topName) + '</span>') +
             (r.catName !== r.topName ? '<span class="arrow-to">›</span>' + mapLink(r.top, r.cat, r.catName) : '')) + '</td>' +
-          '<td>' + detail(r) + '</td></tr>';
+          '<td>' + detail(r) + '</td>' +
+          '<td class="col-site">' + (siteUrl(r) ? '<a class="link-site" href="' + esc(siteUrl(r)) + '" target="_blank" rel="noopener">↗</a>' : '') + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
       (rows.length > st.limit ? '<div class="more-row"><button class="chip" data-more>Показати ще ' + Math.min(PAGE, rows.length - st.limit) + ' з ' + (rows.length - st.limit) + '</button></div>' : '');
   }
@@ -1203,9 +1211,11 @@ function initReportsPage() {
   initHelpWindow();
   initNarrowGuard();
   setupTooltips();
+  initDescriptions({ base: '../' });
   Promise.all([getJson(DATA + 'index.json'), getJson(DATA + 'products.json'),
-    getJson(DATA + 'categories.json').catch(function () { return {}; })]).then(function (r) {
+    getJson(DATA + 'categories.json').catch(function () { return {}; }), getJson(DATA + 'desc.json').catch(function () { return []; })]).then(function (r) {
     idx = r[0]; products = r[1]; catUrls = r[2];
+    r[3].forEach(function (d) { descIds[d] = 1; });
     $('generated').textContent = fmtLong(idx.dates[idx.dates.length - 1]);
     if (idx.dates.length < 2) {
       $('panel-wrap').innerHTML = '<div class="card empty"><b>Поки що є лише один знімок (' + fmtLong(idx.dates[0]) + ')</b>Порівняння з\'явиться після наступного нічного скрапінгу.</div>';
@@ -1437,6 +1447,7 @@ html, body { height: auto; overflow: visible; }
 .code { font-family: var(--font-mono); font-size: .76rem; color: var(--text-muted); background: var(--bg-tag); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
 .pname { color: var(--text-main); text-decoration: none; }
 .pname:hover { color: var(--text-link); text-decoration: underline; }
+.rep-table .col-site { width: 72px; text-align: center; white-space: normal; }
 .cat-link { color: var(--text-muted); text-decoration: none; }
 .cat-link:hover { color: var(--text-link); text-decoration: underline; }
 .cat-site { color: inherit; text-decoration: none; }
@@ -1744,7 +1755,7 @@ if (require.main === module) (async () => {
   // бере їх через ../, але збиратись може й окремо від build-maps.js.
   writeLogos(SITE_DIR);
   // Прибрати компактні знімки дат, яких більше немає в гілці data.
-  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json', 'content']));
+  const keep = new Set(dates.map(d => `${d}.json`).concat(['index.json', 'products.json', 'categories.json', 'desc.json', 'content']));
   fs.readdirSync(OUT_DATA).filter(f => !keep.has(f)).forEach(f => fs.rmSync(path.join(OUT_DATA, f), { recursive: true, force: true }));
 
   // Таблиця статусів наявності спільна для всіх днів: у кожному товарі лише її індекс.
@@ -1817,6 +1828,10 @@ if (require.main === module) (async () => {
     contentStats: contentHist ? contentHist.stats : {}, contentAnchor: contentHist ? contentHist.anchors : {} }), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'products.json'), JSON.stringify(products), 'utf-8');
   fs.writeFileSync(path.join(OUT_DATA, 'categories.json'), JSON.stringify(readCategoryUrls(catUrls)), 'utf-8');
+  // Які товари й категорії мають вікно «Опис» (output/site/desc/ пише build-maps.js, він іде раніше).
+  const descDir = path.join(SITE_DIR, 'desc');
+  fs.writeFileSync(path.join(OUT_DATA, 'desc.json'), JSON.stringify(fs.existsSync(descDir)
+    ? fs.readdirSync(descDir).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)) : []), 'utf-8');
 
   fs.writeFileSync(path.join(OUT_DIR, 'reports.css'), REPORTS_CSS, 'utf-8');
   fs.writeFileSync(path.join(OUT_DIR, 'reports.js'), REPORTS_JS, 'utf-8');
