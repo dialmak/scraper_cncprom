@@ -1111,7 +1111,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
 
   // Списки медіа: оболонка тут, вміст малює initSideMenu з media-report.json при
   // першому відкритті (списки великі, у map.html їм не місце). advice — другий рядок
-  // пояснення «Що робити: …» у списках проблем (користувач 20.10.2026).
+  // пояснення «Рекомендація: …» у списках проблем (користувач 20.10.2026).
   const mediaPanelHtml = (id, title, note, kind, advice) => `
   <div class="help-overlay" id="${id}">
     <div class="help-panel">
@@ -1120,7 +1120,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
         <button class="btn-help-close" id="${id}-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">${note}${advice ? `<br><b>Що робити:</b> ${advice}` : ''}</p>
+        <p class="failed-note">${note}${advice ? `<br><b>Рекомендація:</b> ${advice}` : ''}</p>
         <div data-media-body="${kind}"></div>
       </div>
     </div>
