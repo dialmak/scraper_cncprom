@@ -343,7 +343,8 @@ function readSearchEntries(id) {
 //     broken: { image|file|video|link: [[адреса, код, з якої дати, [[власник, [місця]]]]] },
 //     hosts | fileHosts | siteHosts: [[хостинг, [[адреса, [[власник, [місця]]]]]]],
 //     videos: [[платформа, [[адреса, назва, [[власник, [місця]]]]]]],
-//     heavy: [[адреса, розмір у байтах, [[власник, [місця]]]]] }
+//     heavy: [[адреса, розмір у байтах, [[власник, [місця]]]]],
+//     oldDomain: { listing: [[адреса, сторінок, мертве 0|1]], desc: [[адреса, мертве 0|1, [[власник, [місця]]]]] } }
 // Місця — для кожного власника окремо: у списку «Де на сторінці» стоїть після
 // «Сторінки» (15.10.2026), і файл буває в описі одного товару, а в іншого мініатюрою.
 // Недоступний — той, що не відкривається другу перевірку поспіль (n ≥ 2, див.
@@ -352,6 +353,9 @@ function readSearchEntries(id) {
 // Важкі зображення (20.10.2026): ті, що відкриваються, але важать понад HEAVY_IMAGE_BYTES
 // (розмір з Content-Range у check-media.js); спершу найважчі. Сервери Prom не беруться:
 // фото галереї покупцю показується зменшеною копією.
+// Старий домен (20.10.2026): посилання на cnc.prom.ua працюють через перенаправлення на
+// cncprom.ua. Шаблон «Дивіться всі наші оголошення» стоїть майже на всіх сторінках, тож у
+// нього замість переліку сторінок лише їхня кількість; мертве — те, що є й у битих.
 // Немає media-check.json — повертає null, пункти меню кажуть «немає даних».
 const HEAVY_IMAGE_BYTES = 1e6;
 function writeMediaReport(ids) {
@@ -366,6 +370,8 @@ function writeMediaReport(ids) {
   const known = knownIds(catalogs.map(x => x[1]));
   const where = new Map();  // адреса → Map власник → Set місць (gallery, desc, xsell…, див. lib/media.js)
   const links = new Map();  // ключ посилання → { url, problem, check, ext, at: Map власник → Set місць }
+  const oldDomain = { listing: new Map(), desc: new Map() };  // адреса → Map власник → Set місць
+  const oldCheck = new Map();  // адреса на старому домені → адреса перевірки (лише для товару чи розділу, якого немає)
   const put = (map, key, o, place) => {
     if (!map.has(key)) map.set(key, new Map());
     const byOwner = map.get(key);
@@ -383,6 +389,11 @@ function writeMediaReport(ids) {
     });
     collectMedia(c).forEach(m => put(where, m.url, m.productId ? 'p' + m.productId : 'c' + m.categoryId, m.place));
     collectLinks(c, known).forEach(l => {
+      if (l.old) {
+        put(oldDomain[l.place === 'listing' ? 'listing' : 'desc'], l.url, l.productId ? 'p' + l.productId : 'c' + l.categoryId, l.place);
+        if (l.check) oldCheck.set(l.url, l.check);
+        if (!l.check) return;  // робоче посилання: лише в список старого домену
+      }
       // Помилкова адреса — сама собою; сторінка — за адресою запиту (той самий товар під
       // різними слагами й доменами — одне посилання).
       const key = l.problem ? 'bad:' + l.url : l.check;
@@ -430,10 +441,15 @@ function writeMediaReport(ids) {
   // Спершу файли, що стоять у найбільшій кількості товарів: їх виправлення дає найбільше.
   Object.values(broken).forEach(l => l.sort((a, b) => b[3].length - a[3].length));
   heavy.sort((a, b) => b[1] - a[1]);
+  const isDead = url => { const r = results[oldCheck.get(url)]; return r && r.s !== 'ok' && r.n >= 2 ? 1 : 0; };
+  const old = {
+    listing: [...oldDomain.listing].map(([url, byOwner]) => [url, byOwner.size, isDead(url)]).sort((a, b) => b[1] - a[1]),
+    desc: [...oldDomain.desc].map(([url, byOwner]) => [url, isDead(url), list(byOwner)]).sort((a, b) => b[2].length - a[2].length),
+  };
   const byHost = (m, i) => [...m].map(([h, files]) => [h, files.sort((a, b) => b[i].length - a[i].length)])
     .sort((a, b) => b[1].length - a[1].length);
   const hosts = byHost(hostsMap.image, 1), fileHosts = byHost(hostsMap.file, 1), siteHosts = byHost(siteMap, 1), videos = byHost(videoMap, 2);
-  const report = { checkedAt: check.checkedAt, owners: {}, broken, hosts, fileHosts, siteHosts, videos, heavy };
+  const report = { checkedAt: check.checkedAt, owners: {}, broken, hosts, fileHosts, siteHosts, videos, heavy, oldDomain: old };
   used.forEach(o => { report.owners[o] = owners[o] || ['', '', '', '', '']; });
   fs.writeFileSync(path.join(DIR, 'media-report.json'), JSON.stringify(report), 'utf-8');
   const ownersOf = (lists, i) => new Set(lists.flatMap(x => x[i].map(o => o[0]))).size;
@@ -445,6 +461,10 @@ function writeMediaReport(ids) {
     video: { files: broken.video.length, owners: ownersOf(broken.video, 3) },
     link: { files: broken.link.length, owners: ownersOf(broken.link, 3) },
     heavy: { files: heavy.length, owners: ownersOf(heavy, 2) },
+    oldDomain: {
+      files: new Set([...oldDomain.listing.keys(), ...oldDomain.desc.keys()]).size,
+      owners: new Set([...oldDomain.listing.values(), ...oldDomain.desc.values()].flatMap(m => [...m.keys()])).size,
+    },
     hosts: grouped(hosts, 1),
     fileHosts: grouped(fileHosts, 1),
     siteHosts: grouped(siteHosts, 1),
@@ -720,7 +740,7 @@ function initSideMenu() {
     if (more) rows += '<tr class="md-more-row"><td colspan="2"><button type="button" class="md-more" data-more="' + more + '">ще ' + more + '</button></td></tr>';
     return '<tbody class="md-grp">' + rows + '</tbody>';
   }
-  var LINK_HEAD = { image: 'Посилання на зображення', heavy: 'Посилання на зображення', hosts: 'Посилання на зображення', file: 'Посилання на файл',
+  var LINK_HEAD = { image: 'Посилання на зображення', heavy: 'Посилання на зображення', old: 'Посилання', hosts: 'Посилання на зображення', file: 'Посилання на файл',
     'file-hosts': 'Посилання на файл', video: 'Посилання на відео', link: 'Посилання', 'site-hosts': 'Посилання', videos: 'Відео' };
   // Списки групами: зображення й файли на сторонніх хостингах і посилання на інші сайти — за
   // хостингом, відео — за платформою (у відео в записі ще назва: власники третім елементом).
@@ -749,6 +769,7 @@ function initSideMenu() {
           ', товарів і категорій ' + Object.keys(own).length + '</summary><div class="md-host-body"></div></details>';
       }).join('');
     }
+    if (kind === 'old') return oldDomainHtml(rep);
     if (kind === 'heavy') {
       var hv = rep.heavy || [];
       if (!hv.length) return '<p class="failed-note">Немає.</p>';
@@ -761,6 +782,29 @@ function initSideMenu() {
     sort = sort || 0;
     if (sort) list.sort(function (a, b) { return (sort === 1 ? 1 : -1) * a.why.localeCompare(b.why, 'uk') || a.n - b.n; });
     return tableHtml(kind, list.map(function (x) { return groupHtml(rep, x.n, x.f[0], x.why, x.f[3], kind === 'link' ? linkHtml(x.f[0], x.f[1]) : null); }).join(''), sort);
+  }
+  // Старий домен: шаблон «Дивіться всі наші оголошення» (стоїть майже на всіх сторінках,
+  // тож лише кількість сторінок) і посилання в тексті описів, кожне зі своїми сторінками.
+  function oldDomainHtml(rep) {
+    var o = rep.oldDomain || { listing: [], desc: [] };
+    if (!o.listing.length && !o.desc.length) return '<p class="failed-note">Немає.</p>';
+    var link = function (url, dead) { return linkHtml(url, '') + (dead ? '<div class="md-sub">сторінки вже немає</div>' : ''); };
+    var html = '';
+    if (o.listing.length) {
+      html += '<details class="md-host" open><summary><b>Шаблон «Дивіться всі наші оголошення»</b> · посилань ' + o.listing.length + '</summary><div class="md-host-body" data-filled="1">' +
+        '<table class="md-tab"><thead><tr><th class="md-n">№</th><th>Посилання</th><th class="md-why">Сторінок</th></tr></thead>' +
+        o.listing.map(function (f, i) {
+          return '<tbody class="md-grp"><tr><td class="md-n">' + (i + 1) + '</td><td>' + link(f[0], f[2]) + '</td><td class="md-why">' + f[1] + '</td></tr></tbody>';
+        }).join('') + '</table></div></details>';
+    }
+    if (o.desc.length) {
+      var own = {};
+      o.desc.forEach(function (f) { f[2].forEach(function (x) { own[x[0]] = 1; }); });
+      html += '<details class="md-host"' + (o.listing.length ? '' : ' open') + '><summary><b>Текст описів</b> · посилань ' + o.desc.length +
+        ', товарів і категорій ' + Object.keys(own).length + '</summary><div class="md-host-body" data-filled="1">' +
+        tableHtml('old', o.desc.map(function (f, i) { return groupHtml(rep, i + 1, f[0], null, f[2], link(f[0], f[1])); }).join(''), null) + '</div></details>';
+    }
+    return html;
   }
   function fillHost(det, rep, kind) {
     var box = det.querySelector('.md-host-body');
@@ -1088,6 +1132,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
       mediaItem(ICONS.file, 'Недоступні файли', 'PDF і файли з описів, що не відкриваються', ms.file, 'media-file-overlay', 'bad'),
       mediaItem(ICONS.video, 'Недоступні відео', 'Відео YouTube з описів, що не відкриваються', ms.video, 'media-video-overlay', 'bad'),
       mediaItem(ICONS.brokenLink, 'Биті посилання', 'Посилання в описах, що нікуди не ведуть', ms.link, 'media-link-overlay', 'bad'),
+      mediaItem(ICONS.oldDomain, 'Посилання на старий домен', 'Посилання на cnc.prom.ua: сайт перекидає їх на cncprom.ua, і кожен клік чекає довше', ms.oldDomain, 'media-old-overlay', 'host'),
       mediaItem(ICONS.videos, 'Відео', 'Відео в описах за платформою', ms.videos, 'media-videos-overlay', 'info'),
       mediaItem(ICONS.hosts, 'Зображення на сторонніх хостингах', 'Картинки в описах не на серверах Prom', ms.hosts, 'media-hosts-overlay', 'host'),
       mediaItem(ICONS.hosts, 'Файли на сторонніх хостингах', 'PDF і файли з описів не на серверах Prom', ms.fileHosts, 'media-file-hosts-overlay', 'host'),
@@ -1139,8 +1184,11 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
     mediaPanelHtml('media-video-overlay', `${ICONS.video} Недоступні відео (${ms.video.files})`, brokenNote, 'video',
       'замініть відео в описі на доступне або приберіть його.') +
     mediaPanelHtml('media-link-overlay', `${ICONS.brokenLink} Биті посилання (${(ms.link || {}).files || 0})`,
-      'Посилання в описах, що нікуди не ведуть: сторінки товару, розділу чи сайту вже немає, або адресу записано з помилкою. Помилку в адресі видно одразу, сторінку, якої немає, з другої перевірки поспіль.', 'link',
+      'Посилання в описах, що нікуди не ведуть: сторінки товару, розділу чи сайту вже немає, або адресу записано з помилкою.', 'link',
       'виправте адресу чи замініть посилання на живу сторінку, або приберіть його.') +
+    mediaPanelHtml('media-old-overlay', `${ICONS.oldDomain} Посилання на старий домен (${(ms.oldDomain || {}).files || 0})`,
+      'Посилання в описах на старий домен cnc.prom.ua. Сайт перекидає їх на cncprom.ua, і кожен клік чекає близько секунди. Позначка «сторінки вже немає»: посилання бите, воно є й у «Битих посиланнях».', 'old',
+      'замініть cnc.prom.ua на cncprom.ua у шаблоні «Дивіться всі наші оголошення» та в описах.') +
     mediaPanelHtml('media-videos-overlay', `${ICONS.videos} Відео (${(ms.videos || {}).files || 0})`,
       'Відео, вбудовані в описи, групами за платформою.', 'videos') +
     mediaPanelHtml('media-hosts-overlay', `${ICONS.hosts} Зображення на сторонніх хостингах (${ms.hosts.files})`,
@@ -1452,7 +1500,7 @@ initThemeToggle();
 // потрібен: він вішає хрестик, Esc і клік поза панеллю, а відсутню кнопку-відкривач
 // терпить (if (openBtn)).
 setupModalOverlay('orphan-overlay', null, 'btn-orphan-close');
-['media-image-overlay', 'media-heavy-overlay', 'media-file-overlay', 'media-video-overlay', 'media-link-overlay', 'media-videos-overlay', 'media-hosts-overlay', 'media-file-hosts-overlay', 'media-sites-overlay'].forEach(function (id) {
+['media-image-overlay', 'media-heavy-overlay', 'media-file-overlay', 'media-video-overlay', 'media-link-overlay', 'media-old-overlay', 'media-videos-overlay', 'media-hosts-overlay', 'media-file-hosts-overlay', 'media-sites-overlay'].forEach(function (id) {
   setupModalOverlay(id, null, id + '-close');
 });
 setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
@@ -1579,7 +1627,7 @@ function writeRedirect(file, target) {
   let mediaStats = null;
   try {
     mediaStats = writeMediaReport(builtIds);
-    if (mediaStats) console.log(`Медіа: недоступних зображень ${mediaStats.image.files}, файлів ${mediaStats.file.files}, відео ${mediaStats.video.files}, битих посилань ${mediaStats.link.files}; важких зображень ${mediaStats.heavy.files}; на сторонніх хостингах ${mediaStats.hosts.files} зображень і ${mediaStats.fileHosts.files} файлів; відео ${mediaStats.videos.files}; посилань на інші сайти ${mediaStats.siteHosts.files}.`);
+    if (mediaStats) console.log(`Медіа: недоступних зображень ${mediaStats.image.files}, файлів ${mediaStats.file.files}, відео ${mediaStats.video.files}, битих посилань ${mediaStats.link.files}; важких зображень ${mediaStats.heavy.files}; посилань на старий домен ${mediaStats.oldDomain.files}; на сторонніх хостингах ${mediaStats.hosts.files} зображень і ${mediaStats.fileHosts.files} файлів; відео ${mediaStats.videos.files}; посилань на інші сайти ${mediaStats.siteHosts.files}.`);
     else console.log('Медіа: media-check.json немає — пункти «Доступність медіа» без даних.');
   } catch (err) {
     // Як і XLSX: зручність, а не результат — збірку не валить.
