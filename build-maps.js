@@ -342,13 +342,18 @@ function readSearchEntries(id) {
 //   { checkedAt, owners: { p<id>|c<id>: [назва, код, адреса, topId, categoryId] },
 //     broken: { image|file|video|link: [[адреса, код, з якої дати, [[власник, [місця]]]]] },
 //     hosts | fileHosts | siteHosts: [[хостинг, [[адреса, [[власник, [місця]]]]]]],
-//     videos: [[платформа, [[адреса, назва, [[власник, [місця]]]]]]] }
+//     videos: [[платформа, [[адреса, назва, [[власник, [місця]]]]]]],
+//     heavy: [[адреса, розмір у байтах, [[власник, [місця]]]]] }
 // Місця — для кожного власника окремо: у списку «Де на сторінці» стоїть після
 // «Сторінки» (15.10.2026), і файл буває в описі одного товару, а в іншого мініатюрою.
 // Недоступний — той, що не відкривається другу перевірку поспіль (n ≥ 2, див.
 // check-media.js). Биті посилання: помилка в самій адресі (подвоєне https://, номер чи
 // слово замість адреси) — одразу, без запиту; сторінка, якої немає, — як файли, з n ≥ 2.
+// Важкі зображення (20.10.2026): ті, що відкриваються, але важать понад HEAVY_IMAGE_BYTES
+// (розмір з Content-Range у check-media.js); спершу найважчі. Сервери Prom не беруться:
+// фото галереї покупцю показується зменшеною копією.
 // Немає media-check.json — повертає null, пункти меню кажуть «немає даних».
+const HEAVY_IMAGE_BYTES = 1e6;
 function writeMediaReport(ids) {
   let check;
   try { check = JSON.parse(fs.readFileSync(path.join(DIR, 'media-check.json'), 'utf-8')); } catch (e) { return null; }
@@ -394,10 +399,12 @@ function writeMediaReport(ids) {
   const broken = { image: [], file: [], video: [], link: [] };
   const hostsMap = { image: new Map(), file: new Map() };
   const videoMap = new Map();
+  const heavy = [];
   for (const [url, r] of Object.entries(results)) {
     if (!where.has(url)) continue;  // адреса з категорії, якої вже немає в каталогах, або посилання
     if (r.s !== 'ok' && r.n >= 2 && broken[r.k]) broken[r.k].push([url, String(r.c), since(r), own(url)]);
     const host = hostOf(url);
+    if (r.k === 'image' && r.s === 'ok' && r.size > HEAVY_IMAGE_BYTES && !isPromHost(host)) heavy.push([url, r.size, own(url)]);
     const hm = hostsMap[r.k];
     if (hm && !isPromHost(host)) {
       if (!hm.has(host)) hm.set(host, []);
@@ -422,10 +429,11 @@ function writeMediaReport(ids) {
   });
   // Спершу файли, що стоять у найбільшій кількості товарів: їх виправлення дає найбільше.
   Object.values(broken).forEach(l => l.sort((a, b) => b[3].length - a[3].length));
+  heavy.sort((a, b) => b[1] - a[1]);
   const byHost = (m, i) => [...m].map(([h, files]) => [h, files.sort((a, b) => b[i].length - a[i].length)])
     .sort((a, b) => b[1].length - a[1].length);
   const hosts = byHost(hostsMap.image, 1), fileHosts = byHost(hostsMap.file, 1), siteHosts = byHost(siteMap, 1), videos = byHost(videoMap, 2);
-  const report = { checkedAt: check.checkedAt, owners: {}, broken, hosts, fileHosts, siteHosts, videos };
+  const report = { checkedAt: check.checkedAt, owners: {}, broken, hosts, fileHosts, siteHosts, videos, heavy };
   used.forEach(o => { report.owners[o] = owners[o] || ['', '', '', '', '']; });
   fs.writeFileSync(path.join(DIR, 'media-report.json'), JSON.stringify(report), 'utf-8');
   const ownersOf = (lists, i) => new Set(lists.flatMap(x => x[i].map(o => o[0]))).size;
@@ -436,6 +444,7 @@ function writeMediaReport(ids) {
     file: { files: broken.file.length, owners: ownersOf(broken.file, 3) },
     video: { files: broken.video.length, owners: ownersOf(broken.video, 3) },
     link: { files: broken.link.length, owners: ownersOf(broken.link, 3) },
+    heavy: { files: heavy.length, owners: ownersOf(heavy, 2) },
     hosts: grouped(hosts, 1),
     fileHosts: grouped(fileHosts, 1),
     siteHosts: grouped(siteHosts, 1),
@@ -711,7 +720,7 @@ function initSideMenu() {
     if (more) rows += '<tr class="md-more-row"><td colspan="2"><button type="button" class="md-more" data-more="' + more + '">ще ' + more + '</button></td></tr>';
     return '<tbody class="md-grp">' + rows + '</tbody>';
   }
-  var LINK_HEAD = { image: 'Посилання на зображення', hosts: 'Посилання на зображення', file: 'Посилання на файл',
+  var LINK_HEAD = { image: 'Посилання на зображення', heavy: 'Посилання на зображення', hosts: 'Посилання на зображення', file: 'Посилання на файл',
     'file-hosts': 'Посилання на файл', video: 'Посилання на відео', link: 'Посилання', 'site-hosts': 'Посилання', videos: 'Відео' };
   // Списки групами: зображення й файли на сторонніх хостингах і посилання на інші сайти — за
   // хостингом, відео — за платформою (у відео в записі ще назва: власники третім елементом).
@@ -720,9 +729,11 @@ function initSideMenu() {
   var ownersOf = function (kind, f) { return kind === 'videos' ? f[2] : f[1]; };
   var SORT_ARROWS = ['⇅', '▼', '▲'];
   // sort: null — колонка «Що з ним» не показується (сторонні хостинги); 0/1/2 — порядок.
+  // У важких зображень на її місці «Розмір», без сортування: список і так від найважчих.
   function tableHtml(kind, groups, sort) {
     return '<table class="md-tab"><thead><tr><th class="md-n">№</th><th class="md-link">' + LINK_HEAD[kind] + '</th>' +
-      (sort === null ? '' : '<th class="md-why md-sort' + (sort ? ' active' : '') + '" data-md-sort>Що з ним<span class="sort-arrow">' + SORT_ARROWS[sort] + '</span></th>') +
+      (kind === 'heavy' ? '<th class="md-why">Розмір</th>' :
+        sort === null ? '' : '<th class="md-why md-sort' + (sort ? ' active' : '') + '" data-md-sort>Що з ним<span class="sort-arrow">' + SORT_ARROWS[sort] + '</span></th>') +
       '<th>Сторінка на сайті</th><th class="md-place">Де на сторінці</th></tr></thead>' + groups + '</table>';
   }
   // Сортування за «Що з ним» — клік по заголовку по колу: як у списку (спершу файли
@@ -737,6 +748,13 @@ function initSideMenu() {
         return '<details class="md-host" data-host="' + hi + '"' + (hi === 0 ? ' open' : '') + '><summary><b>' + esc(h[0]) + '</b> · ' + GROUPS[kind][1] + ' ' + h[1].length +
           ', товарів і категорій ' + Object.keys(own).length + '</summary><div class="md-host-body"></div></details>';
       }).join('');
+    }
+    if (kind === 'heavy') {
+      var hv = rep.heavy || [];
+      if (!hv.length) return '<p class="failed-note">Немає.</p>';
+      return tableHtml(kind, hv.map(function (f, i) {
+        return groupHtml(rep, i + 1, f[0], (f[1] / 1e6).toFixed(1).replace('.', ',') + ' МБ', f[2]);
+      }).join(''), null);
     }
     var list = (rep.broken[kind] || []).map(function (f, i) { return { f: f, n: i + 1, why: reason(f[1], kind) }; });
     if (!list.length) return '<p class="failed-note">Немає.</p>';
@@ -1066,6 +1084,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
       menuItem({ icon: ICONS.content, name: 'Змінений контент', hist: 'content', href: 'reports/index.html?type=content', tip: 'Опис, фото, характеристики, файли й відео, які змінив магазин' }),
     ])}${menuGroup('media', 'Доступність медіа', 'bad', [
       mediaItem(ICONS.image, 'Недоступні зображення', 'Фото, картинки в описах і плитки категорій, що не відкриваються', ms.image, 'media-image-overlay', 'bad'),
+      mediaItem(ICONS.heavy, 'Важкі зображення', 'Зображення понад 1 МБ: сторінка з ними повільно відкривається', ms.heavy, 'media-heavy-overlay', 'bad'),
       mediaItem(ICONS.file, 'Недоступні файли', 'PDF і файли з описів, що не відкриваються', ms.file, 'media-file-overlay', 'bad'),
       mediaItem(ICONS.video, 'Недоступні відео', 'Відео YouTube з описів, що не відкриваються', ms.video, 'media-video-overlay', 'bad'),
       mediaItem(ICONS.brokenLink, 'Биті посилання', 'Посилання в описах, що нікуди не ведуть', ms.link, 'media-link-overlay', 'bad'),
@@ -1091,8 +1110,9 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
   </nav>`;
 
   // Списки медіа: оболонка тут, вміст малює initSideMenu з media-report.json при
-  // першому відкритті (списки великі, у map.html їм не місце).
-  const mediaPanelHtml = (id, title, note, kind) => `
+  // першому відкритті (списки великі, у map.html їм не місце). advice — другий рядок
+  // пояснення «Що робити: …» у списках проблем (користувач 20.10.2026).
+  const mediaPanelHtml = (id, title, note, kind, advice) => `
   <div class="help-overlay" id="${id}">
     <div class="help-panel">
       <div class="help-panel-head">
@@ -1100,7 +1120,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
         <button class="btn-help-close" id="${id}-close" data-tip="Закрити (Esc)">✕</button>
       </div>
       <div class="help-panel-body">
-        <p class="failed-note">${note}</p>
+        <p class="failed-note">${note}${advice ? `<br><b>Що робити:</b> ${advice}` : ''}</p>
         <div data-media-body="${kind}"></div>
       </div>
     </div>
@@ -1109,11 +1129,18 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
   // Текст користувача (15.10.2026) — про зображення, тож лише в їхньому списку.
   const brokenImageNote = 'Не відкриваються другу перевірку поспіль (перевірка щоночі після скрапінгу). Сторінки сайту повільно завантажуються, якщо зображення на них недоступні.';
   const mediaPanelsHtml = !mediaStats ? '' :
-    mediaPanelHtml('media-image-overlay', `${ICONS.image} Недоступні зображення (${ms.image.files})`, brokenImageNote, 'image') +
-    mediaPanelHtml('media-file-overlay', `${ICONS.file} Недоступні файли (${ms.file.files})`, brokenNote, 'file') +
-    mediaPanelHtml('media-video-overlay', `${ICONS.video} Недоступні відео (${ms.video.files})`, brokenNote, 'video') +
+    mediaPanelHtml('media-image-overlay', `${ICONS.image} Недоступні зображення (${ms.image.files})`, brokenImageNote, 'image',
+      'завантажте зображення заново, краще на Prom, або приберіть його з опису.') +
+    mediaPanelHtml('media-heavy-overlay', `${ICONS.heavy} Важкі зображення (${(ms.heavy || {}).files || 0})`,
+      'Зображення понад 1 МБ. Сторінка з ними повільно відкривається, особливо з телефона. Спершу найважчі.', 'heavy',
+      'зменште зображення (для опису досить 1200 px по ширині) і завантажте заново; велику анімацію GIF краще замінити відео.') +
+    mediaPanelHtml('media-file-overlay', `${ICONS.file} Недоступні файли (${ms.file.files})`, brokenNote, 'file',
+      'завантажте файл заново й замініть посилання в описі чи у вкладці «Специфікація».') +
+    mediaPanelHtml('media-video-overlay', `${ICONS.video} Недоступні відео (${ms.video.files})`, brokenNote, 'video',
+      'замініть відео в описі на доступне або приберіть його.') +
     mediaPanelHtml('media-link-overlay', `${ICONS.brokenLink} Биті посилання (${(ms.link || {}).files || 0})`,
-      'Посилання в описах, що нікуди не ведуть: сторінки товару, розділу чи сайту вже немає, або адресу записано з помилкою. Помилку в адресі видно одразу, сторінку, якої немає, з другої перевірки поспіль.', 'link') +
+      'Посилання в описах, що нікуди не ведуть: сторінки товару, розділу чи сайту вже немає, або адресу записано з помилкою. Помилку в адресі видно одразу, сторінку, якої немає, з другої перевірки поспіль.', 'link',
+      'виправте адресу чи замініть посилання на живу сторінку, або приберіть його.') +
     mediaPanelHtml('media-videos-overlay', `${ICONS.videos} Відео (${(ms.videos || {}).files || 0})`,
       'Відео, вбудовані в описи, групами за платформою.', 'videos') +
     mediaPanelHtml('media-hosts-overlay', `${ICONS.hosts} Зображення на сторонніх хостингах (${ms.hosts.files})`,
@@ -1425,7 +1452,7 @@ initThemeToggle();
 // потрібен: він вішає хрестик, Esc і клік поза панеллю, а відсутню кнопку-відкривач
 // терпить (if (openBtn)).
 setupModalOverlay('orphan-overlay', null, 'btn-orphan-close');
-['media-image-overlay', 'media-file-overlay', 'media-video-overlay', 'media-link-overlay', 'media-videos-overlay', 'media-hosts-overlay', 'media-file-hosts-overlay', 'media-sites-overlay'].forEach(function (id) {
+['media-image-overlay', 'media-heavy-overlay', 'media-file-overlay', 'media-video-overlay', 'media-link-overlay', 'media-videos-overlay', 'media-hosts-overlay', 'media-file-hosts-overlay', 'media-sites-overlay'].forEach(function (id) {
   setupModalOverlay(id, null, id + '-close');
 });
 setupModalOverlay('scrape-log-overlay', null, 'btn-scrape-log-close');
@@ -1552,7 +1579,7 @@ function writeRedirect(file, target) {
   let mediaStats = null;
   try {
     mediaStats = writeMediaReport(builtIds);
-    if (mediaStats) console.log(`Медіа: недоступних зображень ${mediaStats.image.files}, файлів ${mediaStats.file.files}, відео ${mediaStats.video.files}, битих посилань ${mediaStats.link.files}; на сторонніх хостингах ${mediaStats.hosts.files} зображень і ${mediaStats.fileHosts.files} файлів; відео ${mediaStats.videos.files}; посилань на інші сайти ${mediaStats.siteHosts.files}.`);
+    if (mediaStats) console.log(`Медіа: недоступних зображень ${mediaStats.image.files}, файлів ${mediaStats.file.files}, відео ${mediaStats.video.files}, битих посилань ${mediaStats.link.files}; важких зображень ${mediaStats.heavy.files}; на сторонніх хостингах ${mediaStats.hosts.files} зображень і ${mediaStats.fileHosts.files} файлів; відео ${mediaStats.videos.files}; посилань на інші сайти ${mediaStats.siteHosts.files}.`);
     else console.log('Медіа: media-check.json немає — пункти «Доступність медіа» без даних.');
   } catch (err) {
     // Як і XLSX: зручність, а не результат — збірку не валить.
