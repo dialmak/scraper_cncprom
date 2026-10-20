@@ -1134,7 +1134,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
       mediaItem(ICONS.brokenLink, 'Биті посилання', 'Посилання в описах, що нікуди не ведуть', ms.link, 'media-link-overlay', 'bad'),
       mediaItem(ICONS.oldDomain, 'Посилання на старий домен', 'Посилання на cnc.prom.ua: сайт перекидає їх на cncprom.ua, і кожен клік чекає довше', ms.oldDomain, 'media-old-overlay', 'host'),
       mediaItem(ICONS.videos, 'Відео', 'Відео в описах за платформою', ms.videos, 'media-videos-overlay', 'info'),
-      mediaItem(ICONS.hosts, 'Зображення на сторонніх хостингах', 'Картинки в описах не на серверах Prom', ms.hosts, 'media-hosts-overlay', 'host'),
+      mediaItem(ICONS.imageHosts, 'Зображення на сторонніх хостингах', 'Картинки в описах не на серверах Prom', ms.hosts, 'media-hosts-overlay', 'host'),
       mediaItem(ICONS.hosts, 'Файли на сторонніх хостингах', 'PDF і файли з описів не на серверах Prom', ms.fileHosts, 'media-file-hosts-overlay', 'host'),
       mediaItem(ICONS.sites, 'Посилання на інші сайти', 'Посилання з описів на сторонні сайти', ms.siteHosts, 'media-sites-overlay', 'host'),
     ])}${menuGroup('checks', 'Звірка з сайтом', 'chk', [
@@ -1191,7 +1191,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
       'замініть cnc.prom.ua на cncprom.ua у шаблоні «Дивіться всі наші оголошення» та в описах.') +
     mediaPanelHtml('media-videos-overlay', `${ICONS.videos} Відео (${(ms.videos || {}).files || 0})`,
       'Відео, вбудовані в описи, групами за платформою.', 'videos') +
-    mediaPanelHtml('media-hosts-overlay', `${ICONS.hosts} Зображення на сторонніх хостингах (${ms.hosts.files})`,
+    mediaPanelHtml('media-hosts-overlay', `${ICONS.imageHosts} Зображення на сторонніх хостингах (${ms.hosts.files})`,
       'Картинки в описах, які лежать не на серверах Prom. Групи за хостингом, у кожній спершу файли, що стоять у найбільшій кількості товарів.', 'hosts') +
     mediaPanelHtml('media-file-hosts-overlay', `${ICONS.hosts} Файли на сторонніх хостингах (${(ms.fileHosts || {}).files || 0})`,
       'PDF у вкладці «Специфікація» і файли за посиланнями в описах, які лежать не на серверах Prom. Групи за хостингом, у кожній спершу файли, що стоять у найбільшій кількості товарів.', 'file-hosts') +
