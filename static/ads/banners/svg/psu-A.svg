@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="600" viewBox="0 0 1920 600">
-<style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap');</style>
+<style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;family=Jura:wght@500;600&amp;family=Geist+Mono:wght@400;600&amp;family=Lora:ital,wght@0,600;0,700;1,600;1,700&amp;family=Rubik:wght@500;700;800&amp;display=swap');</style>
 <defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#00A6DE" stop-opacity=".35"/><stop offset="1" stop-color="#00A6DE" stop-opacity="0"/></radialGradient>
 <linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="#0A1A31" stop-opacity=".95"/><stop offset=".55" stop-color="#0A1A31" stop-opacity=".55"/><stop offset="1" stop-color="#0A1A31" stop-opacity="0"/></linearGradient>
 <pattern id="g1" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#10264A" stroke-width="1"/></pattern>
