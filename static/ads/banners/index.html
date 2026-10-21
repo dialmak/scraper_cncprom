@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Банери CNCPROM</title>
+<style>
+:root { --bg:#111418; --card:#1a1e24; --text:#e6e9ef; --sub:#a3abb9; --line:#2e343e; --acc:#00A6DE; color-scheme: dark; }
+:root[data-theme="light"] { --bg:#f4f6f8; --card:#fff; --text:#1d2330; --sub:#5b6474; --line:#dde1e7; --acc:#0079A8; color-scheme: light; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Segoe UI", sans-serif; }
+.wrap { max-width:1500px; margin:0 auto; padding:20px 16px 48px; }
+h1 { font-size:1.3rem; margin:0 0 6px; }
+.lead { color:var(--sub); margin:0 0 4px; max-width:1100px; }
+.bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:12px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:2; }
+.bar span { color:var(--sub); margin-right:4px; }
+.bar button { font:inherit; color:var(--text); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 14px; cursor:pointer; }
+.bar button:hover { border-color:var(--acc); }
+.bar button[aria-pressed="true"] { border-color:var(--acc); color:var(--acc); font-weight:600; }
+.bar .sp { flex:1; }
+section { margin:0 0 28px; }
+h2 { font-size:1rem; margin:0 0 8px; font-weight:600; }
+figure { margin:0 0 12px; }
+figure img { width:100%; display:block; border-radius:6px; border:1px solid var(--line); }
+figcaption { display:flex; gap:14px; color:var(--sub); font-size:.85rem; margin-top:4px; }
+figcaption b { color:var(--text); font-weight:600; }
+figcaption a { color:var(--acc); }
+body[data-v="A"] .vB, body[data-v="B"] .vA { display:none; }
+</style></head>
+<body data-v="both"><div class="wrap">
+<h1>Банери - це легко, 1920×600, два варіанти.</h1>
+<p class="lead">А «Креслення»: темне тло з сіткою, розмітка навколо товару, моноширинні підписи.</p>
+<p class="lead">Б «Вітрина»: світле тло, фірмовий круг під товаром, крупні цифри.</p>
+<p class="lead">Якщо потрібні зміни дизайну, наприклад, додати телефон - під кожним банером: SVG для Figma (текст редагується, шари названі), ну й готовий PNG та JPG.</p>
+<div class="bar"><span>Показати:</span>
+  <button data-set="both" aria-pressed="true">Обидва</button><button data-set="A" aria-pressed="false">А «Креслення»</button><button data-set="B" aria-pressed="false">Б «Вітрина»</button>
+  <span class="sp"></span><button id="theme">Світла тема</button></div>
+<section><h2>Волоконні лазерні маркери</h2><figure class="vA"><img src="png/markers-A.png" alt="Волоконні лазерні маркери, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/markers-A.svg" download>SVG</a><a href="png/markers-A.png" download>PNG</a><a href="jpg/markers-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/markers-B.png" alt="Волоконні лазерні маркери, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/markers-B.svg" download>SVG</a><a href="png/markers-B.png" download>PNG</a><a href="jpg/markers-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Акумулятори</h2><figure class="vA"><img src="png/batteries-A.png" alt="Акумулятори, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/batteries-A.svg" download>SVG</a><a href="png/batteries-A.png" download>PNG</a><a href="jpg/batteries-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/batteries-B.png" alt="Акумулятори, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/batteries-B.svg" download>SVG</a><a href="png/batteries-B.png" download>PNG</a><a href="jpg/batteries-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Лазерні верстати CO₂</h2><figure class="vA"><img src="png/co2-A.png" alt="Лазерні верстати CO₂, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/co2-A.svg" download>SVG</a><a href="png/co2-A.png" download>PNG</a><a href="jpg/co2-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/co2-B.png" alt="Лазерні верстати CO₂, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/co2-B.svg" download>SVG</a><a href="png/co2-B.png" download>PNG</a><a href="jpg/co2-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Фрезерні верстати</h2><figure class="vA"><img src="png/milling-A.png" alt="Фрезерні верстати, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/milling-A.svg" download>SVG</a><a href="png/milling-A.png" download>PNG</a><a href="jpg/milling-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/milling-B.png" alt="Фрезерні верстати, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/milling-B.svg" download>SVG</a><a href="png/milling-B.png" download>PNG</a><a href="jpg/milling-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Лінійні напрямні HIWIN</h2><figure class="vA"><img src="png/hiwin-A.png" alt="Лінійні напрямні HIWIN, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/hiwin-A.svg" download>SVG</a><a href="png/hiwin-A.png" download>PNG</a><a href="jpg/hiwin-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/hiwin-B.png" alt="Лінійні напрямні HIWIN, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/hiwin-B.svg" download>SVG</a><a href="png/hiwin-B.png" download>PNG</a><a href="jpg/hiwin-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Шпинделі</h2><figure class="vA"><img src="png/spindles-A.png" alt="Шпинделі, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/spindles-A.svg" download>SVG</a><a href="png/spindles-A.png" download>PNG</a><a href="jpg/spindles-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/spindles-B.png" alt="Шпинделі, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/spindles-B.svg" download>SVG</a><a href="png/spindles-B.png" download>PNG</a><a href="jpg/spindles-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Імпульсні блоки живлення</h2><figure class="vA"><img src="png/psu-A.png" alt="Імпульсні блоки живлення, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/psu-A.svg" download>SVG</a><a href="png/psu-A.png" download>PNG</a><a href="jpg/psu-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/psu-B.png" alt="Імпульсні блоки живлення, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/psu-B.svg" download>SVG</a><a href="png/psu-B.png" download>PNG</a><a href="jpg/psu-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Токарні верстати</h2><figure class="vA"><img src="png/lathes-A.png" alt="Токарні верстати, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/lathes-A.svg" download>SVG</a><a href="png/lathes-A.png" download>PNG</a><a href="jpg/lathes-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/lathes-B.png" alt="Токарні верстати, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/lathes-B.svg" download>SVG</a><a href="png/lathes-B.png" download>PNG</a><a href="jpg/lathes-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Датчики</h2><figure class="vA"><img src="png/sensors-A.png" alt="Датчики, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/sensors-A.svg" download>SVG</a><a href="png/sensors-A.png" download>PNG</a><a href="jpg/sensors-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/sensors-B.png" alt="Датчики, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/sensors-B.svg" download>SVG</a><a href="png/sensors-B.png" download>PNG</a><a href="jpg/sensors-B.jpg" download>JPG</a></figcaption></figure></section>
+<section><h2>Синхронні мотор-редуктори</h2><figure class="vA"><img src="png/gearmotors-A.png" alt="Синхронні мотор-редуктори, варіант А «Креслення»" loading="lazy"><figcaption><b>А «Креслення»</b><a href="svg/gearmotors-A.svg" download>SVG</a><a href="png/gearmotors-A.png" download>PNG</a><a href="jpg/gearmotors-A.jpg" download>JPG</a></figcaption></figure><figure class="vB"><img src="png/gearmotors-B.png" alt="Синхронні мотор-редуктори, варіант Б «Вітрина»" loading="lazy"><figcaption><b>Б «Вітрина»</b><a href="svg/gearmotors-B.svg" download>SVG</a><a href="png/gearmotors-B.png" download>PNG</a><a href="jpg/gearmotors-B.jpg" download>JPG</a></figcaption></figure></section>
+</div>
+<script>
+function setV(v) {
+  document.body.setAttribute('data-v', v);
+  document.querySelectorAll('[data-set]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-set') === v)); });
+  try { localStorage.setItem('ads-v', v); } catch (e) {}
+}
+document.querySelectorAll('[data-set]').forEach(function (x) { x.addEventListener('click', function () { setV(x.getAttribute('data-set')); }); });
+try { var sv = localStorage.getItem('ads-v'); if (sv) setV(sv); } catch (e) {}
+var th = document.getElementById('theme');
+th.addEventListener('click', function () {
+  var light = document.documentElement.getAttribute('data-theme') !== 'light';
+  if (light) document.documentElement.setAttribute('data-theme', 'light'); else document.documentElement.removeAttribute('data-theme');
+  th.textContent = light ? 'Темна тема' : 'Світла тема';
+});
+</script>
+</body></html>
