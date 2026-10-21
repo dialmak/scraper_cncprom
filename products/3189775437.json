@@ -1,0 +1,30 @@
+{
+  "id": "3189775437",
+  "name": "Контролер 7–27 В, до 100 Вт YMR8-F для прямого та зворотного ходу двигуна",
+  "sku": "05-265",
+  "url": "https://cncprom.ua/ua/p3189775437-kontroler-ymr8-dc7.html",
+  "attrs": [
+    ["Кількість функцій", "4"],
+    ["Тип монтажу", "На DIN рейку"],
+    ["Вага", "0.045 кг"],
+    ["Стан", "Новий"],
+    ["Довжина", "90 мм"],
+    ["Ширина", "41 мм"],
+    ["Висота", "17 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7716195986_kontroler-7-27-v.jpg",
+    "https://images.prom.ua/7716194935_kontroler-7-27-v.jpg",
+    "https://images.prom.ua/7716194955_kontroler-7-27-v.jpg",
+    "https://images.prom.ua/7716194969_kontroler-7-27-v.jpg",
+    "https://images.prom.ua/7716195942_kontroler-7-27-v.jpg"
+  ],
+  "accessories": [
+    "535040186",
+    "440543824",
+    "796947391",
+    "797033776",
+    "6896760"
+  ]
+}

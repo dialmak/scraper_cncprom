@@ -1,0 +1,24 @@
+{
+  "id": "3189771598",
+  "name": "Датчик потоку води 1 А, XINTA GXBH0091-001, поршневого типу, NO",
+  "sku": "08-270",
+  "url": "https://cncprom.ua/ua/p3189771598-datchik-potoka-vody.html",
+  "attrs": [
+    ["Модель:", "GXBH0091-001"],
+    ["Тип пристрою:", "датчик наявності потоку води"],
+    ["Принцип дії:", "поршневий, магнітний"],
+    ["Максимальний тривалий струм замкненого контакту:", "1 А"],
+    ["Максимальна напруга комутації:", "200 В постійного струму"],
+    ["Матеріал корпусу:", "ABS-пластик"],
+    ["Довжина дротів:", "350 мм"],
+    ["Вага", "0,017 кг"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7708247421_datchik-potoku-vodi.jpg",
+    "https://images.prom.ua/7708247444_datchik-potoku-vodi.jpg",
+    "https://images.prom.ua/7708247422_datchik-potoku-vodi.jpg",
+    "https://images.prom.ua/7708247423_datchik-potoku-vodi.jpg"
+  ],
+  "accessories": []
+}

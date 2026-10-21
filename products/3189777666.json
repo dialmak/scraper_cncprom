@@ -1,0 +1,27 @@
+{
+  "id": "3189777666",
+  "name": "Розумний WIFI лічильник електроенергії Atorch GR2PWS, AC 50–320 V, автомат введення резерву",
+  "sku": "HP09-036",
+  "url": "https://cncprom.ua/ua/p3189777666-umnyj-wifi-schetchik.html",
+  "attrs": [
+    ["Виробник", "Atorch"],
+    ["Стан", "Новий"],
+    ["Кількість фаз", "1"],
+    ["Номінальний струм", "100 А"],
+    ["Довжина", "66 мм"],
+    ["Ширина", "36 мм"],
+    ["Висота", "80 мм"],
+    ["Вага", "0.15 кг"]
+  ],
+  "specs": [
+    ["Посібник користувача.pdf", "https://storage.ua.prom.st/3454468_posibnik_koristuvacha.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7701977366_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7701977758_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7701977365_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7701977368_rozumnij-wifi-lichilnik.jpg",
+    "https://images.prom.ua/7701977607_rozumnij-wifi-lichilnik.jpg"
+  ],
+  "accessories": []
+}
