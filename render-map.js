@@ -24,7 +24,7 @@ const path = require('path');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { helpButtonHtml, searchHelpButtonHtml, writeLogos } = require('./lib/help');
-const { assetVer } = require('./lib/assets');
+const { assetVer, faviconLinks } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { narrowGuardHtml } = require('./lib/notice');
 const { hasDescription, hasCategoryDescription } = require('./lib/desc');
@@ -2779,6 +2779,7 @@ const html = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Мапа: ${escapeHtmlOuter(CATALOG_DATA.tree.name)} (${rootLevelsLabel})</title>
+${faviconLinks()}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">

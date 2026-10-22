@@ -27,7 +27,7 @@ const { escapeHtmlOuter: esc } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { helpButtonHtml } = require('./lib/help');
 const { narrowGuardHtml } = require('./lib/notice');
-const { assetVer } = require('./lib/assets');
+const { assetVer, faviconLinks } = require('./lib/assets');
 const { fmtDateTime } = require('./lib/time');
 const { plural } = require('./lib/plural');
 const { sleep } = require('./lib/browser');
@@ -357,6 +357,7 @@ html, body { height: auto; overflow: visible; }
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тест платформи: ${esc(data.category.name)}</title>
+${faviconLinks()}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="map-common.css${assetVer(path.join(DIR, 'map-common.css'))}">

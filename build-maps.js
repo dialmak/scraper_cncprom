@@ -13,7 +13,7 @@ const { signed } = require('./lib/num');
 const { escapeHtmlOuter } = require('./lib/html');
 const { ICONS } = require('./lib/icons');
 const { helpButtonHtml, searchHelpButtonHtml, writeHelpPage, writeLogos } = require('./lib/help');
-const { assetVer } = require('./lib/assets');
+const { assetVer, faviconLinks } = require('./lib/assets');
 const { fmtDate, fmtDateTime } = require('./lib/time');
 const { hasDescription, hasCategoryDescription, descriptionJson, categoryJson, descIndex, descSearchIndex } = require('./lib/desc');
 const { collectMedia, collectLinks, knownIds, hostOf, isPromHost } = require('./lib/media');
@@ -262,6 +262,7 @@ function writeStub(id, name, reason) {
 <head>
 <meta charset="UTF-8">
 <title>Категорія ${id}${name ? " (" + escapeHtmlOuter(name) + ")" : ""}: немає актуальних даних</title>
+${faviconLinks()}
 <style>
   body { font-family: system-ui, sans-serif; background:#f5f5f5; color:#333; display:flex;
          align-items:center; justify-content:center; height:100vh; margin:0; text-align:center; }
@@ -1228,6 +1229,7 @@ function buildIndexPage(entries, scrapeLogContent, mapLogContent, xlsxReady, med
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Мапа сайту cncprom.ua</title>
+${faviconLinks()}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1554,7 +1556,8 @@ function writeRedirect(file, target) {
   fs.writeFileSync(file, `<!DOCTYPE html>
 <html lang="uk"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=${t}">
 <script>location.replace('${target}' + location.search + location.hash);</script>
-<title>Мапа сайту cncprom.ua</title></head>
+<title>Мапа сайту cncprom.ua</title>
+${faviconLinks()}</head>
 <body><p><a href="${t}">Мапа сайту cncprom.ua</a></p></body></html>
 `, "utf-8");
 }

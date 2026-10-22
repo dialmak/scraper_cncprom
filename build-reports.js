@@ -34,7 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { ICONS } = require('./lib/icons');
 const { helpButtonHtml, writeLogos } = require('./lib/help');
-const { assetVer, contentVer } = require('./lib/assets');
+const { assetVer, contentVer, faviconLinks } = require('./lib/assets');
 const { narrowGuardHtml } = require('./lib/notice');
 const { realUrl, mediaFromHtml, mediaKey } = require('./lib/media');
 
@@ -1483,6 +1483,7 @@ const html = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Історія змін каталогу</title>
+${faviconLinks()}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../map-common.css${assetVer(path.join(SITE_DIR, 'map-common.css'))}">
