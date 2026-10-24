@@ -1,0 +1,31 @@
+{
+  "id": "3197511928",
+  "name": "3D-принтер IdeaFormer IR3 V2, CoreXY, 250×250 мм, конвеєрна платформа, 400 мм/с",
+  "sku": "10-271",
+  "url": "https://cncprom.ua/ua/p3197511928-printer-ideaformer-ir3.html",
+  "attrs": [
+    ["Метод друку", "Моделювання методом наплавлення (FDM)"],
+    ["Максимальна швидкість друку", "300 мм/сек"],
+    ["Гарантійний термін", "12 міс"],
+    ["Стан", "Новий"],
+    ["Тип пристрою", "3D-принтер"],
+    ["Кількість сопел", "1 шт."],
+    ["Довжина", "700 мм"],
+    ["Ширина", "436 мм"],
+    ["Висота", "510 мм"],
+    ["Вага", "17.5 кг"],
+    ["Рабочая длина", "250 мм"],
+    ["Робоча ширина", "250 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7716012532_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012531_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012529_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012538_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012548_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012556_3d-printer-ideaformer-ir3.jpg",
+    "https://images.prom.ua/7716012555_3d-printer-ideaformer-ir3.jpg"
+  ],
+  "accessories": []
+}
