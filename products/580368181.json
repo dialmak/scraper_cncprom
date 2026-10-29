@@ -14,7 +14,7 @@
     ["Вихідна напруга", "380VAC"],
     ["Ток", "5.5А"],
     ["Частота (Гц)", "400"],
-    ["Потужність", "2200"]
+    ["Потужність", "2200 Вт"]
   ],
   "specs": [
     ["HY02D243B inverter manual (eng).pdf", "https://storage.ua.prom.st/2370509_hy02d243b_inverter_manual_eng.pdf"]
