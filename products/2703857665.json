@@ -1,8 +1,8 @@
 {
   "id": "2703857665",
-  "name": "BMS JK-BD4A8S-4Р, 40A, для LiFePO4/Li-ion/LTO (4S-8S), 0.4A активного балансування",
+  "name": "BMS JK-BD4A8S-4Р, 40 A, для LiFePO4/Li-ion/LTO (4S-8S), 0.4 A активного балансування",
   "sku": "05-330",
-  "url": "https://cncprom.ua/ua/p2703857665-bms-bd4a8s-40a.html",
+  "url": "https://cncprom.ua/ua/p2703857665-bms-bd4a8s-dlya.html",
   "attrs": [
     ["Виробник", "Jikong"],
     ["Країна виробник", "Китай"],
@@ -25,11 +25,9 @@
     ["Посібник з експлуатації JK BMS.pdf", "https://storage.ua.prom.st/3070858_posibnik_z_ekspluatatsiyi_jk_bms.pdf"]
   ],
   "photos": [
-    "https://images.prom.ua/7032933173_bms-jk-bd4a8s-4r-40a.jpg",
-    "https://images.prom.ua/7032990390_bms-jk-bd4a8s-4r-40a.jpg",
-    "https://images.prom.ua/7032863437_bms-jk-bd4a8s-4r-40a.jpg",
-    "https://images.prom.ua/7032933534_bms-jk-bd4a8s-4r-40a.jpg",
-    "https://images.prom.ua/7032959915_bms-jk-bd4a8s-4r-40a.jpg"
+    "https://images.prom.ua/6788211240_bms-jk-bd4a8s-4r-40.jpg",
+    "https://images.prom.ua/7847154579_bms-jk-bd4a8s-4r-40.jpg",
+    "https://images.prom.ua/7032933534_bms-jk-bd4a8s-4r-40.jpg"
   ],
   "accessories": []
 }

@@ -1,10 +1,11 @@
 {
   "id": "2336824749",
-  "name": "Автоматичний запобіжник 12-48V 70A, автоматичний вимикач",
+  "name": "Автоматичний запобіжник 12-48 В, 70 A, автоматичний вимикач",
   "sku": "91-118",
-  "url": "https://cncprom.ua/ua/p2336824749-avtomaticheskij-predohranitel-48v.html",
+  "url": "https://cncprom.ua/ua/p2336824749-avtomaticheskij-predohranitel-avtomaticheskij.html",
   "attrs": [
     ["Країна виробник", "Китай"],
+    ["Номінальний струм", "70 А"],
     ["Ступінь захисту IP", "67"],
     ["Висота", "40 мм"],
     ["Ширина", "52 мм"],
@@ -13,7 +14,6 @@
     ["Тип ПЗВ", "Реле"],
     ["Матеріал корпусу", "Пластик"],
     ["Мінімальна робоча температура", "-10.0"],
-    ["Номінальний струм", "70.0"],
     ["Тип спрацьовування ПЗВ", "Електромеханічний"],
     ["Максимальна робоча температура", "50"],
     ["Вага", "0.09"],
@@ -24,9 +24,9 @@
   ],
   "specs": [],
   "photos": [
-    "https://images.prom.ua/6257663290_avtomatichnij-zapobizhnik-12-48v.jpg",
-    "https://images.prom.ua/6257888484_avtomatichnij-zapobizhnik-12-48v.jpg",
-    "https://images.prom.ua/6257903804_avtomatichnij-zapobizhnik-12-48v.jpg"
+    "https://images.prom.ua/6257663290_avtomatichnij-zapobizhnik-12-48.jpg",
+    "https://images.prom.ua/6257888484_avtomatichnij-zapobizhnik-12-48.jpg",
+    "https://images.prom.ua/6257903804_avtomatichnij-zapobizhnik-12-48.jpg"
   ],
   "accessories": []
 }

@@ -1,10 +1,11 @@
 {
   "id": "2336824750",
-  "name": "Автоматичний запобіжник 12-48V 80A, автоматичний вимикач",
+  "name": "Автоматичний запобіжник 12-48 В, 80 A, автоматичний вимикач",
   "sku": "91-119",
-  "url": "https://cncprom.ua/ua/p2336824750-avtomaticheskij-predohranitel-48v.html",
+  "url": "https://cncprom.ua/ua/p2336824750-avtomaticheskij-predohranitel-avtomaticheskij.html",
   "attrs": [
     ["Країна виробник", "Китай"],
+    ["Номінальний струм, А", "80"],
     ["Тип монтажа", "Гвинтовий"],
     ["Тип ПЗВ", "Реле"],
     ["Матеріал корпусу", "Пластик"],
@@ -24,9 +25,9 @@
   ],
   "specs": [],
   "photos": [
-    "https://images.prom.ua/6257932608_avtomatichnij-zapobizhnik-12-48v.jpg",
-    "https://images.prom.ua/6257888484_avtomatichnij-zapobizhnik-12-48v.jpg",
-    "https://images.prom.ua/6257903804_avtomatichnij-zapobizhnik-12-48v.jpg"
+    "https://images.prom.ua/6257932608_avtomatichnij-zapobizhnik-12-48.jpg",
+    "https://images.prom.ua/6257888484_avtomatichnij-zapobizhnik-12-48.jpg",
+    "https://images.prom.ua/6257903804_avtomatichnij-zapobizhnik-12-48.jpg"
   ],
   "accessories": []
 }
