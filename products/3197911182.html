@@ -1,0 +1,176 @@
+<p style="text-align:center"><u><strong><span style="font-size:18px">Програмований контролер послідовного керування MT010-7X5Y, 12–24 В, 7 входів, 5 виходів</span></strong></u></p>
+<p><span style="font-size:18px"><strong>MT010-7X5Y</strong> — програмований контролер для автоматичного послідовного керування виконавчими механізмами невеликих верстатів і промислового обладнання. Пристрій дає змогу створювати покрокову програму, у якій задаються стани виходів, очікування сигналів від датчиків, часові затримки та повторення окремих ділянок робочого циклу.</span></p>
+<p><span style="font-size:18px">Контролер має п’ять програмованих входів X1–X5, п’ять транзисторних виходів Y1–Y5, а також окремі входи запуску та аварійної зупинки. До входів можна підключати індуктивні датчики типу NPN із нормально розімкненим контактом, кінцеві вимикачі, кнопки та інші пристрої, які подають на вхід сигнал 0 В. Виходи можуть використовуватися для керування проміжними реле, електромагнітними клапанами та іншими пристроями відповідної потужності.</span></p>
+<p><span style="font-size:18px">Програмування виконується безпосередньо з передньої панелі за допомогою кнопок і поворотного регулятора. П’ятирозрядний цифровий індикатор відображає параметри налаштування, поточний етап програми, кількість виконаних циклів і повідомлення про помилки. Контролер підтримує до 40 програмних рядків, ручну перевірку входів і виходів, автоматичний запуск, регулювання затримок під час роботи та обмін даними через RS-485.</span></p>
+<p><u><strong><span style="font-size:18px">Принцип роботи</span></strong></u></p>
+<p><span style="font-size:18px">Користувач створює послідовність команд, кожна з яких виконує одну визначену дію: змінює стан виходів, задає часову затримку або очікує сигналу від вибраного входу. Наприклад, контролер може увімкнути електромагнітний клапан, витримати заданий час, вимкнути клапан, дочекатися спрацювання кінцевого вимикача та повторити цикл необхідну кількість разів.</span></p>
+<p><span style="font-size:18px">Після отримання сигналу запуску контролер послідовно виконує записані команди. Початковий і кінцевий рядки повторюваної ділянки, а також кількість циклів задаються окремо. Значення 65535 використовується для безперервного повторення програми. У разі натискання кнопки аварійної зупинки виконання програми припиняється відповідно до вибраного налаштування.</span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span class="ck-alert__title"></span>
+<p><span style="font-size:16px"><strong>Важливо!</strong></span></p>
+<p><span style="font-size:16px"> Виходи контролера не можна безпосередньо з’єднувати з +24 В або використовувати для підключення навантаження зі струмом понад 0,8 А. Для керування потужними електромагнітами, клапанами, контакторами та іншими індуктивними навантаженнями потрібно застосовувати проміжні реле або відповідні підсилювальні модулі із захистом від імпульсів самоіндукції.</span></p>
+<p><span style="font-size:16px">Контролер не призначений для медичного обладнання, ліфтів, пожежних систем, котлів, електрогенераторного та гірничого обладнання, а також систем, від яких залежить безпека або життя людей.</span></p>
+</div>
+</div>
+<p><u><strong><span style="font-size:18px">Особливості</span></strong></u></p>
+<ul>
+<li>
+<p><span style="font-size:18px">Програмування без підключення до комп’ютера.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Створення послідовностей із керуванням виходами, затримками та очікуванням вхідних сигналів.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">До 40 рядків у програмі.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Одночасне керування декількома виходами в одному програмному рядку.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Налаштування початкового та кінцевого рядків циклу.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Одноразове, багаторазове або безперервне виконання циклу.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Можливість автоматичного запуску після подавання живлення.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Окрема ділянка програми в рядках 31–40 для спеціального запуску або дій після аварійної зупинки.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Зміна тривалості затримок під час роботи за допомогою поворотного регулятора.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Ручний режим перевірки кожного входу та виходу.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Налаштування фільтрації вхідних сигналів для зменшення впливу електричних перешкод.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Відображення кодів помилок під час неправильного налаштування.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Можливість відновлення заводських параметрів.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Збереження налаштувань у пам’яті контролера.</span></p>
+</li>
+</ul>
+<p><u><strong><span style="font-size:18px">Сфери застосування</span></strong></u></p>
+<ul>
+<li>
+<p><span style="font-size:18px">Невеликі промислові верстати.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Пневматичні системи.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Механізми з електромагнітними клапанами.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Конвеєрне обладнання.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Пакувальні механізми.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Складальні та сортувальні установки.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Автоматичні подавачі.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Обладнання з кінцевими вимикачами та датчиками положення.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Системи циклічного керування виконавчими механізмами.</span></p>
+</li>
+<li>
+<p><span style="font-size:18px">Навчальні та випробувальні стенди.</span></p>
+</li>
+</ul>
+<p><u><strong><span style="font-size:18px">Технічні характеристики</span></strong></u></p>
+<p><span style="font-size:18px"><em>Модель: </em>MT010-7X5Y.</span></p>
+<p><span style="font-size:18px"><em>Тип пристрою:</em> Програмований контролер послідовного керування.</span></p>
+<p><span style="font-size:18px"><em>Напруга живлення: </em>12–24 В постійного струму.</span></p>
+<p><span style="font-size:18px"><em>Рекомендована напруга живлення: </em>24 В постійного струму.</span></p>
+<p><span style="font-size:18px"><em>Рекомендований струм блока живлення:</em> Понад 1,5 А.</span></p>
+<p><span style="font-size:18px"><em>Кількість входів:</em> 7.</span></p>
+<p><span style="font-size:18px"><em>Програмовані входи:</em> 5, X1–X5.</span></p>
+<p><span style="font-size:18px"><em>Фіксовані входи: </em>2, запуск та аварійна зупинка.</span></p>
+<p><span style="font-size:18px"><em>Тип підключуваних датчиків: </em>NPN, нормально розімкнені.</span></p>
+<p><span style="font-size:18px"><em>Активний рівень вхідного сигналу:</em> 0 В.</span></p>
+<p><span style="font-size:18px"><em>Кількість виходів: </em>5, Y1–Y5.</span></p>
+<p><span style="font-size:18px"><em>Тип виходів: </em>транзисторні, з комутацією 0 В.</span></p>
+<p><span style="font-size:18px"><em>Допустимий струм одного виходу:</em> менше 0,8 А.</span></p>
+<p><span style="font-size:18px"><em>Кількість програмних рядків: д</em>о 40.</span></p>
+<p><span style="font-size:18px"><em>Кількість повторень циклу:</em> від 1 до 65534.</span></p>
+<p><span style="font-size:18px"><em>Безперервне повторення циклу:</em> значення 65535.</span></p>
+<p><span style="font-size:18px"><em>Діапазон налаштування затримки:</em> від 0 до 65535,999 с.</span></p>
+<p><span style="font-size:18px"><em>Індикація:</em> п’ятирозрядний цифровий індикатор.</span></p>
+<p><span style="font-size:18px"><em>Керування:</em> кнопки та поворотний регулятор на передній панелі.</span></p>
+<p><span style="font-size:18px"><em>Лінія зв’язку:</em> RS-485.</span></p>
+<p><span style="font-size:18px"><em>Рекомендована довжина лінії RS-485:</em> До 300 м.</span></p>
+<p><span style="font-size:18px"><em>Робоча температура: </em>від −5 до +60 °C, без утворення конденсату.</span></p>
+<p><span style="font-size:18px"><em>Розміри корпусу:</em> 99,5 × 72 × 29 мм.</span></p>
+<p><span style="font-size:18px"><em>Розмір монтажного отвору: </em>92 × 70 мм.</span></p>
+<p><span style="font-size:18px"><em>Вага: </em>0,085 кг</span></p>
+<p><img alt="" src="https://i.ibb.co/xqzC3d0F/Chat-GPT-Image-23-2026-10-07-08.png" style="width:1000px;height:667px"></p>
+<p>&nbsp;</p>
+<p><img alt="" src="https://i.ibb.co/r2QvtFs9/Chat-GPT-Image-23-2026-17-40-23.png" style="width:1000px;height:1018px"></p>
+<p><img alt="" src="https://i.ibb.co/gLgZM6zX/Chat-GPT-Image-24-2026-09-21-44.png" style="width:1000px;height:1000px"></p>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_red">
+<div>
+<p><span style="font-size:16px"><strong>Важливо!</strong><br>
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця.<br>
+Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою.<br>
+<strong>Інформація на сайті є актуальною на момент її опублікування!<br>
+Обов'язково</strong> перевіряйте цілісність і стан товару при отриманні (на пошті або з кур’єром). Претензії щодо механічних пошкоджень після підписання накладної не приймаються.</span><span style="font-size:16px"></span><span class="ck-alert__title"></span></p>
+</div>
+</div>
+<p>&nbsp;<img alt="" src="https://i.ibb.co/v4sPdVct/image.jpg" style="width:470px;height:112px"></p>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong><span class="ck-alert__title"></span>Комплект постачання:</strong><span class="fa fa-car" style="color:#000000">&nbsp;</span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><span style="font-size:18px"><strong>Контролер для автоматики 12–24 В MT010-7X5Y (1 шт.)</strong></span></span></li>
+</ul>
+<div class="ck-alert ck-alert_theme_blue">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong>З цим товаром Ви можете придбати:</strong></span></div>
+</div>
+<p><span style="font-size:18px"><img alt="" src="https://i.ibb.co/yB4RmCfq/5.png" style="width:101px;height:50px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<div class="ck-alert ck-alert_theme_orange">
+<div><span style="font-size:18px"><span class="ck-alert__title"></span><strong>Дивіться всі наші оголошення на сайті компанії CNCPROM:</strong></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2432613-alyuminievyj-profil" target="_blank">Алюмінієвий профіль</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank">Блоки живлення</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1270337-gibkie-mufty" target="_blank">Гнучкі муфти</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1372753-gibkij-kabel-kanal" target="_blank">Гнучкий кабель канал&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1261329-stanki-chpu" target="_blank">Верстати з ЧПК</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022907-datchiki-knopki-razemy" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank">Драйвери крокового двигуна</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli" target="_blank">Драйвери та крокові двигуни з енкодером</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki" target="_blank">Затискні цанги, гайки ER</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory" target="_blank">Інвертори</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1292282-shvp" target="_blank">КГП</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022485-kontrollery" target="_blank">Контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1022553-shagovye-dvigateli" target="_blank">Крокові двигуни</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie" target="_blank">Лінійні направляючі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g16759716-linejnye-podshipniki" target="_blank">Лінійні підшипники</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g92857157-osnastka-dlya-stankov" target="_blank">Оснащення для верстатів</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka" target="_blank">Регулятори висоти різака THC&nbsp;</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488426-reechnyj-privod" target="_blank">Рейковий привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g2488264-remennyj-privod" target="_blank">Ремінний привід</a></span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g51015677-rezhuschij-instrument" target="_blank">Ріжучий інструмент</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1481716-povorotnye-osi" target="_blank">Поворотні осі</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank">Пульти ручного управління і DSP контролери</a></span></li>
+<li><span style="font-size:18px"><a href="https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami" target="_blank">Серводвигуни з серводрайверами</a>&nbsp;</span></li>
+<li><span style="font-size:18px"><a href="https://cncprom.ua/ua/g96572435-sistemy-ohlazhdeniya-ventilyatsii" target="_blank">Системи охолодження і вентиляції</a></span></li>
+<li><span style="font-size:18px"><a href="http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu" target="_blank">Шпинделі</a></span></li>
+</ul>
+<p>&nbsp;</p>
+<div style=""><span></span></div>

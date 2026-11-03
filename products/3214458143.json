@@ -1,10 +1,13 @@
 {
   "id": "3214458143",
-  "name": "HLDC06-AB-H+HLSL-1NZY [Комплект контролера + маховика NEW",
+  "name": "HLDC06-AB-H + HLSL-1NZY  комплект контролера та електронного маховика для ЧПК",
   "sku": "01-057",
-  "url": "https://cncprom.ua/ua/p3214458143-hldc06-hhlsl-1nzy.html",
+  "url": "https://cncprom.ua/ua/p3214458143-hldc06-hlsl-1nzy.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7779761109_hldc06-ab-h--hlsl-1nzy.jpg",
+    "https://images.prom.ua/7779761183_hldc06-ab-h--hlsl-1nzy.jpg"
+  ],
   "accessories": []
 }
