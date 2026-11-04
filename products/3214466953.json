@@ -1,10 +1,13 @@
 {
   "id": "3214466953",
-  "name": "Розподілювач імпульсів OIS2-108-1 NEW",
+  "name": "Розподільник імпульсів OIS-108, 1 вхід 8 виходів, 5 В, 2 МГц",
   "sku": "05-272",
-  "url": "https://cncprom.ua/ua/p3214466953-raspredelivatel-impulsov-ois2.html",
+  "url": "https://cncprom.ua/ua/p3214466953-raspredelitel-impulsov-ois.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7776919598_rozpodilnik-impulsiv-ois-108.jpg",
+    "https://images.prom.ua/7776919621_rozpodilnik-impulsiv-ois-108.jpg"
+  ],
   "accessories": []
 }

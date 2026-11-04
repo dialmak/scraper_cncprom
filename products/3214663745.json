@@ -1,0 +1,19 @@
+{
+  "id": "3214663745",
+  "name": "Регулятор обертів двигуна US-52, 120 W, контролер швидкості обертання двигуна потужністю до 120 Вт",
+  "sku": "05-117",
+  "url": "https://cncprom.ua/ua/p3214663745-regulyator-oborotov-dvigatelya.html",
+  "attrs": [
+    ["Тип двигуна", "Асинхронні"]
+  ],
+  "specs": [
+    ["посібник користувача англійською.pdf", "https://storage.ua.prom.st/3480108_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7752900132_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/7752900885_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/7752901437_regulyator-obertiv-dviguna.jpg",
+    "https://images.prom.ua/7752979599_regulyator-obertiv-dviguna.jpg"
+  ],
+  "accessories": []
+}

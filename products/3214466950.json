@@ -1,10 +1,20 @@
 {
   "id": "3214466950",
-  "name": "Розподілювач імпульсів OIS2-102- NEW",
+  "name": "Розподільник імпульсів OIS-102, 1 вхід 2 виходи, 5 В, 2 МГц",
   "sku": "05-273",
-  "url": "https://cncprom.ua/ua/p3214466950-raspredelivatel-impulsov-ois2.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3214466950-raspredelitel-impulsov-ois.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Одиниці виміру частоти", "МГц"],
+    ["Живлення", "Мережа 24В"],
+    ["Довжина", "87 мм"],
+    ["Ширина", "25 мм"],
+    ["Висота", "43 мм"],
+    ["Вага", "0.042 кг"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7776919447_rozpodilnik-impulsiv-ois-102.jpg"
+  ],
   "accessories": []
 }

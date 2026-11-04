@@ -1,10 +1,21 @@
 {
   "id": "3225778044",
-  "name": "Гофрозахист для круглих напрямних 1 метр-16мм NEW",
+  "name": "Гофрозахист для лінійної напрямної SBR 16 мм, 1 метр. гофрований захист для лінійних напрямних",
   "sku": "57-202",
-  "url": "https://cncprom.ua/ua/p3225778044-gofrozaschita-dlya-kruglyh.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3225778044-gofrozaschita-dlya-linejnoj.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Стан", "Новий"],
+    ["Довжина", "1000 мм"],
+    ["Ширина", "63 мм"],
+    ["Висота", "46 мм"],
+    ["Вага", "180 г"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7779674667_gofrozahist-dlya-linijnoyi.jpg",
+    "https://images.prom.ua/7784256455_gofrozahist-dlya-linijnoyi.jpg",
+    "https://images.prom.ua/7779565469_gofrozahist-dlya-linijnoyi.jpg"
+  ],
   "accessories": []
 }

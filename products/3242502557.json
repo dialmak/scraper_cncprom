@@ -1,0 +1,31 @@
+{
+  "id": "3242502557",
+  "name": "Трифазний асинхронний електродвигун YE3-80L-2P, 2,2 кВт, 380 В, 2880 об/хв, вал 25,4 мм, для дискових пилок і різальних верстатів",
+  "sku": "12-154",
+  "url": "https://cncprom.ua/ua/p3242502557-trehfaznyj-asinhronnyj-elektrodvigatel.html",
+  "attrs": [
+    ["Кількість фаз", "3"],
+    ["Напруга", "380 В"],
+    ["Номінальний струм", "4.7 А"],
+    ["Колір корпусу", "Чорний"],
+    ["Ступінь захисту IP", "54"],
+    ["Стан", "Новий"],
+    ["Потужність", "2.2 кВт"],
+    ["Тип двигуна", "Асинхронні"],
+    ["Вага", "18 кг"],
+    ["Кількість полюсів", "2 шт."],
+    ["Частота струму", "50 Гц"],
+    ["Система охолодження двигуна", "Повітряна"],
+    ["Довжина", "388 мм"],
+    ["Висота", "165 мм"],
+    ["Ширина", "146 мм"]
+  ],
+  "specs": [],
+  "photos": [
+    "https://images.prom.ua/7830877926_trifaznij-asinhronnij-elektrodvigun.jpg",
+    "https://images.prom.ua/7847083793_trifaznij-asinhronnij-elektrodvigun.jpg",
+    "https://images.prom.ua/7847084108_trifaznij-asinhronnij-elektrodvigun.jpg",
+    "https://images.prom.ua/7856539673_trifaznij-asinhronnij-elektrodvigun.jpg"
+  ],
+  "accessories": []
+}

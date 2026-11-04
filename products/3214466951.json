@@ -1,10 +1,22 @@
 {
   "id": "3214466951",
-  "name": "Розподілювач імпульсів OIS2-104- NEW",
+  "name": "Розподільник імпульсів OIS-104, 1 вхід 4 виходи, 5 В, 2 МГц",
   "sku": "05-271",
-  "url": "https://cncprom.ua/ua/p3214466951-raspredelivatel-impulsov-ois2.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3214466951-raspredelitel-impulsov-ois.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Одиниці виміру частоти", "МГц"],
+    ["Максимальний діапазон частот", "2"],
+    ["Живлення", "Мережа 24В"],
+    ["Довжина", "87.5 мм"],
+    ["Ширина", "43 мм"],
+    ["Висота", "44 мм"],
+    ["Вага", "0.061 кг"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7776919463_rozpodilnik-impulsiv-ois-104.jpg",
+    "https://images.prom.ua/7776919467_rozpodilnik-impulsiv-ois-104.jpg"
+  ],
   "accessories": []
 }

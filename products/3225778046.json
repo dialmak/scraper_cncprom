@@ -1,10 +1,21 @@
 {
   "id": "3225778046",
-  "name": "Гофрозахист для круглих напрямних 1 метр-25мм NEW",
+  "name": "Гофрозахист для лінійної напрямної SBR 25мм, 1 метр гофрований захист для лінійних напрямних",
   "sku": "57-204",
-  "url": "https://cncprom.ua/ua/p3225778046-gofrozaschita-dlya-kruglyh.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3225778046-gofrozaschita-dlya-linejnoj.html",
+  "attrs": [
+    ["Виробник", "CNCPROM"],
+    ["Стан", "Новий"],
+    ["Довжина", "1000 мм"],
+    ["Ширина", "68 мм"],
+    ["Висота", "54 мм"],
+    ["Вага", "200 г"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7784591418_gofrozahist-dlya-linijnoyi.jpg",
+    "https://images.prom.ua/7784591440_gofrozahist-dlya-linijnoyi.jpg",
+    "https://images.prom.ua/7784245270_gofrozahist-dlya-linijnoyi.jpg"
+  ],
   "accessories": []
 }
