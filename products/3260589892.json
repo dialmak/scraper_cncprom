@@ -1,10 +1,15 @@
 {
   "id": "3260589892",
-  "name": "Сервопривідний двигун Delta ASD-B2-1021-B NEW",
+  "name": "Серводрайвер Delta ASD-B2-1021-B, 1 кВт, 200–230 В AC",
   "sku": "09-043",
-  "url": "https://cncprom.ua/ua/p3260589892-servoprivodnyj-dvigatel-delta.html",
+  "url": "https://cncprom.ua/ua/p3260589892-servodrajver-delta-asd.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7865404827_servodrajver-delta-asd-b2-1021-b.jpg",
+    "https://images.prom.ua/7865404891_servodrajver-delta-asd-b2-1021-b.jpg",
+    "https://images.prom.ua/7863188226_servodrajver-delta-asd-b2-1021-b.jpg",
+    "https://images.prom.ua/7865454273_servodrajver-delta-asd-b2-1021-b.jpg"
+  ],
   "accessories": []
 }

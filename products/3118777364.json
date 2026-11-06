@@ -1,0 +1,34 @@
+{
+  "id": "3118777364",
+  "name": "Поворотний пневмоциліндр MSQB-30L2, 180°, Rc1/8, з амортизатором Low Energy, поворотний стіл",
+  "sku": "08-404",
+  "url": "https://cncprom.ua/ua/p3118777364-povorotnyj-pnevmotsilindr-msqb.html",
+  "attrs": [
+    ["Тип", "Пневмоциліндр"],
+    ["Внутрішня різьба", "1/8\""],
+    ["Мінімальний робочий тиск", "0.2 МПа"],
+    ["Максимальний робочий тиск", "1 МПа"],
+    ["Мінімальна робоча температура", "0 град."],
+    ["Максимальна робоча температура", "60 град."],
+    ["Вага", "1.4 кг"],
+    ["Довжина", "127 мм"],
+    ["Ширина", "122 мм"]
+  ],
+  "specs": [
+    ["MSQ.pdf", "https://storage.ua.prom.st/3405766_msq.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7597384644_povorotnij-pnevmotsilindr-msqb-30l2.jpg",
+    "https://images.prom.ua/7597384683_povorotnij-pnevmotsilindr-msqb-30l2.jpg",
+    "https://images.prom.ua/7597384687_povorotnij-pnevmotsilindr-msqb-30l2.jpg"
+  ],
+  "accessories": [
+    "2127252964",
+    "2127252965",
+    "1879798336",
+    "1879798335",
+    "2118119427",
+    "2118119426",
+    "2127252973"
+  ]
+}

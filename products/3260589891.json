@@ -1,10 +1,15 @@
 {
   "id": "3260589891",
-  "name": "Сервопривідний двигун Delta ASD-B2-0721-B NEW",
+  "name": "Серводрайвер Delta ASD-B2-0721-B, 750 Вт, 200–230 В AC",
   "sku": "09-044",
-  "url": "https://cncprom.ua/ua/p3260589891-servoprivodnyj-dvigatel-delta.html",
+  "url": "https://cncprom.ua/ua/p3260589891-servodrajver-delta-asd.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7865404827_servodrajver-delta-asd-b2-0721-b.jpg",
+    "https://images.prom.ua/7865404891_servodrajver-delta-asd-b2-0721-b.jpg",
+    "https://images.prom.ua/7863188226_servodrajver-delta-asd-b2-0721-b.jpg",
+    "https://images.prom.ua/7865405039_servodrajver-delta-asd-b2-0721-b.jpg"
+  ],
   "accessories": []
 }

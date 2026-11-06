@@ -1,0 +1,27 @@
+{
+  "id": "3118777363",
+  "name": "Поворотний пневмоциліндр MSQB-20A, 190°, M5×0.8, з регулюванням кута, поворотний стіл",
+  "sku": "08-410",
+  "url": "https://cncprom.ua/ua/p3118777363-povorotnyj-pnevmotsilindr-msqb.html",
+  "attrs": [
+    ["Тип", "Пневмоциліндр"],
+    ["Внутрішня різьба", "M5"],
+    ["Мінімальний робочий тиск", "0.1 МПа"],
+    ["Максимальний робочий тиск", "1 МПа"],
+    ["Мінімальна робоча температура", "0 град."],
+    ["Максимальна робоча температура", "60 град."],
+    ["Вага", "0.97 кг"],
+    ["Довжина", "142 мм"],
+    ["Ширина", "65 мм"]
+  ],
+  "specs": [
+    ["MSQ.pdf", "https://storage.ua.prom.st/3405380_msq.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7596868529_povorotnij-pnevmotsilindr-msqb-20a.jpg",
+    "https://images.prom.ua/7596868639_povorotnij-pnevmotsilindr-msqb-20a.jpg",
+    "https://images.prom.ua/7596868699_povorotnij-pnevmotsilindr-msqb-20a.jpg",
+    "https://images.prom.ua/7596868768_povorotnij-pnevmotsilindr-msqb-20a.jpg"
+  ],
+  "accessories": []
+}
