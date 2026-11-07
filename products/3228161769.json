@@ -1,10 +1,29 @@
 {
   "id": "3228161769",
-  "name": "Новий оригінальний контактор змінного струму Schneider LC1 N1810M5N NEW",
+  "name": "Контактор Schneider Electric LC1N1810M5N, 18 А, 3-полюсний, котушка 220 В AC, 50 Гц, 1NO",
   "sku": "HP09-037",
-  "url": "https://cncprom.ua/ua/p3228161769-novyj-originalnyj-kontaktor.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228161769-kontaktor-schneider-electric.html",
+  "attrs": [
+    ["Кількість полюсів", "3 шт."],
+    ["Номінальна напруга котушки", "220 В"],
+    ["Номінальний струм", "18 А"],
+    ["Частота струму", "50 Гц"],
+    ["Ступінь захисту IP", "20"],
+    ["Стан", "Новий"],
+    ["Тип контактів", "3NO"],
+    ["Довжина", "74 мм"],
+    ["Висота", "45 мм"],
+    ["Ширина", "80 мм"],
+    ["Вага", "340 г"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7806553787_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7806554215_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7806553980_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7796752925_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7796752264_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7797179050_kontaktor-schneider-electric.jpg"
+  ],
   "accessories": []
 }

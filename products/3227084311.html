@@ -1,0 +1,106 @@
+<p><span style="font-size:18px">Універсальний модуль для автоматичного керування зарядкою акумулятора та захисту від глибокого розряду. Порогові напруги вмикання й вимикання налаштовуються за допомогою чотирьох кнопок, а поточна напруга відображається на вбудованому цифровому вольтметрі.</span></p>
+<p><span style="font-size:18px">Плата має <strong>два незалежні канали реле</strong>:</span></p>
+<ul>
+<li><span style="font-size:18px"><strong>канал захисту від перезаряду</strong> автоматично відключає зарядний пристрій, коли акумулятор заряджений, і вмикає його знову після зниження напруги;</span></li>
+<li><span style="font-size:18px"><strong>канал захисту від переразряду</strong> відключає навантаження при надмірному розряді та підключає його після відновлення напруги.</span></li>
+</ul>
+<p><span style="font-size:18px">Модуль підходить для побутових зарядних пристроїв, сонячних панелей. Налаштування потрібно виконати лише один раз: усі параметри зберігаються в пам'яті й не зникають після вимкнення живлення. Для комутації використано реле на 30 А, а компактні розміри дозволяють легко вбудувати плату в корпус.</span></p>
+<p><span style="font-size:18px"><strong>Переваги:</strong></span></p>
+<ul>
+<li><span style="font-size:18px">налаштування порогів заряду та розряду;</span></li>
+<li><span style="font-size:18px">вбудований цифровий вольтметр;</span></li>
+<li><span style="font-size:18px">два незалежні реле на 30 А;</span></li>
+<li><span style="font-size:18px">збереження налаштувань після відключення живлення;</span></li>
+<li><span style="font-size:18px">підтримка сонячних батарей, вітряків і мережевих зарядних пристроїв;</span></li>
+<li><span style="font-size:18px">компактна плата, проста установка і підключення.</span></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Технічні характеристики:</span></strong></p>
+<p><span style="font-size:18px">Робоча напруга: 7–30 V DC</span></p>
+<p><span style="font-size:18px">Похибка вимірювання напруги: ± 0,2 V</span></p>
+<p><span style="font-size:18px">Комутований струм: 30 А&nbsp;</span></p>
+<p><span style="font-size:18px">Реле: 2 × SONGLE SLA-05VDC-SL-A&nbsp;</span></p>
+<p><span style="font-size:18px">Мікроконтролер: STC15W408AS</span></p>
+<p><span style="font-size:18px">Індикація: 3-розрядний світлодіодний сегментний дисплей</span></p>
+<p><span style="font-size:18px">Типи акумуляторів: свинцево-кислотні, лужні та літієві (необхідно враховувати вимоги до їх заряду).</span></p>
+<p><span style="font-size:18px">Джерела заряду: мережевий зарядний пристрій, сонячна панель, вітрогенератор.</span></p>
+<p><span style="font-size:18px">Пам'ять налаштувань: є (енергонезалежна)</span></p>
+<p><span style="font-size:18px">Розміри: 100 × 56 × 24 мм&nbsp;</span></p>
+<p><span style="font-size:18px">Маса: 98 г</span></p>
+<p>&nbsp;</p>
+<p><strong><span style="font-size:18px">Інструкція з використання</span></strong></p>
+<h3><span style="font-size:18px">Підключення</span></h3>
+<p><span style="font-size:18px">Плата має <strong>два релейні клемники</strong> і <strong>синій клемник живлення</strong>.</span></p>
+<ol>
+<li><span style="font-size:18px"><strong>Живлення плати.</strong> Підключіть синій клемник VCC (+) і GND (−) до клем акумулятора, відповідно до полярності.&nbsp;</span></li>
+<li><span style="font-size:18px"><strong>Канал захисту від перезаряду (верхній клемник).</strong> Зарядне джерело (сонячна панель, зарядний пристрій, вітряк) підключається через реле до акумулятора. За схемою виробника «плюс» джерела йде напряму на «плюс» акумулятора, а «мінус» джерела проходить через клеми реле до «мінуса» акумулятора.</span></li>
+<li><span style="font-size:18px"><strong>Канал захисту від перерозряду (нижній клемник).</strong> Навантаження підключається до акумулятора через реле. За схемою виробника «плюс» акумулятора йде через клеми реле на «плюс» навантаження, а «мінус» навантаження підключається прямо до «мінуса» акумулятора.</span></li>
+</ol>
+<p><span style="font-size:18px">Для зарядки потрібен <strong>постійний</strong> струм 7–30 В, а підключати 220 В безпосередньо до плати <strong>заборонено</strong>.</span></p>
+<p>&nbsp;</p>
+<h3><strong><span style="font-size:18px">Налаштування захисту від перезаряду</span></strong></h3>
+<ol>
+<li><span style="font-size:18px">Один раз натисніть <strong>SET</strong>. На дисплеї з'явиться <strong>C.C.C.</strong></span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong>. З'явиться <strong>HHH</strong>, тобто верхній поріг (напруга вимкнення зарядки). Кнопками <strong>+</strong> / <strong>−</strong> встановіть потрібне значення.</span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong>. З'явиться <strong>LLL</strong>, тобто нижній поріг (напруга повторного ввімкнення зарядки). Кнопками <strong>+</strong> / <strong>−</strong> встановіть значення.</span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong> ще раз, щоб зберегти налаштування.</span></li>
+</ol>
+<p><span style="font-size:18px"><strong>Логіка роботи:</strong> напруга вище верхнього порогу → реле розмикається, зарядка зупиняється. Напруга нижче нижнього порога → реле замикається, зарядка йде.</span></p>
+<p>&nbsp;</p>
+<h3><strong><span style="font-size:18px">Налаштування захисту від перерозряду</span></strong></h3>
+<ol>
+<li><span style="font-size:18px">Натисніть <strong>SET</strong> двічі. З'явиться <strong>F.F.F.</strong></span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong>. З'явиться <strong>HHH</strong>, тобто верхній поріг (напруга повторного підключення навантаження). Кнопками <strong>+</strong> / <strong>−</strong> встановіть значення.</span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong>. З'явиться <strong>LLL</strong>, тобто нижній поріг (напруга відключення навантаження). Кнопками <strong>+</strong> / <strong>−</strong> встановіть значення.</span></li>
+<li><span style="font-size:18px">Натисніть <strong>HL</strong> ще раз, щоб зберегти.</span></li>
+</ol>
+<p><span style="font-size:18px"><strong>Логіка роботи:</strong> напруга нижче нижнього порога → реле розмикається, навантаження відключається. Напруга вище верхнього порога → реле замикається, навантаження підключається.</span></p>
+<p><span style="font-size:18px">Налаштування виконується один раз, а параметри зберігаються в пам'яті</span></p>
+<p>&nbsp;</p>
+<p><img alt="" src="https://i.ibb.co/QjHhm0V7/O1-CN01-Teucu41ypg-Fvy3-Ijq-crop-0-0-658-1316-1013186628.jpg" style="width:658px;height:1316px"></p>
+<p><img alt="" src="https://i.ibb.co/wFpVqx7b/O1-CN01-Of-Nu-O01ypg-Fvy36-Gf-1013186628.jpg" style="width:648px;height:1290px"></p>
+<p>&nbsp;</p>
+<div class="ck-alert ck-alert_theme_red">
+<div>
+<h2><span style="font-size:18px"><strong>Важливо!</strong><br>
+Виробник залишає за собою право вносити зміни в конструкцію виробу, які не погіршують його якість, без попереднього повідомлення покупця</span></h2>
+<h2><span style="font-size:18px">Зовнішній вигляд товару може трохи відрізнятися від фотографій на сайті. Розбіжність зовнішнього вигляду не є показником неналежної якості пристрою</span></h2>
+<h2><strong><span style="font-size:18px">Інформація на сайті є актуальною на момент її опублікування!</span></strong></h2>
+</div>
+</div>
+<div class="ck-alert ck-alert_theme_green">
+<div><span style="font-size:18px"><strong>Комплект постачання&nbsp;</strong><span class="fa fa-truck" style="color:#000000">&nbsp;</span></span></div>
+</div>
+<ul>
+<li><span style="font-size:18px"><strong>Цифровий модуль захисту акумулятора від перезаряду та глибокого розряду DC 7–30 V, 30 А - 1шт</strong></span></li>
+</ul>
+<p><span style="font-size:18px"><u><strong>Дивіться всі наші оголошення</strong></u></span></p>
+<ul>
+<li><a href="https://cnc.prom.ua/product_list" target="_blank">Каталог товарів</a></li>
+<li><a href="https://cnc.prom.ua/g1022485-kontrollery" target="_blank">Контролери</a></li>
+<li><a href="https://cnc.prom.ua/g1022553-shagovye-dvigateli" target="_blank">Крокові двигуни</a></li>
+<li><a href="https://cnc.prom.ua/g1022837-drajvery-shagovogo-dvigatelya" target="_blank">Драйвери крокового двигуна</a></li>
+<li><a href="https://cnc.prom.ua/g1022952-bloki-pitaniya" target="_blank">Блоки живлення</a></li>
+<li><a href="http://cnc.prom.ua/g1484301-shpindeli-dlya-chpu" target="_blank">Шпинделі</a></li>
+<li><a href="http://cnc.prom.ua/g1484318-preobrazovateli-chastoty-invertory" target="_blank">Інвертори</a></li>
+<li><a href="https://cnc.prom.ua/g18556308-servodvigateli-servodrajverami" target="_blank">Серводвигуни із серводрайверами</a>&nbsp;</li>
+<li><a href="https://cnc.prom.ua/g17662477-drajvery-shagovye-dvigateli" target="_blank">Драйвери та крокові двигуни з енкодером</a></li>
+<li><a href="https://cnc.prom.ua/g1261329-stanki-chpu" target="_blank">Верстати&nbsp;з&nbsp;ЧПК</a></li>
+<li><a href="https://cnc.prom.ua/g1477431-pulty-ruchnogo-upravleniya" target="_blank">Пульти ручного керування та DSP контролери</a></li>
+<li><a href="https://cnc.prom.ua/g1022907-datchiki-knopki-razemy" target="_blank">Датчики, кнопки, роз'єми, кабелі, мікросхеми, фільтри</a></li>
+<li><a href="https://cnc.prom.ua/g1292282-shvp" target="_blank">КГП</a></li>
+<li><a href="https://cnc.prom.ua/g1548856-linejnye-napravlyayuschie" target="_blank">Лінійні напрямні</a></li>
+<li><a href="https://cnc.prom.ua/g16759716-linejnye-podshipniki" target="_blank">Лінійні підшипники</a></li>
+<li><a href="https://cnc.prom.ua/g1270337-gibkie-mufty" target="_blank">Гнучкі муфти</a></li>
+<li><a href="https://cnc.prom.ua/g1372753-gibkij-kabel-kanal" target="_blank">Гнучкий кабель-канал (кабелеукладач)</a></li>
+<li><a href="https://cnc.prom.ua/g1390727-zazhimnye-tsangi-gajki" target="_blank">Затискні цанги, гайки ER</a></li>
+<li><a href="https://cnc.prom.ua/g1481716-povorotnye-osi" target="_blank">Поворотні осі</a></li>
+<li><a href="https://cnc.prom.ua/g2432613-alyuminievyj-profil" target="_blank">Алюмінієвий профіль</a></li>
+<li><a href="https://cnc.prom.ua/g2488264-remennyj-privod" target="_blank">Ремінний привід</a></li>
+<li><a href="https://cnc.prom.ua/g2488426-reechnyj-privod" target="_blank">Рейковий привід</a></li>
+<li><a href="https://cnc.prom.ua/g3367320-regulyatory-vysoty-rezaka" target="_blank">Регулятори висоти різання THC (torch height control)</a></li>
+</ul>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>
+<div style=""><span></span></div>

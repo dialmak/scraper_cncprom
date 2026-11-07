@@ -1,10 +1,16 @@
 {
   "id": "3228162372",
-  "name": "Оригінальний контактор змінного струму Schneider LC1 E0910M5N NEW",
+  "name": "Контактор Schneider Electric LC1N0910M5N, 9 А, 3-полюсний, котушка 220 В AC, 50 Гц, 1NO",
   "sku": "HP09-038",
-  "url": "https://cncprom.ua/ua/p3228162372-originalnyj-kontaktor-peremennogo.html",
+  "url": "https://cncprom.ua/ua/p3228162372-kontaktor-schneider-electric.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7796751432_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7796752052_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7797177933_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7796752423_kontaktor-schneider-electric.jpg",
+    "https://images.prom.ua/7797179050_kontaktor-schneider-electric.jpg"
+  ],
   "accessories": []
 }
