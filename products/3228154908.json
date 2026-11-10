@@ -1,10 +1,21 @@
 {
   "id": "3228154908",
-  "name": "Вимикач навантаження LW28-20/2 0-3 NEW",
+  "name": "Поворотний кулачковий перемикач LW28-20/2, 20 А, 4 положення (0–3), 2 полюси, вимикач навантаження",
   "sku": "03-189",
-  "url": "https://cncprom.ua/ua/p3228154908-vyklyuchatel-nagruzki-lw28.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228154908-povorotnyj-kulachkovyj-pereklyuchatel.html",
+  "attrs": [
+    ["Номінальний струм", "20 А"],
+    ["Кількість полюсів", "2 шт."],
+    ["Кількість робочих положень", "4"],
+    ["Мінімальна робоча температура", "-20 град."],
+    ["Максимальна робоча температура", "55 град."],
+    ["Ступінь захисту IP", "20"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7784851538_povorotnij-kulachkovij-peremikach.jpg",
+    "https://images.prom.ua/7784851571_povorotnij-kulachkovij-peremikach.jpg",
+    "https://images.prom.ua/7784851572_povorotnij-kulachkovij-peremikach.jpg"
+  ],
   "accessories": []
 }
