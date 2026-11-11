@@ -3,7 +3,9 @@
   "name": "Шків зубчастий HTD5M-BF (48 зубів, посадковий діаметр 20 мм)",
   "sku": "167-069",
   "url": "https://cncprom.ua/ua/p3213172271-shkiv-zubchastij-htd5m.html",
-  "attrs": [],
+  "attrs": [
+    ["Стан", "Новий"]
+  ],
   "specs": [],
   "photos": [
     "https://images.prom.ua/7749875851_shkiv-zubchastij-htd5m-bf.jpg",

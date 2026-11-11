@@ -4,7 +4,8 @@
   "sku": "05-117",
   "url": "https://cncprom.ua/ua/p3214663745-regulyator-oborotov-dvigatelya.html",
   "attrs": [
-    ["Тип двигуна", "Асинхронні"]
+    ["Тип двигуна", "Асинхронні"],
+    ["Реверс", "Так"]
   ],
   "specs": [
     ["посібник користувача англійською.pdf", "https://storage.ua.prom.st/3480108_posibnik_koristuvacha_anglijskoyu.pdf"]

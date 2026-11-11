@@ -3,7 +3,9 @@
   "name": "Модуль лінійного переміщення хід 460 мм, LWX60-L500 зубчасто-рейковий привід",
   "sku": "12-397",
   "url": "https://cncprom.ua/ua/p3223997079-modul-linejnogo-peremescheniya.html",
-  "attrs": [],
+  "attrs": [
+    ["Тип деталі", "Модуль лінійного переміщення"]
+  ],
   "specs": [],
   "photos": [
     "https://images.prom.ua/7776823565_modul-linijnogo-peremischennya.jpg",

@@ -3,7 +3,11 @@
   "name": "Опорно-поворотний пристрій SE5, редуктор поворотного приводу із черв’ячною передачею",
   "sku": "67-018",
   "url": "https://cncprom.ua/ua/p3236315494-oporno-povorotnoe-ustrojstvo.html",
-  "attrs": [],
+  "attrs": [
+    ["Вага", "12.2 кг"],
+    ["Наявність корпусу", "Так"],
+    ["Змащуюча прокладка", "Так"]
+  ],
   "specs": [],
   "photos": [
     "https://images.prom.ua/7818230309_oporno-povorotnij-pristrij-se5.jpg",

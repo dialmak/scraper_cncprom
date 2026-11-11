@@ -1,10 +1,18 @@
 {
   "id": "3224218888",
-  "name": "Водяний насос P2402A NEW",
+  "name": "Мембранний насос EC-RV-02L 24 В, 2 л/хв, з реле тиску",
   "sku": "18-012",
-  "url": "https://cncprom.ua/ua/p3224218888-vodyanoj-nasos-p2402a.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3224218888-membrannyj-nasos-02l.html",
+  "attrs": [
+    ["Вид насоса", "Мембранний"],
+    ["Вага", "2.3 кг"],
+    ["Стан", "Новий"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7788735200_membrannij-nasos-ec-rv-02l.jpg",
+    "https://images.prom.ua/7788735199_membrannij-nasos-ec-rv-02l.jpg",
+    "https://images.prom.ua/7788735201_membrannij-nasos-ec-rv-02l.jpg"
+  ],
   "accessories": []
 }

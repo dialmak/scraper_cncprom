@@ -3,7 +3,9 @@
   "name": "Модуль лінійного переміщення хід 460 мм, LWX40-L300 зубчасто-рейковий привід",
   "sku": "12-396",
   "url": "https://cncprom.ua/ua/p3223997078-modul-linejnogo-peremescheniya.html",
-  "attrs": [],
+  "attrs": [
+    ["Тип деталі", "Модуль лінійного переміщення"]
+  ],
   "specs": [],
   "photos": [
     "https://images.prom.ua/7773967367_modul-linijnogo-peremischennya.jpg",

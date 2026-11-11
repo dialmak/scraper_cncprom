@@ -1,10 +1,23 @@
 {
   "id": "3224218890",
-  "name": "Водяний насос P2430 NEW",
+  "name": "Водяний насос 24 В, 30 Вт, для системи охолодження, P2430",
   "sku": "18-014",
-  "url": "https://cncprom.ua/ua/p3224218890-vodyanoj-nasos-p2430.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3224218890-vodyanoj-nasos-dlya.html",
+  "attrs": [
+    ["Споживана потужність (W)", "0.03 кВт"],
+    ["Вага", "0.25 кг"],
+    ["Номінальна напруга живлення:", "24 В DC"],
+    ["Продуктивність:", "8,5 л/хв"],
+    ["Тиск:", "0,08963 МПа"],
+    ["Ширина", "47 мм"],
+    ["Довжина", "77 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7795906447_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7795906450_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7796028731_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7796028719_vodyanij-nasos-24.jpg"
+  ],
   "accessories": []
 }

@@ -1,10 +1,23 @@
 {
   "id": "3224218891",
-  "name": "Водяний насос P2450 NEW",
+  "name": "Водяний насос 24 В, 50 Вт, для системи охолодження, P2450",
   "sku": "18-013",
-  "url": "https://cncprom.ua/ua/p3224218891-vodyanoj-nasos-p2450.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3224218891-vodyanoj-nasos-dlya.html",
+  "attrs": [
+    ["Споживана потужність (W)", "0.05 кВт"],
+    ["Вага", "0.37 кг"],
+    ["Номінальна напруга живлення:", "24 В DC"],
+    ["Продуктивність:", "13 л/хв"],
+    ["Тиск:", "0,124 МПа"],
+    ["Ширина", "77 мм"],
+    ["Довжина", "86 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7795906874_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7795906875_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7795906873_vodyanij-nasos-24.jpg",
+    "https://images.prom.ua/7795906442_vodyanij-nasos-24.jpg"
+  ],
   "accessories": []
 }
