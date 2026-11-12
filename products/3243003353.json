@@ -1,10 +1,28 @@
 {
   "id": "3243003353",
-  "name": "Автономний контролер DDCS V4.1, 4 осi управлiння NEW",
+  "name": "Автономний контролер DDCS V4.1, 4 осi управлiння",
   "sku": "05-137",
   "url": "https://cncprom.ua/ua/p3243003353-avtonomnyj-kontroller-ddcs.html",
-  "attrs": [],
-  "specs": [],
-  "photos": [],
+  "attrs": [
+    ["Тип управління", "Сенсорне"],
+    ["Вага", "1.8 кг"],
+    ["Стан", "Новий"],
+    ["Напруга", "24 В"],
+    ["Номінальна сила струму", "0.5 А"],
+    ["Середня вихідна потужність", "40 Вт"],
+    ["Об'єм оперативної пам'яті", "1000 MB"]
+  ],
+  "specs": [
+    ["Посібник користувача (англійською).pdf", "https://storage.ua.prom.st/3505979_posibnik_koristuvacha_anglijskoyu.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7444020637_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444013965_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444013957_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444014983_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7444014985_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7821313869_avtonomnij-kontroler-ddcs.jpg",
+    "https://images.prom.ua/7821252980_avtonomnij-kontroler-ddcs.jpg"
+  ],
   "accessories": []
 }
