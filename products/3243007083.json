@@ -1,10 +1,16 @@
 {
   "id": "3243007083",
-  "name": "Трикоординатний прецизійний зонд , зарядний пристрій та припаяний штекер NEW",
+  "name": "Трикоординатний прецизійний зонд, 6-30 В, NPN NO, 3D-тригерний центрошукач, цифровий сенсорний детектор країв",
   "sku": "10-253",
   "url": "https://cncprom.ua/ua/p3243007083-trehkoordinatnyj-pretsizionnyj-zond.html",
-  "attrs": [],
+  "attrs": [
+    ["Ступінь захисту IP", "43"],
+    ["Напруга", "30 В"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7847439216_trikoordinatnij-pretsizijnij-zond.jpg",
+    "https://images.prom.ua/7847439625_trikoordinatnij-pretsizijnij-zond.jpg"
+  ],
   "accessories": []
 }
