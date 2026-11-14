@@ -1,0 +1,228 @@
+:root { --chg-bar: #2563eb; --chg-mov: #6d28d9; --chg-mov-bg: #f5f3ff; --chg-mov-border: #ddd6fe; --chg-price: #b45309; --chg-price-bg: #fffbeb; --chg-price-border: #fde68a; --chg-desc: #0f766e; --chg-desc-bg: #f0fdfa; --chg-desc-border: #99f6e4; }
+:root[data-theme="dark"] { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); --chg-desc: #2dd4bf; --chg-desc-bg: rgba(45,212,191,.12); --chg-desc-border: rgba(45,212,191,.3); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chg-bar: #3794ff; --chg-mov: #b4a0ff; --chg-mov-bg: rgba(180,160,255,.12); --chg-mov-border: rgba(180,160,255,.28); --chg-price: #f0a04b; --chg-price-bg: rgba(240,160,75,.12); --chg-price-border: rgba(240,160,75,.3); --chg-desc: #2dd4bf; --chg-desc-bg: rgba(45,212,191,.12); --chg-desc-border: rgba(45,212,191,.3); } }
+
+/* map-common.css робить html,body { height:100%; overflow:hidden } — для
+   <id>_map.html, де прокручується лише внутрішня .main-content. Тут, як і на
+   map.html, прокручується весь документ; без цього перевизначення сторінка
+   колесом не прокручувалась узагалі й таблиця нижче першого екрана була
+   недосяжна. Саме visible, НЕ auto — з тієї ж причини, що й у build-maps.js:
+   auto на html і body разом робить body окремим скрол-контейнером, і липка
+   .app-header їде разом зі сторінкою. */
+html, body { height: auto; overflow: visible; }
+.rep-wrap { max-width: 1280px; margin: 0 auto; padding: 20px 20px 48px; }
+.card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; }
+.top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.top-row h1 { font-size: 1.25rem; margin: 0; font-weight: 600; }
+.top-row h1 .muted { font-weight: 400; font-size: .9rem; margin-left: 6px; }
+.range-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.range-bar label { font-size: .8rem; color: var(--text-muted); }
+.range-bar select { font: inherit; font-size: .85rem; padding: 5px 8px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); }
+.range-arrow { color: var(--text-faint); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-dark); background: var(--bg-white); color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+/* Під курсором рамка й текст світлішають: одного тла в темній темі майже не видно. */
+.chip:hover:not([disabled]) { background: var(--bg-hover); border-color: var(--text-muted); color: var(--text-main); }
+.chip[disabled] { opacity: .45; cursor: default; }
+.chip[aria-pressed="true"] { background: var(--bg-active); border-color: var(--border-active); color: var(--text-main); }
+.chip[aria-pressed="true"]:hover { background: var(--bg-active); border-color: var(--text-link); }
+.chip .n { font-family: var(--font-mono); font-size: .72rem; color: var(--text-subtle); }
+
+.chart-card { padding: 16px 18px 10px; margin-bottom: 16px; }
+.chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.chart-head h2 { font-size: .95rem; margin: 0; font-weight: 600; }
+.chart-head .hint { font-size: .78rem; color: var(--text-muted); }
+#chart { width: 100%; height: 190px; display: block; margin-top: 8px; }
+#chart .grid { stroke: var(--border-color); stroke-width: 1; }
+#chart .axis { fill: var(--text-subtle); font-size: 11px; font-family: var(--font-sans); }
+#chart .axis.cur { fill: var(--text-main); font-weight: 600; }
+#chart .bar { fill: var(--chg-bar); }
+#chart .bar.off { fill: var(--border-dark); }
+#chart g:hover .bar { opacity: .82; }
+#chart .hit { fill: transparent; cursor: pointer; }
+#chart .gap .hit { cursor: default; }
+#chart .gap-box { fill: none; stroke: var(--border-dark); stroke-dasharray: 4 3; }
+#chart .cap { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
+.chart-tip { position: fixed; pointer-events: none; z-index: 50; background: var(--bg-header); border: 1px solid var(--border-dark);
+  border-radius: 8px; padding: 8px 10px; font-size: .78rem; box-shadow: 0 6px 20px rgba(0,0,0,.12); display: none; min-width: 200px; }
+.chart-tip b { display: block; margin-bottom: 4px; }
+.chart-tip .row { display: flex; justify-content: space-between; gap: 16px; color: var(--text-muted); }
+.chart-tip .row span:last-child { font-family: var(--font-mono); color: var(--text-main); }
+.chart-tip .foot { margin-top: 6px; color: var(--text-subtle); }
+/* Заголовок графіка — кнопка згортання, але виглядає як заголовок. */
+.chart-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0;
+  font: inherit; color: inherit; cursor: pointer; }
+.chart-toggle .caret { font-size: .8em; color: var(--text-muted); }
+.chart-toggle:hover, .chart-toggle:hover .caret { color: var(--text-link); }
+
+.tiles { display: flex; margin-bottom: 16px; }
+.tiles .tg { display: grid; gap: 10px; min-width: 0; }
+.tiles .tg + .tg { border-left: 1px solid var(--border-dark); margin-left: 11px; padding-left: 11px; }
+.tile { text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.tile[disabled] { cursor: default; }
+.tile[aria-pressed="true"] { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active) inset; }
+.tile .tb { align-self: flex-start; }
+.tile .num { font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.tile .num.zero { color: var(--text-subtle); }
+.tile .lbl { font-size: .78rem; color: var(--text-muted); }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-color); padding: 0 12px; }
+.tab { font: inherit; font-size: .88rem; padding: 10px 14px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer; margin-bottom: -1px; }
+.tab:hover { color: var(--text-main); }
+.tab[aria-selected="true"] { color: var(--text-main); border-bottom-color: var(--border-active); font-weight: 600; }
+.tab .n { font-family: var(--font-mono); font-size: .75rem; color: var(--text-subtle); margin-left: 4px; }
+.search-mini { font: inherit; font-size: .85rem; padding: 6px 10px; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-white); color: var(--text-main); min-width: 220px; }
+.result-line { padding: 8px 12px; font-size: .78rem; color: var(--text-muted); }
+.tabs .tabs-q { margin: 6px 0 6px auto; align-self: center; min-width: 300px; }
+.result-line .sep { color: var(--text-faint); margin: 0 8px; }
+.link-btn { font: inherit; border: 0; background: none; padding: 0; color: var(--text-link); cursor: pointer; }
+.link-btn:hover { text-decoration: underline; }
+/* Наведення на невибрану плитку чи фішку — синя рамка (користувач 18.10.2026: сіра в темній темі
+   майже не помітна); вибрана відрізняється подвійною рамкою (плитка) чи тлом (фішка). */
+.tile:hover:not([disabled]):not([aria-pressed="true"]), .chip:hover:not([disabled]):not([aria-pressed="true"]) { border-color: var(--border-active); }
+
+/* Бейдж типу зміни: іконка + колір + текст — ніколи не колір сам по собі */
+.tb { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
+.tb .ic { font-family: var(--font-mono); }
+.t-in  { color: var(--status-yes); background: var(--status-yes-bg); border-color: var(--status-yes-border); }
+.t-out { color: var(--status-no);  background: var(--status-no-bg);  border-color: var(--status-no-border); }
+.t-add { color: var(--text-link);  background: var(--bg-active);     border-color: var(--border-dark); }
+.t-rem { color: var(--text-muted); background: var(--bg-tag);        border-color: var(--border-dark); }
+.t-mov { color: var(--chg-mov);    background: var(--chg-mov-bg);    border-color: var(--chg-mov-border); }
+.t-price { color: var(--chg-price); background: var(--chg-price-bg); border-color: var(--chg-price-border); }
+.price-pct { margin-left: 8px; white-space: nowrap; }
+.t-desc { color: var(--chg-desc); background: var(--chg-desc-bg); border-color: var(--chg-desc-border); }
+/* «Змінився контент»: у рядку таблиці — що саме змінилось; над таблицею — ряд частин. */
+.st-box { display: grid; grid-template-columns: auto auto; gap: 1px 10px; font-size: .78rem; margin-bottom: 6px; justify-content: start; }
+.st-name { color: var(--text-muted); }
+.st-val { font-family: var(--font-mono); font-size: .74rem; color: var(--text-main); }
+.parts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+.parts-lbl { font-size: .78rem; color: var(--text-subtle); margin-right: 4px; }
+.cat-tag { font-size: .72rem; color: var(--text-subtle); margin-left: 6px; }
+
+/* Вікно «Було / стало» (вибір користувача 18.10.2026): два вікна «Опис» поруч, ліве — на
+   початок періоду, праве — на кінець; змінене — лише тлом: червоне зліва, зелене справа. */
+.help-overlay.mg-overlay { padding: 3vh 0; align-items: flex-start; }
+.help-panel.mg-panel { width: 94vw; max-width: none; }
+/* Дві колонки «Було · Стало», кожна — вікно «Опис»; прокручуються колонки, шапка вікна стоїть. */
+.mg-scroll { display: flex; flex-direction: column; height: calc(94vh - 58px); overflow: hidden; }
+.mg-scroll > .empty-note { padding: 18px 20px; color: var(--text-muted); }
+.mg-stats { flex: none; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 20px 4px; font-size: .8rem; }
+.mg-stats .chip b { font-family: var(--font-mono); font-weight: 600; font-size: .74rem; color: var(--text-main); }
+.mg-bar { flex: none; padding: 0 20px; border-bottom: 1px solid var(--border-dark); }
+.mg-tabs { margin-bottom: 0; position: static; }
+.mg-tools { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: .8rem; }
+.mg-tools .grow { flex: 1; }
+.mg-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; }
+.mg-col { overflow-y: auto; padding: 0 16px 24px; min-width: 0; }
+.mg-col + .mg-col { border-left: 1px solid var(--border-dark); }
+.mg-lbl { position: sticky; top: 0; z-index: 3; background: var(--bg-white); padding: 8px 0; font-size: .78rem; font-weight: 600; }
+.mg-lbl.old { color: var(--status-no); }
+.mg-lbl.new { color: var(--status-yes); }
+.mg-doc > .desc-tabs, #mg-l .desc-links { display: none; }
+.mg-head .mg-stats { flex: 1; min-width: 0; padding: 0; }
+.mg-name { display: flex; align-items: baseline; gap: 16px; padding: 2px 0 12px; }
+.mg-name .mg-title { flex: 1; min-width: 0; margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.4; color: var(--text-main); }
+.mg-name .mg-code { margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+.mg-name .mg-code:empty { display: none; }
+.mg-doc .desc-grid { grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; }
+.mg-doc .desc-side { top: 40px; }
+.mg-doc .desc-gal-open img { height: 200px; }
+/* Фото на весь екран: дві половини «Було · Стало», кожна як перегляд у вікні «Опис». */
+.mg-lightbox { position: fixed; inset: 0; z-index: 1100; display: none; grid-template-columns: 1fr 1fr; gap: 20px;
+  padding: 20px 64px 20px 20px; background: rgba(15, 23, 42, 0.92); }
+.mg-lightbox.open { display: grid; }
+.mg-lb-half { display: grid; grid-template-columns: 84px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 8px 12px; min-width: 0; min-height: 0; }
+.mg-lb-half.single, .mg-lb-half.empty { grid-template-columns: minmax(0, 1fr); }
+.mg-lb-half.single .desc-lb-thumbs, .mg-lb-half.empty .desc-lb-thumbs, .mg-lb-half.single .desc-gal-arrow, .mg-lb-half.empty .desc-gal-arrow, .mg-lb-half.empty img { display: none; }
+.mg-lb-lbl { grid-column: 1 / -1; font-size: .85rem; font-weight: 600; }
+.mg-lb-lbl.old { color: #fca5a5; }
+.mg-lb-lbl.new { color: #86efac; }
+.mg-lb-half .desc-lb-thumbs button { width: 72px; height: 72px; }
+.mg-lb-half .desc-lb-stage { border: 3px solid transparent; }
+.mg-lb-half.active .desc-lb-stage { border-color: #60a5fa; }
+.mg-lightbox .desc-lb-thumbs button.on { border-color: #60a5fa; }
+.mg-lb-half .desc-lb-stage img { max-width: calc(100% - 90px); max-height: calc(100vh - 90px); }
+.mg-lb-count { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); padding: 3px 10px; border-radius: 12px;
+  background: rgba(15, 23, 42, 0.75); color: #fff; font-size: 0.8rem; white-space: nowrap; }
+.mg-lb-half.empty .mg-lb-count { position: static; transform: none; background: none; color: #475569; }
+/* ---- Позначки змін у «Було / стало» (вибір користувача з макета 18.10.2026 → H60) ----
+   Лише тлом: незмінене на вкладці зі змінами приглушене; слова — тло 38%; прибраний, доданий,
+   переміщений елемент і переписаний абзац (.mkb) — тло 12%; змінений елемент, де слів не
+   підсвічено (значення замінене цілком), — бурштинове тло. Фото й картинки — рамка. */
+:root { --mk-del: #dc2626; --mk-ins: #15803d; --mk-chg: #b45309; --mk-mov: #7c3aed; }
+:root[data-theme="dark"] { --mk-del: #f87171; --mk-ins: #4ade80; --mk-chg: #fbbf24; --mk-mov: #a78bfa; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --mk-del: #f87171; --mk-ins: #4ade80; --mk-chg: #fbbf24; --mk-mov: #a78bfa; } }
+.mk-gap { display: inline-block; width: 3px; height: 1.15em; vertical-align: text-bottom; margin: 0 2px; border-radius: 2px; }
+.mk-gap.del { background: var(--mk-del); }
+.mk-gap.ins { background: var(--mk-ins); }
+.mkw { border-radius: 2px; }
+.mkw.del { background: color-mix(in srgb, var(--mk-del) 38%, transparent); }
+.mkw.ins { background: color-mix(in srgb, var(--mk-ins) 38%, transparent); }
+.mg-doc .mg-now { outline: 2px solid var(--border-active) !important; outline-offset: 2px; }
+.mg-legend { display: inline-flex; gap: 12px; font-size: .74rem; color: var(--text-muted); white-space: nowrap; }
+.mg-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.mg-legend .lg { display: inline-block; width: 14px; height: 12px; border-radius: 3px; flex: none; }
+.mg-legend .lg.del { background: color-mix(in srgb, var(--mk-del) 38%, transparent); }
+.mg-legend .lg.ins { background: color-mix(in srgb, var(--mk-ins) 38%, transparent); }
+.mg-legend .lg.chg { background: color-mix(in srgb, var(--mk-chg) 38%, transparent); }
+.mg-legend .lg.mov { background: color-mix(in srgb, var(--mk-mov) 38%, transparent); }
+.mg-doc .desc-text img.desc-img { max-height: 260px; width: auto; }
+.mg-doc li.mk { padding-left: 6px; margin-left: -6px; border-radius: 4px; }
+.mg-doc .desc-attrs td:first-child, .mg-doc .desc-facts td:first-child { padding-left: 8px; }
+.mg-doc .desc-pane:has(.mk, .mkw, .mk-gap, .mkb) .desc-text > *:not(.mkb):not(:has(.mk, .mkw, .mk-gap, .mkb)),
+.mg-doc .desc-pane:has(.mk, .mkw, .mk-gap, .mkb) .desc-attrs tr:not(.mk), .mg-doc .desc-pane:has(.mk, .mkw, .mk-gap, .mkb) .desc-kit li:not(.mk),
+.mg-doc .desc-pane:has(.mk, .mkw, .mk-gap, .mkb) .desc-specs li:not(.mk), .mg-doc .desc-pane:has(.mk, .mkw, .mk-gap, .mkb) .desc-card:not(.mk),
+.mg-doc .desc-facts:has(.mk) tr:not(.mk) { opacity: .4; }
+.mg-doc .desc-gal:has(.mk) .desc-gal-thumb:not(.mk) { opacity: .3; }
+.mg-doc .desc-gal-thumb.mk { opacity: 1; }
+.mg-doc .desc-attrs tr.mk.del > td, .mg-doc li.mk.del, .mg-doc .desc-card.mk.del { background: color-mix(in srgb, var(--mk-del) 12%, transparent); }
+.mg-doc .desc-attrs tr.mk.ins > td, .mg-doc li.mk.ins, .mg-doc .desc-card.mk.ins { background: color-mix(in srgb, var(--mk-ins) 12%, transparent); }
+.mg-doc .desc-attrs tr.mk.mov > td, .mg-doc li.mk.mov, .mg-doc .desc-card.mk.mov { background: color-mix(in srgb, var(--mk-mov) 12%, transparent); }
+.mg-doc .desc-attrs tr.mk.chg:not(:has(.mkw)) > td, .mg-doc .desc-facts tr.mk.chg:not(:has(.mkw)) > td, .mg-doc li.mk.chg:not(:has(.mkw)),
+.mg-doc .desc-card.mk.chg:not(:has(.mkw)), .mg-doc .mg-name.mk.chg:not(:has(.mkw)) .mg-title { background: color-mix(in srgb, var(--mk-chg) 16%, transparent); }
+.mg-doc .desc-card.mk { border-radius: 4px; }
+.mg-doc .desc-text .mkb { border-radius: 3px; }
+.mg-doc .desc-text .mkb.del { background: color-mix(in srgb, var(--mk-del) 12%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--mk-del) 12%, transparent); }
+.mg-doc .desc-text .mkb.ins { background: color-mix(in srgb, var(--mk-ins) 12%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--mk-ins) 12%, transparent); }
+.mg-doc .desc-gal-thumb.mk.del, .mg-lightbox .desc-lb-thumbs button.mk.del { border-color: var(--mk-del); }
+.mg-doc .desc-gal-main.mk.del, .mg-doc img.mk.del { outline: 2px solid var(--mk-del); outline-offset: 2px; }
+.mg-lightbox .desc-lb-stage.mk.del img { outline: 3px solid var(--mk-del); outline-offset: 4px; }
+.mg-doc .desc-gal-thumb.mk.ins, .mg-lightbox .desc-lb-thumbs button.mk.ins { border-color: var(--mk-ins); }
+.mg-doc .desc-gal-main.mk.ins, .mg-doc img.mk.ins { outline: 2px solid var(--mk-ins); outline-offset: 2px; }
+.mg-lightbox .desc-lb-stage.mk.ins img { outline: 3px solid var(--mk-ins); outline-offset: 4px; }
+.mg-doc .desc-gal-thumb.mk.chg, .mg-lightbox .desc-lb-thumbs button.mk.chg { border-color: var(--mk-chg); }
+.mg-doc .desc-gal-main.mk.chg, .mg-doc img.mk.chg { outline: 2px solid var(--mk-chg); outline-offset: 2px; }
+.mg-lightbox .desc-lb-stage.mk.chg img { outline: 3px solid var(--mk-chg); outline-offset: 4px; }
+.mg-doc .desc-gal-thumb.mk.mov, .mg-lightbox .desc-lb-thumbs button.mk.mov { border-color: var(--mk-mov); }
+.mg-doc .desc-gal-main.mk.mov, .mg-doc img.mk.mov { outline: 2px solid var(--mk-mov); outline-offset: 2px; }
+.mg-lightbox .desc-lb-stage.mk.mov img { outline: 3px solid var(--mk-mov); outline-offset: 4px; }
+.mg-broken { display: inline-flex; flex-direction: column; gap: 4px; border: 2px dashed var(--status-no); border-radius: 6px; padding: 10px 12px; font-size: .76rem; color: var(--status-no); max-width: 260px; }
+.mg-broken small { color: var(--text-subtle); word-break: break-all; }
+.tab-chg { display: inline-block; min-width: 17px; padding: 0 5px; margin-left: 6px; border-radius: 9px; font: 700 .7rem/17px var(--font-sans); text-align: center; background: var(--status-yes); color: var(--bg-white); }
+
+.rep-table td { vertical-align: top; }
+.rep-table th { white-space: nowrap; }
+.code { font-family: var(--font-mono); font-size: .76rem; color: var(--text-muted); background: var(--bg-tag); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+.pname { color: var(--text-main); text-decoration: none; }
+.pname:hover { color: var(--text-link); text-decoration: underline; }
+.rep-table .col-site { width: 72px; text-align: center; white-space: normal; }
+.cat-link { color: var(--text-muted); text-decoration: none; }
+.cat-link:hover { color: var(--text-link); text-decoration: underline; }
+.cat-site { color: inherit; text-decoration: none; }
+.cat-site:hover { color: var(--text-link); text-decoration: underline; }
+.path-line + .path-line { margin-top: 4px; }
+.path-label { display: inline-block; min-width: 48px; color: var(--text-muted); }
+.path-link { color: inherit; text-decoration: none; }
+.path-link:hover { color: var(--text-link); text-decoration: underline; }
+.muted { color: var(--text-muted); }
+.subtle { color: var(--text-subtle); }
+.arrow-to { color: var(--text-faint); padding: 0 4px; }
+.more-row { padding: 12px; text-align: center; border-top: 1px solid var(--border-color); }
+.empty { padding: 48px 16px; text-align: center; color: var(--text-muted); }
+.empty b { display: block; color: var(--text-main); font-size: 1rem; margin-bottom: 6px; }
+
+@media (max-width: 560px) {
+  .rep-wrap { padding: 16px 16px 40px; }
+  .search-mini { min-width: 0; flex: 1; }
+}
