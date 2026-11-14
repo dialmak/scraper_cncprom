@@ -1,10 +1,22 @@
 {
   "id": "3228162373",
-  "name": "Оригінальні контакти кнопкового перемикача Schneider XB2-BVM3LD NEW",
+  "name": "Сигнальна лампа Schneider Electric XB2-BVM3LC, зелена, 220 В AC, LED",
   "sku": "03-199",
-  "url": "https://cncprom.ua/ua/p3228162373-originalnye-kontakty-knopochnogo.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228162373-signalnaya-lampa-schneider.html",
+  "attrs": [
+    ["Кількість кнопок", "1 шт."],
+    ["Колір корпусу", "Чорний"],
+    ["Напруга", "220 В"],
+    ["Мінімальна робоча температура", "-25 град."],
+    ["Максимальна робоча температура", "70 град."],
+    ["Ступінь захисту IP", "65"],
+    ["Довжина", "57.2 мм"],
+    ["Діаметр", "30 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7817760639_signalna-lampa-schneider.jpg",
+    "https://images.prom.ua/7817760717_signalna-lampa-schneider.jpg"
+  ],
   "accessories": []
 }

@@ -1,10 +1,22 @@
 {
   "id": "3242851331",
-  "name": "Фланцева муфта з діаметром отвору 5 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів NEW",
+  "name": "Фланцева муфта з діаметром отвору 5 мм, фланцеве з'єднання для валів ЧПУ, редукторів і приводів",
   "sku": "33-161",
-  "url": "https://cncprom.ua/ua/p3242851331-flantseva-mufta-diametrom.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3242851331-flantsevaya-mufta-diametrom.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Ширина", "28 мм"],
+    ["Висота", "12.6 мм"],
+    ["Діаметр", "5 мм"],
+    ["Вага", "6.5 г"],
+    ["Кількість в упаковці", "1 шт."]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7167097634_flantseva-mufta-z.jpg",
+    "https://images.prom.ua/7167098582_flantseva-mufta-z.jpg",
+    "https://images.prom.ua/7167099397_flantseva-mufta-z.jpg",
+    "https://images.prom.ua/7833652291_flantseva-mufta-z.jpg"
+  ],
   "accessories": []
 }

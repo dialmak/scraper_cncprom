@@ -1,10 +1,16 @@
 {
   "id": "3228162376",
-  "name": "Оригінальні контакти кнопкового перемикача Schneider ZB2-BE101C NEW",
+  "name": "Контактний блок Schneider Electric ZB2-BE101C, 1NO (1 замикаючий контакт), гвинтові затискачі",
   "sku": "03-197",
-  "url": "https://cncprom.ua/ua/p3228162376-originalnye-kontakty-knopochnogo.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228162376-kontaktnyj-blok-schneider.html",
+  "attrs": [
+    ["Довжина", "30 мм"],
+    ["Висота", "30 мм"],
+    ["Ширина", "15 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7811010935_kontaktnij-blok-schneider.jpg"
+  ],
   "accessories": []
 }

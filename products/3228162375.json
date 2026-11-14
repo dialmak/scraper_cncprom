@@ -1,10 +1,24 @@
 {
   "id": "3228162375",
-  "name": "Оригінальні контакти кнопкового перемикача Schneider ZB2-BD5C NEW",
+  "name": "Головка поворотного перемикача Schneider Electric ZB2-BD5C, 3 положення, Ø22,5 мм, чорна, пружинне повернення в центр",
   "sku": "03-194",
-  "url": "https://cncprom.ua/ua/p3228162375-originalnye-kontakty-knopochnogo.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228162375-golovka-povorotnogo-pereklyuchatelya.html",
+  "attrs": [
+    ["Виробник", "Shneider Electric"],
+    ["Колір кнопки", "Чорний"],
+    ["Кількість кнопок", "1 шт."],
+    ["Колір корпусу", "Срібний"],
+    ["Фіксація положення", "Ні"],
+    ["Ступінь захисту IP", "65"],
+    ["Довжина", "29 мм"],
+    ["Висота", "43 мм"],
+    ["Ширина", "29 мм"],
+    ["Діаметр", "22.5 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7807441724_golovka-povorotnogo-peremikacha.jpg",
+    "https://images.prom.ua/7807441929_golovka-povorotnogo-peremikacha.jpg"
+  ],
   "accessories": []
 }

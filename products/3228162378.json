@@ -1,10 +1,21 @@
 {
   "id": "3228162378",
-  "name": "Оригінальні контакти кнопкового перемикача Schneider ZB2-BZ103C NEW",
+  "name": "Контактний блок Schneider Electric ZB2-BZ103C, 2NO, з фіксацією та металевим кріпленням",
   "sku": "03-195",
-  "url": "https://cncprom.ua/ua/p3228162378-originalnye-kontakty-knopochnogo.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3228162378-kontaktnyj-blok-schneider.html",
+  "attrs": [
+    ["Виробник", "Shneider Electric"],
+    ["Номінальна сила струму", "3 А"],
+    ["Напруга", "240 В"],
+    ["Довжина", "40 мм"],
+    ["Висота", "30 мм"],
+    ["Ширина", "42.5 мм"],
+    ["Діаметр", "22.5 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7807462036_kontaktnij-blok-schneider.jpg",
+    "https://images.prom.ua/7807458881_kontaktnij-blok-schneider.jpg"
+  ],
   "accessories": []
 }
