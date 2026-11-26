@@ -1,10 +1,26 @@
 {
   "id": "3262086770",
-  "name": "Контролер температури T-506A NEW",
+  "name": "Контролер температури 220 В AC для чилера, S&A T-506B",
   "sku": "05-284",
-  "url": "https://cncprom.ua/ua/p3262086770-kontroller-temperatury-506a.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262086770-kontroler-temperaturi-220.html",
+  "attrs": [
+    ["Вага", "0.29 кг"],
+    ["Стан", "Новий"],
+    ["Ширина", "100 мм"],
+    ["Довжина", "69 мм"],
+    ["Висота", "51 мм"]
+  ],
   "specs": [],
-  "photos": [],
-  "accessories": []
+  "photos": [
+    "https://images.prom.ua/7907497395_kontroler-temperaturi-220.jpg",
+    "https://images.prom.ua/7907497400_kontroler-temperaturi-220.jpg",
+    "https://images.prom.ua/7907497398_kontroler-temperaturi-220.jpg",
+    "https://images.prom.ua/7907497396_kontroler-temperaturi-220.jpg",
+    "https://images.prom.ua/7907497744_kontroler-temperaturi-220.jpg"
+  ],
+  "accessories": [
+    "978166277",
+    "2518268883",
+    "3101110731"
+  ]
 }

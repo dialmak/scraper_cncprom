@@ -1,10 +1,21 @@
 {
   "id": "3269973497",
-  "name": "Реле двохканальне NEW",
+  "name": "Роз'єм модульний PYF08A на 8 контактів для реле Omron H3Y-2, колодка для реле, монтаж на DIN-рейку",
   "sku": "03-286",
-  "url": "https://cncprom.ua/ua/p3269973497-rele-dvuhkanalnoe-new.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3269973497-razem-modulnyj-pyf08a.html",
+  "attrs": [
+    ["Тип монтажу", "На DIN рейку"],
+    ["Матеріал корпусу", "Пластик"],
+    ["Маса", "30 г"],
+    ["Довжина", "72 мм"],
+    ["Висота", "30 мм"],
+    ["Ширина", "23 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7899185981_rozyem-modulnij-pyf08a.jpg",
+    "https://images.prom.ua/7900063862_rozyem-modulnij-pyf08a.jpg",
+    "https://images.prom.ua/7900063861_rozyem-modulnij-pyf08a.jpg"
+  ],
   "accessories": []
 }

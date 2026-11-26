@@ -1,10 +1,26 @@
 {
   "id": "3269972917",
-  "name": "Контролер MESA 7I92TF NEW",
+  "name": "Плата керування ЧПК MESA 7I92TF, FPGA, Ethernet 100 Base-T, 34 входи/виходи",
   "sku": "05-118",
-  "url": "https://cncprom.ua/ua/p3269972917-kontroller-mesa-7i92tf.html",
-  "attrs": [],
-  "specs": [],
-  "photos": [],
+  "url": "https://cncprom.ua/ua/p3269972917-plata-upravleniya-chpk.html",
+  "attrs": [
+    ["Виробник", "MESA"],
+    ["Підключення модулів розширення", "Так"],
+    ["Вага", "0.065 кг"],
+    ["Стан", "Новий"],
+    ["Кількість аналогових входів", "0"],
+    ["Кількість аналогових виходів", "0"],
+    ["Напруга", "5 В"],
+    ["Довжина", "92 мм"],
+    ["Ширина", "64 мм"],
+    ["Висота", "30 мм"],
+    ["Під'єднання модулів розширення", "Так"]
+  ],
+  "specs": [
+    ["7i92tman.pdf", "https://storage.ua.prom.st/3530959_7i92tman.pdf"]
+  ],
+  "photos": [
+    "https://images.prom.ua/7880662282_plata-keruvannya-chpk.jpg"
+  ],
   "accessories": []
 }

@@ -1,10 +1,29 @@
 {
   "id": "3262086768",
-  "name": "Контролер температури STC-9200 NEW",
+  "name": "Цифровий терморегулятор 8 А, 220 В AC, STC‑9200, з датчиком NTC",
   "sku": "05-281",
-  "url": "https://cncprom.ua/ua/p3262086768-kontroler-temperaturi-stc.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262086768-tsifrovoj-termoregulyator-220.html",
+  "attrs": [
+    ["Одиниця виміру", "°С"],
+    ["Мінімальний діапазон вимірювань", "-50"],
+    ["Максимальний діапазон вимірювань", "50"],
+    ["Напруга", "220 В"],
+    ["Довжина", "85 мм"],
+    ["Ширина", "75 мм"],
+    ["Висота", "34.5 мм"],
+    ["Вага", "0.22 кг"],
+    ["Живлення", "Акумулятор"],
+    ["Споживана потужність:", "<5 Вт"],
+    ["Точність вимірювання температури:", "±1 °C"],
+    ["Номінальний струм контактів кожного реле:", "8 А за 220 В AC"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7884541834_tsifrovij-termoregulyator-8.jpg",
+    "https://images.prom.ua/7876337074_tsifrovij-termoregulyator-8.jpg",
+    "https://images.prom.ua/7884541836_tsifrovij-termoregulyator-8.jpg",
+    "https://images.prom.ua/7901893663_tsifrovij-termoregulyator-8.jpg",
+    "https://images.prom.ua/7884543262_tsifrovij-termoregulyator-8.jpg"
+  ],
   "accessories": []
 }

@@ -1,10 +1,23 @@
 {
   "id": "3262086767",
-  "name": "Контролер температури STC-8080 NEW",
+  "name": "Цифровий терморегулятор 7 А, 220 В AC, STC‑8080А+ з датчиком NTC",
   "sku": "05-282",
-  "url": "https://cncprom.ua/ua/p3262086767-kontroler-temperaturi-stc.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262086767-tsifrovoj-termoregulyator-220.html",
+  "attrs": [
+    ["Живлення", "Мережа 220В"],
+    ["Довжина", "85 мм"],
+    ["Ширина", "75 мм"],
+    ["Висота", "34.5 мм"],
+    ["Вага", "196 г"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7880407196_tsifrovij-termoregulyator-7.jpg",
+    "https://images.prom.ua/7876337074_tsifrovij-termoregulyator-7.jpg",
+    "https://images.prom.ua/7880407220_tsifrovij-termoregulyator-7.jpg",
+    "https://images.prom.ua/7876549423_tsifrovij-termoregulyator-7.jpg",
+    "https://images.prom.ua/7901898730_tsifrovij-termoregulyator-7.jpg",
+    "https://images.prom.ua/7876337230_tsifrovij-termoregulyator-7.jpg"
+  ],
   "accessories": []
 }

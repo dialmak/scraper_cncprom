@@ -1,10 +1,22 @@
 {
   "id": "3262092252",
-  "name": "Цифровий термостат XH-W2060 NEW",
+  "name": "Цифровий терморегулятор 10 А, 12 В, XH-W2060, з датчиком NTC",
   "sku": "05-285",
-  "url": "https://cncprom.ua/ua/p3262092252-tsifrovoj-termostat-w2060.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262092252-tsifrovoj-termoregulyator-w2060.html",
+  "attrs": [
+    ["Вид терморегулятора", "Електронний"],
+    ["Дисплей", "Так"],
+    ["Вага", "0.072 кг"],
+    ["Стан", "Новий"],
+    ["Живлення", "Акумулятор"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7899988391_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7899988399_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7899988479_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7899988500_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7899990997_tsifrovij-termoregulyator-10.jpg"
+  ],
   "accessories": []
 }

@@ -1,10 +1,29 @@
 {
   "id": "3262086766",
-  "name": "Контролер температури STC-1000 NEW",
+  "name": "Цифровий терморегулятор 10 А, 220 В AC, STC‑1000, з датчиком NTC",
   "sku": "05-280",
-  "url": "https://cncprom.ua/ua/p3262086766-kontroler-temperaturi-stc.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262086766-tsifrovoj-termoregulyator-220.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Модель:", "STC‑1000"],
+    ["Діапазон вимірювання температури:", "−50…+99 °C"],
+    ["Точність вимірювання температури:", "±1 °C, −50…+70 °C"],
+    ["Живлення:", "220 В AC ±10%, 50/60 Гц"],
+    ["Датчик температури:", "NTC"],
+    ["Робоча температура навколишнього середовища:", "0…+60 °C"],
+    ["Роздільна здатність вимірювання температури:", "0,1 °C"],
+    ["Навантажувальна здатність реле охолодження:", "10 А / 250 В AC"],
+    ["Навантажувальна здатність реле нагрівання:", "10 А / 250 В AC"],
+    ["Маса:", "0,18 кг"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7876268062_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876337074_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876549389_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876549423_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7901892040_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876337230_tsifrovij-termoregulyator-10.jpg"
+  ],
   "accessories": []
 }

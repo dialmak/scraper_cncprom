@@ -1,10 +1,20 @@
 {
   "id": "3269973499",
-  "name": "Силове реле Songle SRD-48VDC-SL-C NEW",
+  "name": "Силове реле Songle SRD-48VDC-SL-C",
   "sku": "03-287",
   "url": "https://cncprom.ua/ua/p3269973499-silove-rele-songle.html",
-  "attrs": [],
+  "attrs": [
+    ["Маса", "9 г"],
+    ["Час спрацьовування", "10 мс"],
+    ["Номінальна робоча напруга постійного струму", "48 В"],
+    ["Довжина", "19.2 мм"],
+    ["Висота", "15.8 мм"],
+    ["Ширина", "15.6 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7882851673_silove-rele-songle.jpg",
+    "https://images.prom.ua/7882852868_silove-rele-songle.jpg"
+  ],
   "accessories": []
 }

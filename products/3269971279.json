@@ -1,10 +1,26 @@
 {
   "id": "3269971279",
-  "name": "Кнопка LA16-11ZS NEW",
+  "name": "Кнопка аварійної зупинки AB6-V (LA16-11ZS) червона, 16 мм, з фіксацією, 1NO+1NC",
   "sku": "03-284",
-  "url": "https://cncprom.ua/ua/p3269971279-knopka-la16-11zs.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3269971279-knopka-avarijnoj-ostanovki.html",
+  "attrs": [
+    ["Форма кнопки", "Грибоподібна"],
+    ["Колір кнопки", "Червоний"],
+    ["Кількість кнопок", "1 шт."],
+    ["Колір корпусу", "Чорний"],
+    ["Фіксація положення", "Так"],
+    ["Мінімальна робоча температура", "-25 град."],
+    ["Максимальна робоча температура", "55 град."],
+    ["Ступінь захисту IP", "40"],
+    ["Висота", "48 мм"],
+    ["Ширина", "24 мм"],
+    ["Діаметр", "16 мм"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7889655645_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/7889655697_knopka-avarijnoyi-zupinki.jpg",
+    "https://images.prom.ua/7889655776_knopka-avarijnoyi-zupinki.jpg"
+  ],
   "accessories": []
 }

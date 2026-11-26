@@ -1,10 +1,13 @@
 {
   "id": "3269972918",
-  "name": "Контролер безколекторного двигуна 24V 1200W NEW",
+  "name": "Контролер безколекторного двигуна 24 В 1200 Вт",
   "sku": "02-415",
   "url": "https://cncprom.ua/ua/p3269972918-kontroller-beskollektornogo-dvigatelya.html",
   "attrs": [],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7883955001_kontroler-bezkolektornogo-dviguna.jpg",
+    "https://images.prom.ua/7883955646_kontroler-bezkolektornogo-dviguna.jpg"
+  ],
   "accessories": []
 }

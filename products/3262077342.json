@@ -1,10 +1,30 @@
 {
   "id": "3262077342",
-  "name": "DF3-D Цифровий вольтметр та амперметр NEW",
+  "name": "Цифровий панельний вольтметр до 300 В DC, 110/220 В AC, DF3-D",
   "sku": "03-280",
-  "url": "https://cncprom.ua/ua/p3262077342-df3-tsifrovoj-voltmetr.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262077342-tsifrovoj-panelnyj-voltmetr.html",
+  "attrs": [
+    ["Стан", "Новий"],
+    ["Тип вимірюваної напруги", "DC"],
+    ["Максимальний діапазон вимірювання", "300"],
+    ["Похибка, +/-", "0.5 %"],
+    ["Колір символів", "Червоний"],
+    ["Кількість рядків", "1 шт."],
+    ["Живлення", "Мережа 220В"],
+    ["Мінімальна робоча температура", "0 °С"],
+    ["Максимальна робоча температура", "50 °С"],
+    ["Довжина", "65 мм"],
+    ["Ширина", "96 мм"],
+    ["Висота", "48 мм"],
+    ["Вага", "0.2 кг"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7902320732_tsifrovij-panelnij-voltmetr.jpg",
+    "https://images.prom.ua/7902320738_tsifrovij-panelnij-voltmetr.jpg",
+    "https://images.prom.ua/7902320740_tsifrovij-panelnij-voltmetr.jpg",
+    "https://images.prom.ua/7902320742_tsifrovij-panelnij-voltmetr.jpg",
+    "https://images.prom.ua/7902321030_tsifrovij-panelnij-voltmetr.jpg"
+  ],
   "accessories": []
 }

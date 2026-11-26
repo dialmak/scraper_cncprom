@@ -1,10 +1,30 @@
 {
   "id": "3262092251",
-  "name": "Цифровий термостат RC-316M NEW",
+  "name": "Цифровий терморегулятор 10 A, 250 В AC, RC-316M, з датчиком NTC",
   "sku": "05-286",
-  "url": "https://cncprom.ua/ua/p3262092251-tsifrovoj-termostat-316m.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262092251-tsifrovoj-termoregulyator-250.html",
+  "attrs": [
+    ["Вид терморегулятора", "Електронний"],
+    ["Максимальна сила струму", "10 А"],
+    ["Дисплей", "Так"],
+    ["Вага", "0.12 кг"],
+    ["Стан", "Новий"],
+    ["Інтерфейс", "Провідний"],
+    ["Живлення", "Акумулятор"],
+    ["Наявність Wi-Fi", "Ні"],
+    ["Напруга живлення:", "12 В"],
+    ["Споживана потужність:", "<3 Вт"],
+    ["Номінал контактів реле охолодження:", "10 А / 250 В"],
+    ["Номінал контактів реле нагрівання:", "10 А / 250 В"],
+    ["Точність вимірювання температури ±1 °C у діапазоні:", "−50…+70 °C"]
+  ],
   "specs": [],
-  "photos": [],
+  "photos": [
+    "https://images.prom.ua/7897076744_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7899736536_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876337074_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876549423_tsifrovij-termoregulyator-10.jpg",
+    "https://images.prom.ua/7876337230_tsifrovij-termoregulyator-10.jpg"
+  ],
   "accessories": []
 }

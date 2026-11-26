@@ -1,10 +1,26 @@
 {
   "id": "3262086769",
-  "name": "Контролер температури T-503A NEW",
+  "name": "Контролер температури 24 В DC для чилера, S&A T-503A",
   "sku": "05-283",
-  "url": "https://cncprom.ua/ua/p3262086769-kontroler-temperaturi-503a.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3262086769-kontroler-temperaturi-dlya.html",
+  "attrs": [
+    ["Вага", "0.18 кг"],
+    ["Стан", "Новий"],
+    ["Ширина", "74 мм"],
+    ["Довжина", "63 мм"],
+    ["Висота", "35 мм"]
+  ],
   "specs": [],
-  "photos": [],
-  "accessories": []
+  "photos": [
+    "https://images.prom.ua/7905522164_kontroler-temperaturi-24.jpg",
+    "https://images.prom.ua/7905522290_kontroler-temperaturi-24.jpg",
+    "https://images.prom.ua/7905522240_kontroler-temperaturi-24.jpg",
+    "https://images.prom.ua/7905522281_kontroler-temperaturi-24.jpg",
+    "https://images.prom.ua/7905535581_kontroler-temperaturi-24.jpg"
+  ],
+  "accessories": [
+    "978166277",
+    "2518268883",
+    "3101110731"
+  ]
 }
