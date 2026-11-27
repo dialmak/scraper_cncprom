@@ -1,10 +1,29 @@
 {
   "id": "3275268901",
-  "name": "Запобіжний клапан RV-01 0-300 мбар NEW",
+  "name": "Запобіжний клапан скидання тиску RV-01A 0–300 мбар, 1 1/4″ для пневматичних систем",
   "sku": "18-016",
-  "url": "https://cncprom.ua/ua/p3275268901-predohranitelnyj-klapan-300.html",
-  "attrs": [],
+  "url": "https://cncprom.ua/ua/p3275268901-predohranitelnyj-klapan-sbrosa.html",
+  "attrs": [
+    ["Тип", "Клапан"],
+    ["Зовнішня різьба", "1 1/4\""],
+    ["Матеріал виробу", "Пластик"],
+    ["Мінімальна робоча температура", "-10 град."],
+    ["Максимальна робоча температура", "120 град."],
+    ["Вага", "0.08 кг"],
+    ["З'єднання", "Різьбове"]
+  ],
   "specs": [],
-  "photos": [],
-  "accessories": []
+  "photos": [
+    "https://images.prom.ua/7908223416_zapobizhnij-klapan-skidannya.jpg",
+    "https://images.prom.ua/7908223518_zapobizhnij-klapan-skidannya.jpg",
+    "https://images.prom.ua/7908223668_zapobizhnij-klapan-skidannya.jpg"
+  ],
+  "accessories": [
+    "2224940231",
+    "2224940220",
+    "2224940228",
+    "2224940229",
+    "2224940230",
+    "2224940233"
+  ]
 }
