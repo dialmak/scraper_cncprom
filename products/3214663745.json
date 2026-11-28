@@ -5,7 +5,10 @@
   "url": "https://cncprom.ua/ua/p3214663745-regulyator-oborotov-dvigatelya.html",
   "attrs": [
     ["Тип двигуна", "Асинхронні"],
-    ["Реверс", "Так"]
+    ["Реверс", "Так"],
+    ["Модель:", "US-52"],
+    ["Напруга живлення:", "220 В"],
+    ["Частота змінного струму:", "50 Гц"]
   ],
   "specs": [
     ["посібник користувача англійською.pdf", "https://storage.ua.prom.st/3480108_posibnik_koristuvacha_anglijskoyu.pdf"]
