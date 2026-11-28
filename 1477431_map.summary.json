@@ -1,0 +1,39 @@
+{
+  "id": "1477431",
+  "levels": 1,
+  "categories_count": 1,
+  "has_products": true,
+  "total_products": 37,
+  "total_yes": 19,
+  "total_no": 18,
+  "site_counter": 19,
+  "diff": 0,
+  "scraped_at": "28.11.2026 04:47",
+  "source": "1477431_catalog.json",
+  "mismatch_categories": [],
+  "crumb_summary": {
+    "match": 37,
+    "ancestor": 0,
+    "descendant": 0,
+    "other": 0,
+    "unknown": 0
+  },
+  "crumb_other": [],
+  "crumb_unknown": [],
+  "orphan_categories": [],
+  "nodes": [
+    {
+      "id": "1477431",
+      "name": "Пульти ручного управління і DSP контролери",
+      "parentId": "",
+      "level": 1,
+      "url": "https://cncprom.ua/ua/g1477431-pulty-ruchnogo-upravleniya",
+      "own": 37,
+      "products": 37,
+      "yes": 19,
+      "no": 18,
+      "counter": 19,
+      "diff": 0
+    }
+  ]
+}
